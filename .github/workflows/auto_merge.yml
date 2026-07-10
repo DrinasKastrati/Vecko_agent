@@ -1,0 +1,57 @@
+name: Auto-merge claude-brancher till main
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+  workflow_dispatch:   # manuell körning mergar ALLA befintliga claude/-brancher
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automerge-main
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hämta repot (alla brancher)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merga till main och ta bort branchen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manuell körning: plocka upp alla befintliga claude/-brancher
+            BRANCHES=$(git branch -r | grep 'origin/claude/' | sed 's|.*origin/||' || true)
+          else
+            # Automatisk körning: branchen som just pushades
+            BRANCHES="${GITHUB_REF_NAME}"
+          fi
+
+          if [ -z "$BRANCHES" ]; then
+            echo "Inga claude/-brancher att merga. Klart."
+            exit 0
+          fi
+
+          FAIL=0
+          for BRANCH in $BRANCHES; do
+            echo "==> Mergar $BRANCH till main"
+            if git merge "origin/$BRANCH" -m "Auto-merge: $BRANCH -> main"; then
+              git push origin main
+              git push origin --delete "$BRANCH"
+              echo "==> Klart: $BRANCH mergad till main och borttagen."
+            else
+              git merge --abort
+              echo "::error::Mergekonflikt i $BRANCH - branchen lamnas kvar for manuell hantering."
+              FAIL=1
+            fi
+          done
+          exit $FAIL
