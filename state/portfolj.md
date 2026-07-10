@@ -22,7 +22,6 @@
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Anteckning |
 |---|---|---|---|---|---|---|---|
-| ALLEI.ST | 95 | 95 | 2026-07-10 | 95 | 91 | 105 | Köpt |
 | – | – | – | – | – | – | – | Inga öppnade positioner – se pending nedan |
 
 ### Pending veckorotation v28 (beslutad i veckorapport-260706.md – ej öppnad)
@@ -33,7 +32,7 @@
 *Nivåerna ovan är planen från veckorapport-260706.md och ska justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. Kongsberg (KOG.OL) roterades ut till bubblarlistan (Q2-rapport denna vecka). Saab avfördes 2026‑07‑08 efter att katalysatorn löst ut och kursen sprungit förbi planen.*
 
 ## Kassa
-50 % (inga verifierade fills – rotationen ej exekverad denna körning)
+100 % (inga verifierade fills – rotationen ej exekverad denna körning)
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Skäl (mål/stopp/rotation/katalysator) |
