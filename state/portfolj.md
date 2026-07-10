@@ -27,8 +27,7 @@
 ### Pending veckorotation v28 (beslutad i veckorapport-260706.md – ej öppnad)
 | Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Status |
 |---|---|---|---|---|---|---|---|
-| Alleima (BEHÅLL/ankarcase) | ALLEI.ST | Nasdaq Stockholm | ~94,5 kr (köp om öppning < 96; annars retest 90–92) | 90,5 kr | 102,5 kr | 1:2,0 | 2026‑07‑10: kurs VERIFIERAD 96,50 SEK (prices.json 12:50 UTC) – entry EJ triggad (se toppnotis: Q2 17/7 + priskonflikt + villkor ej rent triggat). Kvarstår pending, omprövas efter rapport/källverifiering. |
-| ~~Saab B (ryktescase)~~ | ~~SAAB-B.ST~~ | ~~Nasdaq Stockholm~~ | ~~~560 kr (köp om öppning < 575)~~ | ~~535 kr~~ | ~~615 kr~~ | ~~1:2,2~~ | **AVFÖRD 2026‑07‑08** – GlobalEye‑ryktet bekräftat (NATO/Ankara 7/7), aktien gapade förbi 575→~685 kr; entryvillkoret triggades aldrig. Ej öppnad → ingen historikrad. |
+
 
 *Nivåerna ovan är planen från veckorapport-260706.md och ska justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. Kongsberg (KOG.OL) roterades ut till bubblarlistan (Q2-rapport denna vecka). Saab avfördes 2026‑07‑08 efter att katalysatorn löst ut och kursen sprungit förbi planen.*
 
