@@ -22,7 +22,6 @@
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Anteckning |
 |---|---|---|---|---|---|---|---|
-|ALLEI.ST| 95 | - | - | - | - | - |
 | – | – | – | – | – | – | – | Inga öppnade positioner – se pending nedan |
 
 ### Pending veckorotation v28 (beslutad i veckorapport-260706.md – ej öppnad)
