@@ -6,7 +6,7 @@ och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
 ---
 
 ## 1. Vad projektet är
-Ett automatiserat system för aktie-beslutsstöd, i fyra delar:
+Ett automatiserat system för aktie-beslutsstöd, i fem delar:
 
 1. **Routinen** – en schemalagd Claude-körning som varje handelsdag (LÄGE B) bevakar innehav och
    varje måndag (LÄGE A) gör en full veckorotation. Den läser preferenser/tillstånd/mallar,
@@ -21,6 +21,10 @@ Ett automatiserat system för aktie-beslutsstöd, i fyra delar:
    USA-/kryptomarknaden (marknadsöversikt, ekonomiska siffror, aktuella händelser) och tar fram
    2–3 nya case. Skriver `reports/scout/rapport-yymmdd.md`, egen kategori i dashboarden. Täcker
    INTE Norden (det gör del 1).
+5. **Analys på begäran** – skriv en ticker i dashboardens "Analys"-flik → ett förifyllt GitHub-issue
+   ("analys: TICKER") köas av en NYCKELLÖS Action till `state/analysis_queue.json`. En MANUELL
+   Claude-arbetare (`prompts/analysprompt.md`, körs i Cowork – **ingen API-nyckel**) bearbetar kön
+   och skriver `reports/analysis/analys-TICKER-yymmdd.md`. Dashboarden cachar och visar analyserna.
 
 - **Repo:** https://github.com/DrinasKastrati/Vecko_agent  (publikt, branch `main`)
 - **Dashboard (GitHub Pages):** https://drinaskastrati.github.io/Vecko_agent/
@@ -39,12 +43,14 @@ Vecko_agent/
 │  └─ app.js             #   class Dashboard – hämtar data, renderar, event
 ├─ prompts/              # instruktioner till routinerna
 │  ├─ dagligprompt.md    #   nordisk rotation – enda ingången (veckoprompt.md utgången/stub)
-│  └─ scoutprompt.md     #   USA & krypto – daglig scout (fristående kategori)
+│  ├─ scoutprompt.md     #   USA & krypto – daglig scout (fristående kategori)
+│  └─ analysprompt.md    #   aktieanalys på begäran (manuell kö-arbetare, ingen API-nyckel)
 ├─ templates/            # strikta mallar (routinerna får ALDRIG ändra dem)
 │  ├─ vecko_rapport.md
 │  ├─ daglig_mall.md
 │  ├─ case_rapport.md
-│  └─ scout_case.md      #   USA & krypto-rapportens mall
+│  ├─ scout_case.md      #   USA & krypto-rapportens mall
+│  └─ analys_mall.md     #   mall för aktieanalys på begäran
 ├─ config/               # preferenser + bevakning
 │  ├─ fokus.md           #   nordiska preferenser
 │  ├─ fokus_scout.md     #   USA & krypto-preferenser (scout)
@@ -52,14 +58,19 @@ Vecko_agent/
 │  └─ watchlist_us.txt   #   USA/krypto-tickers till pris-hämtaren
 ├─ state/                # levande tillstånd (muteras av routinen / actionen)
 │  ├─ portfolj.md        #   innehav, kassa, ackumulerad avkastning, append-only historik
-│  └─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
+│  ├─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
+│  └─ analysis_queue.json #  analyskö (pending/done); issue-Action fyller, arbetaren tömmer
 ├─ reports/
 │  ├─ weekly/            #   veckorapport-yymmdd.md (nordisk)
 │  ├─ daily/             #   daglig-yymmdd.md (nordisk)
-│  └─ scout/             #   rapport-yymmdd.md (USA & krypto)
+│  ├─ scout/             #   rapport-yymmdd.md (USA & krypto)
+│  └─ analysis/          #   analys-TICKER-yymmdd.md (på begäran, cache)
 └─ .github/
-   ├─ workflows/prices.yml     # schemalagd kurshämtning
-   └─ scripts/fetch-prices.mjs # hämtar Yahoo-kurser -> state/prices.json
+   ├─ workflows/prices.yml       # schemalagd kurshämtning (nordisk + USA/krypto)
+   ├─ workflows/auto_merge.yml   # auto-merge av claude/**-brancher till main
+   ├─ workflows/analys_queue.yml # issue "analys: TICKER" -> analysis_queue.json (nyckellös)
+   ├─ scripts/fetch-prices.mjs   # hämtar Yahoo-kurser -> state/prices.json
+   └─ scripts/queue-add.mjs      # lägger ticker i analysis_queue.json
 ```
 Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
 
@@ -71,9 +82,10 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
-- Sektioner: Översikt (KPI + dagens beslut + prisfärskhet), Rapporter (Daglig/Vecko/Scout-väljare),
-  Nyheter & radar, USA & Krypto (scout: marknad, makro, case), Avkastning (Chart.js + historik +
-  bubblare). Visar även routinens "DATAKÄLLA BLOCKERAD"-notis
+- **Flikbaserad** (en vy i taget): Översikt (KPI + dagens beslut), Rapporter (Daglig/Vecko/Scout),
+  Nyheter & radar, USA & Krypto (scout), Analys (aktieanalys på begäran, cache), Kurser
+  (prices.json-tabell), Avkastning (Chart.js + historik + bubblare). Visar även routinens
+  "DATAKÄLLA BLOCKERAD"-notis
   som en gul varningsbanner (det är korrekt beteende – appen speglar bara routinens status).
 - Verifierad i sandbox med jsdom (parsning + rendering + modul-laddning), inte bara antaget.
 
@@ -93,6 +105,18 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   i dashboarden ("USA & Krypto").
 - Hårt krav: varje kurs ska ha **verifierad källa + tidsstämpel**; annars "KURS EJ VERIFIERAD" och
   inget kursbaserat beslut. Detta krav ska INTE sänkas.
+
+---
+
+## 4b. Analys på begäran (flöde, ingen API-nyckel)
+1. I dashboardens **Analys**-flik skriver du en ticker → finns den cachad visas den direkt.
+2. Annars öppnas ett förifyllt GitHub-issue **"analys: TICKER"**. Skicka in det (ett klick).
+3. `analys_queue.yml` (nyckellös Action, endast `GITHUB_TOKEN`, ägar-skyddad) lägger tickern i
+   `state/analysis_queue.json` (pending), kvitterar och stänger issuet.
+4. Kör den MANUELLA arbetaren i Cowork ("analysera kön") → `prompts/analysprompt.md` bearbetar
+   pending, skriver `reports/analysis/analys-TICKER-yymmdd.md`, flyttar posten till done, committar.
+5. Dashboarden pollar och visar analysen; sedan är den cachad. Filnamn: `analys-<TICKER>-yymmdd.md`.
+   Ingen Anthropic API-nyckel behövs – arbetaren är en vanlig Claude/Cowork-körning.
 
 ---
 

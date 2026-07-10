@@ -271,9 +271,23 @@
       + scoutBlock("Makro- & sektorfaktorer", scout.macro);
   }
 
+  // ---- analys-index (på begäran) ----------------------------------------
+  function renderAnalysisIndex(list, pending){
+    let html = "";
+    if (pending && pending.length)
+      html += `<div class="an-queue">I kö: ${pending.map(t => pill(t)).join(" ")} <span style="color:var(--faint)">· väntar på arbetaren</span></div>`;
+    if (!list || !list.length)
+      html += `<div class="empty">Inga analyser i cachen ännu – skriv en ticker ovan och tryck Analysera.</div>`;
+    else
+      html += `<div class="an-grid">` + list.map(m =>
+        `<button class="an-chip" data-ticker="${esc(m.ticker)}"><span class="an-chip-tk">${esc(m.ticker)}</span><span class="an-chip-dt">${esc(m.dateISO)}</span></button>`
+      ).join("") + `</div>`;
+    return html;
+  }
+
   const API = { esc, signPct, trendClass, decClass, truncate,
     renderKPIs, renderMarket, renderHoldings, renderFeed,
-    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout };
+    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout, renderAnalysisIndex };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

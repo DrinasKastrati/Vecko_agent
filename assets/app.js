@@ -13,7 +13,7 @@
       this.R = root.VRender;
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
-        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [],
+        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -57,17 +57,20 @@
         this.state.metas = metas;
         const portfPath = paths.find(p => /(^|\/)portfolj\.md$/i.test(p)) || "portfolj.md";
         const pricesPath = paths.find(p => /(^|\/)prices\.json$/i.test(p));
+        const queuePath = paths.find(p => /(^|\/)analysis_queue\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 8);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
           Promise.all(sMetas.map(m => this.getMd(m.path))),
-          pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null)
+          pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null),
+          queuePath ? this.fetchJSON(this.raw(queuePath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
+        this.state.queue = queue;
         this.state.portfolio = pMd ? this.P.parsePortfolio(pMd) : { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
@@ -88,6 +91,7 @@
       const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
+      this.renderAnalysisIndex();
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.el("repoFoot").href = this.repoURL;
@@ -130,6 +134,64 @@
       });
       t.content.querySelectorAll("a[href]").forEach(a => { a.target = "_blank"; a.rel = "noopener noreferrer"; });
       return t.innerHTML;
+    }
+
+    // ---- analys (på begäran, cachad i git) ----
+    renderAnalysisIndex() {
+      const el = this.el("analysList"); if (!el) return;
+      const metas = this.state.metas.filter(m => m.type === "analysis");
+      const byT = {};
+      metas.forEach(m => { if (!byT[m.ticker] || m.sortKey > byT[m.ticker].sortKey) byT[m.ticker] = m; });
+      const list = Object.values(byT).sort((a, b) => b.sortKey - a.sortKey);
+      const pending = ((this.state.queue && this.state.queue.pending) || []).map(p => p && p.ticker).filter(Boolean);
+      el.innerHTML = this.R.renderAnalysisIndex(list, pending);
+      el.querySelectorAll("[data-ticker]").forEach(b => b.addEventListener("click", () => this.analyse(b.dataset.ticker)));
+    }
+    analyse(rawTicker) {
+      const ticker = (rawTicker || "").toUpperCase().trim().replace(/\s+/g, "");
+      if (!ticker) return;
+      this.showView("analys");
+      const cached = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey);
+      if (cached.length) { this.el("analysStatus").innerHTML = "Cachad analys – tryck Re-analysera för en färsk."; this.showAnalysis(cached[0]); return; }
+      const url = this.repoURL + "/issues/new?title=" + encodeURIComponent("analys: " + ticker) +
+        "&body=" + encodeURIComponent("Begäran om aktieanalys för " + ticker + ". Skicka in ärendet så köas det automatiskt.");
+      window.open(url, "_blank", "noopener");
+      this.el("analysBody").innerHTML = "";
+      this.el("analysStatus").innerHTML = 'Ingen cachad analys för <b>' + this.R.esc(ticker) + '</b>. Skicka in GitHub-ärendet som öppnades, kör sedan "analysera kön" i Cowork – jag lyssnar efter resultatet…';
+      this.pollAnalysis(ticker);
+    }
+    async showAnalysis(meta) {
+      const body = this.el("analysBody"); if (!body) return;
+      body.innerHTML = '<div class="empty">Hämtar…</div>';
+      try {
+        const md = await this.getMd(meta.path);
+        const verdict = this.P.stripMd(this.P.field(md, "Slutsats")).slice(0, 70);
+        const price = this.P.stripMd(this.P.field(md, "Kurs")).slice(0, 90);
+        const head = '<div class="an-head"><div><span class="an-tk">' + this.R.esc(meta.ticker) + '</span> <span class="an-date">' + this.R.esc(meta.dateISO) + '</span></div>' +
+          (verdict ? '<span class="an-verdict">' + this.R.esc(verdict) + '</span>' : '') + '</div>' +
+          (price ? '<div class="an-price">Kurs: ' + this.R.esc(price) + '</div>' : '') +
+          '<div class="an-actions"><a class="btn" target="_blank" rel="noopener" href="' + this.ghBlob(meta.path) + '">GitHub</a> <button class="btn" id="anReana">Re-analysera</button></div>';
+        body.innerHTML = head + '<div class="report" style="max-height:none">' + this.mdToHtml(md) + '</div>';
+        const rb = this.el("anReana"); if (rb) rb.addEventListener("click", () => this.analyse(meta.ticker));
+      } catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta analysen.</div>'; }
+    }
+    pollAnalysis(ticker) {
+      if (this._poll) clearInterval(this._poll);
+      let tries = 0;
+      this._poll = setInterval(async () => {
+        tries++;
+        try {
+          const paths = await this.discoverTree(true);
+          this.state.metas = this.metasFromTree(paths);
+          const hit = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey)[0];
+          if (hit) {
+            clearInterval(this._poll); this._poll = null;
+            this.el("analysStatus").innerHTML = 'Analys klar för <b>' + this.R.esc(ticker) + '</b>.';
+            this.showAnalysis(hit); this.renderAnalysisIndex();
+          }
+        } catch (e) {}
+        if (tries >= 40 && this._poll) { clearInterval(this._poll); this._poll = null; this.el("analysStatus").innerHTML += ' (slutade lyssna – tryck Analysera igen när den är klar.)'; }
+      }, 15000);
     }
 
     // ---- chart ----
@@ -188,6 +250,9 @@
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
+      const ab = this.el("analysBtn"), ai = this.el("analysInput");
+      if (ab) ab.addEventListener("click", () => this.analyse(ai ? ai.value : ""));
+      if (ai) ai.addEventListener("keydown", e => { if (e.key === "Enter") this.analyse(ai.value); });
       this.el("reportSelect").addEventListener("change", e => this.showReport(e.target.value));
       this.el("rawToggle").addEventListener("change", () => { const b = this.el("reportBody"); const md = b.dataset.raw || ""; if (!md) return; b.innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md); });
       document.querySelectorAll(".rtype").forEach(btn => btn.addEventListener("click", () => {

@@ -69,6 +69,12 @@
       return mk("case", m);
     if ((m = name.match(/^rapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
       return mk("scout", m);
+    if ((m = name.match(/^analys-(.+?)-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i))){
+      const r = mk("analysis", [null, m[2], m[3], m[4], m[5]]);
+      r.ticker = m[1].toUpperCase();
+      r.label = r.ticker + " · " + r.label;
+      return r;
+    }
     return null;
     function mk(type, m){
       const yy = 2000 + parseInt(m[1],10), mm = parseInt(m[2],10), dd = parseInt(m[3],10);

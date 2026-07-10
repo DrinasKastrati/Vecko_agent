@@ -194,6 +194,23 @@
   .bb--bear{background:rgba(255,92,120,.07)} .bb--bear .k{color:var(--red)}
   .scase-setup{font-size:12.3px;color:var(--muted);padding-top:9px;border-top:1px solid var(--border)}
 
+  .an-bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  #analysInput{flex:1;min-width:200px;background:var(--panel3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px}
+  #analysInput:focus{outline:none;border-color:#37507a}
+  .an-status{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .an-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .an-tk{font-family:var(--mono);font-size:18px;font-weight:600}
+  .an-date{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .an-verdict{font-size:12.5px;color:var(--amber);border:1px solid rgba(255,180,84,.35);border-radius:7px;padding:3px 10px}
+  .an-price{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px}
+  .an-actions{display:flex;gap:8px;margin:8px 0 12px}
+  .an-queue{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+  .an-chip{cursor:pointer;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--text);font-family:inherit;display:flex;flex-direction:column;gap:2px}
+  .an-chip:hover{border-color:var(--border2);background:var(--panel3)}
+  .an-chip-tk{font-family:var(--mono);font-size:13px;font-weight:600}
+  .an-chip-dt{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+
   .footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--faint);font-size:12px;
     display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
   .disclaimer{color:var(--amber);font-size:12px}
@@ -231,6 +248,7 @@
     <a href="#rapporter" data-view="rapporter">Rapporter</a>
     <a href="#nyheter" data-view="nyheter">Nyheter &amp; radar</a>
     <a href="#scout" data-view="scout">USA &amp; Krypto</a>
+    <a href="#analys" data-view="analys">Analys</a>
     <a href="#kurser" data-view="kurser">Kurser</a>
     <a href="#avkastning" data-view="avkastning">Avkastning</a>
   </nav>
@@ -271,6 +289,18 @@
     <section class="view" id="view-scout" data-view="scout">
       <div class="sec-head"><h2>USA &amp; Krypto</h2><span class="hint">daglig scout · nyheter, makro &amp; case</span></div>
       <div id="scoutBody"></div>
+    </section>
+
+    <section class="view" id="view-analys" data-view="analys">
+      <div class="sec-head"><h2>Analys</h2><span class="hint">aktieanalys på begäran · cachas i git</span></div>
+      <div class="an-bar">
+        <input id="analysInput" type="text" placeholder="Ticker, t.ex. NVDA, BTC-USD, VOLV-B.ST" autocomplete="off" spellcheck="false" />
+        <button id="analysBtn" class="btn">Analysera</button>
+      </div>
+      <div id="analysStatus" class="an-status"></div>
+      <div id="analysBody"></div>
+      <h3 class="sub">Tidigare analyser</h3>
+      <div id="analysList"></div>
     </section>
 
     <section class="view" id="view-kurser" data-view="kurser">
