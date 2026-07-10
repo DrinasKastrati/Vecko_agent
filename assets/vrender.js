@@ -196,7 +196,7 @@
               : Math.round(mins / 1440) + " dygn sedan";
     return { txt, cls: mins > 3 * 1440 ? "px-stale" : "px-fresh" };
   }
-  function renderPrices(prices){
+  function renderPrices(prices, history){
     if (!prices || !prices.quotes)
       return `<div class="px-card"><div class="px-head"><span class="t">Kurser (prices.json)</span></div>`
            + `<div class="empty">Inga kurser hämtade ännu – kör pris-actionen (Actions → “Hämta kurser”).</div></div>`;
@@ -212,9 +212,10 @@
       const mt = pxAge(q.marketTime);
       const price = String(q.price) + (q.currency ? " " + q.currency : "");
       const tm = q.marketTime ? q.marketTime.slice(0, 16).replace("T", " ") : "okänd tid";
+      const ser = history && history.series && history.series[q.symbol || s];
       return `<div class="px-item"><div class="px-tk"><span>${esc(q.symbol || s)}</span>`
            + `<span class="${mt.cls}">${mt.cls === "px-fresh" ? "✓" : "⚠"}</span></div>`
-           + `<div class="px-pr">${esc(price)}</div><div class="px-tm">${esc(tm)}</div></div>`;
+           + `<div class="px-pr">${esc(price)}</div><div class="px-tm">${esc(tm)}</div>${sparkline(ser)}</div>`;
     }).join("");
     return `<div class="px-card">
       <div class="px-head">
@@ -273,21 +274,60 @@
 
   // ---- analys-index (på begäran) ----------------------------------------
   function renderAnalysisIndex(list, pending){
+    const daysSince = iso => { const t = Date.parse(iso); return isNaN(t) ? null : Math.floor((Date.now() - t) / 86400000); };
     let html = "";
     if (pending && pending.length)
       html += `<div class="an-queue">I kö: ${pending.map(t => pill(t)).join(" ")} <span style="color:var(--faint)">· väntar på arbetaren</span></div>`;
     if (!list || !list.length)
       html += `<div class="empty">Inga analyser i cachen ännu – skriv en ticker ovan och tryck Analysera.</div>`;
     else
-      html += `<div class="an-grid">` + list.map(m =>
-        `<button class="an-chip" data-ticker="${esc(m.ticker)}"><span class="an-chip-tk">${esc(m.ticker)}</span><span class="an-chip-dt">${esc(m.dateISO)}</span></button>`
-      ).join("") + `</div>`;
+      html += `<div class="an-grid">` + list.map(m => {
+        const d = daysSince(m.dateISO);
+        const stale = d != null && d > 7;
+        const age = d != null ? (d === 0 ? "idag" : d + " dgr") : "";
+        return `<button class="an-chip${stale ? " an-stale" : ""}" data-ticker="${esc(m.ticker)}" title="${stale ? "Gammal analys – klicka för att köra om" : "Klicka för att öppna"}">`
+          + `<span class="an-chip-tk">${esc(m.ticker)}</span>`
+          + `<span class="an-chip-dt">${esc(m.dateISO)}${age ? " · " + age : ""}${stale ? " · gammal" : ""}</span></button>`;
+      }).join("") + `</div>`;
     return html;
   }
 
-  const API = { esc, signPct, trendClass, decClass, truncate,
+  // ---- sparkline (SVG) --------------------------------------------------
+  function sparkline(points, w, h){
+    w = w || 96; h = h || 24;
+    if (!points || points.length < 2) return "";
+    const vals = points.map(p => p[1]);
+    const min = Math.min.apply(null, vals), max = Math.max.apply(null, vals), rng = (max - min) || 1;
+    const step = w / (points.length - 1);
+    const path = points.map((p, i) => (i * step).toFixed(1) + "," + (h - 2 - ((p[1] - min) / rng) * (h - 4)).toFixed(1)).join(" ");
+    const col = vals[vals.length - 1] >= vals[0] ? "var(--green)" : "var(--red)";
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${path}" fill="none" stroke="${col}" stroke-width="1.5"/></svg>`;
+  }
+
+  // ---- trade-statistik --------------------------------------------------
+  function renderTradeStats(s){
+    if (!s || !s.trades)
+      return `<div class="empty">Inga stängda affärer ännu – statistiken fylls i när positioner stängs.</div>`;
+    const pf = s.profitFactor == null ? "–" : (s.profitFactor === Infinity ? "∞" : s.profitFactor.toFixed(2));
+    const cell = (label, val, cls, sub) =>
+      `<div class="stat"><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
+    return `<div class="stat-grid">
+      ${cell("Affärer", String(s.trades), "", s.wins + " vinst / " + s.losses + " förlust")}
+      ${cell("Träffsäkerhet", s.winRate != null ? Math.round(s.winRate * 100) + " %" : "–", s.winRate >= 0.5 ? "pos" : "")}
+      ${cell("Snittvinst", s.avgWin != null ? esc(signPct(s.avgWin)) : "–", "pos")}
+      ${cell("Snittförlust", s.avgLoss != null ? esc(signPct(s.avgLoss)) : "–", "neg")}
+      ${cell("Profit factor", pf, s.profitFactor >= 1 ? "pos" : "neg")}
+      ${cell("Bästa / sämsta", esc((s.best != null ? signPct(s.best) : "–") + " / " + (s.worst != null ? signPct(s.worst) : "–")))}
+      ${cell("Snitt hålltid", s.avgHoldDays != null ? Math.round(s.avgHoldDays) + " dgr" : "–")}
+      ${cell("Mål / stopp / rot.", s.byReason.target + " / " + s.byReason.stop + " / " + s.byReason.rotation, "", "orsak till stängning")}
+    </div>
+    <div class="stat-note">Grov kedjad avkastning (50 % vikt/affär): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
+  }
+
+  const API = { esc, signPct, trendClass, decClass, truncate, sparkline,
     renderKPIs, renderMarket, renderHoldings, renderFeed,
-    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout, renderAnalysisIndex };
+    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
+    renderAnalysisIndex, renderTradeStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

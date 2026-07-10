@@ -13,7 +13,7 @@
       this.R = root.VRender;
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
-        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null,
+        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -58,19 +58,22 @@
         const portfPath = paths.find(p => /(^|\/)portfolj\.md$/i.test(p)) || "portfolj.md";
         const pricesPath = paths.find(p => /(^|\/)prices\.json$/i.test(p));
         const queuePath = paths.find(p => /(^|\/)analysis_queue\.json$/i.test(p));
+        const histPath = paths.find(p => /(^|\/)price_history\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 8);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
           Promise.all(sMetas.map(m => this.getMd(m.path))),
           pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null),
-          queuePath ? this.fetchJSON(this.raw(queuePath)).catch(() => null) : Promise.resolve(null)
+          queuePath ? this.fetchJSON(this.raw(queuePath)).catch(() => null) : Promise.resolve(null),
+          histPath ? this.fetchJSON(this.raw(histPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
+        this.state.priceHistory = priceHistory;
         this.state.portfolio = pMd ? this.P.parsePortfolio(pMd) : { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
@@ -88,10 +91,11 @@
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
       this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio);
-      const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices);
+      const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
+      const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.el("repoFoot").href = this.repoURL;

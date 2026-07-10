@@ -148,6 +148,30 @@ export function parseChart(json, sym){
 // ---- network ----------------------------------------------------------
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// Reservkälla när Yahoo fallerar: stooq CSV (USA + krypto främst).
+export async function fetchStooq(sym, fetchImpl = globalThis.fetch){
+  let s = null;
+  if (/^[A-Z]{1,6}$/.test(sym)) s = sym.toLowerCase() + ".us";
+  else if (/^[A-Z0-9]{2,6}-USD$/.test(sym)) s = sym.replace("-", "").toLowerCase();
+  else if (/\.ST$/.test(sym)) s = sym.toLowerCase();
+  if (!s) return null;
+  const url = `https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;
+  try {
+    const r = await fetchImpl(url, { headers: { "User-Agent": UA } });
+    if (!r.ok) return null;
+    const txt = await r.text();
+    const lines = txt.trim().split("\n");
+    if (lines.length < 2) return null;
+    const c = lines[1].split(",");            // Symbol,Date,Time,Open,High,Low,Close,Volume
+    const close = parseFloat(c[6]);
+    if (isNaN(close) || c[1] === "N/D") return null;
+    const mt = (c[1] && c[2]) ? new Date(c[1] + "T" + c[2] + "Z").toISOString() : null;
+    return { symbol: sym, price: close, currency: null, exchange: "stooq",
+      marketTime: mt, marketState: null, previousClose: null,
+      dayHigh: parseFloat(c[4]) || null, dayLow: parseFloat(c[5]) || null, source: "stooq.com (CSV)" };
+  } catch { return null; }
+}
+
 export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
   const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
   for (const host of hosts){
@@ -160,6 +184,8 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
       if (!q.error) return q;
     } catch { /* try next host */ }
   }
+  const st = await fetchStooq(sym, fetchImpl);
+  if (st && !st.error) return st;
   return { symbol: sym, error: "kunde inte hämtas (alla källor gav fel)" };
 }
 
@@ -185,8 +211,29 @@ export async function run(fetchImpl = globalThis.fetch){
   };
   mkdirSync("state", { recursive: true });
   writeFileSync("state/prices.json", JSON.stringify(out, null, 2) + "\n");
+  updatePriceHistory(quotes);
   console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade.`);
   return out;
+}
+
+// Rullande prishistorik för sparklines (max 60 punkter/ticker, en per dag).
+export function updatePriceHistory(quotes){
+  const path = "state/price_history.json";
+  let hist = { series: {} };
+  if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
+  hist.series = hist.series || {};
+  const today = new Date().toISOString().slice(0, 10);
+  for (const [sym, q] of Object.entries(quotes)){
+    if (!q || q.error || q.price == null) continue;
+    const arr = hist.series[sym] || (hist.series[sym] = []);
+    if (arr.length && arr[arr.length - 1][0] === today) arr[arr.length - 1] = [today, q.price];
+    else arr.push([today, q.price]);
+    if (arr.length > 60) hist.series[sym] = arr.slice(-60);
+  }
+  hist.generatedAt = new Date().toISOString();
+  mkdirSync("state", { recursive: true });
+  writeFileSync(path, JSON.stringify(hist) + "\n");
+  return hist;
 }
 
 // kör bara när scriptet startas direkt (inte vid import i test)

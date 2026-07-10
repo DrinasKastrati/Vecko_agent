@@ -337,10 +337,48 @@
     return out;
   }
 
+  // ---- trade-statistik (från Historik) ----------------------------------
+  function computeTradeStats(history){
+    const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    const out = { trades:0, wins:0, losses:0, winRate:null, avgWin:null, avgLoss:null,
+      profitFactor:null, best:null, worst:null, avgHoldDays:null,
+      byReason:{ target:0, stop:0, rotation:0, other:0 }, chainedPct:null, sumPct:null };
+    if (!rows.length) return out;
+    const pcts = [], holds = [];
+    let sumWin = 0, sumLoss = 0, chain = 1;
+    for (const o of rows){
+      const reasonKey = Object.keys(o).find(k => /sk[aä]l/i.test(k));
+      const reason = String((reasonKey && o[reasonKey]) || "").toLowerCase();
+      if (/m[aå]l/.test(reason)) out.byReason.target++;
+      else if (/stop/.test(reason)) out.byReason.stop++;
+      else if (/rotation/.test(reason)) out.byReason.rotation++;
+      else out.byReason.other++;
+      const p = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
+      if (p != null){
+        out.trades++; pcts.push(p);
+        if (p > 0){ out.wins++; sumWin += p; } else if (p < 0){ out.losses++; sumLoss += p; }
+        chain *= (1 + 0.5 * p / 100);
+      }
+      const d1 = Date.parse(String(o["Entry-datum"] || "").slice(0, 10));
+      const d2 = Date.parse(String(o["Stängd"] || "").slice(0, 10));
+      if (!isNaN(d1) && !isNaN(d2) && d2 >= d1) holds.push((d2 - d1) / 86400000);
+    }
+    if (!out.trades) return out;
+    out.winRate = out.wins / out.trades;
+    out.avgWin = out.wins ? sumWin / out.wins : null;
+    out.avgLoss = out.losses ? sumLoss / out.losses : null;
+    out.profitFactor = sumLoss !== 0 ? Math.abs(sumWin / sumLoss) : (sumWin > 0 ? Infinity : null);
+    out.best = Math.max.apply(null, pcts); out.worst = Math.min.apply(null, pcts);
+    out.sumPct = pcts.reduce((a, b) => a + b, 0);
+    out.chainedPct = (chain - 1) * 100;
+    if (holds.length) out.avgHoldDays = holds.reduce((a, b) => a + b, 0) / holds.length;
+    return out;
+  }
+
   const API = {
     field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename,
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
-    buildFeed, buildReturnSeries
+    computeTradeStats, buildFeed, buildReturnSeries
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;
