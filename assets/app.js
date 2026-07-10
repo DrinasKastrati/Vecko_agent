@@ -171,14 +171,20 @@
     nowStr() { try { return new Date().toLocaleString("sv-SE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" }); } catch (e) { return new Date().toISOString().slice(0, 16).replace("T", " "); } }
 
     // ---- wiring ----
+    showView(view) {
+      const views = [...document.querySelectorAll(".view")];
+      if (!views.some(v => v.dataset.view === view)) view = "oversikt";
+      views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
+      document.querySelectorAll(".subnav a").forEach(l => l.classList.toggle("active", l.dataset.view === view));
+      try { history.replaceState(null, "", "#" + view); } catch (e) {}
+      window.scrollTo(0, 0);
+      if (view === "avkastning") requestAnimationFrame(() => this.drawChart());
+    }
     initNav() {
-      const links = [...document.querySelectorAll(".subnav a")];
-      links.forEach(a => a.addEventListener("click", e => { e.preventDefault(); const t = this.el(a.getAttribute("href").slice(1)); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }));
-      const secs = [...document.querySelectorAll(".wrap section")];
-      if ("IntersectionObserver" in window) {
-        const obs = new IntersectionObserver(es => { es.forEach(en => { if (en.isIntersecting) { links.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + en.target.id)); } }); }, { rootMargin: "-45% 0px -50% 0px" });
-        secs.forEach(s => obs.observe(s));
-      }
+      document.querySelectorAll(".subnav a").forEach(a =>
+        a.addEventListener("click", e => { e.preventDefault(); this.showView(a.dataset.view); }));
+      const h = (location.hash || "").slice(1);
+      if (h && document.querySelector('.view[data-view="' + h + '"]')) this.showView(h);
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
