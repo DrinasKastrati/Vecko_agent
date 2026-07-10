@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-10 15:15 CEST (fredag – LÄGE B, daglig bevakning)
+**Senast uppdaterad:** 2026-07-10 15:52 CEST (fredag – LÄGE B; daglig rapport återskapad, watchlist kompletterad med MORLD.OL/NOKIA.HE)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position ännu stängd)
 
 > **✅ DATAKÄLLAN ÅTER I FUNKTION (2026‑07‑10).** Efter fem körningar med 403‑spärr levererar nu
