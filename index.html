@@ -24,7 +24,6 @@
   ::-webkit-scrollbar-thumb{background:#22304a;border-radius:8px;border:2px solid var(--bg)}
   ::-webkit-scrollbar-track{background:transparent}
 
-  /* top bar */
   .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;
     padding:12px 22px;background:rgba(9,13,22,.82);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--border)}
@@ -42,11 +41,9 @@
   #updated{color:var(--faint);font-size:11.5px}
   .btn{cursor:pointer;border:1px solid var(--border2);background:var(--panel3);color:var(--text);
     border-radius:8px;padding:7px 12px;font-size:12.5px;font-family:var(--sans);display:inline-flex;align-items:center;gap:7px;transition:.15s}
-  .btn:hover{background:#1b2942;border-color:#365party}
   .btn:hover{background:#1b2942;border-color:#37507a}
   .btn svg{width:14px;height:14px}
 
-  /* sub nav */
   .subnav{position:sticky;top:56px;z-index:40;display:flex;gap:4px;padding:8px 18px;overflow-x:auto;
     background:rgba(9,13,22,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
   .subnav a{color:var(--muted);font-size:13px;padding:7px 14px;border-radius:8px;white-space:nowrap;letter-spacing:.02em}
@@ -60,14 +57,12 @@
     padding-left:12px;border-left:3px solid var(--green)}
   .sec-head .hint{color:var(--faint);font-size:12px}
 
-  /* banner */
   .banner{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:11px;
     background:var(--panel2);border:1px solid var(--border);font-size:12.7px;color:var(--muted);margin-bottom:6px}
   .banner--warn{background:rgba(255,180,84,.08);border-color:rgba(255,180,84,.32);color:#ffce8f}
   .banner--err{background:rgba(255,92,120,.09);border-color:rgba(255,92,120,.4);color:#ffb3c1}
   .banner-ico{font-size:15px;line-height:1.3;flex:0 0 auto}
 
-  /* KPI */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px}
   .kpi{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--border);
     border-radius:14px;padding:15px 16px 14px;position:relative;overflow:hidden}
@@ -79,13 +74,11 @@
   .kpi-value .upd{font-size:16px;font-family:var(--mono);color:var(--text)}
   .kpi-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
 
-  /* market strip */
   .market{margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:12px;
     padding:12px 15px;font-size:13.3px;color:#c7d4e8;display:flex;gap:11px;align-items:flex-start}
   .market-tag{flex:0 0 auto;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);
     border:1px solid rgba(38,208,124,.35);border-radius:6px;padding:3px 8px;margin-top:1px}
 
-  /* holdings */
   .sub{font-size:13px;letter-spacing:.02em;color:var(--text);margin:22px 0 11px;font-weight:600;display:flex;align-items:center;gap:9px}
   .sub-date{font-family:var(--mono);font-size:11.5px;color:var(--faint);font-weight:400}
   .hold-grid-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:13px}
@@ -111,7 +104,6 @@
   .badge--none{background:rgba(139,156,184,.13);color:var(--muted);box-shadow:inset 0 0 0 1px rgba(139,156,184,.3)}
   .badge--rumor{background:rgba(255,180,84,.14);color:var(--amber);box-shadow:inset 0 0 0 1px rgba(255,180,84,.4);font-size:10px}
 
-  /* feed */
   .feed-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .feed-col{background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:6px 15px 12px}
   .feed{list-style:none;margin:0;padding:0}
@@ -127,7 +119,6 @@
   .cat-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600;margin-bottom:7px}
   .cat-text{font-size:12.5px;color:var(--muted)}
 
-  /* report viewer */
   .report-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
   .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:3px}
   .rtype{cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--sans);
@@ -158,7 +149,6 @@
   .report del{color:var(--faint)}
   pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:11.8px;color:#b7c6de;margin:0}
 
-  /* chart + table */
   .card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
   #chartWrap{position:relative;height:270px;margin-top:4px}
   #chartNote{color:var(--faint);font-size:12px;margin-top:9px}
@@ -259,450 +249,12 @@
     </div>
   </div>
 
+  <!-- 3:e-partsbibliotek -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <script>
-  /* ===================== VParse (verified) ===================== */
-  (function (root) {
-    "use strict";
-    const MONTHS_SV = ["jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"];
-    function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-    function field(md, label){
-      const re = new RegExp("\\*\\*\\s*" + escapeRe(label) + "\\s*:?\\s*\\*\\*\\s*([^\\n|]*)", "i");
-      const m = md.match(re); return m ? m[1].trim() : "";
-    }
-    function firstNumberPct(s){
-      const m = (s||"").replace(",", ".").match(/(-?\d+(?:\.\d+)?)\s*%/);
-      return m ? parseFloat(m[1]) : null;
-    }
-    function stripMd(s){
-      return (s||"").replace(/~~/g,"").replace(/\*\*/g,"").replace(/`/g,"").replace(/\s+/g," ").trim();
-    }
-    function parseTables(md){
-      const lines = md.split("\n"); const groups = []; let cur = null;
-      for (const ln of lines){
-        if (/^\s*\|.*\|\s*$/.test(ln)) { (cur = cur || []).push(ln); }
-        else { if (cur){ groups.push(cur); cur = null; } }
-      }
-      if (cur) groups.push(cur);
-      return groups.map(rows => {
-        const cells = rows.map(r => r.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim()));
-        const header = cells[0] || [];
-        const body = cells.slice(1).filter(r => !r.every(c => /^:?-{2,}:?$/.test(c) || c === ""));
-        return { header, rows: body };
-      });
-    }
-    function splitSections(md){
-      const parts = md.split(/\n(?=##\s)/);
-      return parts.map(p => { const m = p.match(/^##\s+(.*)/); return { heading: m ? m[1].trim() : "", body: p }; });
-    }
-    function parseFilename(name){
-      let m;
-      if ((m = name.match(/^daglig-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i))) return mk("daily", m);
-      if ((m = name.match(/^veckorapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i))) return mk("weekly", m);
-      if ((m = name.match(/^case[-_](\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i))) return mk("case", m);
-      return null;
-      function mk(type, m){
-        const yy = 2000 + parseInt(m[1],10), mm = parseInt(m[2],10), dd = parseInt(m[3],10);
-        const iso = `${yy}-${String(mm).padStart(2,"0")}-${String(dd).padStart(2,"0")}`;
-        const sortKey = yy*10000 + mm*100 + dd + (m[4] ? parseInt(m[4],10)*0.001 : 0);
-        return { name, type, dateISO: iso, sortKey, suffix: m[4] ? parseInt(m[4],10) : 0,
-          label: `${dd} ${MONTHS_SV[mm-1]}` + (m[4] ? ` (${m[4]})` : "") };
-      }
-    }
-    function normDecision(raw){
-      const t = stripMd(raw).toUpperCase();
-      if (/AVVAKTA|AVVAKTAR/.test(t)) return "AVVAKTA";
-      if (/\bSÄLJ/.test(t)) return "SÄLJ";
-      if (/BEHÅLL/.test(t)) return "BEHÅLL";
-      if (/\bKÖP/.test(t)) return "KÖP";
-      return t ? t.split(/[\s–-]/)[0] : "—";
-    }
-    function extractNote(md){
-      const lines = md.split("\n"); const buf = [];
-      for (const ln of lines){
-        if (/^\s*>/.test(ln)) buf.push(ln.replace(/^\s*>\s?/, ""));
-        else if (buf.length) break;
-      }
-      const text = stripMd(buf.join(" "));
-      if (!text) return null;
-      return { text, blocked: /BLOCKERAD|403|blockerad/i.test(text) };
-    }
-    function parsePortfolio(md){
-      const out = { updated: field(md, "Senast uppdaterad"), accumText: field(md, "Ackumulerad avkastning sedan start"),
-        accum: null, cash: "", holdings: [], pending: [], history: [], note: extractNote(md) };
-      out.accum = firstNumberPct(out.accumText);
-      for (const s of splitSections(md)){
-        const h = s.heading.toLowerCase();
-        if (h.startsWith("aktuellt innehav")){
-          const t = parseTables(s.body)[0];
-          if (t) out.holdings = t.rows.map(r => rowObj(t.header, r)).filter(o => o["Aktie"] && !/^[–\-]$/.test(o["Aktie"]));
-        } else if (h.startsWith("kassa")){
-          out.cash = stripMd(s.body.replace(/^##.*\n/, "")).trim();
-        } else if (h.startsWith("historik")){
-          const t = parseTables(s.body)[0];
-          if (t) out.history = t.rows.map(r => rowObj(t.header, r)).filter(o => Object.values(o).some(v => v && !/^[–\-]$/.test(v)));
-        }
-      }
-      const pendIdx = md.search(/###\s+Pending/i);
-      if (pendIdx >= 0){
-        const t = parseTables(md.slice(pendIdx))[0];
-        if (t) out.pending = t.rows.map(r => { const o = rowObj(t.header, r); o._struck = r.some(c => /~~/.test(c)); return o; });
-      }
-      return out;
-    }
-    function rowObj(header, row){ const o = {}; header.forEach((h, i) => { o[h] = (row[i] || "").trim(); }); return o; }
-    function parseDaily(md, meta){
-      const out = { meta, dateISO: meta ? meta.dateISO : field(md, "Datum"), mode: field(md, "Läge"),
-        market: field(md, "Marknadsläget i korthet"), portfStatus: field(md, "Portföljstatus"),
-        note: extractNote(md), holdings: [], watch: [] };
-      for (const s of splitSections(md)){
-        const H = s.heading;
-        if (/^Innehav\s+\d+/i.test(H)){
-          const hm = H.match(/Innehav\s+\d+:\s*(.+?)\s*\(([^/]+)\/([^)]+)\)/);
-          if (!hm) continue;
-          const tbl = parseTables(s.body)[0];
-          let priceCell="", since="", stop="", target="", decision="—";
-          if (tbl && tbl.rows[0]){
-            const r = tbl.rows[0];
-            priceCell = stripMd(r[0]||""); since = stripMd(r[1]||"");
-            stop = stripMd(r[2]||""); target = stripMd(r[3]||""); decision = normDecision(r[4]||"");
-          }
-          out.holdings.push({ name: stripMd(hm[1]), ticker: hm[2].trim(), exchange: hm[3].trim(),
-            price: priceCell, since, stop, target, decision,
-            news: field(s.body, "Nyheter senaste 24h"), motivation: field(s.body, "Motivering") });
-        } else if (/Bevakning inför imorgon/i.test(H)){ out.watch = bullets(s.body); }
-      }
-      return out;
-    }
-    function parseWeekly(md, meta){
-      const out = { meta, dateISO: meta ? meta.dateISO : field(md, "Datum"), week: field(md, "Vecka"),
-        climate: field(md, "Marknadsklimat"), facit: { accum: null, outcome: "", lesson: "" },
-        cases: [], bubblare: [], radar: [] };
-      out.facit.accum = firstNumberPct(field(md, "Ackumulerad avkastning sedan strategistart"));
-      out.facit.outcome = field(md, "Veckans portföljutfall (50/50)");
-      out.facit.lesson = field(md, "Lärdom");
-      for (const s of splitSections(md)){
-        const H = s.heading;
-        if (/^Case\s+\d+/i.test(H)){
-          const hm = H.match(/Case\s+\d+:\s*(.+?)\s*\(([^/]+)\/([^)]+)\)/);
-          const name = hm ? stripMd(hm[1]) : stripMd(H);
-          const cat = sub(s.body, "Katalysatorn");
-          const tbl = parseTables(s.body).slice(-1)[0];
-          let plan = null;
-          if (tbl && tbl.rows[0]){ const r = tbl.rows[0]; plan = { entry: stripMd(r[0]), stop: stripMd(r[1]), target: stripMd(r[2]), rr: stripMd(r[3]) }; }
-          out.cases.push({ name, ticker: hm ? hm[2].trim() : "", exchange: hm ? hm[3].trim() : "",
-            hold: /BEHÅLL/i.test(H), rumor: /RYKTE/i.test(cat), catalyst: firstSentences(cat, 2), plan });
-        } else if (/^Bubblare/i.test(H)){ out.bubblare = bullets(s.body).map(stripMd); }
-        else if (/Veckans radar/i.test(H)){
-          out.radar = bullets(s.body).map(b => {
-            const clean = stripMd(b);
-            const m = clean.match(/^(.+?)\s+[–—-]\s+([\s\S]+)$/);
-            return m ? { day: m[1].trim(), text: m[2].trim() } : { day: "", text: clean };
-          });
-        }
-      }
-      return out;
-    }
-    function sub(body, name){
-      const re = new RegExp("###[^\\n]*" + escapeRe(name) + "[\\s\\S]*?(?=\\n###|$)", "i");
-      const m = body.match(re); return m ? m[0].replace(/^###[^\n]*\n/, "").trim() : "";
-    }
-    function firstSentences(text, n){
-      const clean = stripMd(text).replace(/\*/g,"");
-      const parts = clean.split(/(?<=[.!?])\s+/); return parts.slice(0, n).join(" ");
-    }
-    function bullets(body){
-      return body.split("\n").map(l => l.trim()).filter(l => /^([*\-]|\d+\.)\s+/.test(l)).map(l => l.replace(/^([*\-]|\d+\.)\s+/, ""));
-    }
-    function buildFeed(dailies, weeklies){
-      const news = [];
-      for (const d of dailies){
-        for (const h of d.holdings){
-          if (h.news && !/^inga\b/i.test(stripMd(h.news))) news.push({ date: d.dateISO, subject: h.name, text: stripMd(h.news) });
-        }
-      }
-      news.sort((a,b) => (a.date < b.date ? 1 : -1));
-      const latestWeekly = weeklies[0] || null;
-      return { news, radar: latestWeekly ? latestWeekly.radar : [],
-        catalysts: latestWeekly ? latestWeekly.cases.map(c => ({ name: c.name, ticker: c.ticker, rumor: c.rumor, text: c.catalyst })) : [] };
-    }
-    function buildReturnSeries(weeklies, portfolio){
-      const pts = [];
-      const asc = [...weeklies].sort((a,b) => a.meta.sortKey - b.meta.sortKey);
-      for (const w of asc){ pts.push({ date: w.dateISO, value: w.facit.accum == null ? 0 : w.facit.accum }); }
-      if (portfolio && portfolio.accum != null){
-        const last = pts[pts.length-1];
-        if (!last || last.value !== portfolio.accum || asc.length === 0)
-          pts.push({ date: (portfolio.updated||"").slice(0,10) || "nu", value: portfolio.accum });
-      }
-      const seen = new Set(); const clean = [];
-      for (const p of pts){ const k = p.date; if (seen.has(k)) { clean[clean.length-1]=p; } else { seen.add(k); clean.push(p);} }
-      return clean;
-    }
-    root.VParse = { field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename, normDecision,
-      extractNote, parsePortfolio, parseDaily, parseWeekly, buildFeed, buildReturnSeries };
-  })(window);
-
-  /* ===================== VRender (verified) ===================== */
-  (function (root) {
-    "use strict";
-    const strip = root.VParse.stripMd;
-    function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
-    function signPct(n){ if (n == null || isNaN(n)) return "–"; return (n > 0 ? "+" : "") + Number(n).toFixed(2) + " %"; }
-    function trendClass(n){ if (n == null || isNaN(n) || n === 0) return "flat"; return n > 0 ? "pos" : "neg"; }
-    function decClass(d){ return ({ "KÖP":"kop","SÄLJ":"salj","BEHÅLL":"behall","AVVAKTA":"avvakta" })[d] || "none"; }
-    function pill(text){ return `<span class="pill">${esc(text)}</span>`; }
-    function truncate(s, n){ s = strip(s||""); return s.length > n ? s.slice(0, n-1) + "…" : s; }
-    function renderKPIs(portfolio, latestDaily){
-      const accum = portfolio.accum;
-      const cashPct = (portfolio.cash.match(/(-?\d+(?:[.,]\d+)?)\s*%/) || [])[1];
-      const cash = cashPct ? cashPct.replace(",", ".") + " %" : truncate(portfolio.cash, 18) || "–";
-      const open = portfolio.holdings.length;
-      const pend = portfolio.pending.filter(p => !p._struck).length;
-      const upd = (portfolio.updated || "").replace(/\s*\(.*$/, "") || (latestDaily ? latestDaily.dateISO : "");
-      const card = (label, value, cls, sub) =>
-        `<div class="kpi"><div class="kpi-label">${esc(label)}</div><div class="kpi-value ${cls||""}">${value}</div>${sub ? `<div class="kpi-sub">${esc(sub)}</div>` : ""}</div>`;
-      return `<div class="kpi-grid">
-        ${card("Ackumulerad avkastning", esc(signPct(accum)), "num "+trendClass(accum), "sedan strategistart")}
-        ${card("Kassa", esc(cash), "num", open ? `${open} position(er) öppna` : "inga öppna positioner")}
-        ${card("Aktiva planer", String(pend), "num", pend ? "pending rotation" : "avvaktar")}
-        ${card("Senast uppdaterad", `<span class="upd">${esc(upd)}</span>`, "", latestDaily ? esc(truncate(latestDaily.mode, 34)) : "")}
-      </div>`;
-    }
-    function renderMarket(latestDaily){
-      if (!latestDaily) return "";
-      return `<div class="market"><span class="market-tag">Marknadsläget</span><span class="market-text">${esc(strip(latestDaily.market)) || "—"}</span></div>`;
-    }
-    function holdingCard(h){
-      return `<div class="hold"><div class="hold-top"><div class="hold-name">${esc(h.name)}</div><span class="badge badge--${decClass(h.decision)}">${esc(h.decision)}</span></div>
-        <div class="hold-tickers">${pill(h.ticker)}${pill(h.exchange)}</div>
-        <div class="hold-grid">
-          <div><span class="k">Kurs</span><span class="v">${esc(truncate(h.price, 30) || "–")}</span></div>
-          <div><span class="k">Sedan entry</span><span class="v">${esc(h.since || "–")}</span></div>
-          <div><span class="k">Stop-loss</span><span class="v">${esc(h.stop || "–")}</span></div>
-          <div><span class="k">Målkurs</span><span class="v">${esc(h.target || "–")}</span></div>
-        </div>
-        ${h.motivation ? `<div class="hold-note">${esc(truncate(h.motivation, 180))}</div>` : ""}</div>`;
-    }
-    function pendingCard(p){
-      const name = strip(p["Aktie"] || ""); const ticker = strip(p["Yahoo-ticker"] || "");
-      const entry = strip(p["Planerad entry (villkor)"] || p["Planerad entry"] || "");
-      const stop = strip(p["Planerad stop-loss"] || ""); const target = strip(p["Planerad målkurs"] || "");
-      const rr = strip(p["R/R"] || ""); const status = strip(p["Status"] || "");
-      return `<div class="hold ${p._struck ? "hold--struck" : ""}"><div class="hold-top"><div class="hold-name">${esc(name)}</div>
-        <span class="badge badge--${p._struck ? "none" : "plan"}">${p._struck ? "AVFÖRD" : "PENDING"}</span></div>
-        <div class="hold-tickers">${ticker ? pill(ticker) : ""}</div>
-        <div class="hold-grid">
-          <div><span class="k">Planerad entry</span><span class="v">${esc(truncate(entry, 34) || "–")}</span></div>
-          <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
-          <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
-          <div><span class="k">R/R</span><span class="v">${esc(rr || "–")}</span></div>
-        </div>
-        ${status ? `<div class="hold-note">${esc(truncate(status, 160))}</div>` : ""}</div>`;
-    }
-    function renderHoldings(latestDaily, portfolio){
-      let html = "";
-      const monitored = latestDaily ? latestDaily.holdings : [];
-      if (monitored.length){
-        html += `<h3 class="sub">Dagens beslut <span class="sub-date">${esc(latestDaily.dateISO)}</span></h3><div class="hold-grid-wrap">${monitored.map(holdingCard).join("")}</div>`;
-      }
-      const pend = portfolio.pending || [];
-      if (pend.length){
-        html += `<h3 class="sub">Portföljplan (rotation)</h3><div class="hold-grid-wrap">${pend.map(pendingCard).join("")}</div>`;
-      }
-      if (!monitored.length && !pend.length) html += `<div class="empty">Inga innehav eller planerade rotationer just nu.</div>`;
-      return html;
-    }
-    function renderFeed(feed){
-      const news = feed.news.length
-        ? feed.news.map(n => `<li class="feed-item"><span class="chip chip--date">${esc(n.date)}</span><div class="feed-body"><span class="feed-subj">${esc(n.subject)}</span>${esc(truncate(n.text, 320))}</div></li>`).join("")
-        : `<li class="empty">Inga nya bolagsspecifika nyheter i de senaste rapporterna.</li>`;
-      const radar = feed.radar.length
-        ? feed.radar.map(r => `<li class="feed-item"><span class="chip chip--day">${esc(r.day || "•")}</span><div class="feed-body">${esc(truncate(r.text, 300))}</div></li>`).join("")
-        : `<li class="empty">Ingen radar i senaste veckorapporten.</li>`;
-      const cats = feed.catalysts.length
-        ? feed.catalysts.map(c => `<div class="cat"><div class="cat-top">${esc(c.name)} ${pill(c.ticker)} ${c.rumor ? `<span class="badge badge--rumor">⚠️ RYKTE</span>` : ""}</div><div class="cat-text">${esc(truncate(c.text, 260))}</div></div>`).join("")
-        : `<div class="empty">Inga aktiva case.</div>`;
-      return `<div class="feed-cols">
-          <div class="feed-col"><h3 class="sub">Senaste nyheterna</h3><ul class="feed">${news}</ul></div>
-          <div class="feed-col"><h3 class="sub">Veckans radar</h3><ul class="feed">${radar}</ul></div>
-        </div>
-        <h3 class="sub">Aktiva katalysatorer</h3><div class="cat-wrap">${cats}</div>`;
-    }
-    function renderHistory(portfolio){
-      if (!portfolio.history.length) return `<div class="empty">Inga stängda positioner ännu – strategin är i baslinjeläge (0 %).</div>`;
-      const cols = Object.keys(portfolio.history[0]);
-      const head = cols.map(c => `<th>${esc(c)}</th>`).join("");
-      const rows = portfolio.history.map(r => `<tr>${cols.map(c => `<td>${esc(strip(r[c]))}</td>`).join("")}</tr>`).join("");
-      return `<table class="tbl"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
-    }
-    function renderBubblare(weekly){
-      if (!weekly || !weekly.bubblare.length) return "";
-      return `<h3 class="sub">Bubblare (watchlist)</h3><ul class="bubbl">${weekly.bubblare.map(b => `<li>${esc(truncate(b, 180))}</li>`).join("")}</ul>`;
-    }
-    function renderOptions(metas, type){
-      return metas.filter(m => m.type === type).map((m, i) => `<option value="${esc(m.name)}"${i===0?" selected":""}>${esc(m.dateISO)} — ${esc(m.label)}</option>`).join("");
-    }
-    function renderBanner(note){
-      if (!note) return "";
-      return `<div class="banner ${note.blocked ? "banner--warn" : ""}"><span class="banner-ico">${note.blocked ? "⚠" : "ℹ"}</span><span class="banner-text">${esc(truncate(note.text, 400))}</span></div>`;
-    }
-    root.VRender = { esc, signPct, trendClass, decClass, truncate, renderKPIs, renderMarket, renderHoldings,
-      renderFeed, renderHistory, renderBubblare, renderOptions, renderBanner };
-  })(window);
-
-  /* ===================== App ===================== */
-  (function(){
-    "use strict";
-    const P = window.VParse, R = window.VRender;
-    const CFG = { owner:"DrinasKastrati", repo:"Vecko_agent", branch:"main" };
-    const API_TREE = `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/git/trees/${CFG.branch}?recursive=1`;
-    const raw = p => `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${p}`;
-    const ghBlob = p => `https://github.com/${CFG.owner}/${CFG.repo}/blob/${CFG.branch}/${p}`;
-    const repoURL = `https://github.com/${CFG.owner}/${CFG.repo}`;
-    const S = { metas:[], dailies:[], weeklies:[], portfolio:null, feed:null, md:new Map(), chart:null, reportType:"daily" };
-    const el = id => document.getElementById(id);
-
-    async function fetchText(url){ const r = await fetch(url, {cache:"no-store"}); if(!r.ok) throw new Error(r.status+" "+url); return r.text(); }
-    async function fetchJSON(url){ const r = await fetch(url, {cache:"no-store"}); if(!r.ok) throw new Error(r.status+" "+url); return r.json(); }
-    async function getMd(path){ if(S.md.has(path)) return S.md.get(path); const t=await fetchText(raw(path)); S.md.set(path,t); return t; }
-    function cacheGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } }
-    function cacheSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
-
-    async function discoverTree(force){
-      const CK="vr_tree_v2";
-      if(!force){ const c=cacheGet(CK); if(c && Date.now()-c.t < 180000) return c.d; }
-      const j = await fetchJSON(API_TREE);
-      const paths = (j.tree||[]).filter(n=>n.type==="blob").map(n=>n.path);
-      cacheSet(CK, {t:Date.now(), d:paths});
-      return paths;
-    }
-    function metasFromTree(paths){
-      return paths.map(p=>{ const n=p.split("/").pop(); const m=P.parseFilename(n); return m?Object.assign(m,{path:p}):null; })
-                  .filter(Boolean).sort((a,b)=>b.sortKey-a.sortKey);
-    }
-
-    async function load(force){
-      setStatus("loading");
-      try{
-        const paths = await discoverTree(force);
-        const metas = metasFromTree(paths); S.metas = metas;
-        const portfPath = paths.find(p=>/(^|\/)portfolj\.md$/i.test(p)) || "portfolj.md";
-        const wMetas = metas.filter(m=>m.type==="weekly").slice(0,12);
-        const dMetas = metas.filter(m=>m.type==="daily").slice(0,8);
-        const [pMd, dMds, wMds] = await Promise.all([
-          getMd(portfPath).catch(()=>null),
-          Promise.all(dMetas.map(m=>getMd(m.path))),
-          Promise.all(wMetas.map(m=>getMd(m.path)))
-        ]);
-        S.portfolio = pMd ? P.parsePortfolio(pMd) : {accum:null,cash:"",holdings:[],pending:[],history:[],note:null,updated:""};
-        S.dailies  = dMetas.map((m,i)=>P.parseDaily(dMds[i], m));
-        S.weeklies = wMetas.map((m,i)=>P.parseWeekly(wMds[i], m));
-        S.feed = P.buildFeed(S.dailies, S.weeklies);
-        renderAll();
-        setStatus("ok");
-      }catch(err){ console.error(err); setStatus("error", err); }
-    }
-
-    function renderAll(){
-      const latestDaily = S.dailies[0] || null;
-      el("banner").innerHTML = R.renderBanner(S.portfolio.note);
-      el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
-      el("market").innerHTML = R.renderMarket(latestDaily);
-      el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio);
-      el("feed").innerHTML = R.renderFeed(S.feed);
-      el("history").innerHTML = R.renderHistory(S.portfolio);
-      el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
-      el("repoFoot").href = repoURL;
-      setupReportPicker();
-      drawChart();
-    }
-
-    function setupReportPicker(){
-      const sel = el("reportSelect");
-      sel.innerHTML = R.renderOptions(S.metas, S.reportType);
-      if(sel.value) showReport(sel.value); else el("reportBody").innerHTML = '<div class="empty">Inga rapporter av denna typ ännu.</div>';
-    }
-    async function showReport(name){
-      const meta = S.metas.find(m=>m.name===name);
-      if(!meta){ el("reportBody").innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
-      el("ghLink").href = ghBlob(meta.path);
-      el("reportBody").innerHTML = '<div class="empty">Hämtar…</div>';
-      try{
-        const md = await getMd(meta.path);
-        el("reportBody").dataset.raw = md;
-        el("reportBody").innerHTML = el("rawToggle").checked ? '<pre class="raw">'+R.esc(md)+'</pre>' : mdToHtml(md);
-      }catch(e){ el("reportBody").innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
-    }
-    function mdToHtml(md){
-      let html;
-      try{ html = window.marked ? window.marked.parse(md) : '<pre class="raw">'+R.esc(md)+'</pre>'; }
-      catch(e){ html = '<pre class="raw">'+R.esc(md)+'</pre>'; }
-      return sanitize(html);
-    }
-    function sanitize(html){
-      const t=document.createElement("template"); t.innerHTML=html;
-      t.content.querySelectorAll("script,style,iframe,object,embed,link,meta,form").forEach(n=>n.remove());
-      t.content.querySelectorAll("*").forEach(node=>{
-        [...node.attributes].forEach(a=>{
-          if(/^on/i.test(a.name)) node.removeAttribute(a.name);
-          else if(/^(href|src)$/i.test(a.name) && /^\s*javascript:/i.test(a.value)) node.removeAttribute(a.name);
-        });
-      });
-      t.content.querySelectorAll("a[href]").forEach(a=>{ a.target="_blank"; a.rel="noopener noreferrer"; });
-      return t.innerHTML;
-    }
-    function drawChart(){
-      const canvas = el("returnChart");
-      if(!canvas || !window.Chart){ if(el("chartWrap")) el("chartWrap").style.display="none"; el("chartNote").textContent = window.Chart?"":"Diagram kunde inte laddas (offline?)."; return; }
-      const series = P.buildReturnSeries(S.weeklies, S.portfolio);
-      const labels = series.map(p=>p.date); const data = series.map(p=>p.value);
-      const allZero = data.every(v=>v===0);
-      el("chartNote").textContent = allZero ? "Baslinje – inga stängda positioner ännu (0 %)." : "";
-      const ctx = canvas.getContext("2d");
-      const grd = ctx.createLinearGradient(0,0,0,240);
-      grd.addColorStop(0,"rgba(38,208,124,0.25)"); grd.addColorStop(1,"rgba(38,208,124,0)");
-      if(S.chart) S.chart.destroy();
-      S.chart = new Chart(ctx,{ type:"line",
-        data:{ labels, datasets:[{ label:"Ackumulerad avkastning (%)", data, borderColor:"#26d07c", backgroundColor:grd, fill:true, tension:0.25, pointRadius:3, pointBackgroundColor:"#26d07c", borderWidth:2 }]},
-        options:{ responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>" "+c.parsed.y+" %" } } },
-          scales:{ x:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#8b9cb8"} },
-            y:{ grid:{color:"rgba(255,255,255,0.06)"}, ticks:{color:"#8b9cb8", callback:v=>v+" %"},
-                suggestedMin: allZero?-1:undefined, suggestedMax: allZero?1:undefined } } }
-      });
-    }
-    function setStatus(kind, err){
-      const dot=el("liveDot"), txt=el("statusTxt");
-      if(kind==="loading"){ dot.className="dot dot--load"; txt.textContent="Hämtar…"; }
-      else if(kind==="ok"){ dot.className="dot dot--live"; txt.textContent="Live"; el("updated").textContent="Uppdaterad "+nowStr(); }
-      else if(kind==="error"){ dot.className="dot dot--err"; txt.textContent="Fel";
-        el("banner").innerHTML='<div class="banner banner--err"><span class="banner-ico">⚠</span><span class="banner-text">Kunde inte hämta data från GitHub ('+R.esc(String(err&&err.message||err))+'). Kontrollera att repot är publikt och prova Uppdatera.</span></div>'; }
-    }
-    function nowStr(){ try{ return new Date().toLocaleString("sv-SE",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"}); }catch(e){ return new Date().toISOString().slice(0,16).replace("T"," "); } }
-
-    function initNav(){
-      const links=[...document.querySelectorAll(".subnav a")];
-      links.forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); const t=el(a.getAttribute("href").slice(1)); if(t) t.scrollIntoView({behavior:"smooth",block:"start"}); }));
-      const secs=[...document.querySelectorAll("main section, .wrap section")];
-      if("IntersectionObserver" in window){
-        const obs=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting){ links.forEach(l=>l.classList.toggle("active", l.getAttribute("href")==="#"+en.target.id)); } }); },{rootMargin:"-45% 0px -50% 0px"});
-        secs.forEach(s=>obs.observe(s));
-      }
-    }
-    function initEvents(){
-      el("refreshBtn").addEventListener("click",()=>{ S.md.clear(); load(true); });
-      el("reportSelect").addEventListener("change",e=>showReport(e.target.value));
-      el("rawToggle").addEventListener("change",()=>{ const b=el("reportBody"); const md=b.dataset.raw||""; if(!md) return; b.innerHTML = el("rawToggle").checked ? '<pre class="raw">'+R.esc(md)+'</pre>' : mdToHtml(md); });
-      document.querySelectorAll(".rtype").forEach(btn=>btn.addEventListener("click",()=>{
-        document.querySelectorAll(".rtype").forEach(b=>b.classList.remove("on"));
-        btn.classList.add("on"); S.reportType=btn.dataset.type; setupReportPicker();
-      }));
-    }
-    function boot(){ initNav(); initEvents(); load(false); }
-    if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
-  })();
-  </script>
+  <!-- egna moduler (ordning spelar roll: parse -> render -> app) -->
+  <script src="assets/vparse.js"></script>
+  <script src="assets/vrender.js"></script>
+  <script src="assets/app.js"></script>
 </body>
 </html>
