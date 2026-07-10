@@ -13,7 +13,7 @@
       this.R = root.VRender;
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
-        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null,
+        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -56,13 +56,16 @@
         const metas = this.metasFromTree(paths);
         this.state.metas = metas;
         const portfPath = paths.find(p => /(^|\/)portfolj\.md$/i.test(p)) || "portfolj.md";
+        const pricesPath = paths.find(p => /(^|\/)prices\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 8);
-        const [pMd, dMds, wMds] = await Promise.all([
+        const [pMd, dMds, wMds, prices] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
-          Promise.all(wMetas.map(m => this.getMd(m.path)))
+          Promise.all(wMetas.map(m => this.getMd(m.path))),
+          pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null)
         ]);
+        this.state.prices = prices;
         this.state.portfolio = pMd ? this.P.parsePortfolio(pMd) : { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
@@ -79,6 +82,7 @@
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
       this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio);
+      const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);

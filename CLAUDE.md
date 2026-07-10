@@ -28,13 +28,13 @@ Ett automatiserat system för nordisk swing trade-rotation, i tre delar:
 Vecko_agent/
 ├─ index.html            # webbappen (MÅSTE ligga i roten för GitHub Pages)
 ├─ .nojekyll
+├─ .gitignore            # OS-/editor-skräp (viktigt med OneDrive)
 ├─ assets/               # webbappens moduler
 │  ├─ vparse.js          #   window.VParse  – all parsning (rena funktioner)
 │  ├─ vrender.js         #   window.VRender – bygger HTML-strängar
 │  └─ app.js             #   class Dashboard – hämtar data, renderar, event
-├─ prompts/              # instruktionerna till routinen
-│  ├─ veckoprompt.md
-│  └─ dagligprompt.md
+├─ prompts/              # instruktionen till routinen
+│  └─ dagligprompt.md    #   enda ingången (veckoprompt.md är utgången/stub)
 ├─ templates/            # strikta mallar (routinen får ALDRIG ändra dem)
 │  ├─ vecko_rapport.md
 │  ├─ daglig_mall.md
@@ -50,7 +50,6 @@ Vecko_agent/
 │  └─ daily/             #   daglig-yymmdd.md
 └─ .github/
    ├─ workflows/prices.yml     # schemalagd kurshämtning
-   ├─ workflows/auto_merge.yml # (fanns sedan tidigare)
    └─ scripts/fetch-prices.mjs # hämtar Yahoo-kurser -> state/prices.json
 ```
 Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
@@ -70,15 +69,16 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 
 ---
 
-## 4. Routinen — vad promptarna gör
-- **`prompts/dagligprompt.md`** – körs varje handelsdag. Måndag = LÄGE A (full rotation, skriver
-  `reports/weekly/…`), övriga dagar = LÄGE B (bevakning, skriver `reports/daily/…`). Läser
-  `config/fokus.md`, `state/portfolj.md`, rätt mall i `templates/`, och **kurser i första hand ur
-  `state/prices.json`**. Uppdaterar `state/portfolj.md` (historik är append-only). Committar till main.
-- **`prompts/veckoprompt.md`** – separat måndagsrotation (samma logik som LÄGE A). Skriver
-  `reports/weekly/veckorapport-yymmdd.md`.
-- Hårt krav i båda: varje kurs ska ha **verifierad källa + tidsstämpel**; annars "KURS EJ
-  VERIFIERAD" och inget kursbaserat beslut. Detta krav ska INTE sänkas.
+## 4. Routinen — vad prompten gör
+- **`prompts/dagligprompt.md`** – ENDA ingången, körs varje handelsdag (mån–fre). Måndag = LÄGE A
+  (full rotation, skriver `reports/weekly/…`), övriga dagar = LÄGE B (bevakning, skriver
+  `reports/daily/…`). Läser `config/fokus.md`, `state/portfolj.md`, rätt mall i `templates/`, och
+  **kurser i första hand ur `state/prices.json`**. Uppdaterar `state/portfolj.md` (historik är
+  append-only). Committar till main.
+- **`prompts/veckoprompt.md`** är UTGÅNGEN (stub) – den separata måndagsrotationen skapade dubbletter
+  och är borttagen ur flödet. Schemalägg endast `dagligprompt.md`.
+- Hårt krav: varje kurs ska ha **verifierad källa + tidsstämpel**; annars "KURS EJ VERIFIERAD" och
+  inget kursbaserat beslut. Detta krav ska INTE sänkas.
 
 ---
 
@@ -121,8 +121,9 @@ verifierad tidsstämpel och besluten kan fattas igen. `fetch-prices.mjs` samlar 
 
 ## 7. Fällor att känna till
 - **OneDrive + git:** klona repot utanför OneDrive-mappen (annars sync-konflikter i `.git`).
-- **Dubbel rotation på måndag:** dagsprompten gör själv rotation (LÄGE A) OCH det finns en separat
-  måndagsroutine (`veckoprompt.md`). Kör bara EN av dem på måndagar (annars skapar de samma fil).
+- **Dubbel rotation på måndag (ÅTGÄRDAT):** `veckoprompt.md` är utgången och `dagligprompt.md` är
+  enda ingången (den gör LÄGE A på måndagar). Schemalägg ALDRIG en separat måndagsprompt igen –
+  det skapade tidigare dubbletter (`veckorapport-yymmdd_1.md`).
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
 - **Sänk inte verifieringskravet** för kurser – lösningen är pålitliga priser (prices.json), inte
   att ta bort skyddet.

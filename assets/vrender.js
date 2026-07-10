@@ -5,7 +5,7 @@
 (function (root) {
   "use strict";
   const strip = (root.VParse && root.VParse.stripMd) ||
-                (typeof require !== "undefined" && require("/sessions/amazing-wonderful-thompson/mnt/outputs/vparse.js").stripMd);
+                (typeof require !== "undefined" && require("./vparse.js").stripMd);
 
   function esc(s){
     return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
@@ -186,9 +186,50 @@
     </div>`;
   }
 
+  // ---- prices freshness (state/prices.json) -----------------------------
+  function pxAge(iso){
+    const t = iso ? Date.parse(iso) : NaN;
+    if (isNaN(t)) return { txt: "okänd tid", cls: "px-stale" };
+    const mins = Math.round((Date.now() - t) / 60000);
+    const txt = mins < 60 ? mins + " min sedan"
+              : mins < 1440 ? Math.round(mins / 60) + " tim sedan"
+              : Math.round(mins / 1440) + " dygn sedan";
+    return { txt, cls: mins > 3 * 1440 ? "px-stale" : "px-fresh" };
+  }
+  function renderPrices(prices){
+    if (!prices || !prices.quotes)
+      return `<div class="px-card"><div class="px-head"><span class="t">Kurser (prices.json)</span></div>`
+           + `<div class="empty">Inga kurser hämtade ännu – kör pris-actionen (Actions → “Hämta kurser”).</div></div>`;
+    const gen = pxAge(prices.generatedAt);
+    const syms = Object.keys(prices.quotes);
+    const ok = prices.okCount != null ? prices.okCount
+             : syms.filter(s => prices.quotes[s] && !prices.quotes[s].error).length;
+    const items = syms.map(s => {
+      const q = prices.quotes[s] || {};
+      if (q.error || q.price == null)
+        return `<div class="px-item"><div class="px-tk"><span>${esc(s)}</span><span class="px-err">⚠</span></div>`
+             + `<div class="px-pr px-err">–</div><div class="px-tm">${esc(truncate(q.error || "ingen kurs", 22))}</div></div>`;
+      const mt = pxAge(q.marketTime);
+      const price = String(q.price) + (q.currency ? " " + q.currency : "");
+      const tm = q.marketTime ? q.marketTime.slice(0, 16).replace("T", " ") : "okänd tid";
+      return `<div class="px-item"><div class="px-tk"><span>${esc(q.symbol || s)}</span>`
+           + `<span class="${mt.cls}">${mt.cls === "px-fresh" ? "✓" : "⚠"}</span></div>`
+           + `<div class="px-pr">${esc(price)}</div><div class="px-tm">${esc(tm)}</div></div>`;
+    }).join("");
+    return `<div class="px-card">
+      <div class="px-head">
+        <span class="t">Kurser (prices.json)</span>
+        <span class="px-age ${gen.cls}">hämtad ${esc(gen.txt)}</span>
+        <span class="px-sum">${ok}/${syms.length} med verifierad kurs</span>
+      </div>
+      ${syms.length ? `<div class="px-grid">${items}</div>`
+                    : `<div class="empty">Inga tickers i prices.json ännu – fyll <code>config/watchlist.txt</code>.</div>`}
+    </div>`;
+  }
+
   const API = { esc, signPct, trendClass, decClass, truncate,
     renderKPIs, renderMarket, renderHoldings, renderFeed,
-    renderHistory, renderBubblare, renderOptions, renderBanner };
+    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

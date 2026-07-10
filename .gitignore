@@ -1,0 +1,18 @@
+# OS- / editor-skräp (särskilt relevant med OneDrive)
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+*.swp
+*~
+~$*
+.idea/
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Lokala miljöfiler
+.env
+.env.local

@@ -2,7 +2,32 @@
 # En ticker per rad i Yahoo-format. Rader som börjar med # ignoreras.
 # Lägg till bolag du bevakar inför måndagsrotationen så finns färska kurser redo.
 #
-# Exempel:
-# EQNR.OL
-# NOVO-B.CO
-# VOLV-B.ST
+# OBS: Listan nedan är en STARTUPPSÄTTNING av likvida nordiska namn – byt gärna ut
+# mot de bolag DU faktiskt bevakar. Färre, fokuserade tickers = lägre risk för
+# API-throttling hos kurskällan.
+
+# --- Nasdaq Stockholm (.ST) ---
+VOLV-B.ST
+INVE-B.ST
+ATCO-A.ST
+ERIC-B.ST
+SAND.ST
+EVO.ST
+ALLEI.ST
+SAAB-B.ST
+
+# --- Oslo Børs (.OL) ---
+EQNR.OL
+DNB.OL
+KOG.OL
+MOWI.OL
+
+# --- Nasdaq Copenhagen (.CO) ---
+NOVO-B.CO
+MAERSK-B.CO
+DSV.CO
+
+# --- Nasdaq Helsinki (.HE) ---
+NOKIA.HE
+SAMPO.HE
+NESTE.HE

@@ -12,10 +12,11 @@ Strategin: portföljen består normalt av 2 aktier viktade 50/50 som roteras var
 1. Läs `config/fokus.md` för grundpreferenser. För denna strategi gäller HELA Norden som universum och alla sektorer är tillåtna – `config/fokus.md`:s teman är endast tiebreaker.
 2. Läs `state/portfolj.md` – den innehåller aktuellt innehav, kassa och historik. Filen SKA uppdateras vid varje körning enligt reglerna under "PORTFÖLJFILEN" nedan.
 3. Läs rätt mall: `templates/vecko_rapport.md` (måndagar) eller `templates/daglig_mall.md` (övriga dagar). Båda är strikta MALLAR som du ALDRIG får modifiera, ändra eller skriva över.
-4. Skapa alltid en helt NY rapportfil: måndagar i mappen `reports/weekly/` döpt "veckorapport-yymmdd.md", övriga handelsdagar i mappen `reports/daily/` döpt "daglig-yymmdd.md" (dagens datum). Exempel: `reports/daily/daglig-260714.md`.
+4. Skapa rapportfilen för DAGENS datum: måndagar i mappen `reports/weekly/` döpt "veckorapport-yymmdd.md", övriga handelsdagar i mappen `reports/daily/` döpt "daglig-yymmdd.md". Exempel: `reports/daily/daglig-260714.md`. Finns filen för dagens datum redan (t.ex. vid omkörning): skriv över/uppdatera DEN filen – skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
 5. Committa och pusha rapportfilen OCH den uppdaterade `state/portfolj.md` DIREKT till standardbranchen (main). Skapa absolut INTE ny branch, pull request eller fork.
 
 ## VÄLJ LÄGE EFTER DAG
+- Denna dagliga prompt är den ENDA ingången till routinen – det finns INGEN separat måndagsprompt. Schemalägg endast denna, alla handelsdagar (mån–fre).
 - Måndag (eller veckans första handelsdag om måndagen är helgdag) → LÄGE A: VECKOROTATION.
 - Övriga handelsdagar → LÄGE B: DAGLIG BEVAKNING.
 - Om samtliga nordiska börser är stängda idag: skapa en kort daglig fil i `reports/daily/` som noterar detta, gör inga beslut.
