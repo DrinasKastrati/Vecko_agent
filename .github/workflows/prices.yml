@@ -1,0 +1,37 @@
+name: Hämta kurser (prices.json)
+
+on:
+  schedule:
+    - cron: "0 5 * * 1-5"    # 05:00 UTC (~07:00 CEST) vardagar – justera till FÖRE din routine
+    - cron: "0 6 * * 1-5"    # extra säkerhetskörning 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prices
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Hämta kurser
+        run: node .github/scripts/fetch-prices.mjs
+      - name: Committa prices.json om ändrad
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/prices.json
+          if git diff --cached --quiet; then
+            echo "Inga kursandringar - hoppar over commit."
+          else
+            git commit -m "Kurser: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
