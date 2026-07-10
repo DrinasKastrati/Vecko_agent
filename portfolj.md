@@ -1,17 +1,18 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-09 08:05 CEST (torsdag – LÄGE B, daglig bevakning)
+**Senast uppdaterad:** 2026-07-10 08:10 CEST (fredag – LÄGE B, daglig bevakning)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position ännu stängd)
 
-> **⚠️ DATAKÄLLA FORTSATT BLOCKERAD (fjärde körningen i rad, 2026‑07‑09).** Yahoo Finance
-> (webb + query‑API), Google Finance, stooq, stockanalysis, Börskollen, Avanza, Nordnet, Nasdaq
-> och marketscreener svarar samtliga 403 (CONNECT tunnel failed / policy‑spärr på egress‑proxyn)
-> vid automatisk hämtning – testat 2026‑07‑09 via både curl och WebFetch. Endast webbsökning
-> fungerar och ger odaterade aggregat som inte uppfyller kravet på verifierad tidsstämpel.
-> Enligt datakrav #4 fattas därför **inga kursbaserade KÖP/SÄLJ‑beslut** – portföljen står kvar
-> på 100 % kassa tills en verifierad kurs kan bekräftas. Eftersom inga positioner är öppna finns
-> ingen stop‑loss‑/målkursrisk att bevaka. v28‑rotationen blev aldrig exekverad. Saab B avfördes
-> 2026‑07‑08 (GlobalEye‑bekräftelse, kursen gapade förbi hela planen – vi jagar inte). Alleima
-> kvarstår som prioriterat pending‑entry. Se daglig‑260709.md.
+> **⚠️ DATAKÄLLA FORTSATT BLOCKERAD (femte körningen i rad, 2026‑07‑10).** Yahoo Finance
+> (webb + query1/query2‑API), Google Finance, stooq, stockanalysis, investing.com och Avanza
+> svarar samtliga 403 (CONNECT tunnel failed / policy‑denial på egress‑proxyn) vid automatisk
+> hämtning – verifierat 2026‑07‑10 via både curl och WebFetch. Endast webbsökning fungerar och
+> ger odaterade aggregat (Alleima senast ~85,25 kr via eToro, utan tidsstämpel) som inte uppfyller
+> kravet på verifierad tidsstämpel. Enligt datakrav #4 fattas därför **inga kursbaserade
+> KÖP/SÄLJ‑beslut** – portföljen står kvar på 100 % kassa tills en verifierad kurs kan bekräftas.
+> Eftersom inga positioner är öppna finns ingen stop‑loss‑/målkursrisk att bevaka. v28‑rotationen
+> blev aldrig exekverad. Saab B avfördes 2026‑07‑08 (GlobalEye‑bekräftelse, kursen gapade förbi
+> hela planen – vi jagar inte). Alleima kvarstår som prioriterat pending‑entry. Egress‑spärren
+> kräver åtgärd (whitelista finansdatahostar). Se daglig‑260710.md.
 
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Anteckning |
