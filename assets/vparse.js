@@ -67,6 +67,8 @@
       return mk("weekly", m);
     if ((m = name.match(/^case[-_](\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
       return mk("case", m);
+    if ((m = name.match(/^rapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
+      return mk("scout", m);
     return null;
     function mk(type, m){
       const yy = 2000 + parseInt(m[1],10), mm = parseInt(m[2],10), dd = parseInt(m[3],10);
@@ -284,9 +286,54 @@
     return clean;
   }
 
+  // ---- scout: rapport-*.md (USA & krypto) -------------------------------
+  function scoutField(block, labels){
+    for (const label of labels){
+      const re = new RegExp("\\*\\*\\s*" + escapeRe(label) + "\\s*:?\\s*\\*\\*\\s*([\\s\\S]*?)(?=\\n\\s*\\*\\*|\\n##|$)", "i");
+      const m = block.match(re);
+      if (m && m[1].trim()) return m[1].trim();
+    }
+    return "";
+  }
+  function parseScoutCases(md){
+    const cases = [];
+    const re = /###\s*Case\s*\d*\s*:?\s*([^\n(]+?)\s*\(\s*([^/)]+?)\s*\/\s*([^)]+?)\)\s*([\s\S]*?)(?=\n###\s|\n##\s|$)/gi;
+    let m;
+    while ((m = re.exec(md))){
+      const block = m[4] || "";
+      cases.push({
+        name: m[1].trim(), ticker: m[2].trim(), exchange: m[3].trim(),
+        catalyst: scoutField(block, ["Katalysator"]),
+        bull: scoutField(block, ["Bull case", "Bull"]),
+        bear: scoutField(block, ["Bear case", "Bear"]),
+        setup: scoutField(block, ["Setup", "Finansiell & Teknisk Setup"])
+      });
+    }
+    return cases;
+  }
+  function parseScout(md, meta){
+    const sectionBody = b => (b || "").replace(/^\s*##[^\n]*\n?/, "").trim();
+    const out = {
+      meta, dateISO: meta ? meta.dateISO : field(md, "Datum"),
+      climate: field(md, "Marknadsklimat"),
+      recap: "", econ: "", events: "", macro: "", cases: [],
+      note: extractNote(md)
+    };
+    for (const s of splitSections(md)){
+      const h = s.heading.toLowerCase();
+      if (h.startsWith("marknadsöversikt")) out.recap = sectionBody(s.body);
+      else if (h.startsWith("ekonomiska siffror")) out.econ = sectionBody(s.body);
+      else if (h.startsWith("aktuella händelser")) out.events = sectionBody(s.body);
+      else if (h.startsWith("makro")) out.macro = sectionBody(s.body);
+      else if (h.startsWith("dagens case") || h === "case") out.cases = parseScoutCases(s.body);
+    }
+    if (!out.cases.length) out.cases = parseScoutCases(md);
+    return out;
+  }
+
   const API = {
     field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename,
-    normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly,
+    normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     buildFeed, buildReturnSeries
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;

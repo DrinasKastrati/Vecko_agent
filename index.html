@@ -173,6 +173,23 @@
   .px-pr{font-family:var(--mono);font-size:14px;color:var(--text);margin-top:4px}
   .px-tm{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:2px}
 
+  .sblock{margin-top:16px}
+  .sblock-body p{margin:6px 0;color:#c7d4e8;font-size:13px}
+  .slist{margin:6px 0;padding-left:18px;color:#c7d4e8;font-size:13px}
+  .slist li{margin:4px 0}
+  .scase-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:13px;margin-top:6px}
+  .scase{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:15px}
+  .scase-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .scase-name{font-size:16px;font-weight:600}
+  .scase-cat{margin:10px 0;font-size:12.5px;color:#c7d4e8}
+  .scase-cat .k,.scase-setup .k{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-right:6px}
+  .scase-bb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+  .bb{border-radius:9px;padding:9px 11px;font-size:12.3px;color:#c7d4e8;border:1px solid var(--border)}
+  .bb .k{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;font-weight:700}
+  .bb--bull{background:rgba(38,208,124,.07)} .bb--bull .k{color:var(--green)}
+  .bb--bear{background:rgba(255,92,120,.07)} .bb--bear .k{color:var(--red)}
+  .scase-setup{font-size:12.3px;color:var(--muted);padding-top:9px;border-top:1px solid var(--border)}
+
   .footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--faint);font-size:12px;
     display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
   .disclaimer{color:var(--amber);font-size:12px}
@@ -209,6 +226,7 @@
     <a href="#oversikt" class="active">Översikt</a>
     <a href="#rapporter">Rapporter</a>
     <a href="#nyheter">Nyheter &amp; radar</a>
+    <a href="#scout">USA &amp; Krypto</a>
     <a href="#avkastning">Avkastning</a>
   </nav>
 
@@ -229,6 +247,7 @@
         <div class="seg">
           <button class="rtype on" data-type="daily">Daglig</button>
           <button class="rtype" data-type="weekly">Vecko</button>
+          <button class="rtype" data-type="scout">Scout</button>
         </div>
         <select id="reportSelect"></select>
         <label class="toggle"><input type="checkbox" id="rawToggle"/> Rådata</label>
@@ -243,6 +262,11 @@
     <section id="nyheter">
       <div class="sec-head"><h2>Nyheter &amp; radar</h2><span class="hint">katalysatorer &amp; kommande händelser</span></div>
       <div id="feed"></div>
+    </section>
+
+    <section id="scout">
+      <div class="sec-head"><h2>USA &amp; Krypto</h2><span class="hint">daglig scout · nyheter, makro &amp; case</span></div>
+      <div id="scoutBody"></div>
     </section>
 
     <section id="avkastning">

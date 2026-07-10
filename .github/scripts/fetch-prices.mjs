@@ -78,6 +78,54 @@ export function collectTickers(){
   return [...tickers].sort();
 }
 
+// ---- USA + krypto (scout-routinen) ------------------------------------
+export function newestScout(){
+  const dirs = ["reports/scout", "."];
+  let best = null;
+  for (const d of dirs){
+    let files = [];
+    try { files = readdirSync(d); } catch { continue; }
+    for (const f of files){
+      const m = f.match(/^rapport-(\d{6})(?:_\d+)?\.md$/i);
+      if (m && (!best || m[1] > best.key)) best = { key: m[1], path: d + "/" + f };
+    }
+  }
+  return best ? readFirst([best.path]) : "";
+}
+
+// Fångar (TICKER / Börs) ur scout-case: NYSE/NASDAQ -> vanlig symbol,
+// kryptonätverk -> <MYNT>-USD.
+export function extractUsCaseTickers(text){
+  if (!text) return [];
+  const clean = text.replace(/[~`*]/g, " ");
+  const out = new Set();
+  const re = /\(\s*([A-Za-z0-9][A-Za-z0-9 .\-]{0,9}?)\s*\/\s*([^)]{2,40})\)/g;
+  for (const m of clean.matchAll(re)){
+    const base = m[1].trim().toUpperCase().replace(/\s+/g, "-");
+    const ex = m[2].toLowerCase();
+    if (/bitcoin|ethereum|solana|crypto|krypto|on-chain|\bnetwork\b|nätverk|\bchain\b|kedja/.test(ex)){
+      if (/^[A-Z0-9]{2,6}(-USD)?$/.test(base)) out.add(base.endsWith("-USD") ? base : base + "-USD");
+    } else if (/nasdaq|nyse|cboe|amex|arca/.test(ex)){
+      if (/^[A-Z]{1,6}(\.[A-Z]{1,2})?$/.test(base)) out.add(base);
+    }
+  }
+  return [...out];
+}
+
+// Läser config/watchlist_us.txt (US-symbol, <MYNT>-USD, ^INDEX, klass-aktie) + senaste
+// scout-rapportens case.
+export function collectUsTickers(){
+  const set = new Set();
+  const watch = readFirst(["config/watchlist_us.txt", "watchlist_us.txt"]);
+  for (const line of watch.split("\n")){
+    const t = line.trim().toUpperCase();
+    if (!t || t.startsWith("#")) continue;
+    if (/^\^?[A-Z]{1,6}$/.test(t) || /^[A-Z0-9]{2,6}-USD$/.test(t) || /^[A-Z]{1,5}\.[A-Z]{1,2}$/.test(t)) set.add(t);
+  }
+  for (const t of extractUsCaseTickers(newestScout())) set.add(t);
+  return [...set];
+}
+
 export function parseChart(json, sym){
   const res = json && json.chart && json.chart.result && json.chart.result[0];
   const meta = res && res.meta;
@@ -117,7 +165,7 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
 
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch){
-  const tickers = collectTickers();
+  const tickers = [...new Set([...collectTickers(), ...collectUsTickers()])].sort();
   const quotes = {};
   let okCount = 0;
   for (const t of tickers){

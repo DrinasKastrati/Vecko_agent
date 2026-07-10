@@ -6,7 +6,7 @@ och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
 ---
 
 ## 1. Vad projektet är
-Ett automatiserat system för nordisk swing trade-rotation, i tre delar:
+Ett automatiserat system för aktie-beslutsstöd, i fyra delar:
 
 1. **Routinen** – en schemalagd Claude-körning som varje handelsdag (LÄGE B) bevakar innehav och
    varje måndag (LÄGE A) gör en full veckorotation. Den läser preferenser/tillstånd/mallar,
@@ -17,6 +17,10 @@ Ett automatiserat system för nordisk swing trade-rotation, i tre delar:
    (dagsöversikt, fulla rapporter, nyheter/radar, avkastning). Mörkt "trading-terminal"-tema.
 3. **Pris-hämtaren** – en GitHub Action som hämtar aktiekurser och skriver `state/prices.json`,
    eftersom routinens egen körmiljö är nätspärrad mot kurssajter (se avsnitt 6).
+4. **Scout-routinen (USA & krypto)** – en FRISTÅENDE andra routine som varje dag sammanfattar
+   USA-/kryptomarknaden (marknadsöversikt, ekonomiska siffror, aktuella händelser) och tar fram
+   2–3 nya case. Skriver `reports/scout/rapport-yymmdd.md`, egen kategori i dashboarden. Täcker
+   INTE Norden (det gör del 1).
 
 - **Repo:** https://github.com/DrinasKastrati/Vecko_agent  (publikt, branch `main`)
 - **Dashboard (GitHub Pages):** https://drinaskastrati.github.io/Vecko_agent/
@@ -33,21 +37,26 @@ Vecko_agent/
 │  ├─ vparse.js          #   window.VParse  – all parsning (rena funktioner)
 │  ├─ vrender.js         #   window.VRender – bygger HTML-strängar
 │  └─ app.js             #   class Dashboard – hämtar data, renderar, event
-├─ prompts/              # instruktionen till routinen
-│  └─ dagligprompt.md    #   enda ingången (veckoprompt.md är utgången/stub)
-├─ templates/            # strikta mallar (routinen får ALDRIG ändra dem)
+├─ prompts/              # instruktioner till routinerna
+│  ├─ dagligprompt.md    #   nordisk rotation – enda ingången (veckoprompt.md utgången/stub)
+│  └─ scoutprompt.md     #   USA & krypto – daglig scout (fristående kategori)
+├─ templates/            # strikta mallar (routinerna får ALDRIG ändra dem)
 │  ├─ vecko_rapport.md
 │  ├─ daglig_mall.md
-│  └─ case_rapport.md
+│  ├─ case_rapport.md
+│  └─ scout_case.md      #   USA & krypto-rapportens mall
 ├─ config/               # preferenser + bevakning
-│  ├─ fokus.md
-│  └─ watchlist.txt      # extra tickers till pris-hämtaren
+│  ├─ fokus.md           #   nordiska preferenser
+│  ├─ fokus_scout.md     #   USA & krypto-preferenser (scout)
+│  ├─ watchlist.txt      #   nordiska extra-tickers till pris-hämtaren
+│  └─ watchlist_us.txt   #   USA/krypto-tickers till pris-hämtaren
 ├─ state/                # levande tillstånd (muteras av routinen / actionen)
 │  ├─ portfolj.md        #   innehav, kassa, ackumulerad avkastning, append-only historik
 │  └─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
 ├─ reports/
-│  ├─ weekly/            #   veckorapport-yymmdd.md
-│  └─ daily/             #   daglig-yymmdd.md
+│  ├─ weekly/            #   veckorapport-yymmdd.md (nordisk)
+│  ├─ daily/             #   daglig-yymmdd.md (nordisk)
+│  └─ scout/             #   rapport-yymmdd.md (USA & krypto)
 └─ .github/
    ├─ workflows/prices.yml     # schemalagd kurshämtning
    └─ scripts/fetch-prices.mjs # hämtar Yahoo-kurser -> state/prices.json
@@ -62,8 +71,9 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
-- Sektioner: Översikt (KPI + dagens beslut), Rapporter (Daglig/Vecko-väljare), Nyheter & radar,
-  Avkastning (Chart.js + historik + bubblare). Visar även routinens "DATAKÄLLA BLOCKERAD"-notis
+- Sektioner: Översikt (KPI + dagens beslut + prisfärskhet), Rapporter (Daglig/Vecko/Scout-väljare),
+  Nyheter & radar, USA & Krypto (scout: marknad, makro, case), Avkastning (Chart.js + historik +
+  bubblare). Visar även routinens "DATAKÄLLA BLOCKERAD"-notis
   som en gul varningsbanner (det är korrekt beteende – appen speglar bara routinens status).
 - Verifierad i sandbox med jsdom (parsning + rendering + modul-laddning), inte bara antaget.
 
@@ -77,6 +87,10 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   append-only). Committar till main.
 - **`prompts/veckoprompt.md`** är UTGÅNGEN (stub) – den separata måndagsrotationen skapade dubbletter
   och är borttagen ur flödet. Schemalägg endast `dagligprompt.md`.
+- **`prompts/scoutprompt.md`** (USA & krypto) – FRISTÅENDE daglig scout. Läser `config/fokus_scout.md`
+  + `templates/scout_case.md`, kurser ur `state/prices.json` (US-symbol / `^INDEX` / `<MYNT>-USD`),
+  skriver `reports/scout/rapport-yymmdd.md`, committar till main. Täcker INTE Norden. Egen kategori
+  i dashboarden ("USA & Krypto").
 - Hårt krav: varje kurs ska ha **verifierad källa + tidsstämpel**; annars "KURS EJ VERIFIERAD" och
   inget kursbaserat beslut. Detta krav ska INTE sänkas.
 

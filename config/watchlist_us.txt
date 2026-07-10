@@ -1,0 +1,32 @@
+# Extra tickers för SCOUT-routinen (USA + krypto) som alltid hämtas till prices.json.
+# Yahoo-format, en per rad. Rader som börjar med # ignoreras.
+#   US-aktier: vanlig symbol (AAPL, NVDA)
+#   Krypto:    <MYNT>-USD (BTC-USD, ETH-USD)
+#   Index:     ^GSPC (S&P 500), ^IXIC (Nasdaq Composite)
+# Byt gärna ut mot de namn DU faktiskt bevakar. Färre = lägre risk för API-throttling.
+
+# --- Index (referens) ---
+^GSPC
+^IXIC
+
+# --- Stora USA-aktier ---
+AAPL
+MSFT
+NVDA
+AMZN
+GOOGL
+META
+AVGO
+AMD
+TSLA
+
+# --- Kryptorelaterade USA-aktier ---
+COIN
+MSTR
+MARA
+RIOT
+
+# --- Krypto (mynt) ---
+BTC-USD
+ETH-USD
+SOL-USD

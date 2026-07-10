@@ -227,9 +227,53 @@
     </div>`;
   }
 
+  // ---- scout (USA & krypto) --------------------------------------------
+  function textToHtml(t){
+    const lines = String(t || "").split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return "";
+    const bullets = lines.filter(l => /^[-*•]/.test(l)).length;
+    if (bullets >= Math.max(2, lines.length - 1))
+      return `<ul class="slist">${lines.map(l => `<li>${esc(strip(l.replace(/^[-*•]\s?/, "")))}</li>`).join("")}</ul>`;
+    return lines.map(l => `<p>${esc(strip(l))}</p>`).join("");
+  }
+  function scoutBlock(title, text){
+    if (!text) return "";
+    return `<div class="sblock"><h3 class="sub">${esc(title)}</h3><div class="sblock-body">${textToHtml(text)}</div></div>`;
+  }
+  function scoutCaseCard(c){
+    return `<div class="scase">
+      <div class="scase-top">
+        <div class="scase-name">${esc(c.name)}</div>
+        <div class="hold-tickers">${c.ticker ? pill(c.ticker) : ""}${c.exchange ? pill(c.exchange) : ""}</div>
+      </div>
+      ${c.catalyst ? `<div class="scase-cat"><span class="k">Katalysator</span> ${esc(truncate(c.catalyst, 300))}</div>` : ""}
+      <div class="scase-bb">
+        <div class="bb bb--bull"><span class="k">Bull</span>${esc(truncate(c.bull, 240)) || "–"}</div>
+        <div class="bb bb--bear"><span class="k">Bear</span>${esc(truncate(c.bear, 240)) || "–"}</div>
+      </div>
+      ${c.setup ? `<div class="scase-setup"><span class="k">Setup</span> ${esc(truncate(c.setup, 240))}</div>` : ""}
+    </div>`;
+  }
+  function renderScout(scout){
+    if (!scout)
+      return `<div class="empty">Ingen scout-rapport ännu – kör scout-routinen (skapar <code>reports/scout/rapport-yymmdd.md</code>).</div>`;
+    const climate = scout.climate
+      ? `<div class="market"><span class="market-tag">Marknadsklimat</span><span class="market-text">${esc(strip(scout.climate))}</span></div>` : "";
+    const cases = scout.cases && scout.cases.length
+      ? `<h3 class="sub">Dagens case <span class="sub-date">${esc(scout.dateISO || "")}</span></h3>`
+        + `<div class="scase-wrap">${scout.cases.map(scoutCaseCard).join("")}</div>`
+      : `<div class="empty">Inga case i senaste rapporten – marknaden avvaktande.</div>`;
+    return climate
+      + scoutBlock("Marknadsöversikt", scout.recap)
+      + scoutBlock("Ekonomiska siffror & kalender", scout.econ)
+      + scoutBlock("Aktuella händelser & katalysatorer", scout.events)
+      + cases
+      + scoutBlock("Makro- & sektorfaktorer", scout.macro);
+  }
+
   const API = { esc, signPct, trendClass, decClass, truncate,
     renderKPIs, renderMarket, renderHoldings, renderFeed,
-    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices };
+    renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);
