@@ -1,5 +1,13 @@
 {
   "note": "Kö för aktieanalys på begäran. Fylls av .github/workflows/analys_queue.yml (GitHub-issue 'analys: TICKER' -> pending). Arbetaren prompts/analysprompt.md bearbetar pending -> reports/analysis/ och flyttar posterna till done. Du kan även lägga till pending-poster manuellt: {\"ticker\":\"NVDA\",\"requestedAt\":\"...\"}.",
   "pending": [],
-  "done": []
+  "done": [
+    {
+      "ticker": "SYNACT.ST",
+      "requestedAt": "2026-07-10T23:29:51.002Z",
+      "issue": "#2",
+      "analysedAt": "2026-07-10T23:37:08Z",
+      "file": "reports/analysis/analys-SYNACT.ST-260710.md"
+    }
+  ]
 }
