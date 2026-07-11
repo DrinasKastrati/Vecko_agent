@@ -42,7 +42,8 @@ Vecko_agent/
 │  ├─ vrender.js         #   window.VRender – bygger HTML-strängar
 │  └─ app.js             #   class Dashboard – hämtar data, renderar, event
 ├─ prompts/              # instruktioner till routinerna
-│  ├─ dagligprompt.md    #   nordisk rotation – enda ingången (veckoprompt.md utgången/stub)
+│  ├─ dagligprompt.md    #   nordisk rotation – enda ingången
+│  ├─ veckoprompt.md     #   UTGÅNGEN stub (skapade dubbletter – schemalägg aldrig)
 │  ├─ scoutprompt.md     #   USA & krypto – daglig scout (fristående kategori)
 │  └─ analysprompt.md    #   aktieanalys på begäran (manuell kö-arbetare, ingen API-nyckel)
 ├─ templates/            # strikta mallar (routinerna får ALDRIG ändra dem)
@@ -59,12 +60,15 @@ Vecko_agent/
 ├─ state/                # levande tillstånd (muteras av routinen / actionen)
 │  ├─ portfolj.md        #   innehav, kassa, ackumulerad avkastning, append-only historik
 │  ├─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
+│  ├─ price_history.json #   rullande kurshistorik (sparklines i dashboarden)
 │  └─ analysis_queue.json #  analyskö (pending/done); issue-Action fyller, arbetaren tömmer
 ├─ reports/
 │  ├─ weekly/            #   veckorapport-yymmdd.md (nordisk)
 │  ├─ daily/             #   daglig-yymmdd.md (nordisk)
 │  ├─ scout/             #   rapport-yymmdd.md (USA & krypto)
 │  └─ analysis/          #   analys-TICKER-yymmdd.md (på begäran, cache)
+├─ tests/
+│  └─ run.mjs            #   testsvit för rena funktioner (node tests/run.mjs)
 └─ .github/
    ├─ workflows/prices.yml       # schemalagd kurshämtning (nordisk + USA/krypto)
    ├─ workflows/auto_merge.yml   # auto-merge av claude/**-brancher till main
@@ -82,12 +86,15 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
-- **Flikbaserad** (en vy i taget): Översikt (KPI + dagens beslut), Rapporter (Daglig/Vecko/Scout),
-  Nyheter & radar, USA & Krypto (scout), Analys (aktieanalys på begäran, cache), Kurser
-  (prices.json-tabell), Avkastning (Chart.js + historik + bubblare). Visar även routinens
-  "DATAKÄLLA BLOCKERAD"-notis
-  som en gul varningsbanner (det är korrekt beteende – appen speglar bara routinens status).
-- Verifierad i sandbox med jsdom (parsning + rendering + modul-laddning), inte bara antaget.
+- **Flikbaserad** (en vy i taget): Översikt (KPI + dagens beslut + marknadsklimat), Rapporter
+  (Daglig/Vecko/Scout-väljare), Nyheter & radar, USA & Krypto (scout), Analys (aktieanalys på
+  begäran + cache, med färskhetsbadge), Kurser (prices.json-tabell med sparklines), Avkastning
+  (handelsstatistik + Chart.js + historik + bubblare). Visar även routinens "DATAKÄLLA
+  BLOCKERAD"-notis som en gul varningsbanner (korrekt beteende – appen speglar routinens status).
+- **Analytics:** Avkastning räknar fram träffsäkerhet, snittvinst/-förlust, profit factor,
+  bästa/sämsta, snitt-hålltid och mål/stopp/rotation ur `portfolj.md`:s historik (`computeTradeStats`).
+  Sparklines ritas ur `state/price_history.json`.
+- Rena funktioner (parsning/rendering/kurslogik) testas med `node tests/run.mjs` (ingen nätåtkomst krävs).
 
 ---
 
@@ -120,45 +127,45 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 
 ---
 
-## 5. Nuläge — vad som är gjort
-- ✅ Dashboarden byggd, uppdelad i moduler och verifierad.
-- ✅ Promptarna omskrivna för den nya mappstrukturen **och** för att läsa `state/prices.json`.
-- ✅ Migreringsguide skriven (`SETUP.md` + `MIGRATION.md` med färdiga `git mv`-kommandon).
-- ✅ Pris-hämtaren (GitHub Action + `fetch-prices.mjs`) byggd och testad (ticker-extraktion,
-  JSON-struktur; live-hämtningen körs på GitHubs runner, inte i sandlådan).
+## 5. Nuläge — vad som är gjort (allt live i repot)
+- ✅ Dashboarden byggd, modulär, **flikbaserad omdesign** klar; GitHub Pages live.
+- ✅ Tre routiner på plats: nordisk rotation (`dagligprompt.md`), scout USA/krypto
+  (`scoutprompt.md`), aktieanalys på begäran (`analysprompt.md` + issue/kö-Action).
+- ✅ Pris-hämtaren täcker nordiskt + USA/krypto, med **stooq-fallback** när Yahoo fallerar;
+  skriver `prices.json` + rullande `price_history.json`.
+- ✅ Analytics (handelsstatistik), sparklines och analys-färskhet i dashboarden.
+- ✅ Testsvit `tests/run.mjs`; `.gitattributes` normaliserar radslut (OneDrive/CRLF).
 
-## 5b. Nuläge — KVAR ATT GÖRA (nästa steg, i ordning)
-1. **Klona repot till en mapp UTANFÖR OneDrive** (OneDrive som synkar `.git` ger konflikter).
-   `git clone https://github.com/DrinasKastrati/Vecko_agent.git`
-2. **Kör mappmigreringen** enligt `SETUP.md` Del 3 (`git mv` av mallar/config/state/reports).
-   Radera INGET – särskilt inte `portfolj.md` (levande tillstånd/historik) eller `daglig_mall.md`.
-3. **Lägg in webbappen** (`index.html`, `.nojekyll`, `assets/`) och **pris-fixen**
-   (`.github/workflows/prices.yml`, `.github/scripts/fetch-prices.mjs`, `config/watchlist.txt`).
-4. **Ersätt routinens två promptar** med de uppdaterade `dagligprompt.md` / `veckoprompt.md`.
-   (Flytt av filer + promptbyte måste ske i SAMMA veva, annars kraschar nästa körning.)
-5. **Aktivera GitHub Pages:** Settings → Pages → Deploy from a branch → `main` / `/ (root)`.
-6. **Aktivera pris-Actionen:** Settings → Actions → General → **Read and write permissions**;
-   kör workflowet manuellt en gång; justera `cron` i `prices.yml` till 15–30 min FÖRE routinen (UTC).
-7. `git commit` + `git push` (migrering + prompts + webapp + action).
+## 5b. Nuläge — KVAR / VALFRITT
+- **GitHub-inställningar (om ej redan gjort):** Settings → Actions → General → **Read and write
+  permissions** (krävs för `prices.yml` OCH `analys_queue.yml`); Issues aktiverade (analys-triggern).
+- **Schemaläggning:** routinerna körs i dag MANUELLT i Cowork (ingen schemalagd task hittad).
+  För helautomatik: schemalägg `dagligprompt.md` (mån–fre) och `scoutprompt.md`, och tajma
+  `prices.yml`-cron 15–30 min före (UTC).
+- **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
+  OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar.
+- **Valfria förbättringar (ej byggda):** benchmark-overlay (strategi vs OMXS30/S&P), daglig
+  digest-notis, jämför två tickers i Analys, samt att klona repot UTANFÖR OneDrive.
 
 ---
 
-## 6. Viktigaste problemet just nu (och fixen)
-Routinen rapporterar återkommande **"DATAKÄLLA BLOCKERAD"**: Yahoo, Avanza, Nordnet, Nasdaq m.fl.
-svarar 403 (egress-proxy) i routinens sandlåda. Bara websökning funkar → odaterade kurser →
-routinen avstår (korrekt) från beslut och står på 100 % kassa.
-
-**Fix (byggd, ej ännu aktiverad i repot):** en GitHub Action (`prices.yml` + `fetch-prices.mjs`)
-kör på GitHubs runner (fri nätåtkomst), hämtar kurser från Yahoos chart-API och skriver en
-tidsstämplad `state/prices.json`. Routinen läser den filen i stället för att hämta live – då finns
-verifierad tidsstämpel och besluten kan fattas igen. `fetch-prices.mjs` samlar tickers från
-`state/portfolj.md` + senaste veckorapportens case/bubblare (t.ex. `KOG.OL`, `MAERSK-B.CO`) +
-`config/watchlist.txt`. Nya måndagskandidater läggs i `config/watchlist.txt`.
+## 6. Kurs-blockeringen och fixen (AKTIV)
+Routinens egen körmiljö är nätspärrad (403 mot Yahoo/Avanza/Nasdaq m.fl.) → utan hjälp får den bara
+odaterade kurser och avstår (korrekt) från beslut. **Fixen är byggd OCH aktiv:** GitHub Action
+`prices.yml` + `fetch-prices.mjs` kör på GitHubs runner (fri nätåtkomst), hämtar Yahoos chart-API
+(med **stooq-fallback**) och skriver en tidsstämplad `state/prices.json` (+ rullande
+`price_history.json`). Routinen/scouten/analysen läser den filen → verifierad tidsstämpel finns.
+`fetch-prices.mjs` samlar tickers ur `state/portfolj.md`, senaste vecko-/scout-rapportens case,
+samt `config/watchlist.txt` (nordiskt) och `config/watchlist_us.txt` (USA/krypto: symbol,
+`^INDEX`, `<MYNT>-USD`). Sänk ALDRIG verifieringskravet – lösningen är pålitliga priser, inte att
+ta bort skyddet.
 
 ---
 
 ## 7. Fällor att känna till
-- **OneDrive + git:** klona repot utanför OneDrive-mappen (annars sync-konflikter i `.git`).
+- **OneDrive + git:** OneDrive-monteringen ger `.git/index.lock`-EPERM, CRLF-brus och trunkerade
+  läsningar i Cowork-sandlådan. `.gitattributes` (LF) dämpar CRLF; den riktiga fixen är att klona
+  repot UTANFÖR OneDrive. Sandlådan kan inte pusha – Dren committar/pushar från sin dator.
 - **Dubbel rotation på måndag (ÅTGÄRDAT):** `veckoprompt.md` är utgången och `dagligprompt.md` är
   enda ingången (den gör LÄGE A på måndagar). Schemalägg ALDRIG en separat måndagsprompt igen –
   det skapade tidigare dubbletter (`veckorapport-yymmdd_1.md`).
@@ -170,12 +177,10 @@ verifierad tidsstämpel och besluten kan fattas igen. `fetch-prices.mjs` samlar 
 
 ---
 
-## 8. Var filerna ligger just nu (innan de lagts i repot)
-Dren har en lokal arbetsmapp (`vecko_bot`) med: `index.html`, `.nojekyll`, `assets/`, `prompts/`,
-`SETUP.md`, `MIGRATION.md`, samt originalfilerna (`fokus.md`, `vecko_rapport.md`, `case_rapport.md`,
-`veckoprompt.md`). De uppdaterade fix-filerna (`fetch-prices.mjs`, `prices.yml`, `watchlist.txt`,
-och de senaste `dagligprompt.md` / `veckoprompt.md` med prices.json-stöd) levererades separat och
-ska in i repot enligt strukturen i avsnitt 2.
+## 8. Var filerna ligger
+Allt ligger nu i repot (branch `main`) enligt strukturen i avsnitt 2 – inga lösa filer utanför.
+Drens lokala arbetskopia ligger i en OneDrive-mapp; se OneDrive-fällan i avsnitt 7. Eventuella
+`SETUP.md` / `MIGRATION.md` är historiska (migreringen är gjord) och kan ignoreras.
 
 ---
 
