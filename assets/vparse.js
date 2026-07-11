@@ -319,6 +319,14 @@
     const m = String(s == null ? "" : s).replace(/\s/g, "").replace(",", ".").match(/-?\d+(?:\.\d+)?/);
     return m ? parseFloat(m[0]) : null;
   }
+  // Positionsmätare: var ligger nu/entry på skalan stopp→mål (0–100 %)?
+  function computeGauge(entry, stop, target, price){
+    if ([entry, stop, target, price].some(v => v == null || isNaN(v))) return null;
+    const span = target - stop;
+    if (!(span > 0) || !(entry > stop) || !(entry < target)) return null;
+    const pct = v => Math.max(0, Math.min(100, ((v - stop) / span) * 100));
+    return { nowPct: Math.round(pct(price) * 10) / 10, entryPct: Math.round(pct(entry) * 10) / 10 };
+  }
   function computeHoldingLive(row, quotes){
     if (!row || !quotes) return null;
     const ticker = String(row["Yahoo-ticker"] || "").trim().toUpperCase();
@@ -327,10 +335,52 @@
     const entry = numFrom(row["Entry"]), stop = numFrom(row["Stop-loss"]), target = numFrom(row["Målkurs"]);
     return {
       ticker, price: q.price, currency: q.currency || "", marketTime: q.marketTime || null,
+      entryNum: entry, stopNum: stop, targetNum: target,
+      gauge: computeGauge(entry, stop, target, q.price),
       pnlPct:      entry  ? (q.price / entry - 1) * 100 : null,
       toStopPct:   stop   ? (stop / q.price - 1) * 100 : null,   // negativ = utrymme ned till stoppen
       toTargetPct: target ? (target / q.price - 1) * 100 : null  // positiv = kvar upp till målet
     };
+  }
+
+  // ---- besluts-historik per ticker ur dagliga rapporter -------------------
+  // dailies antas nyast-först (som i dashboardens state); returnerar äldst→nyast.
+  function buildDecisionHistory(dailies, ticker){
+    const t = String(ticker || "").trim().toUpperCase();
+    const out = [];
+    for (const d of (dailies || [])){
+      const h = (d && d.holdings || []).find(x => String(x.ticker || "").trim().toUpperCase() === t);
+      if (h) out.push({ date: d.dateISO, decision: h.decision });
+    }
+    return out.reverse();
+  }
+
+  // ---- nästa schemalagda routine-körning ----------------------------------
+  // OBS: hårdkodat spegelvärde av Cowork-schemat (scout dagligen 07:47,
+  // rotation mån–fre 08:40, lokal tid) – uppdatera här om tasken ändras.
+  function nextRoutineRun(now){
+    const n = now instanceof Date ? now : new Date(now || Date.now());
+    const cands = [];
+    for (let d = 0; d < 8; d++){
+      const day = new Date(n.getFullYear(), n.getMonth(), n.getDate() + d);
+      const dow = day.getDay(); // 0 = söndag
+      const add = (h, m, label) => {
+        const t = new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, m);
+        if (t > n) cands.push({ t, label });
+      };
+      add(7, 47, "scout");
+      if (dow >= 1 && dow <= 5) add(8, 40, "rotation");
+    }
+    if (!cands.length) return null;
+    cands.sort((a, b) => a.t - b.t);
+    const c = cands[0];
+    const mins = Math.round((c.t - n) / 60000);
+    const rel = mins < 60 ? "om " + mins + " min"
+              : mins < 2880 ? "om " + Math.round(mins / 60) + " tim"
+              : "om " + Math.round(mins / 1440) + " dygn";
+    const days = ["sön","mån","tis","ons","tor","fre","lör"];
+    const when = days[c.t.getDay()] + " " + String(c.t.getHours()).padStart(2, "0") + ":" + String(c.t.getMinutes()).padStart(2, "0");
+    return { label: c.label, when, rel, minutes: mins };
   }
 
   // ---- scout: rapport-*.md (USA & krypto) -------------------------------
@@ -420,7 +470,8 @@
     field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename,
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,
-    buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive
+    buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
+    computeGauge, buildDecisionHistory, nextRoutineRun
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

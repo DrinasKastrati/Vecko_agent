@@ -60,7 +60,7 @@
         const queuePath = paths.find(p => /(^|\/)analysis_queue\.json$/i.test(p));
         const histPath = paths.find(p => /(^|\/)price_history\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
-        const dMetas = metas.filter(m => m.type === "daily").slice(0, 8);
+        const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const [pMd, dMds, wMds, sMds, prices, queue, priceHistory] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
@@ -114,13 +114,25 @@
       el.title = "Ålder på state/prices.json (uppdateras av GitHub-actionen)";
     }
 
+    // Besluts-historik per ticker för dagens innehav (punkterna på korten).
+    buildDecisionMap(latestDaily) {
+      const out = {};
+      ((latestDaily && latestDaily.holdings) || []).forEach(h => {
+        const t = (h.ticker || "").trim().toUpperCase();
+        if (t) out[t] = this.P.buildDecisionHistory(this.state.dailies, t);
+      });
+      return out;
+    }
+
     renderAll() {
       const S = this.state, R = this.R;
       const latestDaily = S.dailies[0] || null;
       this.el("banner").innerHTML = R.renderBanner(S.portfolio.note);
+      const srEl = this.el("statusRow");
+      if (srEl) srEl.innerHTML = R.renderStatusRow(latestDaily, this.P.nextRoutineRun(new Date()));
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
-      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap());
+      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap(), this.buildDecisionMap(latestDaily));
       this.renderPxBadge();
       const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory);
       this.el("feed").innerHTML = R.renderFeed(S.feed);

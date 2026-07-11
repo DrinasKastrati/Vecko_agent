@@ -144,7 +144,12 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   (enklicks-commit+push), stängningskurs-crons i `prices.yml` (16:45 + 21:10 UTC),
   `price_history.json` committas nu av actionen (sparkline-fixen), ticker-regexen kräver ≥2 tecken
   i basen (inget "B.ST"-skräp ur "BAHN B.ST"), `config/watchlist.txt` skapad, `portfolj.md` städad,
-  tickerformat-krav (bindestreck) tillagt i båda prompterna. Testsviten utökad (38 tester, gröna).
+  tickerformat-krav (bindestreck) tillagt i båda prompterna.
+- ✅ 2026-07-11 (Översikt v2): statusrad (datum/läge/beslut-chips + nedräkning till nästa
+  schemalagda körning), positionsmätare stopp→entry→nu→mål på innehavskorten, besluts-historik
+  som färgpunkter (senaste 10 dagliga rapporterna). OBS: nedräkningen speglar Cowork-schemat
+  HÅRDKODAT i `vparse.js` (`nextRoutineRun`: scout 07:47 dagligen, rotation mån–fre 08:40) –
+  uppdatera funktionen om tasken schemaläggs om. Testsviten: 50 tester, gröna.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - **PUSH KRÄVS (2026-07-11):** flik-omdesignen (Analys-/Kurser-flikarna m.m.) och dagens

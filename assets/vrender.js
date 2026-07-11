@@ -58,6 +58,50 @@
   }
 
   // ---- holding / decision cards ----------------------------------------
+  // ---- statusrad (Översikt) ---------------------------------------------
+  function renderStatusRow(latestDaily, next){
+    if (!latestDaily && !next) return "";
+    let left = "";
+    if (latestDaily){
+      const counts = {};
+      (latestDaily.holdings || []).forEach(h => { counts[h.decision] = (counts[h.decision] || 0) + 1; });
+      const chips = Object.keys(counts).map(k =>
+        `<span class="st-chip st-chip--${decClass(k)}">${counts[k]}× ${esc(k)}</span>`).join("");
+      left = `<span class="st-date">${esc(latestDaily.dateISO)}</span>`
+           + (latestDaily.mode ? `<span class="st-mode">${esc(truncate(latestDaily.mode, 30))}</span>` : "")
+           + chips;
+    } else {
+      left = `<span class="st-mode">Ingen daglig rapport ännu.</span>`;
+    }
+    const right = next
+      ? `<span class="st-next" title="Schemalagd Cowork-körning – kräver att Claude-appen är igång">nästa: ${esc(next.label)} ${esc(next.when)} · ${esc(next.rel)}</span>`
+      : "";
+    return `<div class="status-row">${left}${right}</div>`;
+  }
+
+  // Positionsmätare: stopp → entry → nu → mål (procentlägen ur VParse.computeGauge).
+  function gaugeStrip(lv){
+    if (!lv || !lv.gauge) return "";
+    const g = lv.gauge;
+    const fillCls = lv.pnlPct != null && lv.pnlPct < 0 ? " neg" : "";
+    return `<div class="gauge"><div class="gauge-track">
+      <div class="gauge-fill${fillCls}" style="width:${g.nowPct}%"></div>
+      <span class="gauge-tick tick-stop"></span>
+      <span class="gauge-tick tick-entry" style="left:${g.entryPct}%"></span>
+      <span class="gauge-tick tick-now" style="left:${g.nowPct}%"></span>
+      <span class="gauge-tick tick-target"></span>
+    </div>
+    <div class="gauge-lbls"><span class="neg">stopp ${esc(String(lv.stopNum))}</span><span>entry ${esc(String(lv.entryNum))}</span><span class="pos">mål ${esc(String(lv.targetNum))}</span></div></div>`;
+  }
+
+  // Besluts-historik: en punkt per handelsdag (äldst → nyast).
+  function decisionDots(decisions){
+    if (!decisions || decisions.length < 2) return "";
+    const dots = decisions.map(d =>
+      `<span class="ddot ddot--${decClass(d.decision)}" title="${esc(d.date)}: ${esc(d.decision)}"></span>`).join("");
+    return `<div class="dhist"><span class="dhist-l">${decisions.length} dgr</span>${dots}</div>`;
+  }
+
   // Live-remsa: verifierad kurs ur prices.json + P/L mot entry och avstånd
   // till stopp/mål (beräknas i VParse.computeHoldingLive).
   function liveStrip(lv){
@@ -70,7 +114,7 @@
     const tm = lv.marketTime ? String(lv.marketTime).slice(0, 16).replace("T", " ") : "";
     return `<div class="hold-live"><span class="k">Live</span>${bits.join("")}${tm ? `<span class="lv-tm">${esc(tm)}</span>` : ""}</div>`;
   }
-  function holdingCard(h, live){
+  function holdingCard(h, live, decisions){
     return `<div class="hold">
       <div class="hold-top">
         <div class="hold-name">${esc(h.name)}</div>
@@ -83,7 +127,9 @@
         <div><span class="k">Stop-loss</span><span class="v">${esc(h.stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(h.target || "–")}</span></div>
       </div>
+      ${gaugeStrip(live)}
       ${liveStrip(live)}
+      ${decisionDots(decisions)}
       ${h.motivation ? `<div class="hold-note">${esc(truncate(h.motivation, 180))}</div>` : ""}
     </div>`;
   }
@@ -111,13 +157,13 @@
     </div>`;
   }
 
-  function renderHoldings(latestDaily, portfolio, liveByTicker){
+  function renderHoldings(latestDaily, portfolio, liveByTicker, decisionsByTicker){
     let html = "";
     const monitored = latestDaily ? latestDaily.holdings : [];
-    const lv = liveByTicker || {};
+    const lv = liveByTicker || {}, dh = decisionsByTicker || {};
     if (monitored.length){
       html += `<h3 class="sub">Dagens beslut <span class="sub-date">${esc(latestDaily.dateISO)}</span></h3>
-        <div class="hold-grid-wrap">${monitored.map(h => holdingCard(h, lv[(h.ticker || "").trim().toUpperCase()])).join("")}</div>`;
+        <div class="hold-grid-wrap">${monitored.map(h => { const t = (h.ticker || "").trim().toUpperCase(); return holdingCard(h, lv[t], dh[t]); }).join("")}</div>`;
     }
     const pend = portfolio.pending || [];
     if (pend.length){
@@ -339,7 +385,7 @@
   }
 
   const API = { esc, signPct, trendClass, decClass, truncate, sparkline, pxAge,
-    renderKPIs, renderMarket, renderHoldings, renderFeed,
+    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;

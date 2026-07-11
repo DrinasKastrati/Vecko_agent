@@ -100,6 +100,37 @@
   .hold-grid .k{display:block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
   .hold-grid .v{display:block;font-family:var(--mono);font-size:13px;color:var(--text);margin-top:2px}
   .hold-note{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font-size:12.3px;color:var(--muted)}
+  .status-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;background:var(--panel2);
+    border:1px solid var(--border);border-radius:11px;padding:9px 13px;margin-bottom:14px;font-size:12.3px;color:var(--muted)}
+  .st-date{font-family:var(--mono);color:var(--text);font-size:12px}
+  .st-mode{color:var(--muted)}
+  .st-chip{font-size:10.5px;font-weight:700;letter-spacing:.05em;border-radius:6px;padding:2px 8px}
+  .st-chip--kop{background:rgba(38,208,124,.15);color:var(--green)}
+  .st-chip--salj{background:rgba(255,92,120,.15);color:var(--red)}
+  .st-chip--behall{background:rgba(74,163,255,.15);color:var(--blue)}
+  .st-chip--avvakta{background:rgba(255,180,84,.14);color:var(--amber)}
+  .st-chip--none{background:rgba(139,156,184,.13);color:var(--muted)}
+  .st-next{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+  .gauge{margin-top:12px}
+  .gauge-track{position:relative;height:8px;border-radius:4px;background:var(--panel3);margin:0 2px}
+  .gauge-fill{position:absolute;left:0;top:0;bottom:0;background:rgba(38,208,124,.35);border-radius:4px 0 0 4px}
+  .gauge-fill.neg{background:rgba(255,180,84,.3)}
+  .gauge-tick{position:absolute;top:-3px;width:2px;height:14px;background:var(--faint)}
+  .tick-stop{left:0;background:var(--red)}
+  .tick-target{right:0;background:var(--green)}
+  .tick-now{background:var(--text)}
+  .gauge-lbls{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--faint);margin:5px 2px 0}
+  .gauge-lbls .neg{color:var(--red)} .gauge-lbls .pos{color:var(--green)}
+
+  .dhist{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:11px;padding-top:10px;border-top:1px solid var(--border)}
+  .dhist-l{font-size:10px;color:var(--faint);margin-right:3px}
+  .ddot{width:9px;height:9px;border-radius:50%;background:var(--panel3);box-shadow:inset 0 0 0 1px var(--border2)}
+  .ddot--kop{background:var(--green);box-shadow:none}
+  .ddot--salj{background:var(--red);box-shadow:none}
+  .ddot--behall{background:var(--blue);box-shadow:none}
+  .ddot--avvakta{background:var(--amber);box-shadow:none}
+
   .hold-live{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin-top:11px;padding:8px 10px;
     background:var(--panel3);border:1px solid var(--border2);border-radius:9px;font-family:var(--mono);font-size:11.8px}
   .hold-live .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--green);font-family:var(--sans);font-weight:700}
@@ -278,6 +309,7 @@
 
     <section class="view active" id="view-oversikt" data-view="oversikt">
       <div class="sec-head"><h2>Översikt</h2><span class="hint">portfölj &amp; dagens beslut</span></div>
+      <div id="statusRow"></div>
       <div id="kpis"></div>
       <div id="market"></div>
       <div id="holdings"></div>

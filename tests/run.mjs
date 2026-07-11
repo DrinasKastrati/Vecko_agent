@@ -72,6 +72,34 @@ ok("holdingLive toTarget", live && Math.abs(live.toTargetPct - (120/110 - 1) * 1
 ok("holdingLive missing quote", VP.computeHoldingLive({ "Yahoo-ticker": "X", "Entry": "1" }, {}) === null);
 ok("holdingLive error quote", VP.computeHoldingLive({ "Yahoo-ticker": "X" }, { X: { error: "fel" } }) === null);
 ok("pxAge export", typeof VR.pxAge === "function" && VR.pxAge(new Date().toISOString()).cls === "px-fresh");
+
+// ---- statusrad, positionsmätare, besluts-historik ----
+const g = VP.computeGauge(100, 90, 120, 110);
+ok("gauge pcts", g && Math.abs(g.nowPct - 66.7) < 0.11 && Math.abs(g.entryPct - 33.3) < 0.11);
+ok("gauge clamp", VP.computeGauge(100, 90, 120, 200).nowPct === 100);
+ok("gauge invalid span", VP.computeGauge(100, 120, 90, 110) === null);
+ok("gauge null input", VP.computeGauge(null, 90, 120, 110) === null);
+const live2 = VP.computeHoldingLive({ "Yahoo-ticker": "AAPL", "Entry": "100", "Stop-loss": "90", "Målkurs": "120" }, { AAPL: { price: 110 } });
+ok("holdingLive gauge", live2 && live2.gauge && Math.abs(live2.gauge.entryPct - 33.3) < 0.11);
+const dh = VP.buildDecisionHistory([
+  { dateISO: "2026-07-10", holdings: [{ ticker: "AAPL", decision: "BEHÅLL" }] },
+  { dateISO: "2026-07-09", holdings: [{ ticker: "AAPL", decision: "KÖP" }] }
+], "aapl");
+ok("decisionHistory order", dh.length === 2 && dh[0].date === "2026-07-09" && dh[1].decision === "BEHÅLL");
+ok("decisionHistory missing", VP.buildDecisionHistory([], "X").length === 0);
+const nr = VP.nextRoutineRun(new Date(2026, 6, 11, 12, 0)); // lördag 11 jul 12:00
+ok("nextRun weekend->scout", nr && nr.label === "scout" && nr.when === "sön 07:47");
+const nr2 = VP.nextRoutineRun(new Date(2026, 6, 13, 8, 0)); // måndag 08:00
+ok("nextRun monday->rotation", nr2 && nr2.label === "rotation" && nr2.when === "mån 08:40");
+ok("renderStatusRow chips", VR.renderStatusRow(
+  { dateISO: "2026-07-10", mode: "LÄGE B – bevakning", market: "x", holdings: [{ decision: "BEHÅLL" }, { decision: "BEHÅLL" }] },
+  { label: "scout", when: "sön 07:47", rel: "om 19 tim" }
+).includes("2× BEHÅLL"));
+ok("renderStatusRow empty", VR.renderStatusRow(null, null) === "");
+ok("holdingCard dots", VR.renderHoldings(
+  { dateISO: "2026-07-10", holdings: [{ name: "A", ticker: "AAPL", exchange: "N", price: "", since: "", stop: "", target: "", decision: "BEHÅLL", news: "", motivation: "" }] },
+  { pending: [] }, {}, { AAPL: [{ date: "2026-07-09", decision: "KÖP" }, { date: "2026-07-10", decision: "BEHÅLL" }] }
+).includes("ddot--kop"));
 ok("holdingCard live strip", VR.renderHoldings(
   { dateISO: "2026-07-10", holdings: [{ name: "Apple", ticker: "AAPL", exchange: "NASDAQ", price: "", since: "", stop: "", target: "", decision: "BEHÅLL", news: "", motivation: "" }] },
   { pending: [] }, { AAPL: { ticker: "AAPL", price: 110, currency: "USD", pnlPct: 10, toStopPct: -5, toTargetPct: 9 } }
