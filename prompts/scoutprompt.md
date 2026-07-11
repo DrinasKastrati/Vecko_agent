@@ -62,6 +62,7 @@ och rapportflöde samt trovärdiga marknadsrykten.
 
 ## RAPPORTKRAV
 1. Följ EXAKT sektionsstrukturen (rubrikerna) i `templates/scout_case.md`.
+1b. Tickers skrivs ALLTID i Yahoo-format (`NVDA`, `BTC-USD`, `^GSPC`; klassaktier med bindestreck, t.ex. `BRK-B`) – aldrig med mellanslag. Pris-hämtaren läser tickers ur rapporterna.
 2. Varje kurs anges med källa + tidsstämpel. Varje nyhet med datum + källa. Rykten märks
    tydligt "⚠️ RYKTE – EJ BEKRÄFTAT (källa, datum)".
 3. Avsluta ALLTID rapporten med raden:

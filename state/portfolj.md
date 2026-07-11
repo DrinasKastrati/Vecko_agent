@@ -7,13 +7,13 @@
 |---|---|---|---|---|---|---|---|
 | – | – | – | – | – | – | – | Inga öppnade positioner – se pending nedan |
 
-### Pending veckorotation v28 (beslutad i veckorapport-260706.md – ej öppnad)
+### Pending veckorotation v28 (beslutad i veckorapport-260710.md – ej öppnad)
 | Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Status |
 |---|---|---|---|---|---|---|---|
 | – | – | – | – | – | – | – | - |
 
-*Nivåerna ovan är planen från veckorapport-260706.md och ska justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. Kongsberg (KOG.OL) roterades ut till bubblarlistan (Q2-rapport denna vecka). Saab avfördes 2026‑07‑08 efter att katalysatorn löst ut och kursen sprungit förbi planen.*
-s
+*Nivåerna ovan är planen från veckorapport-260710.md och ska justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. Kongsberg (KOG.OL) roterades ut till bubblarlistan (Q2-rapport denna vecka). Saab avfördes 2026‑07‑08 efter att katalysatorn löst ut och kursen sprungit förbi planen.*
+
 ## Kassa
 100 %
 

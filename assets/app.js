@@ -84,13 +84,44 @@
       } catch (err) { console.error(err); this.setStatus("error", err); }
     }
 
+    // Live-P/L per innehav: portfolj.md-rader (entry/stopp/mål) + prices.json.
+    buildLiveMap() {
+      const S = this.state, out = {};
+      const quotes = S.prices && S.prices.quotes;
+      if (!quotes) return out;
+      ((S.portfolio && S.portfolio.holdings) || []).forEach(row => {
+        const lv = this.P.computeHoldingLive(row, quotes);
+        if (lv) out[lv.ticker] = lv;
+      });
+      // fallback: dagens beslut-kort utan portföljrad får ändå live-kurs
+      const latestDaily = S.dailies[0];
+      ((latestDaily && latestDaily.holdings) || []).forEach(h => {
+        const t = (h.ticker || "").trim().toUpperCase();
+        const q = t && quotes[t];
+        if (!out[t] && q && !q.error && q.price != null)
+          out[t] = { ticker: t, price: q.price, currency: q.currency || "", marketTime: q.marketTime || null, pnlPct: null, toStopPct: null, toTargetPct: null };
+      });
+      return out;
+    }
+
+    renderPxBadge() {
+      const el = this.el("pxBadge"); if (!el) return;
+      const p = this.state.prices;
+      if (!p || !p.generatedAt) { el.textContent = "kurser saknas"; el.className = "px-age px-err"; return; }
+      const a = this.R.pxAge(p.generatedAt);
+      el.textContent = "kurser " + a.txt;
+      el.className = "px-age " + a.cls;
+      el.title = "Ålder på state/prices.json (uppdateras av GitHub-actionen)";
+    }
+
     renderAll() {
       const S = this.state, R = this.R;
       const latestDaily = S.dailies[0] || null;
       this.el("banner").innerHTML = R.renderBanner(S.portfolio.note);
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
-      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio);
+      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap());
+      this.renderPxBadge();
       const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
@@ -198,27 +229,50 @@
       }, 15000);
     }
 
-    // ---- chart ----
+    // ---- chart (strategi + benchmark-overlay) ----
     drawChart() {
       const canvas = this.el("returnChart");
       if (!canvas || !root.Chart) { if (this.el("chartWrap")) this.el("chartWrap").style.display = "none"; this.el("chartNote").textContent = root.Chart ? "" : "Diagram kunde inte laddas (offline?)."; return; }
-      const series = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
-      const labels = series.map(p => p.date); const data = series.map(p => p.value);
-      const allZero = data.every(v => v === 0);
-      this.el("chartNote").textContent = allZero ? "Baslinje – inga stängda positioner ännu (0 %)." : "";
+      const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
+      const benches = [];
+      const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX");
+      const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC");
+      if (omx) benches.push({ label: "OMXS30", color: "#4aa3ff", pts: omx });
+      if (spx) benches.push({ label: "S&P 500", color: "#b98bff", pts: spx });
+
+      // gemensam datumaxel (union), carry-forward-mappning per serie
+      const labelSet = new Set(strat.map(p => p.date));
+      benches.forEach(b => b.pts.forEach(p => labelSet.add(p.date)));
+      const labels = [...labelSet].sort();
+      const data = this.P.seriesOnLabels(labels, strat);
+
+      const allZero = strat.every(p => p.value === 0);
+      this.el("chartNote").textContent =
+        (allZero ? "Baslinje – inga stängda positioner ännu (0 %). " : "") +
+        (benches.length ? "Benchmark normaliseras till 0 % vid historikens start." :
+          "Benchmark-overlay (OMXS30/S&P) visas när price_history.json fått minst 2 dagars indexdata.");
       const ctx = canvas.getContext("2d");
       const grd = ctx.createLinearGradient(0, 0, 0, 240);
       grd.addColorStop(0, "rgba(38,208,124,0.25)"); grd.addColorStop(1, "rgba(38,208,124,0)");
       if (this.state.chart) this.state.chart.destroy();
+      const datasets = [{ label: "Strategin (%)", data, borderColor: "#26d07c", backgroundColor: grd, fill: true, tension: 0.25, pointRadius: 3, pointBackgroundColor: "#26d07c", borderWidth: 2, spanGaps: true }];
+      benches.forEach(b => datasets.push({
+        label: b.label, data: this.P.seriesOnLabels(labels, b.pts),
+        borderColor: b.color, borderDash: [5, 4], borderWidth: 1.5,
+        fill: false, tension: 0.25, pointRadius: 0, spanGaps: true
+      }));
       this.state.chart = new Chart(ctx, {
         type: "line",
-        data: { labels, datasets: [{ label: "Ackumulerad avkastning (%)", data, borderColor: "#26d07c", backgroundColor: grd, fill: true, tension: 0.25, pointRadius: 3, pointBackgroundColor: "#26d07c", borderWidth: 2 }] },
+        data: { labels, datasets },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => " " + c.parsed.y + " %" } } },
+          plugins: {
+            legend: { display: benches.length > 0, labels: { color: "#8b9cb8", boxWidth: 18, usePointStyle: false } },
+            tooltip: { callbacks: { label: c => " " + c.dataset.label + ": " + c.parsed.y + " %" } }
+          },
           scales: {
             x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b9cb8" } },
-            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#8b9cb8", callback: v => v + " %" }, suggestedMin: allZero ? -1 : undefined, suggestedMax: allZero ? 1 : undefined }
+            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#8b9cb8", callback: v => v + " %" }, suggestedMin: allZero && !benches.length ? -1 : undefined, suggestedMax: allZero && !benches.length ? 1 : undefined }
           }
         }
       });
@@ -263,6 +317,16 @@
         document.querySelectorAll(".rtype").forEach(b => b.classList.remove("on"));
         btn.classList.add("on"); this.state.reportType = btn.dataset.type; this.setupReportPicker();
       }));
+      // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
+      document.addEventListener("keydown", e => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        const t = e.target, tag = (t && t.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select" || (t && t.isContentEditable)) return;
+        const links = [...document.querySelectorAll(".subnav a")];
+        const n = parseInt(e.key, 10);
+        if (n >= 1 && n <= links.length) this.showView(links[n - 1].dataset.view);
+        else if (e.key === "r" || e.key === "R") { this.state.md.clear(); this.load(true); }
+      });
     }
     boot() { this.initNav(); this.initEvents(); this.load(false); }
   }

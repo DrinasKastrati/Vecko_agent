@@ -292,6 +292,47 @@
     return clean;
   }
 
+  // ---- benchmark-serie ur price_history.json (overlay i Avkastning) -----
+  // history.series["^OMX"] = [["2026-07-10", 2650.1], ...] -> %-utveckling från
+  // seriens första punkt. null om det inte finns minst 2 punkter.
+  function buildBenchmarkSeries(history, sym){
+    const arr = history && history.series && history.series[sym];
+    if (!Array.isArray(arr) || arr.length < 2) return null;
+    const base = Number(arr[0] && arr[0][1]);
+    if (!base || isNaN(base)) return null;
+    return arr
+      .filter(p => p && p[0] != null && !isNaN(Number(p[1])))
+      .map(p => ({ date: String(p[0]), value: Math.round((Number(p[1]) / base - 1) * 10000) / 100 }));
+  }
+
+  // Mappa en {date,value}-serie på en gemensam label-axel med carry-forward
+  // (senast kända värde behålls tills ett nytt kommer; null före första punkten).
+  function seriesOnLabels(labels, series){
+    const map = new Map((series || []).map(p => [p.date, p.value]));
+    let last = null; const out = [];
+    for (const d of labels){ if (map.has(d)) last = map.get(d); out.push(last); }
+    return out;
+  }
+
+  // ---- live-P/L för innehav (portfolj.md-rad + prices.json-quote) --------
+  function numFrom(s){
+    const m = String(s == null ? "" : s).replace(/\s/g, "").replace(",", ".").match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  }
+  function computeHoldingLive(row, quotes){
+    if (!row || !quotes) return null;
+    const ticker = String(row["Yahoo-ticker"] || "").trim().toUpperCase();
+    const q = ticker && quotes[ticker];
+    if (!q || q.error || q.price == null) return null;
+    const entry = numFrom(row["Entry"]), stop = numFrom(row["Stop-loss"]), target = numFrom(row["Målkurs"]);
+    return {
+      ticker, price: q.price, currency: q.currency || "", marketTime: q.marketTime || null,
+      pnlPct:      entry  ? (q.price / entry - 1) * 100 : null,
+      toStopPct:   stop   ? (stop / q.price - 1) * 100 : null,   // negativ = utrymme ned till stoppen
+      toTargetPct: target ? (target / q.price - 1) * 100 : null  // positiv = kvar upp till målet
+    };
+  }
+
   // ---- scout: rapport-*.md (USA & krypto) -------------------------------
   function scoutField(block, labels){
     for (const label of labels){
@@ -378,7 +419,8 @@
   const API = {
     field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename,
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
-    computeTradeStats, buildFeed, buildReturnSeries
+    computeTradeStats, buildFeed, buildReturnSeries,
+    buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

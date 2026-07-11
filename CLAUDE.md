@@ -35,12 +35,15 @@ Ett automatiserat system för aktie-beslutsstöd, i fem delar:
 ```
 Vecko_agent/
 ├─ index.html            # webbappen (MÅSTE ligga i roten för GitHub Pages)
+├─ manifest.json         # PWA-manifest (installerbar på mobil/desktop)
+├─ push.bat              # Drens enklicks-commit+push efter en Cowork-session
 ├─ .nojekyll
 ├─ .gitignore            # OS-/editor-skräp (viktigt med OneDrive)
 ├─ assets/               # webbappens moduler
 │  ├─ vparse.js          #   window.VParse  – all parsning (rena funktioner)
 │  ├─ vrender.js         #   window.VRender – bygger HTML-strängar
-│  └─ app.js             #   class Dashboard – hämtar data, renderar, event
+│  ├─ app.js             #   class Dashboard – hämtar data, renderar, event
+│  └─ icon.svg           #   app-ikon (PWA/favicon)
 ├─ prompts/              # instruktioner till routinerna
 │  ├─ dagligprompt.md    #   nordisk rotation – enda ingången
 │  ├─ veckoprompt.md     #   UTGÅNGEN stub (skapade dubbletter – schemalägg aldrig)
@@ -135,17 +138,30 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   skriver `prices.json` + rullande `price_history.json`.
 - ✅ Analytics (handelsstatistik), sparklines och analys-färskhet i dashboarden.
 - ✅ Testsvit `tests/run.mjs`; `.gitattributes` normaliserar radslut (OneDrive/CRLF).
+- ✅ 2026-07-11: benchmark-overlay i Avkastning (OMXS30 `^OMX` + S&P `^GSPC` vs strategin),
+  live-P/L-remsa på innehavskorten (prices.json), kursfärskhets-badge i topbaren, kortkommandon
+  (1–7 flikar, R uppdatera), PWA-manifest (`manifest.json` + `assets/icon.svg`), `push.bat`
+  (enklicks-commit+push), stängningskurs-crons i `prices.yml` (16:45 + 21:10 UTC),
+  `price_history.json` committas nu av actionen (sparkline-fixen), ticker-regexen kräver ≥2 tecken
+  i basen (inget "B.ST"-skräp ur "BAHN B.ST"), `config/watchlist.txt` skapad, `portfolj.md` städad,
+  tickerformat-krav (bindestreck) tillagt i båda prompterna. Testsviten utökad (38 tester, gröna).
 
 ## 5b. Nuläge — KVAR / VALFRITT
-- **GitHub-inställningar (om ej redan gjort):** Settings → Actions → General → **Read and write
-  permissions** (krävs för `prices.yml` OCH `analys_queue.yml`); Issues aktiverade (analys-triggern).
-- **Schemaläggning:** routinerna körs i dag MANUELLT i Cowork (ingen schemalagd task hittad).
-  För helautomatik: schemalägg `dagligprompt.md` (mån–fre) och `scoutprompt.md`, och tajma
-  `prices.yml`-cron 15–30 min före (UTC).
+- **PUSH KRÄVS (2026-07-11):** flik-omdesignen (Analys-/Kurser-flikarna m.m.) och dagens
+  fixar/features ligger LOKALT men är inte pushade – GitHub main + Pages kör fortfarande den äldre
+  scroll-dashboarden. Dren: dubbelklicka `push.bat`. Verifiera gärna prices-actionen efteråt
+  (Actions → "Hämta kurser" → Run workflow) så USA/krypto-symbolerna kommer med i prices.json.
+- ✅ **GitHub-inställningar:** verifierat klart – både `analys_queue.yml` (issue #2 → kö → analys)
+  och `prices.yml` har committat till main, dvs. write-permissions + Issues fungerar.
+- ✅ **Schemaläggning:** Cowork scheduled tasks skapade 2026-07-11: `vecko-agent-scout-usa-krypto`
+  (dagligen 07:47) och `vecko-agent-nordisk-rotation` (mån–fre 08:40, efter prices-cronen, före
+  börsöppning). OBS: de körs bara när Claude-appen är igång (annars vid nästa appstart), och
+  sandlådan kan inte pusha – rapporterna skrivs lokalt och Dren publicerar med `push.bat`.
 - **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
-  OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar.
-- **Valfria förbättringar (ej byggda):** benchmark-overlay (strategi vs OMXS30/S&P), daglig
-  digest-notis, jämför två tickers i Analys, samt att klona repot UTANFÖR OneDrive.
+  OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
+  (enklast via `push.bat` i repo-roten).
+- **Valfria förbättringar (ej byggda):** daglig digest-notis, jämför två tickers i Analys, samt att
+  klona repot UTANFÖR OneDrive (rekommenderas skarpt – dödar git-låsen och de trunkerade läsningarna).
 
 ---
 

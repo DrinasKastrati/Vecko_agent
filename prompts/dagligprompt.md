@@ -66,5 +66,6 @@ Gör följande för VARJE innehav i `state/portfolj.md`:
 
 ## RAPPORTKRAV (båda lägena)
 1. Varje kurs i rapporten anges med källa och tidsstämpel. Varje nyhet anges med datum och källa.
+1b. Tickers skrivs ALLTID i Yahoo-format med bindestreck för klassaktier: `SAAB-B.ST`, `BAHN-B.ST` – ALDRIG med mellanslag ("SAAB B.ST"). Pris-hämtaren läser tickers ur rapporterna och mellanslagsformen ger trasiga uppslag.
 2. Ryktesbaserad information markeras alltid "⚠️ RYKTE – EJ BEKRÄFTAT (källa, datum)".
 3. Avsluta alltid rapporten med raden: "Detta är automatiserat beslutsstöd, inte finansiell rådgivning."

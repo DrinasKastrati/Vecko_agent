@@ -8,7 +8,9 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-const TICKER_RE = /\b[A-Z0-9]{1,6}(?:-[A-Z0-9]{1,3})?\.(?:ST|OL|CO|HE)\b/gi;
+// Basen kräver minst 2 tecken: annars plockas skräp som "B.ST" ur text skriven
+// med mellanslag ("BAHN B.ST") – klassaktier ska skrivas med bindestreck (BAHN-B.ST).
+const TICKER_RE = /\b[A-Z0-9]{2,6}(?:-[A-Z0-9]{1,3})?\.(?:ST|OL|CO|HE)\b/gi;
 
 // ---- pure helpers (testbara) ------------------------------------------
 export function extractTickers(text){

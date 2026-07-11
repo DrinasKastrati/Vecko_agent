@@ -58,7 +58,19 @@
   }
 
   // ---- holding / decision cards ----------------------------------------
-  function holdingCard(h){
+  // Live-remsa: verifierad kurs ur prices.json + P/L mot entry och avstånd
+  // till stopp/mål (beräknas i VParse.computeHoldingLive).
+  function liveStrip(lv){
+    if (!lv || lv.price == null) return "";
+    const px = String(lv.price) + (lv.currency ? " " + lv.currency : "");
+    const bits = [`<span class="lv-px">${esc(px)}</span>`];
+    if (lv.pnlPct != null)      bits.push(`<span class="lv ${lv.pnlPct >= 0 ? "pos" : "neg"}">${esc(signPct(lv.pnlPct))} sedan entry</span>`);
+    if (lv.toTargetPct != null) bits.push(`<span class="lv">${esc(signPct(lv.toTargetPct))} till mål</span>`);
+    if (lv.toStopPct != null)   bits.push(`<span class="lv">${esc(signPct(lv.toStopPct))} till stopp</span>`);
+    const tm = lv.marketTime ? String(lv.marketTime).slice(0, 16).replace("T", " ") : "";
+    return `<div class="hold-live"><span class="k">Live</span>${bits.join("")}${tm ? `<span class="lv-tm">${esc(tm)}</span>` : ""}</div>`;
+  }
+  function holdingCard(h, live){
     return `<div class="hold">
       <div class="hold-top">
         <div class="hold-name">${esc(h.name)}</div>
@@ -71,6 +83,7 @@
         <div><span class="k">Stop-loss</span><span class="v">${esc(h.stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(h.target || "–")}</span></div>
       </div>
+      ${liveStrip(live)}
       ${h.motivation ? `<div class="hold-note">${esc(truncate(h.motivation, 180))}</div>` : ""}
     </div>`;
   }
@@ -98,12 +111,13 @@
     </div>`;
   }
 
-  function renderHoldings(latestDaily, portfolio){
+  function renderHoldings(latestDaily, portfolio, liveByTicker){
     let html = "";
     const monitored = latestDaily ? latestDaily.holdings : [];
+    const lv = liveByTicker || {};
     if (monitored.length){
       html += `<h3 class="sub">Dagens beslut <span class="sub-date">${esc(latestDaily.dateISO)}</span></h3>
-        <div class="hold-grid-wrap">${monitored.map(holdingCard).join("")}</div>`;
+        <div class="hold-grid-wrap">${monitored.map(h => holdingCard(h, lv[(h.ticker || "").trim().toUpperCase()])).join("")}</div>`;
     }
     const pend = portfolio.pending || [];
     if (pend.length){
@@ -324,7 +338,7 @@
     <div class="stat-note">Grov kedjad avkastning (50 % vikt/affär): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
   }
 
-  const API = { esc, signPct, trendClass, decClass, truncate, sparkline,
+  const API = { esc, signPct, trendClass, decClass, truncate, sparkline, pxAge,
     renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats };
