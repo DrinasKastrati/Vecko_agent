@@ -2,6 +2,7 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
+**Senast uppdaterad:** 2026-07-12.
 
 ---
 
@@ -150,18 +151,28 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   som färgpunkter (senaste 10 dagliga rapporterna). OBS: nedräkningen speglar Cowork-schemat
   HÅRDKODAT i `vparse.js` (`nextRoutineRun`: scout 07:47 dagligen, rotation mån–fre 08:40) –
   uppdatera funktionen om tasken schemaläggs om. Testsviten: 50 tester, gröna.
+- ✅ 2026-07-12: allt ovan pushat till main och live på Pages. Schemalagda routinerna i drift:
+  scout skrev `rapport-260712.md` (första automatiska körningen), `daglig-260711.md` (helgnotis).
 
 ## 5b. Nuläge — KVAR / VALFRITT
-- **PUSH KRÄVS (2026-07-11):** flik-omdesignen (Analys-/Kurser-flikarna m.m.) och dagens
-  fixar/features ligger LOKALT men är inte pushade – GitHub main + Pages kör fortfarande den äldre
-  scroll-dashboarden. Dren: dubbelklicka `push.bat`. Verifiera gärna prices-actionen efteråt
-  (Actions → "Hämta kurser" → Run workflow) så USA/krypto-symbolerna kommer med i prices.json.
+- ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
+  ligger nu på GitHub main (verifierat mot raw) – Pages kör nya dashboarden.
+- **VÄNTAR PÅ FÖRSTA PRICES-KÖRNINGEN:** `prices.yml`-cronen kör bara vardagar → fixarna
+  (US/krypto-symboler ur watchlist_us, `price_history.json` committas, stängningskurs-crons)
+  exekverar första gången måndag 2026-07-13 ~05:00 UTC. Scout-rapporten 260712 flaggade korrekt
+  "US-symboler saknas i prices.json / Yahoo 403" – det ska självläka i och med måndagskörningen.
+  Otåliga: Actions → "Hämta kurser" → Run workflow. Scoutens tips: lägg ev. `XOM`/`CVX` i
+  `config/watchlist_us.txt` (Hormuz-/oljecaset).
 - ✅ **GitHub-inställningar:** verifierat klart – både `analys_queue.yml` (issue #2 → kö → analys)
   och `prices.yml` har committat till main, dvs. write-permissions + Issues fungerar.
-- ✅ **Schemaläggning:** Cowork scheduled tasks skapade 2026-07-11: `vecko-agent-scout-usa-krypto`
-  (dagligen 07:47) och `vecko-agent-nordisk-rotation` (mån–fre 08:40, efter prices-cronen, före
-  börsöppning). OBS: de körs bara när Claude-appen är igång (annars vid nästa appstart), och
-  sandlådan kan inte pusha – rapporterna skrivs lokalt och Dren publicerar med `push.bat`.
+- ✅ **Schemaläggning (verifierat i drift):** Cowork scheduled tasks skapade 2026-07-11:
+  `vecko-agent-scout-usa-krypto` (dagligen 07:47) och `vecko-agent-nordisk-rotation` (mån–fre
+  08:40, efter prices-cronen, före börsöppning). Scoutens första körning 2026-07-12 producerade
+  `reports/scout/rapport-260712.md`; helgkörningen 260711 hanterade stängda börser korrekt.
+  Rotation-tasken har ännu inte kört (första gången mån 2026-07-13 ~08:40) – tryck gärna "Run now"
+  en gång för att förgodkänna dess verktyg så måndagsrundan inte pausar på behörighetsfrågor.
+  OBS: taskarna körs bara när Claude-appen är igång (annars vid nästa appstart), och sandlådan
+  kan inte pusha – rapporterna skrivs lokalt och Dren publicerar med `push.bat`.
 - **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
