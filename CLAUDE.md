@@ -98,10 +98,12 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
-- **Flikbaserad** (en vy i taget): Översikt (KPI + dagens beslut + marknadsklimat), Rapporter
+- **Flikbaserad** (en vy i taget): Översikt (statusrad, KPI, **Aktuellt innehav** = öppna positioner
+  ur `portfolj.md` med live-P/L + positionsmätare, dagens beslut, marknadsklimat), Rapporter
   (Daglig/Vecko/Scout-väljare), Nyheter & radar, USA & Krypto (scout), Analys (aktieanalys på
   begäran + cache, med färskhetsbadge), Kurser (prices.json-tabell med sparklines), Avkastning
-  (handelsstatistik + Chart.js + historik + bubblare). Visar även routinens "DATAKÄLLA
+  (handelsstatistik + benchmark-overlay + Chart.js + historik + bubblare). Överst visas en
+  **intradag-signalbanner** (`state/alerts.json`, KÖP/SÄLJ vid nivåkorsning) samt routinens "DATAKÄLLA
   BLOCKERAD"-notis som en gul varningsbanner (korrekt beteende – appen speglar routinens status).
 - **Analytics:** Avkastning räknar fram träffsäkerhet, snittvinst/-förlust, profit factor,
   bästa/sämsta, snitt-hålltid och mål/stopp/rotation ur `portfolj.md`:s historik (`computeTradeStats`).
@@ -161,6 +163,11 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   uppdatera funktionen om tasken schemaläggs om. Testsviten: 50 tester, gröna.
 - ✅ 2026-07-12: allt ovan pushat till main och live på Pages. Schemalagda routinerna i drift:
   scout skrev `rapport-260712.md` (första automatiska körningen), `daglig-260711.md` (helgnotis).
+
+- ✅ 2026-07-14: **intradag-monitor** (`monitor.yml` + `alerts.mjs`, LLM-fritt) → `state/alerts.json`
+  + signalbanner/GitHub-issue; **Aktuellt innehav** visas nu på Översikt (öppna positioner ur
+  `portfolj.md` med live-P/L); analys-loopen stänger cirkeln (köad ticker → watchlist → prices.json
+  → verifierad kurs i analysen). Analyser hittills: SYNACT.ST, OSSD.ST, NVO, SAAB.ST.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
