@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-07-13T23:55:58.085Z",
+  "generatedAt": "2026-07-14T07:09:15.345Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning.",
-  "tickerCount": 30,
-  "okCount": 30,
+  "tickerCount": 34,
+  "okCount": 33,
   "quotes": {
     "4C.ST": {
       "symbol": "4C.ST",
-      "price": 8.74,
+      "price": 8.73,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-13T15:29:34.000Z",
+      "marketTime": "2026-07-14T07:00:01.000Z",
       "marketState": null,
-      "previousClose": 9.05,
-      "dayHigh": 9.09,
-      "dayLow": 8.4,
+      "previousClose": 9.82,
+      "dayHigh": 8.73,
+      "dayLow": 8.73,
       "source": "Yahoo Finance (chart API)"
     },
     "AAPL": {
@@ -31,14 +31,14 @@
     },
     "ALLEI.ST": {
       "symbol": "ALLEI.ST",
-      "price": 97.3,
+      "price": 96.85,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-13T15:29:35.000Z",
+      "marketTime": "2026-07-14T07:08:56.000Z",
       "marketState": null,
-      "previousClose": 96,
-      "dayHigh": 97.3,
-      "dayLow": 95.7,
+      "previousClose": 94.7,
+      "dayHigh": 97.1,
+      "dayLow": 96.7,
       "source": "Yahoo Finance (chart API)"
     },
     "AMD": {
@@ -79,26 +79,38 @@
     },
     "BOOZT.ST": {
       "symbol": "BOOZT.ST",
-      "price": 151.8,
+      "price": 150.2,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-13T15:29:54.000Z",
+      "marketTime": "2026-07-14T07:06:13.000Z",
       "marketState": null,
-      "previousClose": 146.5,
-      "dayHigh": 153.4,
-      "dayLow": 149.3,
+      "previousClose": 145.2,
+      "dayHigh": 150.6,
+      "dayLow": 150,
       "source": "Yahoo Finance (chart API)"
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 63228.4,
+      "price": 62534.65,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-13T02:11:35.000Z",
+      "marketTime": "2026-07-14T07:09:02.000Z",
       "marketState": null,
-      "previousClose": 63193.15,
-      "dayHigh": 64205.938,
-      "dayLow": 63630.297,
+      "previousClose": 64127.14,
+      "dayHigh": 62784,
+      "dayLow": 62238.242,
+      "source": "Yahoo Finance (chart API)"
+    },
+    "C": {
+      "symbol": "C",
+      "price": 140.71,
+      "currency": "USD",
+      "exchange": "NYSE",
+      "marketTime": "2026-07-13T20:04:32.000Z",
+      "marketState": null,
+      "previousClose": 143.86,
+      "dayHigh": 141.47,
+      "dayLow": 137.585,
       "source": "Yahoo Finance (chart API)"
     },
     "COIN": {
@@ -127,14 +139,14 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1799,
+      "price": 1780.55,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-13T02:11:33.000Z",
+      "marketTime": "2026-07-14T07:09:03.000Z",
       "marketState": null,
-      "previousClose": 1744.4846,
-      "dayHigh": 1824.4897,
-      "dayLow": 1782.5044,
+      "previousClose": 1795.6932,
+      "dayHigh": 1790.5868,
+      "dayLow": 1773.27,
       "source": "Yahoo Finance (chart API)"
     },
     "GOOGL": {
@@ -149,6 +161,30 @@
       "dayLow": 351.75,
       "source": "Yahoo Finance (chart API)"
     },
+    "GS": {
+      "symbol": "GS",
+      "price": 1045.91,
+      "currency": "USD",
+      "exchange": "NYSE",
+      "marketTime": "2026-07-13T20:00:03.000Z",
+      "marketState": null,
+      "previousClose": 1055.29,
+      "dayHigh": 1057.82,
+      "dayLow": 1036.84,
+      "source": "Yahoo Finance (chart API)"
+    },
+    "JPM": {
+      "symbol": "JPM",
+      "price": 334.53,
+      "currency": "USD",
+      "exchange": "NYSE",
+      "marketTime": "2026-07-13T20:00:02.000Z",
+      "marketState": null,
+      "previousClose": 337.72,
+      "dayHigh": 338.35,
+      "dayLow": 332.5,
+      "source": "Yahoo Finance (chart API)"
+    },
     "KOG.OL": {
       "symbol": "KOG.OL",
       "price": 279,
@@ -156,7 +192,7 @@
       "exchange": "Oslo",
       "marketTime": "2026-07-13T14:26:26.000Z",
       "marketState": null,
-      "previousClose": 323.5,
+      "previousClose": 321.8,
       "dayHigh": 290.9,
       "dayLow": 271.2,
       "source": "Yahoo Finance (chart API)"
@@ -192,7 +228,7 @@
       "exchange": "Oslo",
       "marketTime": "2026-07-13T14:25:09.000Z",
       "marketState": null,
-      "previousClose": 19.04,
+      "previousClose": 19.08,
       "dayHigh": 20.3,
       "dayLow": 19.26,
       "source": "Yahoo Finance (chart API)"
@@ -235,14 +271,14 @@
     },
     "NOKIA.HE": {
       "symbol": "NOKIA.HE",
-      "price": 10.56,
+      "price": 10.3,
       "currency": "EUR",
       "exchange": "Helsinki",
-      "marketTime": "2026-07-13T15:29:56.000Z",
+      "marketTime": "2026-07-14T07:09:04.000Z",
       "marketState": null,
-      "previousClose": 10.42,
-      "dayHigh": 11.07,
-      "dayLow": 10.19,
+      "previousClose": 10.215,
+      "dayHigh": 10.33,
+      "dayLow": 10.21,
       "source": "Yahoo Finance (chart API)"
     },
     "NVDA": {
@@ -271,15 +307,19 @@
     },
     "SAAB-B.ST": {
       "symbol": "SAAB-B.ST",
-      "price": 529.5,
+      "price": 526.1,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-13T15:29:56.000Z",
+      "marketTime": "2026-07-14T07:09:10.000Z",
       "marketState": null,
-      "previousClose": 600,
-      "dayHigh": 546.5,
-      "dayLow": 526,
+      "previousClose": 586,
+      "dayHigh": 527.9,
+      "dayLow": 521.8,
       "source": "Yahoo Finance (chart API)"
+    },
+    "SAAB.ST": {
+      "symbol": "SAAB.ST",
+      "error": "kunde inte hämtas (alla källor gav fel)"
     },
     "SKHY": {
       "symbol": "SKHY",
@@ -295,14 +335,14 @@
     },
     "SOL-USD": {
       "symbol": "SOL-USD",
-      "price": 76.14,
+      "price": 75,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-13T02:11:35.000Z",
+      "marketTime": "2026-07-14T07:09:05.000Z",
       "marketState": null,
-      "previousClose": 78.04546,
-      "dayHigh": 77.64632,
-      "dayLow": 75.87922,
+      "previousClose": 78.06661,
+      "dayHigh": 75.37134,
+      "dayLow": 74.59673,
       "source": "Yahoo Finance (chart API)"
     },
     "TSLA": {
@@ -355,14 +395,14 @@
     },
     "^OMX": {
       "symbol": "^OMX",
-      "price": 3167.157,
+      "price": 3139.314,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-13T15:35:00.000Z",
+      "marketTime": "2026-07-14T07:09:13.000Z",
       "marketState": null,
-      "previousClose": 3205.46,
-      "dayHigh": 3170.0647,
-      "dayLow": 3150.197,
+      "previousClose": 3144.48,
+      "dayHigh": 3150.095,
+      "dayLow": 3131.593,
       "source": "Yahoo Finance (chart API)"
     }
   }
