@@ -157,10 +157,44 @@
     </div>`;
   }
 
+  // Kort för en FAKTISK öppen position ur portfolj.md:s "Aktuellt innehav".
+  function heldCard(o, live){
+    const name = strip(o["Aktie"] || "");
+    const ticker = strip(o["Yahoo-ticker"] || "");
+    const exchange = strip(o["Börs"] || "");
+    const entry = strip(o["Entry"] || "");
+    const stop = strip(o["Stop-loss"] || "");
+    const target = strip(o["Målkurs"] || "");
+    const edate = strip(o["Entry-datum"] || "");
+    const note = strip(o["Anteckning"] || "");
+    return `<div class="hold">
+      <div class="hold-top">
+        <div class="hold-name">${esc(name)}</div>
+        <span class="badge badge--behall">INNEHAV</span>
+      </div>
+      <div class="hold-tickers">${ticker ? pill(ticker) : ""}${exchange ? pill(exchange) : ""}</div>
+      <div class="hold-grid">
+        <div><span class="k">Entry</span><span class="v">${esc(truncate(entry, 22) || "–")}</span></div>
+        <div><span class="k">Entry-datum</span><span class="v">${esc(edate || "–")}</span></div>
+        <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
+        <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
+      </div>
+      ${gaugeStrip(live)}
+      ${liveStrip(live)}
+      ${note ? `<div class="hold-note">${esc(truncate(note, 180))}</div>` : ""}
+    </div>`;
+  }
+
   function renderHoldings(latestDaily, portfolio, liveByTicker, decisionsByTicker){
     let html = "";
-    const monitored = latestDaily ? latestDaily.holdings : [];
     const lv = liveByTicker || {}, dh = decisionsByTicker || {};
+    const held = (portfolio.holdings || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    if (held.length){
+      const upd = (portfolio.updated || "").replace(/\s*\(.*$/, "").slice(0, 16);
+      html += `<h3 class="sub">Aktuellt innehav${upd ? ` <span class="sub-date">${esc(upd)}</span>` : ""}</h3>
+        <div class="hold-grid-wrap">${held.map(o => { const t = (o["Yahoo-ticker"] || "").trim().toUpperCase(); return heldCard(o, lv[t]); }).join("")}</div>`;
+    }
+    const monitored = latestDaily ? latestDaily.holdings : [];
     if (monitored.length){
       html += `<h3 class="sub">Dagens beslut <span class="sub-date">${esc(latestDaily.dateISO)}</span></h3>
         <div class="hold-grid-wrap">${monitored.map(h => { const t = (h.ticker || "").trim().toUpperCase(); return holdingCard(h, lv[t], dh[t]); }).join("")}</div>`;
@@ -170,7 +204,7 @@
       html += `<h3 class="sub">Portföljplan (rotation)</h3>
         <div class="hold-grid-wrap">${pend.map(pendingCard).join("")}</div>`;
     }
-    if (!monitored.length && !pend.length)
+    if (!held.length && !monitored.length && !pend.length)
       html += `<div class="empty">Inga innehav eller planerade rotationer just nu.</div>`;
     return html;
   }
