@@ -32,11 +32,11 @@ jobs:
           node .github/scripts/queue-add.mjs "$TICKER" "$NUM"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/analysis_queue.json
+          git add state/analysis_queue.json config/watchlist.txt config/watchlist_us.txt
           if git diff --cached --quiet; then
             echo "Inget att köa (tom eller redan i kön)."
           else
-            git commit -m "Köa analys: $TICKER (issue #$NUM)"
+            git commit -m "Köa analys: $TICKER (issue #$NUM) + watchlist"
             git pull --rebase --autostash origin main || true
             git push
           fi
@@ -48,7 +48,7 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `Köad för analys: **${t}**. Analysen hamnar i \`reports/analysis/\` när Claude-arbetaren körts (kör "analysera kön" i Cowork). Ärendet stängs automatiskt.`
+              body: `Köad för analys: **${t}** (även tillagd i watchlist så priset hämtas nästa pris-körning). Analysen hamnar i \`reports/analysis/\` när Claude-arbetaren körts (kör "analysera kön" i Cowork). Ärendet stängs automatiskt.`
             });
             await github.rest.issues.update({
               owner: context.repo.owner, repo: context.repo.repo,
