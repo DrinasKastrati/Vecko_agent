@@ -2,10 +2,16 @@ name: Hämta kurser (prices.json)
 
 on:
   schedule:
+    # 1. Kör varje halvtimme (:00 och :30) från 07:00 till 20:00 UTC på vardagar
+    # Detta täcker den aktiva handelsdagen för både Europa och USA.
+    - cron: "0,30 7-20 * * 1-5"
+    
+    # 2. Dina specifika stängningstider ligger kvar för att garantera exakt rätt minut
     - cron: "0 5 * * 1-5"    # 05:00 UTC (~07:00 CEST) vardagar – justera till FÖRE din routine
     - cron: "0 6 * * 1-5"    # extra säkerhetskörning 06:00 UTC
     - cron: "45 16 * * 1-5"  # efter Stockholm-stängning (17:30 CET/CEST = 15:30–16:30 UTC) – ger riktiga stängningskurser i price_history
     - cron: "10 21 * * 1-5"  # efter US-stängning (16:00 ET = 20:00–21:00 UTC) – scout/krypto-kurser
+  
   workflow_dispatch: {}
 
 permissions:
@@ -36,4 +42,4 @@ jobs:
             git commit -m "Kurser: $(date -u +'%Y-%m-%d %H:%M UTC')"
             git pull --rebase --autostash origin main || true
             git push
-          fi
+          fi	
