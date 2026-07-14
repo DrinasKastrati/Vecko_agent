@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-13 23:15 UTC (LÄGE A – veckorotation v29 beslutad, se veckorapport-260713.md)
+**Senast uppdaterad:** 2026-07-14 06:50 UTC (LÄGE B – daglig bevakning, se daglig-260714.md; inga positioner öppnade, kurskällor blockerade/börs ej öppen → pending v29-villkor kvarstår)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
