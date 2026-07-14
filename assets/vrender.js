@@ -384,10 +384,24 @@
     <div class="stat-note">Grov kedjad avkastning (50 % vikt/affär): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
   }
 
+  // ---- intradag-signaler (monitor) -------------------------------------
+  function renderAlerts(alerts){
+    const active = (alerts && alerts.active) || [];
+    if (!active.length) return "";
+    const items = active.map(s => {
+      const cls = s.type === "KÖP" ? "al-kop" : "al-salj";
+      const px = s.price != null ? (s.price + (s.currency ? " " + s.currency : "")) : "";
+      const tm = s.marketTime ? String(s.marketTime).slice(0, 16).replace("T", " ") : "";
+      return `<div class="al-item ${cls}"><span class="al-tag">${esc(s.type)}</span><b>${esc(s.ticker)}</b> — ${esc(s.reason)}`
+        + `${s.level != null ? ` (nivå ${esc(String(s.level))})` : ""}${px ? ` · kurs ${esc(String(px))}` : ""}${tm ? ` · ${esc(tm)}` : ""}</div>`;
+    }).join("");
+    return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}</div>`;
+  }
+
   const API = { esc, signPct, trendClass, decClass, truncate, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
-    renderAnalysisIndex, renderTradeStats };
+    renderAnalysisIndex, renderTradeStats, renderAlerts };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

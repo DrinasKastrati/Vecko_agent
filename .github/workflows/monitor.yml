@@ -1,0 +1,54 @@
+name: Intradag-monitor (signaler -> alerts.json)
+
+on:
+  schedule:
+    - cron: "0 7-20 * * 1-5"   # varje timme 07-20 UTC, mån-fre (nordisk + US börstid). GRATIS på publika repos.
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Kör monitor (LLM-fritt, inga tokens)
+        run: node .github/scripts/alerts.mjs
+      - name: Committa alerts.json om signalerna ändrats
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/alerts.json
+          if git diff --cached --quiet; then
+            echo "Inga ändrade signaler – ingen commit."
+          else
+            git commit -m "Monitor: signaler $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
+      - name: Öppna issue (e-post) för NYA signaler
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const p = (process.env.RUNNER_TEMP || '.') + '/alerts_new.json';
+            let news = [];
+            try { news = JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) {}
+            for (const s of news) {
+              const title = `⚠️ ${s.type}-signal: ${s.ticker} – ${s.reason}`;
+              const body = `**${s.ticker}** ${s.reason}. Kurs ${s.price}${s.currency ? (' ' + s.currency) : ''}` +
+                `${s.level != null ? ` (nivå ${s.level})` : ''}${s.marketTime ? ` · ${s.marketTime}` : ''}.\n\n` +
+                `Automatiserad intradag-signal (LLM-fri, ren nivåkorsning). Beslutsstöd, inte finansiell rådgivning.`;
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+            }

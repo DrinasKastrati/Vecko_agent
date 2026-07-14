@@ -7,7 +7,7 @@ och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
 ---
 
 ## 1. Vad projektet är
-Ett automatiserat system för aktie-beslutsstöd, i fem delar:
+Ett automatiserat system för aktie-beslutsstöd, i sex delar:
 
 1. **Routinen** – en schemalagd Claude-körning som varje handelsdag (LÄGE B) bevakar innehav och
    varje måndag (LÄGE A) gör en full veckorotation. Den läser preferenser/tillstånd/mallar,
@@ -26,6 +26,11 @@ Ett automatiserat system för aktie-beslutsstöd, i fem delar:
    ("analys: TICKER") köas av en NYCKELLÖS Action till `state/analysis_queue.json`. En MANUELL
    Claude-arbetare (`prompts/analysprompt.md`, körs i Cowork – **ingen API-nyckel**) bearbetar kön
    och skriver `reports/analysis/analys-TICKER-yymmdd.md`. Dashboarden cachar och visar analyserna.
+6. **Intradag-monitor** – en NYCKELLÖS, LLM-FRI Action (`.github/workflows/monitor.yml` +
+   `scripts/alerts.mjs`) som varje timme under börstid jämför öppna innehav/pending mot
+   stop/mål/entry ur `state/portfolj.md` och flaggar KÖP/SÄLJ-signaler till `state/alerts.json`
+   (dashboard-banner + GitHub-issue/e-post). Ren aritmetik → **noll tokens**; ersätter INTE
+   routinens omdöme utan larmar bara att en nivå korsats.
 
 - **Repo:** https://github.com/DrinasKastrati/Vecko_agent  (publikt, branch `main`)
 - **Dashboard (GitHub Pages):** https://drinaskastrati.github.io/Vecko_agent/
@@ -65,7 +70,8 @@ Vecko_agent/
 │  ├─ portfolj.md        #   innehav, kassa, ackumulerad avkastning, append-only historik
 │  ├─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
 │  ├─ price_history.json #   rullande kurshistorik (sparklines i dashboarden)
-│  └─ analysis_queue.json #  analyskö (pending/done); issue-Action fyller, arbetaren tömmer
+│  ├─ analysis_queue.json #  analyskö (pending/done); issue-Action fyller, arbetaren tömmer
+│  └─ alerts.json         #  intradag-signaler (skrivs av monitor.yml, visas som dashboard-banner)
 ├─ reports/
 │  ├─ weekly/            #   veckorapport-yymmdd.md (nordisk)
 │  ├─ daily/             #   daglig-yymmdd.md (nordisk)
@@ -77,8 +83,10 @@ Vecko_agent/
    ├─ workflows/prices.yml       # schemalagd kurshämtning (nordisk + USA/krypto)
    ├─ workflows/auto_merge.yml   # auto-merge av claude/**-brancher till main
    ├─ workflows/analys_queue.yml # issue "analys: TICKER" -> analysis_queue.json (nyckellös)
+   ├─ workflows/monitor.yml      # intradag-monitor varje timme börstid -> alerts.json (nyckellös, LLM-fritt)
    ├─ scripts/fetch-prices.mjs   # hämtar Yahoo-kurser -> state/prices.json
-   └─ scripts/queue-add.mjs      # lägger ticker i analysis_queue.json
+   ├─ scripts/queue-add.mjs      # lägger ticker i analysis_queue.json + rätt watchlist
+   └─ scripts/alerts.mjs         # jämför kurser mot stop/mål/entry -> alerts.json (inga tokens)
 ```
 Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
 

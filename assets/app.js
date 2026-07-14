@@ -13,7 +13,7 @@
       this.R = root.VRender;
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
-        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null,
+        metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null, alerts: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -59,21 +59,24 @@
         const pricesPath = paths.find(p => /(^|\/)prices\.json$/i.test(p));
         const queuePath = paths.find(p => /(^|\/)analysis_queue\.json$/i.test(p));
         const histPath = paths.find(p => /(^|\/)price_history\.json$/i.test(p));
+        const alertsPath = paths.find(p => /(^|\/)alerts\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
           Promise.all(sMetas.map(m => this.getMd(m.path))),
           pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null),
           queuePath ? this.fetchJSON(this.raw(queuePath)).catch(() => null) : Promise.resolve(null),
-          histPath ? this.fetchJSON(this.raw(histPath)).catch(() => null) : Promise.resolve(null)
+          histPath ? this.fetchJSON(this.raw(histPath)).catch(() => null) : Promise.resolve(null),
+          alertsPath ? this.fetchJSON(this.raw(alertsPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
         this.state.priceHistory = priceHistory;
+        this.state.alerts = alerts;
         this.state.portfolio = pMd ? this.P.parsePortfolio(pMd) : { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
@@ -128,6 +131,7 @@
       const S = this.state, R = this.R;
       const latestDaily = S.dailies[0] || null;
       this.el("banner").innerHTML = R.renderBanner(S.portfolio.note);
+      const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = R.renderAlerts(S.alerts);
       const srEl = this.el("statusRow");
       if (srEl) srEl.innerHTML = R.renderStatusRow(latestDaily, this.P.nextRoutineRun(new Date()));
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
