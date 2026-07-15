@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-14 08:50 UTC (LÄGE B – KÖP Alleima exekverad @ 97,05 kr på verifierad intradagskurs; Moreld kvarstår pending, se daglig-260714.md)
+**Senast uppdaterad:** 2026-07-15 06:50 UTC (LÄGE B – Alleima BEHÅLL @ 98,45 kr / +1,44 % vs entry, tisdagens verifierade stängning; Moreld fortsatt pending ≤19,20 NOK, se daglig-260715.md)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
