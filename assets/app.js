@@ -245,6 +245,8 @@
       if (!modal || !root.Chart) return;
       this.el("pxModalTitle").textContent = tk;
       modal.classList.add("open");
+      const av = this.el("pxModalAvanza");
+      if (av) { const url = this.avanzaUrl(tk); if (url) { av.href = url; av.hidden = false; } else av.hidden = true; }
       const note = this.el("pxModalNote");
       const ser = this.state.priceHistory && this.state.priceHistory.series && this.state.priceHistory.series[tk];
       if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
@@ -277,6 +279,14 @@
       const modal = this.el("pxModal");
       if (modal) modal.classList.remove("open");
       if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
+    }
+
+    // Avanza-söklänk för aktier (ej index/krypto): suffix bort, klasstreck -> mellanslag.
+    avanzaUrl(tk) {
+      const t = String(tk || "").toUpperCase().trim();
+      if (!t || t.startsWith("^") || t.endsWith("-USD")) return null;
+      const base = t.replace(/\.(ST|OL|CO|HE)$/, "").replace(/-/g, " ");
+      return "https://www.avanza.se/sok.html?query=" + encodeURIComponent(base);
     }
 
     // ---- skrivbordsnotiser för intradag-signaler ----

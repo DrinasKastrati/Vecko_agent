@@ -1,0 +1,33 @@
+name: Tester (webbapp + skript)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Kör testsviten (rena funktioner, ingen nätåtkomst)
+        run: node tests/run.mjs
+      - name: Syntaxkontrollera alla JS-moduler
+        run: |
+          node --check assets/vparse.js
+          node --check assets/vrender.js
+          node --check assets/app.js
+          node --check .github/scripts/fetch-prices.mjs
+          node --check .github/scripts/alerts.mjs
+          node --check .github/scripts/digest.mjs
+          node --check .github/scripts/watchdog.mjs

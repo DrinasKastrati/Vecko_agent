@@ -17,6 +17,7 @@
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
   html{scroll-behavior:smooth}
   body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#12203a 0%,var(--bg) 55%) fixed,var(--bg);
     color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -480,6 +481,8 @@
     <div class="modal-box">
       <div class="modal-head">
         <span id="pxModalTitle" class="an-tk"></span>
+        <div class="spacer"></div>
+        <a id="pxModalAvanza" class="btn" target="_blank" rel="noopener" title="Sök tickern på Avanza" hidden>Avanza ↗</a>
         <button id="pxModalClose" class="btn">Stäng</button>
       </div>
       <div class="modal-chart"><canvas id="pxModalChart"></canvas></div>

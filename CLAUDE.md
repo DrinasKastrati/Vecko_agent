@@ -208,6 +208,16 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   OBS: sandlåde-cachen fastnade på stale bytes hela sessionen → verifiering gjordes i en NYSKAPAD
   kopia (nya filer propagerar färskt) och de verifierade bytesen kopierades tillbaka till repot
   med bash-cp (sandlåde→host fungerar). Mönster vid strul: bygg om testträdet under NYTT filnamn.
+- ✅ 2026-07-17 (automation-paket): **auto-push** (`auto_push.bat` tyst var 30:e min vardagar 07–19,
+  registreras EN gång med `setup_autopush.bat`; loggar till gitignorade `auto_push.log`) – gör
+  kedjan routine → push → Pages helt handsfree. **CI-tester** (`test.yml`: hela testsviten +
+  node --check på alla JS-moduler vid varje push). **Daglig digest** (`digest.yml` + `digest.mjs`,
+  LLM-fritt: bygger sammanfattning av dagens rapport → skapar+stänger issue → e-postnotis;
+  dubblett-skydd via titelsökning). **Watchdog** (`watchdog.yml` + `watchdog.mjs`, 10:30 UTC
+  vardagar: larmar via issue om prices.json >26 h gammal eller dagens nordiska/scout-rapport
+  saknas; dedupe mot redan öppna issues). **Avanza-länk** i kurshistorik-modalen (app.js
+  `avanzaUrl`: suffix strippas, klasstreck → mellanslag; döljs för ^index/-USD).
+  Testsviten: 91 tester, gröna.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

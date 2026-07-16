@@ -1,0 +1,47 @@
+name: Daglig digest (issue -> e-post)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "reports/daily/**"
+      - "reports/weekly/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Bygg digest ur dagens rapport (LLM-fritt, inga tokens)
+        run: node .github/scripts/digest.mjs
+      - name: Skapa issue (ger e-postnotis), hoppa över dubbletter
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let d = null;
+            try { d = JSON.parse(fs.readFileSync((process.env.RUNNER_TEMP || '.') + '/digest.json', 'utf8')); } catch (e) {}
+            if (!d || !d.title) { core.info('Ingen rapport för idag – ingen digest.'); return; }
+            // Dubblett-skydd: en digest per rapportdag (sök i alla issues, även stängda).
+            const q = `repo:${context.repo.owner}/${context.repo.repo} in:title "${d.title}"`;
+            const found = await github.rest.search.issuesAndPullRequests({ q });
+            if (found.data.total_count > 0) { core.info('Digest finns redan: ' + d.title); return; }
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo, title: d.title, body: d.body });
+            // Stäng direkt – e-postnotisen skickas ändå och issue-listan hålls ren.
+            await github.rest.issues.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: issue.data.number, state: 'closed' });
+            core.info('Digest skickad och stängd: #' + issue.data.number);

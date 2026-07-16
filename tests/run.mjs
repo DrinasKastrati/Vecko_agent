@@ -137,6 +137,29 @@ ok("mergeHistory cap", AL.mergeHistory({ active: [], history: Array.from({ lengt
 ok("renderAlerts history", VR.renderAlerts({ active: [], history: hist }).includes("Tidigare signaler"));
 ok("renderAlerts empty still empty", VR.renderAlerts({ active: [], history: [] }) === "");
 
+// ---- digest + watchdog (rena funktioner) ----
+const DG = await import(resolve(root, ".github/scripts/digest.mjs"));
+const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",
+  "**Marknadsläget i korthet:** Lugnt.", "",
+  "## Innehav 1: Alleima (ALLEI.ST / Nasdaq Stockholm)", "",
+  "| Aktuell kurs | Sedan entry | Stop-loss | Målkurs | DAGENS BESLUT |", "|---|---|---|---|---|",
+  "| 98 kr | +1 % | 94 | 103 | **BEHÅLL** |", "",
+  "**Motivering:** Tes intakt.", "",
+  "## Pending-planer", "MORLD.OL: villkor ≤ 19,20 – EJ TRIGGAD (20,00)."].join("\n");
+const dg = DG.buildDigest(dmd, "2026-07-17", false);
+ok("digest title", dg.title.includes("2026-07-17"));
+ok("digest decision", dg.body.includes("Alleima") && dg.body.includes("BEHÅLL"));
+ok("digest pending", dg.body.includes("Pending-planer") && dg.body.includes("EJ TRIGGAD"));
+ok("digest market", dg.body.includes("Lugnt"));
+const WD = await import(resolve(root, ".github/scripts/watchdog.mjs"));
+ok("watchdog latest date", WD.latestReportDate(["daglig-260715.md", "daglig-260716.md", "x.md"], "daglig") === "260716");
+const probs = WD.checkStale({ now: "2026-07-17T10:30:00Z", pricesGeneratedAt: "2026-07-15T05:00:00Z", latestDaily: "260716", latestWeekly: "260713", latestScout: "260717" });
+ok("watchdog stale prices", probs.some(p => p.key === "prices"));
+ok("watchdog missing daily", probs.some(p => p.key === "daily"));
+ok("watchdog scout ok", !probs.some(p => p.key === "scout"));
+const probs2 = WD.checkStale({ now: "2026-07-18T10:30:00Z", pricesGeneratedAt: "2026-07-10T05:00:00Z", latestDaily: "260710", latestWeekly: null, latestScout: null });
+ok("watchdog weekend quiet", probs2.length === 0);
+
 // ---- statusrad, positionsmätare, besluts-historik ----
 const g = VP.computeGauge(100, 90, 120, 110);
 ok("gauge pcts", g && Math.abs(g.nowPct - 66.7) < 0.11 && Math.abs(g.entryPct - 33.3) < 0.11);

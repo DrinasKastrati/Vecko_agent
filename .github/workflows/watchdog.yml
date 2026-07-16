@@ -1,0 +1,43 @@
+name: Watchdog (tysta fel -> issue)
+
+on:
+  schedule:
+    - cron: "30 10 * * 1-5"   # 12:30 CEST vardagar – efter routiner (07:47/08:40 lokal) + auto-push
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Kontrollera färskhet (LLM-fritt, inga tokens)
+        run: node .github/scripts/watchdog.mjs
+      - name: Öppna issue per problem (dedupe mot redan öppna)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let problems = [];
+            try { problems = JSON.parse(fs.readFileSync((process.env.RUNNER_TEMP || '.') + '/watchdog.json', 'utf8')); } catch (e) {}
+            if (!problems.length) { core.info('Allt friskt.'); return; }
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            const titles = new Set(open.data.map(i => i.title));
+            for (const p of problems) {
+              if (titles.has(p.title)) { core.info('Redan öppet: ' + p.title); continue; }
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo, title: p.title,
+                body: p.body + '\n\n_Automatisk vakthund (LLM-fri). Stäng ärendet när orsaken är åtgärdad._' });
+              core.info('Öppnade: ' + p.title);
+            }
