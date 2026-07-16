@@ -148,6 +148,94 @@
       this.el("repoFoot").href = this.repoURL;
       this.setupReportPicker();
       this.drawChart();
+      this.applyUiState();
+      this.refreshClamps();
+    }
+
+    // ---- interaktivitet: klamp-toggles, ticker-hopp, sortering, filter ----
+    // Visa "Visa mer"-knappen bara där texten faktiskt är avklippt. Körs efter
+    // render och vid flikbyte (dolda vyer har höjd 0 och kan inte mätas).
+    refreshClamps() {
+      requestAnimationFrame(() => {
+        document.querySelectorAll(".cw").forEach(cw => {
+          if (cw.classList.contains("open")) { cw.classList.add("has-more"); return; }
+          const c = cw.querySelector(".clamp");
+          cw.classList.toggle("has-more", !!c && c.scrollHeight > c.clientHeight + 2);
+        });
+      });
+    }
+
+    // Klick på ticker-pill var som helst -> Analys-fliken (öppnar cachad analys
+    // direkt; köar INGET automatiskt – användaren trycker själv Analysera).
+    gotoTicker(raw) {
+      const t = String(raw || "").toUpperCase().trim();
+      if (!t) return;
+      this.showView("analys");
+      const ai = this.el("analysInput"); if (ai) ai.value = t;
+      const cached = this.state.metas.filter(m => m.type === "analysis" && m.ticker === t).sort((a, b) => b.sortKey - a.sortKey);
+      if (cached.length) {
+        this.el("analysStatus").innerHTML = "Cachad analys – tryck Analysera för en färsk.";
+        this.showAnalysis(cached[0]);
+      } else {
+        this.el("analysBody").innerHTML = "";
+        this.el("analysStatus").innerHTML = 'Ingen cachad analys för <b>' + this.R.esc(t) + '</b> – tryck Analysera för att köa den.';
+        if (ai) ai.focus();
+      }
+    }
+
+    // Sortera en .tbl--sort-tabell på klickad kolumn (datum/tal/text-medveten).
+    sortTable(th) {
+      const table = th.closest("table"); if (!table || !table.tBodies[0]) return;
+      const idx = [...th.parentNode.children].indexOf(th);
+      const dir = th.classList.contains("asc") ? -1 : 1;
+      table.querySelectorAll("th").forEach(h => h.classList.remove("asc", "desc"));
+      th.classList.add(dir === 1 ? "asc" : "desc");
+      const key = s => {
+        s = (s || "").trim();
+        if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const d = Date.parse(s.slice(0, 10)); if (!isNaN(d)) return d; }
+        return this.P.numFrom(s);
+      };
+      const tb = table.tBodies[0];
+      [...tb.rows].sort((a, b) => {
+        const A = a.cells[idx] ? a.cells[idx].textContent : "", B = b.cells[idx] ? b.cells[idx].textContent : "";
+        const ka = key(A), kb = key(B);
+        const r = (ka != null && kb != null) ? ka - kb : A.localeCompare(B, "sv");
+        return dir * (r || 0);
+      }).forEach(r => tb.appendChild(r));
+    }
+
+    filterPrices() {
+      const inp = this.el("pxSearch"), grid = this.el("pxGrid");
+      if (!grid) return;
+      const q = ((inp && inp.value) || "").toUpperCase().trim();
+      this._pxQuery = q;
+      grid.querySelectorAll(".px-item").forEach(it =>
+        it.style.display = !q || (it.dataset.tk || "").includes(q) ? "" : "none");
+    }
+    sortPrices() {
+      const sel = this.el("pxSort"), grid = this.el("pxGrid");
+      if (!grid) return;
+      const mode = (sel && sel.value) || "az";
+      this._pxSort = mode;
+      [...grid.children].sort((a, b) =>
+        mode === "fresh" ? (Number(b.dataset.t) || 0) - (Number(a.dataset.t) || 0)
+                         : (a.dataset.tk || "").localeCompare(b.dataset.tk || "", "sv")
+      ).forEach(n => grid.appendChild(n));
+    }
+
+    // Återställ UI-läge efter varje re-render (rapport-höjd, sektioner, filter).
+    applyUiState() {
+      const full = !!this.cacheGet("vr_reportfull");
+      const rb = this.el("reportBody"), fb = this.el("fullBtn");
+      if (rb) rb.classList.toggle("report--full", full);
+      if (fb) fb.classList.toggle("on", full);
+      document.querySelectorAll("details.sblock[data-key]").forEach(d => {
+        const st = this.cacheGet("vr_sec_" + d.dataset.key);
+        if (st === false) d.open = false;
+      });
+      const inp = this.el("pxSearch"), sel = this.el("pxSort");
+      if (inp && this._pxQuery) { inp.value = this._pxQuery; this.filterPrices(); }
+      if (sel && this._pxSort) { sel.value = this._pxSort; this.sortPrices(); }
     }
 
     // ---- report viewer ----
@@ -315,6 +403,7 @@
       try { history.replaceState(null, "", "#" + view); } catch (e) {}
       window.scrollTo(0, 0);
       if (view === "avkastning") requestAnimationFrame(() => this.drawChart());
+      this.refreshClamps(); // nyligen synliga klampar kan mätas först nu
     }
     initNav() {
       document.querySelectorAll(".subnav a").forEach(a =>
@@ -333,6 +422,38 @@
         document.querySelectorAll(".rtype").forEach(b => b.classList.remove("on"));
         btn.classList.add("on"); this.state.reportType = btn.dataset.type; this.setupReportPicker();
       }));
+      // Rapport: växla 74vh-rullningsbox <-> full höjd (minns valet).
+      const fb = this.el("fullBtn");
+      if (fb) fb.addEventListener("click", () => {
+        const full = this.el("reportBody").classList.toggle("report--full");
+        fb.classList.toggle("on", full);
+        this.cacheSet("vr_reportfull", full);
+      });
+      // Delegerade klick (innehållet re-renderas med innerHTML, så lyssna globalt):
+      document.addEventListener("click", e => {
+        const more = e.target.closest(".clamp-more");
+        if (more) {
+          const cw = more.closest(".cw");
+          const open = cw.classList.toggle("open");
+          more.textContent = open ? "Visa mindre" : "Visa mer";
+          more.setAttribute("aria-expanded", String(open));
+          return;
+        }
+        const tp = e.target.closest("[data-goto-ticker]");
+        if (tp) { this.gotoTicker(tp.dataset.gotoTicker); return; }
+        const th = e.target.closest(".tbl--sort th");
+        if (th) this.sortTable(th);
+      });
+      document.addEventListener("input", e => { if (e.target && e.target.id === "pxSearch") this.filterPrices(); });
+      document.addEventListener("change", e => { if (e.target && e.target.id === "pxSort") this.sortPrices(); });
+      // Scout-sektioner: minns öppet/stängt (toggle bubblar inte -> capture).
+      document.addEventListener("toggle", e => {
+        const d = e.target;
+        if (d && d.matches && d.matches("details.sblock[data-key]")) {
+          this.cacheSet("vr_sec_" + d.dataset.key, d.open);
+          if (d.open) this.refreshClamps();
+        }
+      }, true);
       // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
       document.addEventListener("keydown", e => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;

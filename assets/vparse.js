@@ -220,7 +220,7 @@
         out.cases.push({
           name, ticker: hm ? hm[2].trim() : "", exchange: hm ? hm[3].trim() : "",
           hold: /BEHÅLL/i.test(H), rumor: /RYKTE/i.test(cat),
-          catalyst: firstSentences(cat, 2), plan
+          catalyst: stripMd(cat), plan // full text – klampas visuellt i vrender
         });
       } else if (/^Bubblare/i.test(H)){
         out.bubblare = bullets(s.body).map(stripMd);

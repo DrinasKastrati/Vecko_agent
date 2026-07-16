@@ -168,6 +168,16 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   + signalbanner/GitHub-issue; **Aktuellt innehav** visas nu på Översikt (öppna positioner ur
   `portfolj.md` med live-P/L); analys-loopen stänger cirkeln (köad ticker → watchlist → prices.json
   → verifierad kurs i analysen). Analyser hittills: SYNACT.ST, OSSD.ST, NVO, SAAB.ST.
+- ✅ 2026-07-15: **interaktivitets-uppgradering av dashboarden** (ej pushad ännu – kör `push.bat`):
+  all hård texttrunkering ersatt av CSS-klamp + "Visa mer/Visa mindre" per kort/notis (hela texten
+  finns alltid i DOM; knappen visas bara när texten faktiskt svämmar över), veckans case-katalysator
+  behåller nu FULL text i `parseWeekly` (2-menings-klippet borttaget), entry-/kurs-celler visas
+  oavkortade. Nya interaktioner: klickbara ticker-pills (→ Analys-fliken, köar inget automatiskt),
+  sorterbar Historik-tabell (datum/tal-medveten), filter + sortering (A–Ö/färskhet) i Kurser,
+  hopfällbara scout-sektioner (`<details>`, minns läget i localStorage), "Full höjd"-knapp i
+  Rapporter (74vh-boxen ↔ full höjd, minns valet). Testsviten: 62 tester, gröna.
+  OBS sandlåde-fälla: OneDrive-monteringen serverade trunkerade JS-filer direkt efter redigering →
+  testerna kördes mot en verifierad kopia och de verifierade bytesen skrevs tillbaka till repot.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

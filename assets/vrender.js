@@ -25,6 +25,20 @@
   function pill(text){ return `<span class="pill">${esc(text)}</span>`; }
   function truncate(s, n){ s = strip(s||""); return s.length > n ? s.slice(0, n-1) + "…" : s; }
 
+  // Klickbar ticker-pill: hoppar till Analys-fliken (hanteras i app.js).
+  function tickerPill(t){
+    if (!t) return "";
+    return `<button type="button" class="pill pill--lnk" data-goto-ticker="${esc(t)}" title="Öppna ${esc(t)} i Analys">${esc(t)}</button>`;
+  }
+  // Klampad text: HELA texten renderas, CSS visar N rader + "Visa mer"-knapp.
+  // app.js visar knappen bara när texten faktiskt svämmar över (has-more).
+  function clamp(text, lines){
+    const t = strip(text || "");
+    if (!t) return "";
+    return `<div class="cw"><div class="clamp" style="--cl:${lines || 3}">${esc(t)}</div>`
+         + `<button type="button" class="clamp-more" aria-expanded="false">Visa mer</button></div>`;
+  }
+
   // ---- KPI cards --------------------------------------------------------
   function renderKPIs(portfolio, latestDaily){
     const accum = portfolio.accum;
@@ -34,17 +48,17 @@
     const pend = portfolio.pending.filter(p => !p._struck).length;
     const upd = (portfolio.updated || "").replace(/\s*\(.*$/, "") ||
                 (latestDaily ? latestDaily.dateISO : "");
-    const card = (label, value, cls, sub) =>
-      `<div class="kpi">
+    const card = (label, value, cls, sub, title) =>
+      `<div class="kpi"${title ? ` title="${esc(title)}"` : ""}>
          <div class="kpi-label">${esc(label)}</div>
          <div class="kpi-value ${cls||""}">${value}</div>
          ${sub ? `<div class="kpi-sub">${esc(sub)}</div>` : ""}
        </div>`;
     return `<div class="kpi-grid">
       ${card("Ackumulerad avkastning", esc(signPct(accum)), "num "+trendClass(accum), "sedan strategistart")}
-      ${card("Kassa", esc(cash), "num", open ? `${open} position(er) öppna` : "inga öppna positioner")}
+      ${card("Kassa", esc(cash), "num", open ? `${open} position(er) öppna` : "inga öppna positioner", strip(portfolio.cash))}
       ${card("Aktiva planer", String(pend), "num", pend ? "pending rotation" : "avvaktar")}
-      ${card("Senast uppdaterad", `<span class="upd">${esc(upd)}</span>`, "", latestDaily ? esc(truncate(latestDaily.mode, 34)) : "")}
+      ${card("Senast uppdaterad", `<span class="upd">${esc(upd)}</span>`, "", latestDaily ? esc(truncate(latestDaily.mode, 34)) : "", latestDaily ? strip(latestDaily.mode) : "")}
     </div>`;
   }
 
@@ -68,7 +82,7 @@
       const chips = Object.keys(counts).map(k =>
         `<span class="st-chip st-chip--${decClass(k)}">${counts[k]}× ${esc(k)}</span>`).join("");
       left = `<span class="st-date">${esc(latestDaily.dateISO)}</span>`
-           + (latestDaily.mode ? `<span class="st-mode">${esc(truncate(latestDaily.mode, 30))}</span>` : "")
+           + (latestDaily.mode ? `<span class="st-mode" title="${esc(strip(latestDaily.mode))}">${esc(truncate(latestDaily.mode, 30))}</span>` : "")
            + chips;
     } else {
       left = `<span class="st-mode">Ingen daglig rapport ännu.</span>`;
@@ -120,9 +134,9 @@
         <div class="hold-name">${esc(h.name)}</div>
         <span class="badge badge--${decClass(h.decision)}">${esc(h.decision)}</span>
       </div>
-      <div class="hold-tickers">${pill(h.ticker)}${pill(h.exchange)}</div>
+      <div class="hold-tickers">${tickerPill(h.ticker)}${pill(h.exchange)}</div>
       <div class="hold-grid">
-        <div><span class="k">Kurs</span><span class="v">${esc(truncate(h.price, 30) || "–")}</span></div>
+        <div><span class="k">Kurs</span><span class="v">${esc(strip(h.price) || "–")}</span></div>
         <div><span class="k">Sedan entry</span><span class="v">${esc(h.since || "–")}</span></div>
         <div><span class="k">Stop-loss</span><span class="v">${esc(h.stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(h.target || "–")}</span></div>
@@ -130,7 +144,7 @@
       ${gaugeStrip(live)}
       ${liveStrip(live)}
       ${decisionDots(decisions)}
-      ${h.motivation ? `<div class="hold-note">${esc(truncate(h.motivation, 180))}</div>` : ""}
+      ${h.motivation ? `<div class="hold-note">${clamp(h.motivation, 3)}</div>` : ""}
     </div>`;
   }
   function pendingCard(p){
@@ -146,14 +160,14 @@
         <div class="hold-name">${esc(name)}</div>
         <span class="badge badge--${p._struck ? "none" : "plan"}">${p._struck ? "AVFÖRD" : "PENDING"}</span>
       </div>
-      <div class="hold-tickers">${ticker ? pill(ticker) : ""}</div>
+      <div class="hold-tickers">${ticker ? tickerPill(ticker) : ""}</div>
       <div class="hold-grid">
-        <div><span class="k">Planerad entry</span><span class="v">${esc(truncate(entry, 34) || "–")}</span></div>
+        <div><span class="k">Planerad entry</span><span class="v">${esc(entry || "–")}</span></div>
         <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
         <div><span class="k">R/R</span><span class="v">${esc(rr || "–")}</span></div>
       </div>
-      ${status ? `<div class="hold-note">${esc(truncate(status, 160))}</div>` : ""}
+      ${status ? `<div class="hold-note">${clamp(status, 3)}</div>` : ""}
     </div>`;
   }
 
@@ -172,16 +186,16 @@
         <div class="hold-name">${esc(name)}</div>
         <span class="badge badge--behall">INNEHAV</span>
       </div>
-      <div class="hold-tickers">${ticker ? pill(ticker) : ""}${exchange ? pill(exchange) : ""}</div>
+      <div class="hold-tickers">${ticker ? tickerPill(ticker) : ""}${exchange ? pill(exchange) : ""}</div>
       <div class="hold-grid">
-        <div><span class="k">Entry</span><span class="v">${esc(truncate(entry, 22) || "–")}</span></div>
+        <div><span class="k">Entry</span><span class="v">${esc(entry || "–")}</span></div>
         <div><span class="k">Entry-datum</span><span class="v">${esc(edate || "–")}</span></div>
         <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
       </div>
       ${gaugeStrip(live)}
       ${liveStrip(live)}
-      ${note ? `<div class="hold-note">${esc(truncate(note, 180))}</div>` : ""}
+      ${note ? `<div class="hold-note">${clamp(note, 3)}</div>` : ""}
     </div>`;
   }
 
@@ -214,21 +228,21 @@
     const news = feed.news.length
       ? feed.news.map(n => `<li class="feed-item">
           <span class="chip chip--date">${esc(n.date)}</span>
-          <div class="feed-body"><span class="feed-subj">${esc(n.subject)}</span>${esc(truncate(n.text, 320))}</div>
+          <div class="feed-body"><span class="feed-subj">${esc(n.subject)}</span>${clamp(n.text, 4)}</div>
         </li>`).join("")
       : `<li class="empty">Inga nya bolagsspecifika nyheter i de senaste rapporterna.</li>`;
 
     const radar = feed.radar.length
       ? feed.radar.map(r => `<li class="feed-item">
           <span class="chip chip--day">${esc(r.day || "•")}</span>
-          <div class="feed-body">${esc(truncate(r.text, 300))}</div>
+          <div class="feed-body">${clamp(r.text, 4)}</div>
         </li>`).join("")
       : `<li class="empty">Ingen radar i senaste veckorapporten.</li>`;
 
     const cats = feed.catalysts.length
       ? feed.catalysts.map(c => `<div class="cat">
-          <div class="cat-top">${esc(c.name)} ${pill(c.ticker)} ${c.rumor ? `<span class="badge badge--rumor">⚠️ RYKTE</span>` : ""}</div>
-          <div class="cat-text">${esc(truncate(c.text, 260))}</div>
+          <div class="cat-top">${esc(c.name)} ${tickerPill(c.ticker)} ${c.rumor ? `<span class="badge badge--rumor">⚠️ RYKTE</span>` : ""}</div>
+          <div class="cat-text">${clamp(c.text, 4)}</div>
         </div>`).join("")
       : `<div class="empty">Inga aktiva case.</div>`;
 
@@ -252,16 +266,16 @@
     if (!portfolio.history.length)
       return `<div class="empty">Inga stängda positioner ännu – strategin är i baslinjeläge (0 %).</div>`;
     const cols = Object.keys(portfolio.history[0]);
-    const head = cols.map(c => `<th>${esc(c)}</th>`).join("");
+    const head = cols.map(c => `<th title="Klicka för att sortera">${esc(c)}</th>`).join("");
     const rows = portfolio.history.map(r =>
       `<tr>${cols.map(c => `<td>${esc(strip(r[c]))}</td>`).join("")}</tr>`).join("");
-    return `<table class="tbl"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+    return `<table class="tbl tbl--sort"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
   }
   function renderBubblare(weekly){
     if (!weekly || !weekly.bubblare.length) return "";
     return `<h3 class="sub">Bubblare (watchlist)</h3>
       <ul class="bubbl">${weekly.bubblare.map(b =>
-        `<li>${esc(truncate(b, 180))}</li>`).join("")}</ul>`;
+        `<li>${clamp(b, 3)}</li>`).join("")}</ul>`;
   }
 
   // ---- report picker options -------------------------------------------
@@ -276,7 +290,7 @@
     if (!note) return "";
     return `<div class="banner ${note.blocked ? "banner--warn" : ""}">
       <span class="banner-ico">${note.blocked ? "⚠" : "ℹ"}</span>
-      <span class="banner-text">${esc(truncate(note.text, 400))}</span>
+      <div class="banner-text">${clamp(note.text, 3)}</div>
     </div>`;
   }
 
@@ -300,14 +314,16 @@
              : syms.filter(s => prices.quotes[s] && !prices.quotes[s].error).length;
     const items = syms.map(s => {
       const q = prices.quotes[s] || {};
+      const tk = q.symbol || s;
+      const tMs = q.marketTime ? (Date.parse(q.marketTime) || 0) : 0;
       if (q.error || q.price == null)
-        return `<div class="px-item"><div class="px-tk"><span>${esc(s)}</span><span class="px-err">⚠</span></div>`
-             + `<div class="px-pr px-err">–</div><div class="px-tm">${esc(truncate(q.error || "ingen kurs", 22))}</div></div>`;
+        return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="0"><div class="px-tk"><span>${esc(s)}</span><span class="px-err">⚠</span></div>`
+             + `<div class="px-pr px-err">–</div><div class="px-tm" title="${esc(q.error || "ingen kurs")}">${esc(truncate(q.error || "ingen kurs", 22))}</div></div>`;
       const mt = pxAge(q.marketTime);
       const price = String(q.price) + (q.currency ? " " + q.currency : "");
       const tm = q.marketTime ? q.marketTime.slice(0, 16).replace("T", " ") : "okänd tid";
       const ser = history && history.series && history.series[q.symbol || s];
-      return `<div class="px-item"><div class="px-tk"><span>${esc(q.symbol || s)}</span>`
+      return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="${tMs}"><div class="px-tk"><span>${esc(tk)}</span>`
            + `<span class="${mt.cls}">${mt.cls === "px-fresh" ? "✓" : "⚠"}</span></div>`
            + `<div class="px-pr">${esc(price)}</div><div class="px-tm">${esc(tm)}</div>${sparkline(ser)}</div>`;
     }).join("");
@@ -316,8 +332,15 @@
         <span class="t">Kurser (prices.json)</span>
         <span class="px-age ${gen.cls}">hämtad ${esc(gen.txt)}</span>
         <span class="px-sum">${ok}/${syms.length} med verifierad kurs</span>
+        <div class="px-tools">
+          <input id="pxSearch" class="px-search" type="search" placeholder="Filtrera ticker…" autocomplete="off" spellcheck="false"/>
+          <select id="pxSort" class="px-sort" title="Sortering">
+            <option value="az">A–Ö</option>
+            <option value="fresh">Färskhet</option>
+          </select>
+        </div>
       </div>
-      ${syms.length ? `<div class="px-grid">${items}</div>`
+      ${syms.length ? `<div class="px-grid" id="pxGrid">${items}</div>`
                     : `<div class="empty">Inga tickers i prices.json ännu – fyll <code>config/watchlist.txt</code>.</div>`}
     </div>`;
   }
@@ -333,20 +356,23 @@
   }
   function scoutBlock(title, text){
     if (!text) return "";
-    return `<div class="sblock"><h3 class="sub">${esc(title)}</h3><div class="sblock-body">${textToHtml(text)}</div></div>`;
+    return `<details class="sblock" data-key="${esc(title)}" open>
+      <summary class="sub sub--sum">${esc(title)}</summary>
+      <div class="sblock-body">${textToHtml(text)}</div>
+    </details>`;
   }
   function scoutCaseCard(c){
     return `<div class="scase">
       <div class="scase-top">
         <div class="scase-name">${esc(c.name)}</div>
-        <div class="hold-tickers">${c.ticker ? pill(c.ticker) : ""}${c.exchange ? pill(c.exchange) : ""}</div>
+        <div class="hold-tickers">${c.ticker ? tickerPill(c.ticker) : ""}${c.exchange ? pill(c.exchange) : ""}</div>
       </div>
-      ${c.catalyst ? `<div class="scase-cat"><span class="k">Katalysator</span> ${esc(truncate(c.catalyst, 300))}</div>` : ""}
+      ${c.catalyst ? `<div class="scase-cat"><span class="k">Katalysator</span>${clamp(c.catalyst, 3)}</div>` : ""}
       <div class="scase-bb">
-        <div class="bb bb--bull"><span class="k">Bull</span>${esc(truncate(c.bull, 240)) || "–"}</div>
-        <div class="bb bb--bear"><span class="k">Bear</span>${esc(truncate(c.bear, 240)) || "–"}</div>
+        <div class="bb bb--bull"><span class="k">Bull</span>${clamp(c.bull, 5) || "–"}</div>
+        <div class="bb bb--bear"><span class="k">Bear</span>${clamp(c.bear, 5) || "–"}</div>
       </div>
-      ${c.setup ? `<div class="scase-setup"><span class="k">Setup</span> ${esc(truncate(c.setup, 240))}</div>` : ""}
+      ${c.setup ? `<div class="scase-setup"><span class="k">Setup</span>${clamp(c.setup, 3)}</div>` : ""}
     </div>`;
   }
   function renderScout(scout){
@@ -432,7 +458,7 @@
     return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}</div>`;
   }
 
-  const API = { esc, signPct, trendClass, decClass, truncate, sparkline, pxAge,
+  const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts };

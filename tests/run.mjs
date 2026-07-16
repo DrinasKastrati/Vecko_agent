@@ -57,6 +57,28 @@ ok("renderPrices+spark", VR.renderPrices(
 ok("renderAnalysisIndex stale", VR.renderAnalysisIndex([{ ticker: "NVDA", dateISO: "2020-01-01", sortKey: 1 }], []).includes("gammal"));
 ok("renderScout empty", VR.renderScout(null).includes("Ingen scout"));
 
+// ---- klamp + interaktivitet (ersätter hård trunkering) ----
+ok("clamp renders full text", VR.clamp("abc def ghi", 2).includes("abc def ghi") && VR.clamp("x", 2).includes('--cl:2'));
+ok("clamp empty", VR.clamp("", 3) === "" && VR.clamp(null, 3) === "");
+ok("clamp has toggle", VR.clamp("text", 3).includes("clamp-more"));
+ok("tickerPill", VR.tickerPill("NVDA").includes('data-goto-ticker="NVDA"'));
+ok("tickerPill empty", VR.tickerPill("") === "");
+ok("renderHistory sortable", VR.renderHistory(p).includes("tbl--sort"));
+ok("renderPrices toolbar", VR.renderPrices({ generatedAt: new Date().toISOString(), quotes: { AAPL: { symbol: "AAPL", price: 200, marketTime: new Date().toISOString() } } }, null).includes("pxSearch"));
+ok("renderPrices data-tk", VR.renderPrices({ generatedAt: new Date().toISOString(), quotes: { AAPL: { symbol: "AAPL", price: 200 } } }, null).includes('data-tk="AAPL"'));
+ok("holdings motivation clamped not cut", VR.renderHoldings(
+  { dateISO: "2026-07-10", holdings: [{ name: "A", ticker: "AAPL", exchange: "N", price: "", since: "", stop: "", target: "", decision: "BEHÅLL", news: "", motivation: "M".repeat(400) }] },
+  { pending: [] }, {}, {}
+).includes("M".repeat(400)));
+ok("scout sections collapsible", VR.renderScout({ dateISO: "2026-07-14", climate: "", recap: "En rad text.", econ: "", events: "", macro: "", cases: [] }).includes("<details"));
+const wkFull = VP.parseWeekly([
+  "# V", "## Case 1: Foo (FOO.ST/Nasdaq)", "### 1. Katalysatorn",
+  "Mening ett. Mening två. Mening tre är kvar.", "### 6. Handelsplan",
+  "| Entry | Stop | Mål | R/R |", "|---|---|---|---|", "| 1 | 2 | 3 | 4 |"
+].join("\n"), { dateISO: "2026-07-13", sortKey: 1 });
+ok("weekly catalyst keeps full text", wkFull.cases[0].catalyst.includes("Mening tre"));
+ok("weekly catalyst no table bleed", !wkFull.cases[0].catalyst.includes("Entry"));
+
 // ---- benchmark-overlay + live-P/L ----
 const bh = VP.buildBenchmarkSeries({ series: { "^OMX": [["2026-07-01", 100], ["2026-07-02", 103]] } }, "^OMX");
 ok("benchmarkSeries pct", bh && bh.length === 2 && bh[0].value === 0 && bh[1].value === 3);
