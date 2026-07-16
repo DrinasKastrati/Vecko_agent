@@ -79,6 +79,38 @@ const wkFull = VP.parseWeekly([
 ok("weekly catalyst keeps full text", wkFull.cases[0].catalyst.includes("Mening tre"));
 ok("weekly catalyst no table bleed", !wkFull.cases[0].catalyst.includes("Entry"));
 
+// ---- dagsdiff (Ändrat idag-remsan) ----
+const dToday = { holdings: [
+  { ticker: "AAPL", decision: "SÄLJ", stop: "96,00 kr", target: "120" },
+  { ticker: "NVO",  decision: "BEHÅLL", stop: "700", target: "820" },
+  { ticker: "SAAB-B.ST", decision: "KÖP", stop: "400", target: "500" }
+] };
+const dYest = { holdings: [
+  { ticker: "AAPL", decision: "BEHÅLL", stop: "94,05 kr", target: "120" },
+  { ticker: "NVO",  decision: "BEHÅLL", stop: "700", target: "820" }
+] };
+const dd = VP.diffDailies(dToday, dYest);
+ok("diff decision", dd.AAPL && dd.AAPL.changes.some(c => c.field === "beslut" && c.to === "SÄLJ"));
+ok("diff stop up", dd.AAPL.changes.some(c => c.field === "stopp" && c.from === 94.05 && c.to === 96 && c.up === true));
+ok("diff unchanged skipped", !dd.NVO);
+ok("diff new ticker", dd["SAAB-B.ST"] && dd["SAAB-B.ST"].isNew === true);
+ok("diff null-safe", Object.keys(VP.diffDailies(dToday, null)).length === 0);
+ok("diffStrip renders", VR.diffStrip(dd.AAPL).includes("hold-diff") && VR.diffStrip(dd.AAPL).includes("SÄLJ"));
+ok("diffStrip new", VR.diffStrip({ isNew: true, changes: [] }).includes("NY IDAG"));
+ok("holdings diff strip", VR.renderHoldings(
+  { dateISO: "2026-07-16", holdings: [{ name: "Apple", ticker: "AAPL", exchange: "NASDAQ", price: "", since: "", stop: "96", target: "120", decision: "SÄLJ", news: "", motivation: "" }] },
+  { pending: [] }, {}, {}, { AAPL: { isNew: false, changes: [{ field: "beslut", from: "BEHÅLL", to: "SÄLJ" }] } }
+).includes("hold-diff"));
+
+// ---- scout-uppföljning ----
+const sc = VP.parseScout([
+  "# Daglig Scout", "**Marknadsklimat:** risk-on",
+  "## Uppföljning av tidigare case", "- NVDA (rapport-260715): 170 → 175 (+2,9 %) – tes INTAKT",
+  "## Dagens case", "### Case 1: Nvidia (NVDA / NASDAQ)", "**Katalysator:** x"
+].join("\n"), { dateISO: "2026-07-16" });
+ok("scout followup parsed", sc.followup.includes("NVDA") && sc.followup.includes("INTAKT"));
+ok("scout followup rendered", VR.renderScout(sc).includes("Uppföljning av tidigare case"));
+
 // ---- benchmark-overlay + live-P/L ----
 const bh = VP.buildBenchmarkSeries({ series: { "^OMX": [["2026-07-01", 100], ["2026-07-02", 103]] } }, "^OMX");
 ok("benchmarkSeries pct", bh && bh.length === 2 && bh[0].value === 0 && bh[1].value === 3);

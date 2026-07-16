@@ -128,13 +128,25 @@
     const tm = lv.marketTime ? String(lv.marketTime).slice(0, 16).replace("T", " ") : "";
     return `<div class="hold-live"><span class="k">Live</span>${bits.join("")}${tm ? `<span class="lv-tm">${esc(tm)}</span>` : ""}</div>`;
   }
-  function holdingCard(h, live, decisions){
+  // "Ändrat idag"-remsa: skillnader mot gårdagens rapport (VParse.diffDailies).
+  function diffStrip(d){
+    if (!d) return "";
+    if (d.isNew) return `<div class="hold-diff"><span class="chg chg--new">NY IDAG</span></div>`;
+    if (!d.changes || !d.changes.length) return "";
+    const bits = d.changes.map(c => {
+      const arrow = c.up == null ? "" : (c.up ? " ▲" : " ▼");
+      return `<span class="chg">${esc(c.field)} ${esc(String(c.from))} → <b>${esc(String(c.to))}</b>${arrow}</span>`;
+    }).join("");
+    return `<div class="hold-diff"><span class="chg-l">Ändrat idag</span>${bits}</div>`;
+  }
+  function holdingCard(h, live, decisions, diff){
     return `<div class="hold">
       <div class="hold-top">
         <div class="hold-name">${esc(h.name)}</div>
         <span class="badge badge--${decClass(h.decision)}">${esc(h.decision)}</span>
       </div>
       <div class="hold-tickers">${tickerPill(h.ticker)}${pill(h.exchange)}</div>
+      ${diffStrip(diff)}
       <div class="hold-grid">
         <div><span class="k">Kurs</span><span class="v">${esc(strip(h.price) || "–")}</span></div>
         <div><span class="k">Sedan entry</span><span class="v">${esc(h.since || "–")}</span></div>
@@ -199,9 +211,9 @@
     </div>`;
   }
 
-  function renderHoldings(latestDaily, portfolio, liveByTicker, decisionsByTicker){
+  function renderHoldings(latestDaily, portfolio, liveByTicker, decisionsByTicker, diffByTicker){
     let html = "";
-    const lv = liveByTicker || {}, dh = decisionsByTicker || {};
+    const lv = liveByTicker || {}, dh = decisionsByTicker || {}, df = diffByTicker || {};
     const held = (portfolio.holdings || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
     if (held.length){
       const upd = (portfolio.updated || "").replace(/\s*\(.*$/, "").slice(0, 16);
@@ -211,7 +223,7 @@
     const monitored = latestDaily ? latestDaily.holdings : [];
     if (monitored.length){
       html += `<h3 class="sub">Dagens beslut <span class="sub-date">${esc(latestDaily.dateISO)}</span></h3>
-        <div class="hold-grid-wrap">${monitored.map(h => { const t = (h.ticker || "").trim().toUpperCase(); return holdingCard(h, lv[t], dh[t]); }).join("")}</div>`;
+        <div class="hold-grid-wrap">${monitored.map(h => { const t = (h.ticker || "").trim().toUpperCase(); return holdingCard(h, lv[t], dh[t], df[t]); }).join("")}</div>`;
     }
     const pend = portfolio.pending || [];
     if (pend.length){
@@ -388,6 +400,7 @@
       + scoutBlock("Marknadsöversikt", scout.recap)
       + scoutBlock("Ekonomiska siffror & kalender", scout.econ)
       + scoutBlock("Aktuella händelser & katalysatorer", scout.events)
+      + scoutBlock("Uppföljning av tidigare case", scout.followup)
       + cases
       + scoutBlock("Makro- & sektorfaktorer", scout.macro);
   }
@@ -458,7 +471,7 @@
     return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}</div>`;
   }
 
-  const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, sparkline, pxAge,
+  const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts };

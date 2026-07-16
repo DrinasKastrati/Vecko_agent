@@ -413,7 +413,7 @@
     const out = {
       meta, dateISO: meta ? meta.dateISO : field(md, "Datum"),
       climate: field(md, "Marknadsklimat"),
-      recap: "", econ: "", events: "", macro: "", cases: [],
+      recap: "", econ: "", events: "", macro: "", followup: "", cases: [],
       note: extractNote(md)
     };
     for (const s of splitSections(md)){
@@ -421,10 +421,40 @@
       if (h.startsWith("marknadsöversikt")) out.recap = sectionBody(s.body);
       else if (h.startsWith("ekonomiska siffror")) out.econ = sectionBody(s.body);
       else if (h.startsWith("aktuella händelser")) out.events = sectionBody(s.body);
+      else if (h.startsWith("uppföljning")) out.followup = sectionBody(s.body);
       else if (h.startsWith("makro")) out.macro = sectionBody(s.body);
       else if (h.startsWith("dagens case") || h === "case") out.cases = parseScoutCases(s.body);
     }
     if (!out.cases.length) out.cases = parseScoutCases(md);
+    return out;
+  }
+
+  // ---- dagsdiff: vad ändrades sedan gårdagens rapport? -------------------
+  // Jämför senaste två dagliga rapporterna per ticker. Returnerar
+  // { TICKER: { isNew, changes: [{field, from, to, up?}] } } – bara ändrade.
+  function diffDailies(today, yesterday){
+    const out = {};
+    if (!today || !yesterday) return out;
+    const prev = {};
+    (yesterday.holdings || []).forEach(h => {
+      const t = String(h.ticker || "").trim().toUpperCase();
+      if (t) prev[t] = h;
+    });
+    (today.holdings || []).forEach(h => {
+      const t = String(h.ticker || "").trim().toUpperCase();
+      if (!t) return;
+      const p = prev[t];
+      if (!p) { out[t] = { isNew: true, changes: [] }; return; }
+      const changes = [];
+      if (p.decision !== h.decision && h.decision)
+        changes.push({ field: "beslut", from: p.decision, to: h.decision });
+      for (const [label, key] of [["stopp", "stop"], ["mål", "target"]]){
+        const a = numFrom(p[key]), b = numFrom(h[key]);
+        if (a != null && b != null && a !== b)
+          changes.push({ field: label, from: a, to: b, up: b > a });
+      }
+      if (changes.length) out[t] = { isNew: false, changes };
+    });
     return out;
   }
 
@@ -471,7 +501,7 @@
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
-    computeGauge, buildDecisionHistory, nextRoutineRun
+    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

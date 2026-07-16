@@ -77,6 +77,7 @@
         this.state.queue = queue;
         this.state.priceHistory = priceHistory;
         this.state.alerts = alerts;
+        this._alertsPath = alertsPath || this._alertsPath;
         this.state.portfolio = pMd ? this.P.parsePortfolio(pMd) : { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
@@ -136,7 +137,7 @@
       if (srEl) srEl.innerHTML = R.renderStatusRow(latestDaily, this.P.nextRoutineRun(new Date()));
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
-      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap(), this.buildDecisionMap(latestDaily));
+      this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap(), this.buildDecisionMap(latestDaily), this.P.diffDailies(S.dailies[0], S.dailies[1]));
       this.renderPxBadge();
       const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
@@ -236,6 +237,80 @@
       const inp = this.el("pxSearch"), sel = this.el("pxSort");
       if (inp && this._pxQuery) { inp.value = this._pxQuery; this.filterPrices(); }
       if (sel && this._pxSort) { sel.value = this._pxSort; this.sortPrices(); }
+    }
+
+    // ---- kurshistorik-modal (klick på kort i Kurser) ----
+    openPxChart(tk) {
+      const modal = this.el("pxModal");
+      if (!modal || !root.Chart) return;
+      this.el("pxModalTitle").textContent = tk;
+      modal.classList.add("open");
+      const note = this.el("pxModalNote");
+      const ser = this.state.priceHistory && this.state.priceHistory.series && this.state.priceHistory.series[tk];
+      if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
+      if (!ser || ser.length < 2) {
+        note.textContent = "Ingen kurshistorik ännu för " + tk + " – fylls på av pris-actionen (rullande 60 dagar).";
+        return;
+      }
+      const q = this.state.prices && this.state.prices.quotes && this.state.prices.quotes[tk];
+      note.textContent = ser.length + " dagar · stängningskurser ur price_history.json" + (q && q.currency ? " · " + q.currency : "");
+      const up = ser[ser.length - 1][1] >= ser[0][1];
+      const col = up ? "#26d07c" : "#ff5c78";
+      const ctx = this.el("pxModalChart").getContext("2d");
+      const grd = ctx.createLinearGradient(0, 0, 0, 280);
+      grd.addColorStop(0, up ? "rgba(38,208,124,0.22)" : "rgba(255,92,120,0.2)");
+      grd.addColorStop(1, "rgba(0,0,0,0)");
+      this._pxChart = new Chart(ctx, {
+        type: "line",
+        data: { labels: ser.map(p => p[0]), datasets: [{ label: tk, data: ser.map(p => p[1]), borderColor: col, backgroundColor: grd, fill: true, tension: 0.2, pointRadius: 2, borderWidth: 2 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b9cb8", maxTicksLimit: 8 } },
+            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#8b9cb8" } }
+          }
+        }
+      });
+    }
+    closePxChart() {
+      const modal = this.el("pxModal");
+      if (modal) modal.classList.remove("open");
+      if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
+    }
+
+    // ---- skrivbordsnotiser för intradag-signaler ----
+    updateNotifBtn() {
+      const nb = this.el("notifBtn"); if (!nb) return;
+      const on = ("Notification" in window) && Notification.permission === "granted" && !!this.cacheGet("vr_notif_on");
+      nb.classList.toggle("on", on);
+      nb.textContent = on ? "🔔 Notiser på" : "🔔 Notiser";
+      if (("Notification" in window) && Notification.permission === "denied")
+        nb.title = "Notiser blockerade – tillåt för denna sajt i webbläsarens inställningar.";
+    }
+    // Lätt poll av enbart alerts.json (var 5:e min) + notis för NYA signaler.
+    async pollAlerts() {
+      try {
+        if (!this._alertsPath) return;
+        const alerts = await this.fetchJSON(this.raw(this._alertsPath));
+        this.state.alerts = alerts;
+        const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = this.R.renderAlerts(alerts);
+        const act = (alerts && alerts.active) || [];
+        if (!act.length) return;
+        const key = s => [s.ticker, s.type, s.reason, s.level].join("|");
+        const seen = new Set(this.cacheGet("vr_alert_seen") || []);
+        const fresh = act.filter(s => !seen.has(key(s)));
+        if (!fresh.length) return;
+        this.cacheSet("vr_alert_seen", [...new Set([...seen, ...act.map(key)])].slice(-100));
+        const on = this.cacheGet("vr_notif_on");
+        if (on && ("Notification" in window) && Notification.permission === "granted")
+          fresh.forEach(s => { try {
+            new Notification(s.type + " " + s.ticker, {
+              body: s.reason + (s.level != null ? " (nivå " + s.level + ")" : "") + (s.price != null ? " · kurs " + s.price : ""),
+              tag: key(s)
+            });
+          } catch (e) {} });
+      } catch (e) {}
     }
 
     // ---- report viewer ----
@@ -442,7 +517,10 @@
         const tp = e.target.closest("[data-goto-ticker]");
         if (tp) { this.gotoTicker(tp.dataset.gotoTicker); return; }
         const th = e.target.closest(".tbl--sort th");
-        if (th) this.sortTable(th);
+        if (th) { this.sortTable(th); return; }
+        const px = e.target.closest(".px-item");
+        if (px && px.dataset.tk) { this.openPxChart(px.dataset.tk); return; }
+        if (e.target.id === "pxModal" || e.target.id === "pxModalClose") this.closePxChart();
       });
       document.addEventListener("input", e => { if (e.target && e.target.id === "pxSearch") this.filterPrices(); });
       document.addEventListener("change", e => { if (e.target && e.target.id === "pxSort") this.sortPrices(); });
@@ -454,9 +532,27 @@
           if (d.open) this.refreshClamps();
         }
       }, true);
+      // Skrivbordsnotiser: begär tillstånd vid klick, växla av/på därefter.
+      const nb = this.el("notifBtn");
+      if (nb) {
+        if (!("Notification" in window)) nb.style.display = "none";
+        else {
+          this.updateNotifBtn();
+          nb.addEventListener("click", async () => {
+            if (Notification.permission !== "granted") {
+              const perm = await Notification.requestPermission();
+              if (perm === "granted") this.cacheSet("vr_notif_on", true);
+            } else {
+              this.cacheSet("vr_notif_on", !this.cacheGet("vr_notif_on"));
+            }
+            this.updateNotifBtn();
+          });
+        }
+      }
       // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
       document.addEventListener("keydown", e => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;
+        if (e.key === "Escape") { this.closePxChart(); return; }
         const t = e.target, tag = (t && t.tagName || "").toLowerCase();
         if (tag === "input" || tag === "textarea" || tag === "select" || (t && t.isContentEditable)) return;
         const links = [...document.querySelectorAll(".subnav a")];
@@ -465,7 +561,17 @@
         else if (e.key === "r" || e.key === "R") { this.state.md.clear(); this.load(true); }
       });
     }
-    boot() { this.initNav(); this.initEvents(); this.load(false); }
+    boot() {
+      this.initNav(); this.initEvents(); this.load(false);
+      // Tickande nedräkning till nästa körning (statusraden på Översikt).
+      setInterval(() => {
+        const el = this.el("statusRow");
+        if (el && this.state.dailies.length)
+          el.innerHTML = this.R.renderStatusRow(this.state.dailies[0] || null, this.P.nextRoutineRun(new Date()));
+      }, 30000);
+      // Lätt alerts-poll var 5:e minut (banner + ev. skrivbordsnotis).
+      setInterval(() => this.pollAlerts(), 300000);
+    }
   }
 
   const CFG = { owner: "DrinasKastrati", repo: "Vecko_agent", branch: "main" };

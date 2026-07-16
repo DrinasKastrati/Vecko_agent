@@ -6,6 +6,10 @@
 ## Sammanfattning
 [2–4 meningar: vad bolaget/tillgången är och kärnan i tesen just nu.]
 
+## Sedan senast
+[ENDAST vid re-analys: 2–3 rader om vad som ändrats sedan förra analysen (yymmdd) – kurs,
+viktiga nyheter, ändrad slutsats + varför. Utelämna hela sektionen vid första analysen.]
+
 ## Fundamenta
 [Värdering (P/E, EV/EBITDA, P/S), tillväxt (omsättning/vinst), marginaler,
 balansräkning/skuldsättning, ev. utdelning. För krypto: nätverk, tokenomics, användning/on-chain,

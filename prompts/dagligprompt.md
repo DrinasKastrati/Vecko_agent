@@ -14,6 +14,7 @@ Strategin: portföljen består normalt av 2 aktier viktade 50/50 som roteras var
 3. Läs rätt mall: `templates/vecko_rapport.md` (måndagar) eller `templates/daglig_mall.md` (övriga dagar). Båda är strikta MALLAR som du ALDRIG får modifiera, ändra eller skriva över.
 4. Skapa rapportfilen för DAGENS datum: måndagar i mappen `reports/weekly/` döpt "veckorapport-yymmdd.md", övriga handelsdagar i mappen `reports/daily/` döpt "daglig-yymmdd.md". Exempel: `reports/daily/daglig-260714.md`. Finns filen för dagens datum redan (t.ex. vid omkörning): skriv över/uppdatera DEN filen – skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
 5. Committa och pusha rapportfilen OCH den uppdaterade `state/portfolj.md` DIREKT till standardbranchen (main). Skapa absolut INTE ny branch, pull request eller fork.
+6. WATCHLIST-HYGIEN: håll `config/watchlist.txt` fokuserad (riktmärke ≤ 25 tickers). Ta bort tickers som varken är innehav, pending, bubblare eller nämnts i rapporterna de senaste 14 handelsdagarna. Ta ALDRIG bort aktiva innehav eller pending-planer.
 
 ## VÄLJ LÄGE EFTER DAG
 - Denna dagliga prompt är den ENDA ingången till routinen – det finns INGEN separat måndagsprompt. Schemalägg endast denna, alla handelsdagar (mån–fre).
@@ -31,6 +32,7 @@ Strategin: portföljen består normalt av 2 aktier viktade 50/50 som roteras var
 
 ## LÄGE A – VECKOROTATION (måndagar)
 0. FACIT: hämta färsk kurs för varje innehav i `state/portfolj.md` (i första hand ur `state/prices.json`), beräkna utfall sedan entry, kontrollera om stop-loss eller målkurs träffats. Innehav som hållits 5 handelsdagar säljs enligt rotationsregeln, om de inte på nytt kvalificerar sig som topp 2 (markera då "BEHÅLL"). Flytta stängda positioner till Historik och uppdatera ackumulerad avkastning.
+0b. LÄRDOMAR: läs "Lärdom"-fältet i de senaste 4 veckorapporterna i `reports/weekly/`. Identifiera 1–2 återkommande misstag och låt dem påverka veckans urval; nämn kort i facit-sektionen vilken lärdom som tillämpats denna vecka.
 1. BRED SCANNING (bygg bruttolista, 10–15 kandidater):
    a) KATALYSATORER senaste 5 handelsdagarna: rapporter som slog förväntningarna, omvända vinstvarningar, stora ordrar/kontrakt, regulatoriska godkännanden (FDA/EMA/CE), större insiderköp, återköpsprogram, bekräftade bud/förvärv, indexinkluderingar.
    b) RYKTEN & TIDIGA SIGNALER: M&A-rykten, budspekulationer, aktivister, VD-byten. KÄLLKRAV: endast etablerade finansmedier (Bloomberg, Reuters, Wall Street Journal, Financial Times, CNBC, Dagens Industri, Affärsvärlden, EFN, Placera, E24, Dagens Næringsliv, Børsen, Kauppalehti) med hänvisning till initierade källor. Ignorera HELT X/Twitter, Reddit, Flashback, anonyma bloggar och forum.
@@ -47,6 +49,8 @@ Strategin: portföljen består normalt av 2 aktier viktade 50/50 som roteras var
 Gör följande för VARJE innehav i `state/portfolj.md`:
 1. Hämta färsk kurs enligt datakraven (i första hand ur `state/prices.json`), inklusive dagens/gårdagens högsta och lägsta (`dayHigh`/`dayLow`).
 2. Jämför mot entry, stop-loss och målkurs: har stoppen brutits eller målet nåtts, även intradag?
+2b. PENDING-PLANER: gå igenom VARJE rad i portföljfilens Pending-sektion. Jämför villkoret mot verifierad kurs och redovisa i rapportens sektion "## Pending-planer": TRIGGAD eller EJ TRIGGAD (med kurs + tidsstämpel). En TRIGGAD plan hanteras enligt KÖP-regeln i punkt 4. En plan vars katalysator punkterats markeras AVFÖRD med motivering (stryk raden med ~~…~~ i portfolj.md – radera den aldrig).
+2c. INTRADAG-SIGNALER: läs `state/alerts.json` om den finns. För varje aktiv signal: agera på den via besluten nedan, eller motivera kort i rapporten varför signalen inte föranleder åtgärd. Ignorera aldrig en signal tyst.
 3. Sök nyheter från senaste 24 timmarna om bolaget, dess sektor och närmaste konkurrenter: pressmeddelanden, analyser, rykten (samma källkrav som i läge A) samt makrohändelser som påverkar caset.
 4. Fatta EXAKT ETT beslut per innehav:
    - SÄLJ om: stop-loss träffats eller brutits; målkursen nåtts; katalysatorn punkterats (rykte dementerat, vinstvarning, negativt besked); eller en makrohändelse brutit tesen.

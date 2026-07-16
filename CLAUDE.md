@@ -2,7 +2,9 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-07-12.
+**Senast uppdaterad:** 2026-07-16.
+**AKTIV ARBETSKOPIA:** `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför OneDrive – arbeta HÄR).
+Den gamla kopian under OneDrive är utfasad.
 
 ---
 
@@ -178,6 +180,21 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   Rapporter (74vh-boxen ↔ full höjd, minns valet). Testsviten: 62 tester, gröna.
   OBS sandlåde-fälla: OneDrive-monteringen serverade trunkerade JS-filer direkt efter redigering →
   testerna kördes mot en verifierad kopia och de verifierade bytesen skrevs tillbaka till repot.
+- ✅ 2026-07-16: **arbetskopian flyttad** till `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför
+  OneDrive). **Prompt-pack:** dagligprompt fick 2b PENDING-PLANER (TRIGGAD/EJ TRIGGAD-check mot
+  verifierad kurs), 2c INTRADAG-SIGNALER (läs `state/alerts.json`, agera eller motivera), 0b
+  LÄRDOMAR (läs Lärdom-fältet i 4 senaste veckorapporterna) samt watchlist-hygien (≤ 25 tickers,
+  14 dagars regel); scoutprompt fick 4b UPPFÖLJNING AV TIDIGARE CASE + watchlist_us-hygien;
+  analysprompt fick c2 DELTA MOT CACHE ("Sedan senast"). Mallarna uppdaterade med matchande
+  sektioner (`## Pending-planer` i daglig_mall, `## Uppföljning av tidigare case` i scout_case,
+  `## Sedan senast` i analys_mall). **Dashboard:** "Ändrat idag"-remsa på beslutskorten (diff mot
+  gårdagens rapport: beslut/stopp/mål + NY IDAG, `VParse.diffDailies`), klickbara Kurser-kort →
+  kurshistorik-modal (Chart.js, 60 dagar), 🔔 Notiser-knapp (skrivbordsnotiser vid nya intradag-
+  signaler, alerts.json pollas var 5:e min), tickande nedräkning i statusraden, scout-uppföljning
+  parsas + renderas som egen sektion. Testsviten: 72 tester, gröna.
+  OBS sandlåde-fälla generellt: sessions-monteringen visar GAMLA bytes en stund efter att filer
+  redigerats (gäller ÄVEN utanför OneDrive) – kör tester mot en kopia i outputs-mappen om det
+  strular direkt efter redigering.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
@@ -201,8 +218,9 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
-- **Valfria förbättringar (ej byggda):** daglig digest-notis, jämför två tickers i Analys, samt att
-  klona repot UTANFÖR OneDrive (rekommenderas skarpt – dödar git-låsen och de trunkerade läsningarna).
+- ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia är `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
+- **Valfria förbättringar (ej byggda):** daglig digest-notis, jämför två tickers i Analys,
+  fulltextsökning över alla rapporter, alert-historik (utgångna signaler).
 
 ---
 
@@ -236,7 +254,8 @@ ta bort skyddet.
 
 ## 8. Var filerna ligger
 Allt ligger nu i repot (branch `main`) enligt strukturen i avsnitt 2 – inga lösa filer utanför.
-Drens lokala arbetskopia ligger i en OneDrive-mapp; se OneDrive-fällan i avsnitt 7. Eventuella
+Drens AKTIVA lokala arbetskopia: `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför OneDrive).
+Den gamla kopian i OneDrive-mappen är utfasad – gör inga ändringar där. Eventuella
 `SETUP.md` / `MIGRATION.md` är historiska (migreringen är gjord) och kan ignoreras.
 
 ---

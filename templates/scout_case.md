@@ -17,6 +17,9 @@ datum/tid. Markera vad som är mest marknadsrörande.]
 - [Nästa händelse – datum + källa]
 - [Rykten markeras: "⚠️ RYKTE – EJ BEKRÄFTAT (källa, datum)"]
 
+## Uppföljning av tidigare case
+- [TICKER (rapport-yymmdd): kurs då → nu (±x %, källa + tidsstämpel) – tes INTAKT / FÖRSVAGAD / PUNKTERAD, 1 rad per case, max 5. Skriv "Inga tidigare case att följa upp." om tomt.]
+
 ## Dagens case
 ### Case 1: [BOLAG/COIN] ([TICKER] / [BÖRS/NÄTVERK])
 **Katalysator:** [Den specifika nyheten/rapporten senaste dygnet. Om rykte: ange vilken

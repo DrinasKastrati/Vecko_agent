@@ -20,6 +20,9 @@
 
 ---
 
+## Pending-planer
+[En rad per plan i portfolj.md:s Pending-sektion: "[TICKER]: villkor [t.ex. ≤ X kr] – **TRIGGAD** / EJ TRIGGAD (kurs Y, källa, tidsstämpel) → åtgärd/ingen åtgärd". Skriv "Inga pending-planer." om sektionen är tom.]
+
 ## Åtgärder i portfolj.md
 [T.ex. "SÄLJ [TICKER] @ [kurs] → flyttad till Historik (skäl: målkurs nådd)", "KÖP bubblare [TICKER] enligt handelsplan: entry x, stop x, mål x", eller "Inga ändringar – endast tidsstämpel uppdaterad"]
 

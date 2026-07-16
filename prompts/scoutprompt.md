@@ -22,6 +22,9 @@ och rapportflöde samt trovärdiga marknadsrykten.
    suffixad dubblett (`...-yymmdd_1.md`).
 4. Committa och pusha rapporten DIREKT till standardbranchen (main). Skapa ALDRIG ny
    branch, pull request eller fork.
+5. WATCHLIST-HYGIEN: håll `config/watchlist_us.txt` fokuserad (riktmärke ≤ 25 symboler).
+   Ta bort symboler som inte nämnts i scout-rapporterna de senaste 14 dagarna. Behåll
+   alltid indexen (`^GSPC`, `^IXIC`) samt `BTC-USD` och `ETH-USD`.
 
 ## KRAV PÅ FÄRSK DATA (högsta prioritet)
 1. KURSER läses i FÖRSTA HAND ur `state/prices.json` (fylls av `.github/workflows/prices.yml`).
@@ -52,6 +55,11 @@ och rapportflöde samt trovärdiga marknadsrykten.
 4. AKTUELLA HÄNDELSER & KATALYSATORER: de 3–6 viktigaste rubrikhändelserna senaste 24–48h
    (earnings beats, godkännanden, kontrakt, förvärv, ETF-/regulatoriska besked), var och
    en med datum + källa.
+4b. UPPFÖLJNING AV TIDIGARE CASE: läs den senaste tidigare scout-rapporten i
+   `reports/scout/`. För varje case i den (max 5): en rad i mallens sektion
+   "## Uppföljning av tidigare case" med kurs då → nu (verifierad, källa + tidsstämpel)
+   och bedömning: tes INTAKT / FÖRSVAGAD / PUNKTERAD. Finns inga tidigare case:
+   skriv "Inga tidigare case att följa upp."
 5. DAGENS CASE (2–3 st): för varje case, fyll Katalysator, Bull case, Bear case och Setup
    (nyckeltal + prisåtgärd med kurs/tidsstämpel/källa). Bygger caset på ett rykte: ange
    tydligt vilken mediebyrå som läckt det. Max 1 av casen får vara ryktesdrivet. Blanda
