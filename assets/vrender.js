@@ -457,10 +457,30 @@
     <div class="stat-note">Grov kedjad avkastning (50 % vikt/affär): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
   }
 
+  // ---- sökresultat (fulltextsökning i Rapporter) -------------------------
+  function hilite(text, query){
+    const t = esc(text);
+    const q = esc(String(query || "").trim());
+    if (!q) return t;
+    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
+    return t.replace(re, m => `<mark>${m}</mark>`);
+  }
+  function renderSearchResults(results, query){
+    if (!results || !results.length)
+      return `<div class="empty">Inga träffar på "${esc(query)}" i rapporterna.</div>`;
+    const TYPE = { daily: "Daglig", weekly: "Vecko", scout: "Scout", analysis: "Analys", case: "Case" };
+    return `<div class="sr-list">` + results.map(r =>
+      `<button type="button" class="sr-hit" data-open-report="${esc(r.meta.name)}" data-rtype="${esc(r.meta.type)}">
+        <span class="sr-head"><span class="chip">${esc(TYPE[r.meta.type] || r.meta.type)}</span><b>${esc(r.meta.dateISO)}</b> — ${esc(r.meta.label)}<span class="sr-count">${r.count} träff${r.count > 1 ? "ar" : ""}</span></span>
+        ${r.snippets.map(s => `<span class="sr-snip">${hilite(s, query)}</span>`).join("")}
+      </button>`).join("") + `</div>`;
+  }
+
   // ---- intradag-signaler (monitor) -------------------------------------
   function renderAlerts(alerts){
     const active = (alerts && alerts.active) || [];
-    if (!active.length) return "";
+    const hist = (alerts && alerts.history) || [];
+    if (!active.length && !hist.length) return "";
     const items = active.map(s => {
       const cls = s.type === "KÖP" ? "al-kop" : "al-salj";
       const px = s.price != null ? (s.price + (s.currency ? " " + s.currency : "")) : "";
@@ -468,13 +488,22 @@
       return `<div class="al-item ${cls}"><span class="al-tag">${esc(s.type)}</span><b>${esc(s.ticker)}</b> — ${esc(s.reason)}`
         + `${s.level != null ? ` (nivå ${esc(String(s.level))})` : ""}${px ? ` · kurs ${esc(String(px))}` : ""}${tm ? ` · ${esc(tm)}` : ""}</div>`;
     }).join("");
-    return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}</div>`;
+    const histItems = hist.map(s => {
+      const cls = s.type === "KÖP" ? "al-kop" : "al-salj";
+      const exp = s.expiredAt ? ` · utgick ${esc(String(s.expiredAt).slice(0, 16).replace("T", " "))}` : "";
+      return `<div class="al-item al-exp ${cls}"><span class="al-tag">${esc(s.type)}</span><b>${esc(s.ticker)}</b> — ${esc(s.reason)}`
+        + `${s.level != null ? ` (nivå ${esc(String(s.level))})` : ""}${exp}</div>`;
+    }).join("");
+    const histHtml = hist.length
+      ? `<details class="al-hist"><summary>Tidigare signaler (${hist.length})</summary>${histItems}</details>` : "";
+    if (!active.length) return `<div class="al-wrap al-wrap--calm">${histHtml}</div>`;
+    return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}${histHtml}</div>`;
   }
 
   const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
-    renderAnalysisIndex, renderTradeStats, renderAlerts };
+    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

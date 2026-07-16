@@ -25,6 +25,11 @@ och rapportflöde samt trovärdiga marknadsrykten.
 5. WATCHLIST-HYGIEN: håll `config/watchlist_us.txt` fokuserad (riktmärke ≤ 25 symboler).
    Ta bort symboler som inte nämnts i scout-rapporterna de senaste 14 dagarna. Behåll
    alltid indexen (`^GSPC`, `^IXIC`) samt `BTC-USD` och `ETH-USD`.
+6. DATUM & FILNAMN: verifiera dagens FAKTISKA datum (t.ex. via `date`) innan filnamnet
+   skapas – fel datum ger dubbletter och trasig sortering i dashboarden.
+7. OM PUSH MISSLYCKAS (Cowork-sandlådan saknar ofta git-credentials): committa lokalt om
+   det går, annars lämna rapporten korrekt skriven och avsluta med en notis om att Dren
+   publicerar med `push.bat`. Fastna ALDRIG i upprepade push-försök.
 
 ## KRAV PÅ FÄRSK DATA (högsta prioritet)
 1. KURSER läses i FÖRSTA HAND ur `state/prices.json` (fylls av `.github/workflows/prices.yml`).
@@ -32,6 +37,10 @@ och rapportflöde samt trovärdiga marknadsrykten.
    `BTC-USD`), index som `^GSPC` (S&P 500) / `^IXIC` (Nasdaq). Använd `marketTime` som
    verifierad tidsstämpel och kontrollera `generatedAt` överst i filen. Nya symboler du
    bevakar läggs i `config/watchlist_us.txt` så hämtas de inför nästa körning.
+1b. FÄRSKASTE VERSIONEN: kör `git pull` INNAN du läser `state/prices.json` – pris-actionen
+   kan ha committat en nyare fil än din lokala. Går pull inte: hämta
+   https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/state/prices.json
+   direkt och använd den om dess `generatedAt` är nyare.
 2. Saknas tickern, saknar den `price`, eller är `marketTime` inaktuell: försök en
    reservkälla (Yahoo Finance https://finance.yahoo.com/quote/<TICKER>). Går ingen färsk
    kurs att verifiera – skriv "KURS EJ VERIFIERAD" och undvik tvärsäkra prisnivåer.

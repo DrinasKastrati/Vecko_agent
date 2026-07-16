@@ -2,7 +2,7 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-07-16.
+**Senast uppdaterad:** 2026-07-17.
 **AKTIV ARBETSKOPIA:** `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför OneDrive – arbeta HÄR).
 Den gamla kopian under OneDrive är utfasad.
 
@@ -185,7 +185,11 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   verifierad kurs), 2c INTRADAG-SIGNALER (läs `state/alerts.json`, agera eller motivera), 0b
   LÄRDOMAR (läs Lärdom-fältet i 4 senaste veckorapporterna) samt watchlist-hygien (≤ 25 tickers,
   14 dagars regel); scoutprompt fick 4b UPPFÖLJNING AV TIDIGARE CASE + watchlist_us-hygien;
-  analysprompt fick c2 DELTA MOT CACHE ("Sedan senast"). Mallarna uppdaterade med matchande
+  analysprompt fick c2 DELTA MOT CACHE ("Sedan senast"). Körsäkerhet i alla tre prompterna:
+  datumverifiering före filnamn, push-fallback (lämna filer + notis till Dren i stället för att
+  fastna), `git pull`/raw-URL för färskaste prices.json; daglig BEHÅLL kräver explicit motivering
+  genom binära händelser (rapport ≤ 2 dagar bort); rapportkrav om EXAKTA mall-rubriker
+  (dashboardens parsningskontrakt). Mallarna uppdaterade med matchande
   sektioner (`## Pending-planer` i daglig_mall, `## Uppföljning av tidigare case` i scout_case,
   `## Sedan senast` i analys_mall). **Dashboard:** "Ändrat idag"-remsa på beslutskorten (diff mot
   gårdagens rapport: beslut/stopp/mål + NY IDAG, `VParse.diffDailies`), klickbara Kurser-kort →
@@ -195,6 +199,15 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   OBS sandlåde-fälla generellt: sessions-monteringen visar GAMLA bytes en stund efter att filer
   redigerats (gäller ÄVEN utanför OneDrive) – kör tester mot en kopia i outputs-mappen om det
   strular direkt efter redigering.
+- ✅ 2026-07-17: **sista webbupgrade-omgången.** Fulltextsökning i Rapporter-fliken (sökfält, Enter →
+  söker i ALLA rapporttyper inkl. analyser, träfflista med markerade snippets, klick öppnar
+  rapporten; `VParse.searchDocs` + `VRender.renderSearchResults`). "Jämför två"-läge i Analys
+  (klicka två cachade analyser → sida vid sida-kolumner). Alert-historik: `alerts.mjs` fick
+  `mergeHistory` (utgångna signaler sparas i `alerts.json.history`, max 50, med `expiredAt`) och
+  dashboarden visar hopfällbar "Tidigare signaler". Testsviten: 82 tester, gröna.
+  OBS: sandlåde-cachen fastnade på stale bytes hela sessionen → verifiering gjordes i en NYSKAPAD
+  kopia (nya filer propagerar färskt) och de verifierade bytesen kopierades tillbaka till repot
+  med bash-cp (sandlåde→host fungerar). Mönster vid strul: bygg om testträdet under NYTT filnamn.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
@@ -219,8 +232,8 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
 - ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia är `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
-- **Valfria förbättringar (ej byggda):** daglig digest-notis, jämför två tickers i Analys,
-  fulltextsökning över alla rapporter, alert-historik (utgångna signaler).
+- **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
+  och alert-historik byggdes 2026-07-17.)
 
 ---
 

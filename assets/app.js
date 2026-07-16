@@ -313,6 +313,66 @@
       } catch (e) {}
     }
 
+    // ---- fulltextsökning över ALLA rapporter (Rapporter-fliken) ----
+    async searchReports(q) {
+      const body = this.el("reportBody");
+      q = (q || "").trim();
+      if (q.length < 2) { body.innerHTML = '<div class="empty">Skriv minst 2 tecken och tryck Enter.</div>'; return; }
+      body.innerHTML = '<div class="empty">Söker i ' + this.state.metas.length + ' rapporter…</div>';
+      const docs = await Promise.all(this.state.metas.map(async m => ({ meta: m, text: await this.getMd(m.path).catch(() => "") })));
+      body.innerHTML = this.R.renderSearchResults(this.P.searchDocs(docs, q), q);
+    }
+    // Öppna en rapport från ett sökresultat (analyser hoppar till Analys-fliken).
+    openReportByName(name, type) {
+      const meta = this.state.metas.find(m => m.name === name);
+      if (!meta) return;
+      if (type === "analysis") { this.gotoTicker(meta.ticker); return; }
+      this.state.reportType = type;
+      document.querySelectorAll(".rtype").forEach(b => b.classList.toggle("on", b.dataset.type === type));
+      const sel = this.el("reportSelect");
+      sel.innerHTML = this.R.renderOptions(this.state.metas, type);
+      sel.value = name;
+      this.showReport(name);
+    }
+
+    // ---- jämför två cachade analyser sida vid sida ----
+    toggleCompare() {
+      this._cmpMode = !this._cmpMode;
+      this._cmpSel = [];
+      const b = this.el("cmpBtn"); if (b) b.classList.toggle("on", this._cmpMode);
+      document.querySelectorAll(".an-chip.sel").forEach(c => c.classList.remove("sel"));
+      this.el("analysStatus").innerHTML = this._cmpMode ? "Jämförläge: klicka på TVÅ analyser i listan nedan." : "";
+      if (!this._cmpMode) this.el("analysBody").innerHTML = "";
+    }
+    cmpPick(btnEl, ticker) {
+      const metas = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey);
+      if (!metas.length) return;
+      this._cmpSel = this._cmpSel || [];
+      const i = this._cmpSel.findIndex(m => m.ticker === ticker);
+      if (i >= 0) { this._cmpSel.splice(i, 1); btnEl.classList.remove("sel"); }
+      else {
+        if (this._cmpSel.length >= 2) { this._cmpSel = []; document.querySelectorAll(".an-chip.sel").forEach(c => c.classList.remove("sel")); }
+        this._cmpSel.push(metas[0]); btnEl.classList.add("sel");
+      }
+      if (this._cmpSel.length === 2) this.renderCompare();
+      else this.el("analysStatus").innerHTML = "Jämförläge: klicka på TVÅ analyser i listan nedan.";
+    }
+    async renderCompare() {
+      const [a, b] = this._cmpSel;
+      const body = this.el("analysBody");
+      this.el("analysStatus").innerHTML = "Jämför <b>" + this.R.esc(a.ticker) + "</b> mot <b>" + this.R.esc(b.ticker) + "</b>.";
+      body.innerHTML = '<div class="empty">Hämtar båda analyserna…</div>';
+      const col = async meta => {
+        const md = await this.getMd(meta.path);
+        const verdict = this.P.stripMd(this.P.field(md, "Slutsats")).slice(0, 70);
+        return '<div class="cmp-col"><div class="an-head"><div><span class="an-tk">' + this.R.esc(meta.ticker) + '</span> <span class="an-date">' + this.R.esc(meta.dateISO) + '</span></div>' +
+          (verdict ? '<span class="an-verdict">' + this.R.esc(verdict) + '</span>' : '') + '</div>' +
+          '<div class="report">' + this.mdToHtml(md) + '</div></div>';
+      };
+      try { body.innerHTML = '<div class="cmp-grid">' + (await col(a)) + (await col(b)) + '</div>'; }
+      catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta analyserna.</div>'; }
+    }
+
     // ---- report viewer ----
     setupReportPicker() {
       const sel = this.el("reportSelect");
@@ -359,7 +419,10 @@
       const list = Object.values(byT).sort((a, b) => b.sortKey - a.sortKey);
       const pending = ((this.state.queue && this.state.queue.pending) || []).map(p => p && p.ticker).filter(Boolean);
       el.innerHTML = this.R.renderAnalysisIndex(list, pending);
-      el.querySelectorAll("[data-ticker]").forEach(b => b.addEventListener("click", () => this.analyse(b.dataset.ticker)));
+      el.querySelectorAll("[data-ticker]").forEach(b => b.addEventListener("click", () => {
+        if (this._cmpMode) this.cmpPick(b, b.dataset.ticker);
+        else this.analyse(b.dataset.ticker);
+      }));
     }
     analyse(rawTicker) {
       const ticker = (rawTicker || "").toUpperCase().trim().replace(/\s+/g, "");
@@ -504,6 +567,12 @@
         fb.classList.toggle("on", full);
         this.cacheSet("vr_reportfull", full);
       });
+      // Fulltextsökning i Rapporter (Enter söker i alla rapporttyper).
+      const rs = this.el("repSearch");
+      if (rs) rs.addEventListener("keydown", e => { if (e.key === "Enter") this.searchReports(rs.value); });
+      // Jämför två cachade analyser sida vid sida.
+      const cb = this.el("cmpBtn");
+      if (cb) cb.addEventListener("click", () => this.toggleCompare());
       // Delegerade klick (innehållet re-renderas med innerHTML, så lyssna globalt):
       document.addEventListener("click", e => {
         const more = e.target.closest(".clamp-more");
@@ -518,6 +587,8 @@
         if (tp) { this.gotoTicker(tp.dataset.gotoTicker); return; }
         const th = e.target.closest(".tbl--sort th");
         if (th) { this.sortTable(th); return; }
+        const sr = e.target.closest("[data-open-report]");
+        if (sr) { this.openReportByName(sr.dataset.openReport, sr.dataset.rtype); return; }
         const px = e.target.closest(".px-item");
         if (px && px.dataset.tk) { this.openPxChart(px.dataset.tk); return; }
         if (e.target.id === "pxModal" || e.target.id === "pxModalClose") this.closePxChart();

@@ -16,9 +16,10 @@ slutsats) och spara den som en cachad rapport i git.
 3. För VARJE pending-ticker:
    a. Bestäm typ ur tickerformatet: vanlig symbol = USA (NYSE/Nasdaq); `<X>.ST/.OL/.CO/.HE` =
       Norden; `<MYNT>-USD` = krypto; `^...` = index.
-   b. KURS: hämta i FÖRSTA HAND ur `state/prices.json` (verifierad `marketTime`). Saknas den eller
-      är inaktuell – hämta via Yahoo Finance och ange källa + tidsstämpel. Kan ingen färsk kurs
-      verifieras: skriv "KURS EJ VERIFIERAD".
+   b. KURS: kör `git pull` först (pris-actionen kan ha committat nyare data), hämta sedan i FÖRSTA
+      HAND ur `state/prices.json` (verifierad `marketTime`). Saknas den eller är inaktuell – hämta
+      via Yahoo Finance och ange källa + tidsstämpel. Kan ingen färsk kurs verifieras: skriv
+      "KURS EJ VERIFIERAD".
    c. RESEARCH (websök; lägg ALLTID in dagens datum i frågorna och kontrollera publiceringsdatum
       på varje källa):
       - FUNDAMENTA: värdering (P/E, EV/EBITDA, P/S), tillväxt (omsättning/vinst), marginaler,
@@ -36,13 +37,15 @@ slutsats) och spara den som en cachad rapport i git.
    d. Skriv analysen enligt mallens rubriker, inkl. Bull case, Bear case/risker och en sammanvägd
       SLUTSATS (Köpvärd / Neutral / Undvik) med tydlig brasklapp att det inte är finansiell
       rådgivning.
-   e. Spara som `reports/analysis/analys-<TICKER>-yymmdd.md` (dagens datum, TICKER i versaler,
+   e. Spara som `reports/analysis/analys-<TICKER>-yymmdd.md` (dagens VERIFIERADE datum, TICKER i versaler,
       t.ex. `analys-NVDA-260710.md`, `analys-BTC-USD-260710.md`). Finns filen för dagens datum
       redan: skriv över DEN – skapa ALDRIG en suffixad dubblett.
    f. Flytta tickern från `pending` till `done` i `state/analysis_queue.json` och lägg till
       `analysedAt` + `file`. Radera ALDRIG befintlig `done`-historik.
 4. Committa och pusha alla nya `reports/analysis/…`-filer OCH `state/analysis_queue.json` DIREKT
-   till main. Skapa ALDRIG ny branch, pull request eller fork.
+   till main. Skapa ALDRIG ny branch, pull request eller fork. Misslyckas push (sandlådan saknar
+   ofta credentials): lämna filerna korrekt skrivna och notera att Dren publicerar med `push.bat`
+   – fastna aldrig i upprepade push-försök.
 
 ## KRAV
 - Varje kurs anges med källa + tidsstämpel. Varje nyhet med datum + källa. Rykten tydligt märkta.

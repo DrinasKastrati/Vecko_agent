@@ -73,6 +73,17 @@ export function evalSignals(targets, quotes){
   return out;
 }
 
+// Bevarar utgångna signaler (fanns förra körningen men inte längre) i en
+// historiklista, nyast först, max 50 poster. Ren funktion – testbar.
+export function mergeHistory(prev, signals, nowISO){
+  const key = s => s.ticker + "|" + s.type;
+  const curSet = new Set(signals.map(key));
+  const expired = ((prev && prev.active) || [])
+    .filter(s => !curSet.has(key(s)))
+    .map(s => Object.assign({}, s, { expiredAt: nowISO }));
+  return [...expired, ...((prev && prev.history) || [])].slice(0, 50);
+}
+
 export async function run(fetchImpl = globalThis.fetch){
   const md = existsSync("state/portfolj.md") ? readFileSync("state/portfolj.md", "utf8") : "";
   const targets = collectTargets(md);
@@ -96,7 +107,8 @@ export async function run(fetchImpl = globalThis.fetch){
     console.log(`Oförändrat (${signals.length} aktiva signaler) – rör inte alerts.json.`);
     return prev;
   }
-  const out = { generatedAt: new Date().toISOString(), active: signals };
+  const out = { generatedAt: new Date().toISOString(), active: signals,
+    history: mergeHistory(prev, signals, new Date().toISOString()) };
   mkdirSync("state", { recursive: true });
   writeFileSync(path, JSON.stringify(out, null, 2) + "\n");
   console.log(`Signaler: ${signals.length} aktiva, ${newOnes.length} nya. Bevakade: ${tickers.join(", ") || "(inga)"}`);

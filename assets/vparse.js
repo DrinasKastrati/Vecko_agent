@@ -429,6 +429,29 @@
     return out;
   }
 
+  // ---- fulltextsökning över rapporter --------------------------------------
+  // docs = [{ meta, text }]. Returnerar träffar (nyast först) med max 3 snippets.
+  function searchDocs(docs, query){
+    const q = String(query || "").trim().toLowerCase();
+    if (q.length < 2) return [];
+    const out = [];
+    for (const d of (docs || [])){
+      if (!d || !d.text || !d.meta) continue;
+      const lines = d.text.split("\n");
+      let count = 0;
+      const snippets = [];
+      for (const ln of lines){
+        if (ln.toLowerCase().includes(q)){
+          count++;
+          if (snippets.length < 3) snippets.push(stripMd(ln).slice(0, 220));
+        }
+      }
+      if (count) out.push({ meta: d.meta, count, snippets });
+    }
+    out.sort((a, b) => b.meta.sortKey - a.meta.sortKey);
+    return out;
+  }
+
   // ---- dagsdiff: vad ändrades sedan gårdagens rapport? -------------------
   // Jämför senaste två dagliga rapporterna per ticker. Returnerar
   // { TICKER: { isNew, changes: [{field, from, to, up?}] } } – bara ändrade.
@@ -501,7 +524,7 @@
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
-    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies
+    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;
