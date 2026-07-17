@@ -282,7 +282,7 @@
     const head = cols.map(c => `<th title="Klicka för att sortera">${esc(c)}</th>`).join("");
     const rows = portfolio.history.map(r =>
       `<tr>${cols.map(c => `<td>${esc(strip(r[c]))}</td>`).join("")}</tr>`).join("");
-    return `<table class="tbl tbl--sort"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+    return `<div class="tbl-wrap"><table class="tbl tbl--sort"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
   }
   function renderBubblare(weekly){
     if (!weekly || !weekly.bubblare.length) return "";
@@ -511,11 +511,11 @@
       rows.push({ label: b.label, bi: i, name: strip(o["Aktie"]), tk, entry: strip(o["Entry"]), weight: strip(o["Vikt"]) || "50 %", lv: (b.live || {})[tk] });
     }));
     const tbl = rows.length
-      ? `<table class="tbl total-tbl"><thead><tr><th>Bok</th><th>Aktie</th><th>Ticker</th><th>Vikt</th><th>Entry</th><th>Kurs</th><th>P/L</th></tr></thead><tbody>${rows.map(r => {
+      ? `<div class="tbl-wrap"><table class="tbl total-tbl"><thead><tr><th>Bok</th><th>Aktie</th><th>Ticker</th><th>Vikt</th><th>Entry</th><th>Kurs</th><th>P/L</th></tr></thead><tbody>${rows.map(r => {
           const px = r.lv && r.lv.price != null ? (r.lv.price + (r.lv.currency ? " " + r.lv.currency : "")) : "–";
           const pl = r.lv && r.lv.pnlPct != null ? `<span class="${r.lv.pnlPct >= 0 ? "pos" : "neg"}">${esc(signPct(r.lv.pnlPct))}</span>` : "–";
           return `<tr><td><span class="book-badge book-badge--${r.bi}">${esc(r.label)}</span></td><td>${esc(r.name)}</td><td>${tickerPill(r.tk)}</td><td>${esc(r.weight)}</td><td>${esc(r.entry || "–")}</td><td>${esc(px)}</td><td>${pl}</td></tr>`;
-        }).join("")}</tbody></table>`
+        }).join("")}</tbody></table></div>`
       : `<div class="empty">Inga öppna positioner i någon bok just nu.</div>`;
     return kpis
       + `<h3 class="sub">Kapitalfördelning</h3>${alloc}${allocMeta}`
