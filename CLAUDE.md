@@ -221,7 +221,8 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   (pull --rebase || true; git push) kunde dö med exit 128 vid kollision med andra pushar
   (mycket vanligare nu med auto-push var 30:e min) – ersatt med retry-loop ×3:
   `pull --rebase -X theirs` (färsk action-data vinner konflikter) + `rebase --abort`-städning
-  mellan försöken.
+  mellan försöken, samt `fetch-depth: 0` på checkout (grund klon kan inte rebasa när main
+  hunnit flytta sig → fatal 128).
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
