@@ -32,6 +32,14 @@
   }
   *{box-sizing:border-box}
   [hidden]{display:none!important}
+
+  /* ---- Tema: terminal-layout ------------------------------------------
+     Sektionerna renderas som paneler (bg-surface + border enligt temats
+     mappningsregler); tal sätts med tabular-nums för jämna kolumner. */
+  section.view{background:rgba(26,34,53,.45);border:1px solid var(--border-color);border-radius:16px;padding:16px 16px 22px}
+  .wrap{max-width:1240px}
+  .kpi-value.num,.stat-v,.px-pr,.hold-grid .v,.tbl td,.report td{font-variant-numeric:tabular-nums}
+  input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent-primary);outline-offset:1px}
   html{scroll-behavior:smooth}
   body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#141E38 0%,var(--bg) 55%) fixed,var(--bg);
     color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -66,7 +74,7 @@
   .subnav a{color:var(--muted);font-size:13px;padding:7px 14px;border-radius:8px;white-space:nowrap;letter-spacing:.02em}
   .subnav a:hover{color:var(--text);background:var(--panel);text-decoration:none}
   .subnav a{cursor:pointer}
-  .subnav a.active{color:var(--text);background:var(--panel3);box-shadow:inset 0 0 0 1px var(--border2)}
+  .subnav a.active{color:var(--text);background:var(--panel3);box-shadow:inset 0 0 0 1px var(--border2),inset 0 -2px 0 var(--accent-primary)}
 
   .wrap{max-width:1120px;margin:0 auto;padding:20px 18px 60px}
   section{scroll-margin-top:112px;margin-top:26px}
@@ -75,7 +83,7 @@
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
   .sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
   .sec-head h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0;
-    padding-left:12px;border-left:3px solid var(--green)}
+    padding-left:12px;border-left:3px solid var(--accent-primary)}
   .sec-head .hint{color:var(--faint);font-size:12px}
 
   .banner{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:11px;
@@ -87,7 +95,7 @@
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px}
   .kpi{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--border);
     border-radius:14px;padding:15px 16px 14px;position:relative;overflow:hidden}
-  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent 70%)}
+  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent-primary),transparent 70%)}
   .kpi-label{font-size:11.5px;letter-spacing:.01em;color:var(--muted)}
   .kpi-value{font-size:26px;margin-top:7px;font-weight:600;letter-spacing:-.01em}
   .kpi-value.num{font-family:var(--mono)}
@@ -313,13 +321,13 @@
   /* ---- hopfällbara scout-sektioner ---- */
   details.sblock summary{list-style:none;cursor:pointer}
   details.sblock summary::-webkit-details-marker{display:none}
-  details.sblock summary::before{content:"▸";color:var(--green);margin-right:8px;font-size:11px;display:inline-block;transition:.15s}
+  details.sblock summary::before{content:"▸";color:var(--accent-primary);margin-right:8px;font-size:11px;display:inline-block;transition:.15s}
   details.sblock[open] summary::before{content:"▾"}
   details.sblock summary:hover{color:#fff}
 
   /* ---- rapport i full höjd + aktiv knapp ---- */
   .report--full{max-height:none}
-  .btn.on{background:#24304B;border-color:#3E547D;color:var(--green)}
+  .btn.on{background:#24304B;border-color:#3E547D;color:var(--accent-primary)}
 
   /* ---- "Ändrat idag"-remsa (diff mot gårdagens rapport) ---- */
   .hold-diff{display:flex;flex-wrap:wrap;gap:5px 12px;align-items:center;margin:10px 0 2px;padding:7px 10px;
@@ -353,7 +361,7 @@
   .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
   .cmp-col .report{max-height:62vh}
   @media(max-width:900px){.cmp-grid{grid-template-columns:1fr}}
-  .an-chip.sel{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+  .an-chip.sel{border-color:var(--accent-primary);box-shadow:0 0 0 1px var(--accent-primary)}
 
   /* ---- alert-historik (utgångna signaler) ---- */
   .al-exp{opacity:.62}
@@ -377,6 +385,7 @@
     .report{padding:6px 15px 18px}
     .px-tools{margin-left:0;width:100%}
     .px-search{flex:1;width:auto}
+    section.view{padding:12px 10px 16px}
   }
 </style>
 </head>

@@ -257,10 +257,10 @@
       const q = this.state.prices && this.state.prices.quotes && this.state.prices.quotes[tk];
       note.textContent = ser.length + " dagar · stängningskurser ur price_history.json" + (q && q.currency ? " · " + q.currency : "");
       const up = ser[ser.length - 1][1] >= ser[0][1];
-      const col = up ? "#26d07c" : "#ff5c78";
+      const col = up ? "#10B981" : "#EF4444";
       const ctx = this.el("pxModalChart").getContext("2d");
       const grd = ctx.createLinearGradient(0, 0, 0, 280);
-      grd.addColorStop(0, up ? "rgba(38,208,124,0.22)" : "rgba(255,92,120,0.2)");
+      grd.addColorStop(0, up ? "rgba(16,185,129,0.22)" : "rgba(239,68,68,0.2)");
       grd.addColorStop(1, "rgba(0,0,0,0)");
       this._pxChart = new Chart(ctx, {
         type: "line",
@@ -269,8 +269,8 @@
           responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b9cb8", maxTicksLimit: 8 } },
-            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#8b9cb8" } }
+            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", maxTicksLimit: 8 } },
+            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" } }
           }
         }
       });
@@ -489,8 +489,8 @@
       const benches = [];
       const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX");
       const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC");
-      if (omx) benches.push({ label: "OMXS30", color: "#4aa3ff", pts: omx });
-      if (spx) benches.push({ label: "S&P 500", color: "#b98bff", pts: spx });
+      if (omx) benches.push({ label: "OMXS30", color: "#3B82F6", pts: omx });
+      if (spx) benches.push({ label: "S&P 500", color: "#8B5CF6", pts: spx });
 
       // gemensam datumaxel (union), carry-forward-mappning per serie
       const labelSet = new Set(strat.map(p => p.date));
@@ -505,9 +505,9 @@
           "Benchmark-overlay (OMXS30/S&P) visas när price_history.json fått minst 2 dagars indexdata.");
       const ctx = canvas.getContext("2d");
       const grd = ctx.createLinearGradient(0, 0, 0, 240);
-      grd.addColorStop(0, "rgba(38,208,124,0.25)"); grd.addColorStop(1, "rgba(38,208,124,0)");
+      grd.addColorStop(0, "rgba(16,185,129,0.25)"); grd.addColorStop(1, "rgba(16,185,129,0)");
       if (this.state.chart) this.state.chart.destroy();
-      const datasets = [{ label: "Strategin (%)", data, borderColor: "#26d07c", backgroundColor: grd, fill: true, tension: 0.25, pointRadius: 3, pointBackgroundColor: "#26d07c", borderWidth: 2, spanGaps: true }];
+      const datasets = [{ label: "Strategin (%)", data, borderColor: "#10B981", backgroundColor: grd, fill: true, tension: 0.25, pointRadius: 3, pointBackgroundColor: "#10B981", borderWidth: 2, spanGaps: true }];
       benches.forEach(b => datasets.push({
         label: b.label, data: this.P.seriesOnLabels(labels, b.pts),
         borderColor: b.color, borderDash: [5, 4], borderWidth: 1.5,
@@ -519,12 +519,12 @@
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: {
-            legend: { display: benches.length > 0, labels: { color: "#8b9cb8", boxWidth: 18, usePointStyle: false } },
+            legend: { display: benches.length > 0, labels: { color: "#94A3B8", boxWidth: 18, usePointStyle: false } },
             tooltip: { callbacks: { label: c => " " + c.dataset.label + ": " + c.parsed.y + " %" } }
           },
           scales: {
-            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b9cb8" } },
-            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#8b9cb8", callback: v => v + " %" }, suggestedMin: allZero && !benches.length ? -1 : undefined, suggestedMax: allZero && !benches.length ? 1 : undefined }
+            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8" } },
+            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8", callback: v => v + " %" }, suggestedMin: allZero && !benches.length ? -1 : undefined, suggestedMax: allZero && !benches.length ? 1 : undefined }
           }
         }
       });
