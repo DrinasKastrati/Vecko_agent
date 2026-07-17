@@ -40,6 +40,14 @@ jobs:
             echo "Inga kursandringar - hoppar over commit."
           else
             git commit -m "Kurser: $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git pull --rebase --autostash origin main || true
-            git push
+            for i in 1 2 3; do
+              if git pull --rebase --autostash -X theirs origin main && git push origin main; then
+                exit 0
+              fi
+              git rebase --abort 2>/dev/null || true
+              echo "Push-försök $i misslyckades (kollision med annan push?) – försöker igen..."
+              sleep $((5 * i))
+            done
+            echo "Kunde inte pusha efter 3 försök."
+            exit 1
           fi	

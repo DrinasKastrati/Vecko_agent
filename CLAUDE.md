@@ -217,7 +217,11 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   vardagar: larmar via issue om prices.json >26 h gammal eller dagens nordiska/scout-rapport
   saknas; dedupe mot redan öppna issues). **Avanza-länk** i kurshistorik-modalen (app.js
   `avanzaUrl`: suffix strippas, klasstreck → mellanslag; döljs för ^index/-USD).
-  Testsviten: 91 tester, gröna.
+  Testsviten: 91 tester, gröna. **Push-race-fix:** monitor.yml/prices.yml:s commit-steg
+  (pull --rebase || true; git push) kunde dö med exit 128 vid kollision med andra pushar
+  (mycket vanligare nu med auto-push var 30:e min) – ersatt med retry-loop ×3:
+  `pull --rebase -X theirs` (färsk action-data vinner konflikter) + `rebase --abort`-städning
+  mellan försöken.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
