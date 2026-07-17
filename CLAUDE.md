@@ -252,6 +252,18 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   kombinerad tabell med alla öppna positioner (bok-badge + live-P/L ur prices.json). Rena
   procenttal ⇒ ingen FX. `VRender.renderTotal`; "Översikt"-fliken heter nu "Nordisk". Vikt visas
   som pill på innehavskorten (`heldCard`). Testsviten: 115 tester, gröna.
+- ✅ 2026-07-17 (dynamisk kapitalvikt mellan böckerna): **åttonde delen** – en veckovis
+  ALLOKERINGS-routine som sätter hur totalkapitalet fördelas mellan nordiska och US-boken (i
+  stället för fast 50/50 i Total-vyn). Böckerna förblir separata; detta är en övergripande vikt.
+  Ny prompt `prompts/allokering.md` (läser båda veckorapporterna + portföljerna, sätter splitten
+  inom bandet 0,2–0,8/bok, max ~15 pp rörelse/vecka, motivering krävs), nytt tillstånd
+  `state/allocation.json` ({nordic, us, rationale, updatedAt, week}, baslinje 0,5/0,5). **Dashboard:**
+  app.js läser allocation.json (defensiv clamp 0,2–0,8, annars 50/50-baslinje) och skickar splitten +
+  motivering till `VRender.renderTotal(books, split, meta)`; Total-vyn visar kapitalvikts-stapeln
+  enligt den dynamiska splitten + en rad med motiveringen/veckan. **Schemalagd Cowork-task:**
+  `vecko-agent-allokering` (måndag ~15:30 CET, efter båda veckorotationerna, pekar på Git_proj).
+  Testsviten: 119 tester, gröna. Kapital-splitten är nu det ENDA som allokerings-routinen rör –
+  aktievalen sköts fortsatt av respektive boks rotation.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

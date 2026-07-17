@@ -278,5 +278,14 @@ ok("renderTotal alloc bar", totHtml.includes("alloc-seg") && totHtml.includes("N
 ok("renderTotal live P/L", totHtml.includes("185 USD") && totHtml.includes("99 SEK"));
 ok("renderTotal empty books", VR.renderTotal([{ label: "Nordisk", portfolio: { accum: null, holdings: [] } }, { label: "US", portfolio: { accum: null, holdings: [] } }], 0.5).includes("Inga öppna positioner"));
 
+// ---- dynamisk kapitalvikt (allocation.json) ----
+ok("renderTotal dynamic split 70/30", (() => {
+  const h = VR.renderTotal(totBooks, 0.7, { dynamic: true, rationale: "Starkare nordiska case denna vecka.", updatedAt: "2026-07-20T13:30:00Z", week: "v30" });
+  return h.includes("Nordisk 70 %") && h.includes("US 30 %") && h.includes("Starkare nordiska case") && h.includes("satt av allokerings") && h.includes("v30");
+})());
+ok("renderTotal blended uses split", VR.renderTotal(totBooks, 0.7).includes(VR.signPct(5 * 0.7 + 3 * 0.3)));
+ok("renderTotal baseline meta note", VR.renderTotal(totBooks, 0.5, { dynamic: false }).includes("baslinje 50/50"));
+ok("renderTotal no meta = no rationale row", !VR.renderTotal(totBooks, 0.5).includes("alloc-meta"));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

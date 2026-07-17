@@ -14,7 +14,7 @@
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
         metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null, alerts: null,
-        portfolioUs: null, usDailies: [], usWeeklies: [],
+        portfolioUs: null, usDailies: [], usWeeklies: [], allocation: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -62,12 +62,13 @@
         const histPath = paths.find(p => /(^|\/)price_history\.json$/i.test(p));
         const alertsPath = paths.find(p => /(^|\/)alerts\.json$/i.test(p));
         const portfUsPath = paths.find(p => /(^|\/)portfolj_us\.md$/i.test(p));
+        const allocPath = paths.find(p => /(^|\/)allocation\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -78,7 +79,8 @@
           alertsPath ? this.fetchJSON(this.raw(alertsPath)).catch(() => null) : Promise.resolve(null),
           portfUsPath ? this.getMd(portfUsPath).catch(() => null) : Promise.resolve(null),
           Promise.all(udMetas.map(m => this.getMd(m.path))),
-          Promise.all(uwMetas.map(m => this.getMd(m.path)))
+          Promise.all(uwMetas.map(m => this.getMd(m.path))),
+          allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -92,6 +94,7 @@
         this.state.portfolioUs = pUsMd ? this.P.parsePortfolio(pUsMd) : null;
         this.state.usDailies  = udMetas.map((m, i) => this.P.parseDaily(udMds[i], m));
         this.state.usWeeklies = uwMetas.map((m, i) => this.P.parseWeekly(uwMds[i], m));
+        this.state.allocation = alloc;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -403,7 +406,15 @@
         { label: "Nordisk", portfolio: S.portfolio, live: this.liveMapFor(S.portfolio, S.dailies[0]) },
         { label: "US", portfolio: S.portfolioUs, live: this.liveMapFor(S.portfolioUs, S.usDailies[0]) }
       ];
-      el.innerHTML = this.R.renderTotal(books, 0.5); // 50/50 kapital mellan böckerna (default)
+      // Kapitalvikt ur state/allocation.json (allokerings-routinen). Defensiv:
+      // giltigt tal 0,2–0,8 används, annars 50/50-baslinje.
+      const a = S.allocation;
+      let split = 0.5, meta = { dynamic: false };
+      if (a && typeof a.nordic === "number" && a.nordic >= 0.2 && a.nordic <= 0.8) {
+        split = a.nordic;
+        meta = { dynamic: true, rationale: a.rationale, updatedAt: a.updatedAt, week: a.week };
+      }
+      el.innerHTML = this.R.renderTotal(books, split, meta);
     }
 
     // ---- US-rotation (egen USD-bok, ny flik) ----

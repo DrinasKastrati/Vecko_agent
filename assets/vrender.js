@@ -480,7 +480,7 @@
   // ---- Total: kombinerad översikt över båda böckerna --------------------
   // books = [{ label, portfolio, live }]. splitNordic = kapitalandel (0–1) i
   // första boken. Blended avkastning = böckernas accum viktad med andelarna.
-  function renderTotal(books, splitNordic){
+  function renderTotal(books, splitNordic, meta){
     books = books || [];
     const wN = splitNordic == null ? 0.5 : splitNordic;
     const weights = books.length === 2 ? [wN, 1 - wN] : books.map(() => 1 / (books.length || 1));
@@ -497,6 +497,14 @@
     </div>`;
     const alloc = `<div class="alloc-bar">${books.map((b, i) =>
       `<span class="alloc-seg alloc-seg--${i}" style="width:${Math.round(weights[i] * 100)}%">${esc(b.label)} ${Math.round(weights[i] * 100)} %</span>`).join("")}</div>`;
+    let allocMeta = "";
+    if (meta && meta.dynamic === false){
+      allocMeta = `<div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> baslinje 50/50 – allokerings-routinen har inte kört ännu.</div>`;
+    } else if (meta && (meta.rationale || meta.updatedAt)){
+      const upd = meta.updatedAt ? String(meta.updatedAt).slice(0, 10) : "";
+      allocMeta = `<div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> ${esc(strip(meta.rationale) || "–")}`
+        + `<span class="alloc-meta-t">satt av allokerings-routinen${upd ? " · " + esc(upd) : ""}${meta.week ? " · " + esc(meta.week) : ""}</span></div>`;
+    }
     const rows = [];
     books.forEach((b, i) => real(b).forEach(o => {
       const tk = (o["Yahoo-ticker"] || "").trim().toUpperCase();
@@ -510,7 +518,7 @@
         }).join("")}</tbody></table>`
       : `<div class="empty">Inga öppna positioner i någon bok just nu.</div>`;
     return kpis
-      + `<h3 class="sub">Kapitalfördelning</h3>${alloc}`
+      + `<h3 class="sub">Kapitalfördelning</h3>${alloc}${allocMeta}`
       + `<h3 class="sub">Alla positioner</h3>${tbl}`
       + `<div class="stat-note">Blended = böckernas ackumulerade avkastning viktad med kapitalfördelningen (${books.map((b, i) => b.label + " " + Math.round(weights[i] * 100) + " %").join(" / ")}). Rena procenttal – ingen valutaomräkning. P/L per position ur prices.json.</div>`;
   }
