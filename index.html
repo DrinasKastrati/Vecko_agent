@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0e17'/%3E%3Crect x='8' y='11' width='4' height='13' rx='1' fill='%2326d07c'/%3E%3Crect x='9' y='6' width='2' height='6' fill='%2326d07c'/%3E%3Crect x='9' y='23' width='2' height='4' fill='%2326d07c'/%3E%3Crect x='20' y='8' width='4' height='11' rx='1' fill='%23ff5470'/%3E%3Crect x='21' y='5' width='2' height='4' fill='%23ff5470'/%3E%3Crect x='21' y='18' width='2' height='7' fill='%23ff5470'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0F19'/%3E%3Crect x='8' y='11' width='4' height='13' rx='1' fill='%2310B981'/%3E%3Crect x='9' y='6' width='2' height='6' fill='%2310B981'/%3E%3Crect x='9' y='23' width='2' height='4' fill='%2310B981'/%3E%3Crect x='20' y='8' width='4' height='11' rx='1' fill='%23EF4444'/%3E%3Crect x='21' y='5' width='2' height='4' fill='%23EF4444'/%3E%3Crect x='21' y='18' width='2' height='7' fill='%23EF4444'/%3E%3C/svg%3E" />
 <style>
   :root{
     /* ===== Tema 1: Algorithmic Night (Dark / Quant) ===== */
@@ -33,16 +33,16 @@
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   html{scroll-behavior:smooth}
-  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#12203a 0%,var(--bg) 55%) fixed,var(--bg);
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#141E38 0%,var(--bg) 55%) fixed,var(--bg);
     color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
   a{color:var(--blue);text-decoration:none}
   a:hover{text-decoration:underline}
   ::-webkit-scrollbar{width:11px;height:11px}
-  ::-webkit-scrollbar-thumb{background:#22304a;border-radius:8px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#2A3650;border-radius:8px;border:2px solid var(--bg)}
   ::-webkit-scrollbar-track{background:transparent}
 
   .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;
-    padding:12px 22px;background:rgba(9,13,22,.82);backdrop-filter:blur(12px);
+    padding:12px 22px;background:rgba(8,11,20,.82);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--border)}
   .brand{display:flex;align-items:center;gap:11px;min-width:0}
   .brand .logo{width:30px;height:30px;flex:0 0 auto}
@@ -62,7 +62,7 @@
   .btn svg{width:14px;height:14px}
 
   .subnav{position:sticky;top:56px;z-index:40;display:flex;gap:4px;padding:8px 18px;overflow-x:auto;
-    background:rgba(9,13,22,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    background:rgba(8,11,20,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
   .subnav a{color:var(--muted);font-size:13px;padding:7px 14px;border-radius:8px;white-space:nowrap;letter-spacing:.02em}
   .subnav a:hover{color:var(--text);background:var(--panel);text-decoration:none}
   .subnav a{cursor:pointer}
@@ -330,7 +330,7 @@
 
   /* ---- kurshistorik-modal ---- */
   .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
-    background:rgba(5,8,14,.72);backdrop-filter:blur(4px);padding:20px}
+    background:rgba(6,9,16,.75);backdrop-filter:blur(4px);padding:20px}
   .modal.open{display:flex}
   .modal-box{background:var(--panel);border:1px solid var(--border2);border-radius:16px;box-shadow:var(--shadow);
     width:min(720px,94vw);padding:16px 18px}
@@ -383,7 +383,7 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <svg class="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0e1626"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#26d07c"/><rect x="9" y="6" width="2" height="6" fill="#26d07c"/><rect x="9" y="23" width="2" height="4" fill="#26d07c"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#ff5c78"/><rect x="21" y="5" width="2" height="4" fill="#ff5c78"/><rect x="21" y="18" width="2" height="7" fill="#ff5c78"/></svg>
+      <svg class="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#141C2E"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
       <div>
         <h1>Aktie bot</h1>
         <div class="sub">Automatiserat beslutsstöd · veckorotation</div>
