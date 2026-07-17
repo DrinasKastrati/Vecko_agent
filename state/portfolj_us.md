@@ -1,5 +1,5 @@
 # Portfölj – US-rotation (USD)
-**Senast uppdaterad:** 2026-07-17 (baslinje – US-rotationen initierad, ingen position öppnad ännu)
+**Senast uppdaterad:** 2026-07-17 (daglig bevakning – inga positioner öppnade, väntar på första veckorotationen mån 2026-07-20)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
