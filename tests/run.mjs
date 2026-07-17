@@ -249,5 +249,34 @@ ok("US renderHoldings USD live", VR.renderHoldings(
 ).includes("185 USD"));
 ok("US KPIs render", VR.renderKPIs(usP, null).includes("Ackumulerad avkastning"));
 
+// ---- conviction-viktad sizing (ersätter fast 50/50) ----
+ok("weightFrac reads Vikt", VP.weightFrac({ "Vikt": "60 %" }) === 0.6 && VP.weightFrac({ "Vikt": "40 %" }) === 0.4);
+ok("weightFrac default 50", VP.weightFrac({ "Aktie": "X" }) === 0.5 && VP.weightFrac({}) === 0.5);
+ok("weightFrac clamps invalid", VP.weightFrac({ "Vikt": "0 %" }) === 0.5 && VP.weightFrac({ "Vikt": "150 %" }) === 0.5);
+const wHist = [{ "Aktie": "A", "Utfall %": "+10 %", "Vikt": "60 %" }, { "Aktie": "B", "Utfall %": "-10 %", "Vikt": "40 %" }];
+const wStats = VP.computeTradeStats(wHist);
+ok("weighted chain", Math.abs(wStats.chainedPct - ((1 + 0.6 * 0.1) * (1 - 0.4 * 0.1) - 1) * 100) < 1e-9);
+const eqStats = VP.computeTradeStats([{ "Aktie": "A", "Utfall %": "+10 %" }, { "Aktie": "B", "Utfall %": "-10 %" }]);
+ok("default 50/50 chain back-compat", Math.abs(eqStats.chainedPct - ((1 + 0.5 * 0.1) * (1 - 0.5 * 0.1) - 1) * 100) < 1e-9);
+ok("heldCard shows weight pill", VR.renderHoldings(null,
+  { holdings: [{ "Aktie": "Nvidia", "Yahoo-ticker": "NVDA", "Börs": "NASDAQ", "Entry": "180", "Stop-loss": "170", "Målkurs": "200", "Vikt": "60 %" }], pending: [] }, {}, {}
+).includes("wt-pill") === true);
+
+// ---- combinedReturn + Total-vyn ----
+ok("combinedReturn 50/50", VP.combinedReturn({ accum: 10 }, { accum: 4 }, 0.5) === 7);
+ok("combinedReturn weighted", Math.abs(VP.combinedReturn({ accum: 10 }, { accum: 0 }, 0.7) - 7) < 1e-9);
+ok("combinedReturn one book", VP.combinedReturn({ accum: 8 }, null, 0.5) === 4);
+ok("combinedReturn null both", VP.combinedReturn(null, null, 0.5) === null);
+const totBooks = [
+  { label: "Nordisk", portfolio: { accum: 5, holdings: [{ "Aktie": "Alleima", "Yahoo-ticker": "ALLEI.ST", "Entry": "97", "Vikt": "50 %" }] }, live: { "ALLEI.ST": { price: 99, currency: "SEK", pnlPct: 2.1 } } },
+  { label: "US", portfolio: { accum: 3, holdings: [{ "Aktie": "Nvidia", "Yahoo-ticker": "NVDA", "Entry": "180", "Vikt": "60 %" }] }, live: { "NVDA": { price: 185, currency: "USD", pnlPct: 2.8 } } }
+];
+const totHtml = VR.renderTotal(totBooks, 0.5);
+ok("renderTotal blended KPI", totHtml.includes("Blended avkastning") && totHtml.includes("+4.00 %"));
+ok("renderTotal both books in table", totHtml.includes("Alleima") && totHtml.includes("Nvidia") && totHtml.includes("book-badge--0") && totHtml.includes("book-badge--1"));
+ok("renderTotal alloc bar", totHtml.includes("alloc-seg") && totHtml.includes("Nordisk 50 %") && totHtml.includes("US 50 %"));
+ok("renderTotal live P/L", totHtml.includes("185 USD") && totHtml.includes("99 SEK"));
+ok("renderTotal empty books", VR.renderTotal([{ label: "Nordisk", portfolio: { accum: null, holdings: [] } }, { label: "US", portfolio: { accum: null, holdings: [] } }], 0.5).includes("Inga öppna positioner"));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

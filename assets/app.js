@@ -157,6 +157,7 @@
       const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
+      this.renderTotalView();
       this.renderUs();
       this.el("repoFoot").href = this.repoURL;
       this.setupReportPicker();
@@ -393,6 +394,16 @@
       };
       try { body.innerHTML = '<div class="cmp-grid">' + (await col(a)) + (await col(b)) + '</div>'; }
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta analyserna.</div>'; }
+    }
+
+    // ---- Total: kombinerad översikt (blended avkastning + båda böckerna) ----
+    renderTotalView() {
+      const S = this.state, el = this.el("totalBody"); if (!el) return;
+      const books = [
+        { label: "Nordisk", portfolio: S.portfolio, live: this.liveMapFor(S.portfolio, S.dailies[0]) },
+        { label: "US", portfolio: S.portfolioUs, live: this.liveMapFor(S.portfolioUs, S.usDailies[0]) }
+      ];
+      el.innerHTML = this.R.renderTotal(books, 0.5); // 50/50 kapital mellan böckerna (default)
     }
 
     // ---- US-rotation (egen USD-bok, ny flik) ----

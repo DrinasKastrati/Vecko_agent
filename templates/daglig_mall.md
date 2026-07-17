@@ -1,6 +1,7 @@
 # Daglig bevakning – Nordisk Rotation
 **Datum:** [åååå-mm-dd] | **Läge:** Daglig bevakning
 **Marknadsläget i korthet:** [1–2 meningar: index, riskaptit, ev. makrohändelse senaste dygnet]
+**Portföljvikt & kassa:** [t.ex. "50 % TICKER1 / 50 % TICKER2", "60 % TICKER1 + 40 % kassa" eller "100 % kassa" – spegla portfolj.md:s vikter]
 
 ---
 

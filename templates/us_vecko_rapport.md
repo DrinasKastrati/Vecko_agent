@@ -10,8 +10,9 @@
 | [TICKER 1] | [$kurs] | [$kurs] | [±x %] | [Nej / Stop @ $x / Mål @ $x] |
 | [TICKER 2] | [$kurs] | [$kurs] | [±x %] | [Nej / Stop @ $x / Mål @ $x] |
 
-**Veckans portföljutfall (50/50):** [±x %]
+**Veckans portföljutfall (viktat):** [±x %]
 **Ackumulerad avkastning sedan strategistart:** [±x %]
+**Portföljallokering denna vecka:** [t.ex. "50 % TICKER1 / 50 % TICKER2", "60 % TICKER1 / 40 % TICKER2", eller "60 % TICKER1 + 40 % kassa" – motivera varje avvikelse från 50/50]
 **Lärdom:** [1–2 meningar: vad gick enligt plan, vad missades?]
 
 ---
@@ -39,10 +40,12 @@
 |---|---|---|---|
 | [$x] | [$x (−y %)] | [$x (+y %)] | [1:z] |
 
+**Planerad vikt:** [40–60 % av kapitalet – motivera kort om ≠ 50 %]
+
 ---
 
 ## Case 2: [BOLAGSNAMN] ([TICKER] / [NYSE/NASDAQ])
-*[Exakt samma struktur som Case 1]*
+*[Exakt samma struktur som Case 1, inkl. Planerad vikt]*
 
 ---
 

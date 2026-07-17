@@ -2,6 +2,7 @@
 **Datum:** [åååå-mm-dd] | **Läge:** Daglig bevakning (USD)
 **Marknadsläget i korthet:** [1–2 meningar: S&P 500/Nasdaq, riskaptit, DXY/räntor, ev. makrohändelse senaste dygnet]
 **Pre-/after-hours:** [Kort: rörde sig något innehav i pre-market eller efter gårdagens stängning? Rapport släppt after-hours? "Inga väsentliga rörelser" om lugnt.]
+**Portföljvikt & kassa:** [t.ex. "50 % TICKER1 / 50 % TICKER2", "60 % TICKER1 + 40 % kassa" eller "100 % kassa" – spegla portfolj_us.md:s vikter]
 
 ---
 

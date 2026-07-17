@@ -192,16 +192,17 @@
     const stop = strip(o["Stop-loss"] || "");
     const target = strip(o["Målkurs"] || "");
     const edate = strip(o["Entry-datum"] || "");
+    const weight = strip(o["Vikt"] || "");
     const note = strip(o["Anteckning"] || "");
     return `<div class="hold">
       <div class="hold-top">
         <div class="hold-name">${esc(name)}</div>
-        <span class="badge badge--behall">INNEHAV</span>
+        <div class="hold-badges">${weight ? `<span class="wt-pill" title="Andel av portföljkapitalet">${esc(weight)}</span>` : ""}<span class="badge badge--behall">INNEHAV</span></div>
       </div>
       <div class="hold-tickers">${ticker ? tickerPill(ticker) : ""}${exchange ? pill(exchange) : ""}</div>
       <div class="hold-grid">
         <div><span class="k">Entry</span><span class="v">${esc(entry || "–")}</span></div>
-        <div><span class="k">Entry-datum</span><span class="v">${esc(edate || "–")}</span></div>
+        <div><span class="k">Vikt</span><span class="v">${esc(weight || "50 %")}</span></div>
         <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
       </div>
@@ -476,6 +477,44 @@
       </button>`).join("") + `</div>`;
   }
 
+  // ---- Total: kombinerad översikt över båda böckerna --------------------
+  // books = [{ label, portfolio, live }]. splitNordic = kapitalandel (0–1) i
+  // första boken. Blended avkastning = böckernas accum viktad med andelarna.
+  function renderTotal(books, splitNordic){
+    books = books || [];
+    const wN = splitNordic == null ? 0.5 : splitNordic;
+    const weights = books.length === 2 ? [wN, 1 - wN] : books.map(() => 1 / (books.length || 1));
+    const real = b => ((b.portfolio && b.portfolio.holdings) || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    let blended = 0, haveAny = false;
+    books.forEach((b, i) => { const a = b.portfolio && b.portfolio.accum; if (a != null) { blended += a * weights[i]; haveAny = true; } });
+    const kpi = (label, val, cls, sub) =>
+      `<div class="kpi"><div class="kpi-label">${esc(label)}</div><div class="kpi-value ${cls || ""}">${val}</div>${sub ? `<div class="kpi-sub">${esc(sub)}</div>` : ""}</div>`;
+    let openCount = 0; books.forEach(b => openCount += real(b).length);
+    const kpis = `<div class="kpi-grid">
+      ${kpi("Blended avkastning", haveAny ? esc(signPct(blended)) : "–", "num " + trendClass(haveAny ? blended : null), "viktad över böckerna")}
+      ${books.map((b, i) => kpi(b.label + " avkastning", esc(signPct(b.portfolio && b.portfolio.accum)), "num " + trendClass(b.portfolio && b.portfolio.accum), Math.round(weights[i] * 100) + " % av kapitalet")).join("")}
+      ${kpi("Öppna positioner", String(openCount), "num", books.map(b => real(b).length + " " + b.label.toLowerCase()).join(" · "))}
+    </div>`;
+    const alloc = `<div class="alloc-bar">${books.map((b, i) =>
+      `<span class="alloc-seg alloc-seg--${i}" style="width:${Math.round(weights[i] * 100)}%">${esc(b.label)} ${Math.round(weights[i] * 100)} %</span>`).join("")}</div>`;
+    const rows = [];
+    books.forEach((b, i) => real(b).forEach(o => {
+      const tk = (o["Yahoo-ticker"] || "").trim().toUpperCase();
+      rows.push({ label: b.label, bi: i, name: strip(o["Aktie"]), tk, entry: strip(o["Entry"]), weight: strip(o["Vikt"]) || "50 %", lv: (b.live || {})[tk] });
+    }));
+    const tbl = rows.length
+      ? `<table class="tbl total-tbl"><thead><tr><th>Bok</th><th>Aktie</th><th>Ticker</th><th>Vikt</th><th>Entry</th><th>Kurs</th><th>P/L</th></tr></thead><tbody>${rows.map(r => {
+          const px = r.lv && r.lv.price != null ? (r.lv.price + (r.lv.currency ? " " + r.lv.currency : "")) : "–";
+          const pl = r.lv && r.lv.pnlPct != null ? `<span class="${r.lv.pnlPct >= 0 ? "pos" : "neg"}">${esc(signPct(r.lv.pnlPct))}</span>` : "–";
+          return `<tr><td><span class="book-badge book-badge--${r.bi}">${esc(r.label)}</span></td><td>${esc(r.name)}</td><td>${tickerPill(r.tk)}</td><td>${esc(r.weight)}</td><td>${esc(r.entry || "–")}</td><td>${esc(px)}</td><td>${pl}</td></tr>`;
+        }).join("")}</tbody></table>`
+      : `<div class="empty">Inga öppna positioner i någon bok just nu.</div>`;
+    return kpis
+      + `<h3 class="sub">Kapitalfördelning</h3>${alloc}`
+      + `<h3 class="sub">Alla positioner</h3>${tbl}`
+      + `<div class="stat-note">Blended = böckernas ackumulerade avkastning viktad med kapitalfördelningen (${books.map((b, i) => b.label + " " + Math.round(weights[i] * 100) + " %").join(" / ")}). Rena procenttal – ingen valutaomräkning. P/L per position ur prices.json.</div>`;
+  }
+
   // ---- intradag-signaler (monitor) -------------------------------------
   function renderAlerts(alerts){
     const active = (alerts && alerts.active) || [];
@@ -503,7 +542,7 @@
   const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
-    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults };
+    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

@@ -240,6 +240,18 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   **Schemalagd Cowork-task:** `vecko-agent-us-rotation` (mån–fre 15:00, pekar på Git_proj-kopian).
   Testsviten: 100 tester, gröna. OBS: befintliga tasks (scout/nordisk) är `enabled:false` och
   pekar ännu på den UTFASADE OneDrive-kopian – US-tasken pekar korrekt på Git_proj.
+- ✅ 2026-07-17 (conviction-viktning + Total-vy): **fast 50/50 ersatt av conviction-viktad sizing**
+  i BÅDA böckerna. Prompterna tillåter nu 40–60 % per aktie + kassa (1 aktie + kassa, eller 100 %
+  kassa vid svag conviction), varje avvikelse från 50/50 måste motiveras. Ny "Vikt"-kolumn i
+  `Aktuellt innehav` + `Historik` (båda portfolj-filerna) och `Planerad vikt` i pending/veckomallar
+  (positionellt parsade tabeller lämnades orörda; vikt läses via kolumnnamn så bakåtkompatibelt).
+  **Avkastningsmatematiken** (`computeTradeStats`) läser nu per-affär-vikt (`VParse.weightFrac`,
+  default 0,5) i stället för hårdkodat 0,5 → korrekt kedjad avkastning vid ojämna vikter.
+  **Ny "Total"-flik** (FÖRSTA fliken, default): blended avkastning viktad med kapitalfördelningen
+  mellan böckerna (default 50/50, `VParse.combinedReturn`), kapitalfördelnings-stapel och en
+  kombinerad tabell med alla öppna positioner (bok-badge + live-P/L ur prices.json). Rena
+  procenttal ⇒ ingen FX. `VRender.renderTotal`; "Översikt"-fliken heter nu "Nordisk". Vikt visas
+  som pill på innehavskorten (`heldCard`). Testsviten: 115 tester, gröna.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

@@ -457,6 +457,17 @@
     return out;
   }
 
+  // ---- blended avkastning över böckerna (Total-vyn) ----------------------
+  // Viktar varje boks ackumulerade avkastning med kapitalfördelningen. Rena
+  // procenttal ⇒ ingen FX behövs. splitNordic = andel (0–1) i nordiska boken.
+  function combinedReturn(nordicPortfolio, usPortfolio, splitNordic){
+    const wN = (splitNordic == null ? 0.5 : splitNordic), wU = 1 - wN;
+    const n = nordicPortfolio && nordicPortfolio.accum != null ? nordicPortfolio.accum : null;
+    const u = usPortfolio && usPortfolio.accum != null ? usPortfolio.accum : null;
+    if (n == null && u == null) return null;
+    return (n == null ? 0 : n) * wN + (u == null ? 0 : u) * wU;
+  }
+
   // ---- dagsdiff: vad ändrades sedan gårdagens rapport? -------------------
   // Jämför senaste två dagliga rapporterna per ticker. Returnerar
   // { TICKER: { isNew, changes: [{field, from, to, up?}] } } – bara ändrade.
@@ -486,6 +497,14 @@
     return out;
   }
 
+  // Positionsvikt ur en historik-/innehavsrad ("Vikt": "50 %"). Default 0,5
+  // (bakåtkompatibelt: gamla rader utan Vikt-kolumn räknas som 50/50).
+  function weightFrac(o){
+    const key = Object.keys(o || {}).find(k => /vikt/i.test(k));
+    const w = key ? firstNumberPct(o[key]) : null;
+    return (w != null && w > 0 && w <= 100) ? w / 100 : 0.5;
+  }
+
   // ---- trade-statistik (från Historik) ----------------------------------
   function computeTradeStats(history){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
@@ -506,7 +525,7 @@
       if (p != null){
         out.trades++; pcts.push(p);
         if (p > 0){ out.wins++; sumWin += p; } else if (p < 0){ out.losses++; sumLoss += p; }
-        chain *= (1 + 0.5 * p / 100);
+        chain *= (1 + weightFrac(o) * p / 100); // per-affär vikt (default 50 %)
       }
       const d1 = Date.parse(String(o["Entry-datum"] || "").slice(0, 10));
       const d2 = Date.parse(String(o["Stängd"] || "").slice(0, 10));
@@ -529,7 +548,7 @@
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
-    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs
+    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

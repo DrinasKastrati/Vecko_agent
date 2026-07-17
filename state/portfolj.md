@@ -3,14 +3,14 @@
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
-| Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Anteckning |
-|---|---|---|---|---|---|---|---|
-| Alleima | ALLEI.ST | Nasdaq Stockholm | 2026-07-14 | 97,05 kr (prices.json/Yahoo chart API, 2026-07-14T07:45:16Z) | 94,05 kr | 103,25 kr | Vikt 50 %. Primärcase v29; stop/mål proportionellt justerade från plan (97,30/94,30/103,50). Binär Q2-risk fre 17/7 ~11:30 CEST – stop får flyttas UPP, aldrig ned |
+| Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Vikt | Anteckning |
+|---|---|---|---|---|---|---|---|---|
+| Alleima | ALLEI.ST | Nasdaq Stockholm | 2026-07-14 | 97,05 kr (prices.json/Yahoo chart API, 2026-07-14T07:45:16Z) | 94,05 kr | 103,25 kr | 50 % | Primärcase v29; stop/mål proportionellt justerade från plan (97,30/94,30/103,50). Binär Q2-risk fre 17/7 ~11:30 CEST – stop får flyttas UPP, aldrig ned |
 
 ### Pending veckorotation v29 (beslutad i veckorapport-260713.md)
-| Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Status |
-|---|---|---|---|---|---|---|---|
-| Moreld | MORLD.OL | Oslo Børs | Köp ENDAST vid rekyl till ≤ 19,20 NOK (ref. 20,00 NOK, prices.json 14/7 07:20 UTC) | 18,55 NOK | 20,90 NOK | ~1:2,6 | Villkorat rekyl-case – jagas EJ; ingen rekyl = kassa |
+| Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |
+|---|---|---|---|---|---|---|---|---|
+| Moreld | MORLD.OL | Oslo Børs | Köp ENDAST vid rekyl till ≤ 19,20 NOK (ref. 20,00 NOK, prices.json 14/7 07:20 UTC) | 18,55 NOK | 20,90 NOK | ~1:2,6 | 50 % | Villkorat rekyl-case – jagas EJ; ingen rekyl = kassa |
 
 *Nivåerna är planen från veckorapport-260713.md (verifierade kurser ur `state/prices.json`, marketTime 13/7). Justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. Försvarsnamnen Saab (SAAB-B.ST, −11,75 % idag) och Kongsberg (KOG.OL, −13,8 % idag) uteslöts p.g.a. veckans fredsdrivna försvarsras (fallande knivar) och ligger på bubblarlistan. Föregående pending-plan v29 från veckorapport-260710.md (Moreld ≤17,80 / Alleima ≤97,00) triggades aldrig och är ersatt av nivåerna ovan.*
 
@@ -20,5 +20,5 @@
 50 % (reserverad för Moreld-benet; blir kvar i kassa om ingen rekyl ≤ 19,20 NOK sker under veckan)
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
-| Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Skäl (mål/stopp/rotation/katalysator) |
-|---|---|---|---|---|---|---|
+| Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |
+|---|---|---|---|---|---|---|---|
