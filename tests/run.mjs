@@ -218,5 +218,36 @@ ok("parseChart price", FP.parseChart({ chart: { result: [{ meta: { regularMarket
 ok("updatePriceHistory export", typeof FP.updatePriceHistory === "function");
 ok("fetchStooq export", typeof FP.fetchStooq === "function");
 
+// ---- US-rotation (egen USD-bok) ----
+ok("parseFilename us_daily", VP.parseFilename("us-daglig-260717.md").type === "us_daily");
+ok("parseFilename us_weekly", VP.parseFilename("us-veckorapport-260717.md").type === "us_weekly");
+ok("parseFilename nordic unaffected", VP.parseFilename("daglig-260717.md").type === "daily" && VP.parseFilename("veckorapport-260717.md").type === "weekly");
+ok("extractUsPortfolioTickers", (() => {
+  const md = ["| Aktie | Yahoo-ticker | Börs |", "|---|---|---|", "| Nvidia | NVDA | NASDAQ |", "| Apple | AAPL | NASDAQ |"].join("\n");
+  const t = FP.extractUsPortfolioTickers(md);
+  return t.includes("NVDA") && t.includes("AAPL") && !t.includes("AKTIE");
+})());
+ok("extractUsPortfolioTickers dash-skip", FP.extractUsPortfolioTickers("| Aktie | Yahoo-ticker |\n|---|---|\n| – | – |").length === 0);
+const usPf = [
+  "# Portfölj – US-rotation (USD)",
+  "**Ackumulerad avkastning sedan start:** 0 %",
+  "## Aktuellt innehav",
+  "| Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Anteckning |",
+  "|---|---|---|---|---|---|---|---|",
+  "| Nvidia | NVDA | NASDAQ | 2026-07-17 | 180 | 170 | 200 | vikt 50 % |",
+  "## Kassa", "50 %"
+].join("\n");
+const usP = VP.parsePortfolio(usPf);
+ok("US parsePortfolio holdings", usP.holdings.length === 1 && usP.holdings[0]["Yahoo-ticker"] === "NVDA");
+ok("US collectTargets (monitor)", (() => {
+  const t = AL.collectTargets(usPf);
+  return t.held.length === 1 && t.held[0].ticker === "NVDA" && t.held[0].stop === 170 && t.held[0].target === 200;
+})());
+ok("US renderHoldings USD live", VR.renderHoldings(
+  { dateISO: "2026-07-17", holdings: [{ name: "Nvidia", ticker: "NVDA", exchange: "NASDAQ", price: "", since: "", stop: "170", target: "200", decision: "BEHÅLL", news: "", motivation: "" }] },
+  { pending: [] }, { NVDA: { ticker: "NVDA", price: 185, currency: "USD", pnlPct: 2.8, toStopPct: -8, toTargetPct: 8 } }, {}
+).includes("185 USD"));
+ok("US KPIs render", VR.renderKPIs(usP, null).includes("Ackumulerad avkastning"));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

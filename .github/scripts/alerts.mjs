@@ -85,8 +85,10 @@ export function mergeHistory(prev, signals, nowISO){
 }
 
 export async function run(fetchImpl = globalThis.fetch){
-  const md = existsSync("state/portfolj.md") ? readFileSync("state/portfolj.md", "utf8") : "";
-  const targets = collectTargets(md);
+  const mdN = existsSync("state/portfolj.md") ? readFileSync("state/portfolj.md", "utf8") : "";
+  const mdU = existsSync("state/portfolj_us.md") ? readFileSync("state/portfolj_us.md", "utf8") : "";
+  const tN = collectTargets(mdN), tU = collectTargets(mdU);
+  const targets = { held: [...tN.held, ...tU.held], pending: [...tN.pending, ...tU.pending] };
   const tickers = [...new Set([...targets.held.map(h => h.ticker), ...targets.pending.map(p => p.ticker)])];
   const quotes = {};
   for (const t of tickers){ quotes[t] = await fetchQuote(t, fetchImpl); await new Promise(r => setTimeout(r, 250)); }

@@ -69,6 +69,10 @@
       return mk("case", m);
     if ((m = name.match(/^rapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
       return mk("scout", m);
+    if ((m = name.match(/^us-daglig-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
+      return mk("us_daily", m);
+    if ((m = name.match(/^us-veckorapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
+      return mk("us_weekly", m);
     if ((m = name.match(/^analys-(.+?)-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i))){
       const r = mk("analysis", [null, m[2], m[3], m[4], m[5]]);
       r.ticker = m[1].toUpperCase();
@@ -145,7 +149,7 @@
         const o = rowObj(t.header, r);
         o._struck = r.some(c => /~~/.test(c));
         return o;
-      });
+      }).filter(o => o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
     }
     return out;
   }
@@ -357,7 +361,7 @@
 
   // ---- nästa schemalagda routine-körning ----------------------------------
   // OBS: hårdkodat spegelvärde av Cowork-schemat (scout dagligen 07:47,
-  // rotation mån–fre 08:40, lokal tid) – uppdatera här om tasken ändras.
+  // nordisk rotation mån–fre 08:40, US-rotation mån–fre 15:00, lokal tid) – uppdatera här om tasken ändras.
   function nextRoutineRun(now){
     const n = now instanceof Date ? now : new Date(now || Date.now());
     const cands = [];
@@ -370,6 +374,7 @@
       };
       add(7, 47, "scout");
       if (dow >= 1 && dow <= 5) add(8, 40, "rotation");
+      if (dow >= 1 && dow <= 5) add(15, 0, "us-rotation"); // före US-öppning (CEST)
     }
     if (!cands.length) return null;
     cands.sort((a, b) => a.t - b.t);

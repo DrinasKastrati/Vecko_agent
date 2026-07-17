@@ -14,6 +14,7 @@
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
         metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null, alerts: null,
+        portfolioUs: null, usDailies: [], usWeeklies: [],
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -60,10 +61,13 @@
         const queuePath = paths.find(p => /(^|\/)analysis_queue\.json$/i.test(p));
         const histPath = paths.find(p => /(^|\/)price_history\.json$/i.test(p));
         const alertsPath = paths.find(p => /(^|\/)alerts\.json$/i.test(p));
+        const portfUsPath = paths.find(p => /(^|\/)portfolj_us\.md$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts] = await Promise.all([
+        const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
+        const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -71,7 +75,10 @@
           pricesPath ? this.fetchJSON(this.raw(pricesPath)).catch(() => null) : Promise.resolve(null),
           queuePath ? this.fetchJSON(this.raw(queuePath)).catch(() => null) : Promise.resolve(null),
           histPath ? this.fetchJSON(this.raw(histPath)).catch(() => null) : Promise.resolve(null),
-          alertsPath ? this.fetchJSON(this.raw(alertsPath)).catch(() => null) : Promise.resolve(null)
+          alertsPath ? this.fetchJSON(this.raw(alertsPath)).catch(() => null) : Promise.resolve(null),
+          portfUsPath ? this.getMd(portfUsPath).catch(() => null) : Promise.resolve(null),
+          Promise.all(udMetas.map(m => this.getMd(m.path))),
+          Promise.all(uwMetas.map(m => this.getMd(m.path)))
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -82,6 +89,9 @@
         this.state.dailies  = dMetas.map((m, i) => this.P.parseDaily(dMds[i], m));
         this.state.weeklies = wMetas.map((m, i) => this.P.parseWeekly(wMds[i], m));
         this.state.scouts   = sMetas.map((m, i) => this.P.parseScout(sMds[i], m));
+        this.state.portfolioUs = pUsMd ? this.P.parsePortfolio(pUsMd) : null;
+        this.state.usDailies  = udMetas.map((m, i) => this.P.parseDaily(udMds[i], m));
+        this.state.usWeeklies = uwMetas.map((m, i) => this.P.parseWeekly(uwMds[i], m));
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -89,16 +99,16 @@
     }
 
     // Live-P/L per innehav: portfolj.md-rader (entry/stopp/mål) + prices.json.
-    buildLiveMap() {
-      const S = this.state, out = {};
-      const quotes = S.prices && S.prices.quotes;
+    // Live-P/L för valfri bok (nordisk eller US): portfolj-rader + prices.json,
+    // med fallback till dagens beslut-kort utan portföljrad.
+    liveMapFor(portfolio, latestDaily) {
+      const out = {};
+      const quotes = this.state.prices && this.state.prices.quotes;
       if (!quotes) return out;
-      ((S.portfolio && S.portfolio.holdings) || []).forEach(row => {
+      ((portfolio && portfolio.holdings) || []).forEach(row => {
         const lv = this.P.computeHoldingLive(row, quotes);
         if (lv) out[lv.ticker] = lv;
       });
-      // fallback: dagens beslut-kort utan portföljrad får ändå live-kurs
-      const latestDaily = S.dailies[0];
       ((latestDaily && latestDaily.holdings) || []).forEach(h => {
         const t = (h.ticker || "").trim().toUpperCase();
         const q = t && quotes[t];
@@ -107,6 +117,7 @@
       });
       return out;
     }
+    buildLiveMap() { return this.liveMapFor(this.state.portfolio, this.state.dailies[0]); }
 
     renderPxBadge() {
       const el = this.el("pxBadge"); if (!el) return;
@@ -146,6 +157,7 @@
       const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
+      this.renderUs();
       this.el("repoFoot").href = this.repoURL;
       this.setupReportPicker();
       this.drawChart();
@@ -383,6 +395,38 @@
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta analyserna.</div>'; }
     }
 
+    // ---- US-rotation (egen USD-bok, ny flik) ----
+    renderUs() {
+      const S = this.state, R = this.R;
+      const el = this.el("usBody"); if (!el) return;
+      const p = S.portfolioUs;
+      if (!p) {
+        el.innerHTML = '<div class="empty">Ingen US-rotation ännu \u2013 k\u00f6r US-routinen (skapar <code>state/portfolj_us.md</code> + <code>reports/us_*</code>).</div>';
+      } else {
+        const latest = S.usDailies[0] || null;
+        const live = this.liveMapFor(p, latest);
+        const diff = this.P.diffDailies(S.usDailies[0], S.usDailies[1]);
+        el.innerHTML = R.renderKPIs(p, latest) + R.renderMarket(latest) + R.renderHoldings(latest, p, live, {}, diff);
+      }
+      this.setupUsReportPicker();
+    }
+    setupUsReportPicker() {
+      const sel = this.el("usReportSelect"); if (!sel) return;
+      const metas = this.state.metas.filter(m => m.type === "us_weekly" || m.type === "us_daily");
+      sel.innerHTML = metas.map((m, i) => `<option value="${this.R.esc(m.name)}"${i === 0 ? " selected" : ""}>${this.R.esc(m.dateISO)} \u2014 ${m.type === "us_weekly" ? "Vecko" : "Daglig"} \u00b7 ${this.R.esc(m.label)}</option>`).join("");
+      if (sel.value) this.showUsReport(sel.value);
+      else this.el("usReportBody").innerHTML = '<div class="empty">Inga US-rapporter \u00e4nnu \u2013 skapas n\u00e4r US-routinen k\u00f6rt.</div>';
+    }
+    async showUsReport(name) {
+      const meta = this.state.metas.find(m => m.name === name);
+      const body = this.el("usReportBody"); if (!body) return;
+      if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
+      const gh = this.el("usGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
+      body.innerHTML = '<div class="empty">H\u00e4mtar\u2026</div>';
+      try { body.innerHTML = this.mdToHtml(await this.getMd(meta.path)); }
+      catch (e) { body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
+    }
+
     // ---- report viewer ----
     setupReportPicker() {
       const sel = this.el("reportSelect");
@@ -565,6 +609,8 @@
       if (ab) ab.addEventListener("click", () => this.analyse(ai ? ai.value : ""));
       if (ai) ai.addEventListener("keydown", e => { if (e.key === "Enter") this.analyse(ai.value); });
       this.el("reportSelect").addEventListener("change", e => this.showReport(e.target.value));
+      const usSel = this.el("usReportSelect");
+      if (usSel) usSel.addEventListener("change", e => this.showUsReport(e.target.value));
       this.el("rawToggle").addEventListener("change", () => { const b = this.el("reportBody"); const md = b.dataset.raw || ""; if (!md) return; b.innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md); });
       document.querySelectorAll(".rtype").forEach(btn => btn.addEventListener("click", () => {
         document.querySelectorAll(".rtype").forEach(b => b.classList.remove("on"));

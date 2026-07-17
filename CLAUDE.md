@@ -223,6 +223,23 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   `pull --rebase -X theirs` (färsk action-data vinner konflikter) + `rebase --abort`-städning
   mellan försöken, samt `fetch-depth: 0` på checkout (grund klon kan inte rebasa när main
   hunnit flytta sig → fatal 128).
+- ✅ 2026-07-17 (US-rotation): **ny sjunde del** – en EGEN, USD-denominerad amerikansk
+  rotationsportfölj, HELT SEPARAT från nordiska rotationen och scout-idéerna. Egen prompt
+  (`prompts/us_dagligprompt.md`, kör ~15:00 CET före US-öppning, LÄGE A måndag / LÄGE B
+  bevakning), egna mallar (`templates/us_daglig_mall.md`, `us_vecko_rapport.md`), config
+  (`config/fokus_us_rotation.md`), tillstånd (`state/portfolj_us.md`, USD-bok, baslinje 0 %) och
+  rapporter (`reports/us_daily/us-daglig-yymmdd.md`, `reports/us_weekly/us-veckorapport-yymmdd.md`).
+  **Pre-/after-hours-krav:** prompten kräver att pre-market och gårdagens after-hours-rörelser
+  alltid vägs in (stop/mål brutet utanför reguljär session = brutet). **Prisinfra:**
+  `fetch-prices.mjs` fick `extractUsPortfolioTickers` + `newestUsWeekly` så US-innehavens kurser
+  garanterat hämtas; delar `prices.json`/`watchlist_us.txt`. **Monitor:** `alerts.mjs` läser nu
+  BÅDE `portfolj.md` och `portfolj_us.md` (US-tickers får intradag-signaler). **Dashboard:** ny
+  flik "US-rotation" (KPIs + innehav/beslut med live-USD-P/L + egen rapportväljare); parsers
+  återanvänds oförändrat (parseFilename fick `us_daily`/`us_weekly`, `nextRoutineRun` fick
+  us-rotation 15:00, `parsePortfolio` filtrerar nu bort dash-placeholder-rader ur pending).
+  **Schemalagd Cowork-task:** `vecko-agent-us-rotation` (mån–fre 15:00, pekar på Git_proj-kopian).
+  Testsviten: 100 tester, gröna. OBS: befintliga tasks (scout/nordisk) är `enabled:false` och
+  pekar ännu på den UTFASADE OneDrive-kopian – US-tasken pekar korrekt på Git_proj.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

@@ -114,6 +114,42 @@ export function extractUsCaseTickers(text){
   return [...out];
 }
 
+// Senaste us-veckorapporten (US-rotationens case) – för prisinsamling.
+export function newestUsWeekly(){
+  const dirs = ["reports/us_weekly", "."];
+  let best = null;
+  for (const d of dirs){
+    let files = [];
+    try { files = readdirSync(d); } catch { continue; }
+    for (const f of files){
+      const m = f.match(/^us-veckorapport-(\d{6})(?:_\d+)?\.md$/i);
+      if (m && (!best || m[1] > best.key)) best = { key: m[1], path: d + "/" + f };
+    }
+  }
+  return best ? readFirst([best.path]) : "";
+}
+
+// Plockar US-symboler ur portfolj_us.md:s tabeller (Yahoo-ticker-kolumnen).
+export function extractUsPortfolioTickers(md){
+  if (!md) return [];
+  const out = new Set();
+  const lines = md.split("\n");
+  let tkCol = -1;
+  for (const ln of lines){
+    if (!/^\s*\|.*\|\s*$/.test(ln)) { tkCol = -1; continue; }
+    const cells = ln.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+    if (tkCol < 0){ // headerrad
+      tkCol = cells.findIndex(c => /yahoo|ticker/i.test(c));
+      continue;
+    }
+    if (tkCol >= 0 && cells[tkCol]){
+      const t = cells[tkCol].toUpperCase();
+      if (/^\^?[A-Z]{1,6}(-[A-Z]{1,3})?$/.test(t) && !/^-+$/.test(t)) out.add(t);
+    }
+  }
+  return [...out];
+}
+
 // Läser config/watchlist_us.txt (US-symbol, <MYNT>-USD, ^INDEX, klass-aktie) + senaste
 // scout-rapportens case.
 export function collectUsTickers(){
@@ -125,6 +161,9 @@ export function collectUsTickers(){
     if (/^\^?[A-Z]{1,6}$/.test(t) || /^[A-Z0-9]{2,6}-USD$/.test(t) || /^[A-Z]{1,5}\.[A-Z]{1,2}$/.test(t)) set.add(t);
   }
   for (const t of extractUsCaseTickers(newestScout())) set.add(t);
+  // US-rotationens egna innehav/case (så deras kurser garanterat hämtas):
+  for (const t of extractUsPortfolioTickers(readFirst(["state/portfolj_us.md", "portfolj_us.md"]))) set.add(t);
+  for (const t of extractUsCaseTickers(newestUsWeekly())) set.add(t);
   return [...set];
 }
 
