@@ -1,22 +1,22 @@
 # Portfölj – US-rotation (USD)
-**Senast uppdaterad:** 2026-07-20 06:00 UTC (LÄGE A – första veckorotationen v30 beslutad, se `reports/us_weekly/us-veckorapport-260720.md`; två villkorade pending-köp, inget triggat ännu)
+**Senast uppdaterad:** 2026-07-21 (LÄGE B – JPM-pending TRIGGAD via dagslägsta 337,37 USD mån 2026-07-20, position öppnad; se `reports/us_daily/us-daglig-260721.md`. XOM-pending kvarstår ej triggad.)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Vikt | Anteckning |
 |---|---|---|---|---|---|---|---|---|
-| – | – | – | – | – | – | – | – | – |
+| JPMorgan Chase | JPM | NYSE | 2026-07-21 | 338,00 USD | 330,50 USD | 356,00 USD | 45 % | Rekyl-villkor (≤ 338,00 USD) triggat via intradagslägsta 337,37 USD mån 2026-07-20 (prices.json/Yahoo chart API, marketTime 2026-07-20T20:00:02Z); stängde 338,87 USD samma dag |
 
 ### Pending veckorotation v30 (beslutad i us-veckorapport-260720.md)
 | Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |
 |---|---|---|---|---|---|---|---|---|
-| Exxon Mobil | XOM | NYSE | Köp ENDAST vid rekyl till ≤ 142,00 USD (ref. 147,36 USD, prices.json/Yahoo chart API, marketTime 2026-07-17T20:03:17Z) | 137,50 USD | 158,00 USD | ~1:3,6 | 55 % | Villkorat rekyl-case – jagas EJ; ingen rekyl = kassa |
-| JPMorgan Chase | JPM | NYSE | Köp ENDAST vid rekyl till ≤ 338,00 USD (ref. 341,10 USD, prices.json/Yahoo chart API, marketTime 2026-07-17T20:00:02Z) | 330,50 USD | 356,00 USD | ~1:2,4 | 45 % | Villkorat rekyl-case – jagas EJ; ingen rekyl = kassa |
+| Exxon Mobil | XOM | NYSE | Köp ENDAST vid rekyl till ≤ 142,00 USD (ref. 147,36 USD, prices.json/Yahoo chart API, marketTime 2026-07-17T20:03:17Z) | 137,50 USD | 158,00 USD | ~1:3,6 | 55 % | Villkorat rekyl-case – jagas EJ; EJ TRIGGAD (dagslägsta 146,25 USD mån 20/7, ~3 % över villkoret; se `us-daglig-260721.md`) |
+| ~~JPMorgan Chase~~ | ~~JPM~~ | ~~NYSE~~ | ~~Köp ENDAST vid rekyl till ≤ 338,00 USD~~ | ~~330,50 USD~~ | ~~356,00 USD~~ | ~~1:2,4~~ | ~~45 %~~ | **TRIGGAT 2026-07-21** (dagslägsta 337,37 USD mån 20/7) → position öppnad, se "Aktuellt innehav" ovan |
 
-*Nivåerna är planen från `us-veckorapport-260720.md` (verifierade kurser ur `state/prices.json`, marketTime 17/7 – senaste tillgängliga verifierade stängning inför den första körningen; ingen färsk måndags-premarket kunde verifieras via sökning för exakt pris/tidpunkt). Justeras proportionellt mot faktisk verifierad kurs innan resp. position öppnas. Detta är bokens FÖRSTA veckorotation – ingen tidigare pending-plan att ersätta.*
+*Nivåerna är planen från `us-veckorapport-260720.md` (verifierade kurser ur `state/prices.json`, marketTime 17/7 – senaste tillgängliga verifierade stängning inför den första körningen). XOM-raden justeras proportionellt mot faktisk verifierad kurs när/om positionen öppnas.*
 
 ## Kassa
-100 % (reserverad för de två benen ovan – 55 % öronmärkt XOM, 45 % öronmärkt JPM; förblir kvar i kassa för respektive ben om ingen rekyl till angiven nivå sker under veckan)
+55 % (öronmärkt XOM-pending; kvarstår i kassa om ingen rekyl till ≤ 142,00 USD sker)
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |
