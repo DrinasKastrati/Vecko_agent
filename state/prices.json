@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-21T07:30:39.714Z",
+  "generatedAt": "2026-07-21T08:08:48.104Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning.",
   "tickerCount": 32,
@@ -19,14 +19,14 @@
     },
     "ALLEI.ST": {
       "symbol": "ALLEI.ST",
-      "price": 107.4,
+      "price": 106.9,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-21T07:28:44.000Z",
+      "marketTime": "2026-07-21T08:07:03.000Z",
       "marketState": null,
       "previousClose": 98.5,
       "dayHigh": 108.7,
-      "dayLow": 107.2,
+      "dayLow": 106.9,
       "source": "Yahoo Finance (chart API)"
     },
     "AMD": {
@@ -70,7 +70,7 @@
       "price": 157.9,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-21T07:30:12.000Z",
+      "marketTime": "2026-07-21T08:07:39.000Z",
       "marketState": null,
       "previousClose": 158.1,
       "dayHigh": 159.3,
@@ -79,13 +79,13 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 65907.93,
+      "price": 66173.48,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-21T07:30:25.000Z",
+      "marketTime": "2026-07-21T08:08:34.000Z",
       "marketState": null,
       "previousClose": 63899.46,
-      "dayHigh": 65940.3,
+      "dayHigh": 66171.555,
       "dayLow": 65138.832,
       "source": "Yahoo Finance (chart API)"
     },
@@ -115,10 +115,10 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1934.01,
+      "price": 1932.99,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-21T07:30:24.000Z",
+      "marketTime": "2026-07-21T08:08:23.000Z",
       "marketState": null,
       "previousClose": 1840.9882,
       "dayHigh": 1937.3295,
@@ -163,10 +163,10 @@
     },
     "KOG.OL": {
       "symbol": "KOG.OL",
-      "price": 281.6,
+      "price": 281.4,
       "currency": "NOK",
       "exchange": "Oslo",
-      "marketTime": "2026-07-21T07:15:08.000Z",
+      "marketTime": "2026-07-21T07:53:37.000Z",
       "marketState": null,
       "previousClose": 275.1,
       "dayHigh": 281.8,
@@ -202,11 +202,11 @@
       "price": 21.7,
       "currency": "NOK",
       "exchange": "Oslo",
-      "marketTime": "2026-07-21T07:11:33.000Z",
+      "marketTime": "2026-07-21T07:51:27.000Z",
       "marketState": null,
       "previousClose": 21.15,
       "dayHigh": 21.8,
-      "dayLow": 21.7,
+      "dayLow": 21.65,
       "source": "Yahoo Finance (chart API)"
     },
     "MSFT": {
@@ -247,13 +247,13 @@
     },
     "NOKIA.HE": {
       "symbol": "NOKIA.HE",
-      "price": 9.104,
+      "price": 9.172,
       "currency": "EUR",
       "exchange": "Helsinki",
-      "marketTime": "2026-07-21T07:30:20.000Z",
+      "marketTime": "2026-07-21T08:08:36.000Z",
       "marketState": null,
       "previousClose": 9.782,
-      "dayHigh": 9.132,
+      "dayHigh": 9.208,
       "dayLow": 9.02,
       "source": "Yahoo Finance (chart API)"
     },
@@ -283,13 +283,13 @@
     },
     "SAAB-B.ST": {
       "symbol": "SAAB-B.ST",
-      "price": 577.3,
+      "price": 577.5,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-21T07:30:22.000Z",
+      "marketTime": "2026-07-21T08:08:41.000Z",
       "marketState": null,
       "previousClose": 520.4,
-      "dayHigh": 581.6,
+      "dayHigh": 582.9,
       "dayLow": 573,
       "source": "Yahoo Finance (chart API)"
     },
@@ -371,14 +371,14 @@
     },
     "^OMX": {
       "symbol": "^OMX",
-      "price": 3124.5627,
+      "price": 3128.0679,
       "currency": "SEK",
       "exchange": "Stockholm",
-      "marketTime": "2026-07-21T07:30:37.000Z",
+      "marketTime": "2026-07-21T08:08:45.000Z",
       "marketState": null,
       "previousClose": 3150.86,
       "dayHigh": 3140.606,
-      "dayLow": 3123.2354,
+      "dayLow": 3123.11,
       "source": "Yahoo Finance (chart API)"
     }
   }
