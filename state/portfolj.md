@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-20 06:45 UTC (LÄGE A – v30-rotation: Alleima SÅLD på målträff 103,25 kr (+6,39 %, Q2-beat 17/7) → Historik; nytt primärcase Saab (SAAB-B.ST) 50 % med entry ≤ 572 kr, resten kassa. Moreld-pending utgår (rekyl ≤ 19,20 aldrig triggad). Se veckorapport-260720.md)
+**Senast uppdaterad:** 2026-07-21 06:45 UTC (LÄGE B – daglig bevakning: inga öppna innehav. Saab-entryn EJ TRIGGAD – senast verifierad kurs 574,60 kr (måndagens stängning) ligger över taket 572 kr; jaga ej gap, avvakta rekyl 560–570. Kassa 100 %. Se daglig-260721.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
@@ -15,7 +15,7 @@
 *Nivåerna är planen från veckorapport-260720.md (referens ur `state/prices.json`, marketTime 17/7). Justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. ~~Moreld (MORLD.OL) rekyl-ben v29 (≤ 19,20 NOK) – aldrig triggad, kurs 21,50 NOK 17/7 låg ~12 % över nivån; utgår ur pending vid v30-rotationen, kvar som bubblare.~~*
 
 ## Kassa
-50 % (aktiv reserv – inget andra nordiskt case klarar R/R ≥ 2:1 och en enskild försvarsposition bär fredsmakro-/whipsawrisk; blir 100 % om Saab-entryn ≤ 572 kr inte triggas). Så snart Saab öppnas: 50 % Saab / 50 % kassa.
+100 % (ingen öppen position). Saab-entryn (≤ 572 kr) är ännu EJ TRIGGAD – senast verifierad kurs 574,60 kr (måndagens stängning) ligger över taket, jaga ej gap. 50 % av kapitalet är öronmärkt för Saab och tas in så snart en verifierbar kurs ≤ 572 kr (helst rekyl 560–570) föreligger → då 50 % Saab / 50 % kassa. Inget andra nordiskt case klarar R/R ≥ 2:1.
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |
