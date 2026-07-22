@@ -1,5 +1,5 @@
 # Portfölj – US-rotation (USD)
-**Senast uppdaterad:** 2026-07-21 (LÄGE B – JPM-pending TRIGGAD via dagslägsta 337,37 USD mån 2026-07-20, position öppnad; se `reports/us_daily/us-daglig-260721.md`. XOM-pending kvarstår ej triggad.)
+**Senast uppdaterad:** 2026-07-22 (LÄGE B – BEHÅLL JPM, tesen intakt, inga nivåer brutna; XOM-pending kvarstår ej triggad, gap till villkoret (≤ 142,00 USD) har vidgats till ~6,8 %. Se `reports/us_daily/us-daglig-260722.md`.)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
