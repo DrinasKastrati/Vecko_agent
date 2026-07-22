@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-21 06:45 UTC (LÄGE B – daglig bevakning: inga öppna innehav. Saab-entryn EJ TRIGGAD – senast verifierad kurs 574,60 kr (måndagens stängning) ligger över taket 572 kr; jaga ej gap, avvakta rekyl 560–570. Kassa 100 %. Se daglig-260721.md)
+**Senast uppdaterad:** 2026-07-22 06:45 UTC (LÄGE B – daglig bevakning: inga öppna innehav. Saab-entryn EJ TRIGGAD – senast verifierad kurs 575,80 kr (tisdagens stängning, marketTime 2026-07-21 15:29 UTC) ligger över taket 572 kr och ger R/R endast 1,26:1 (<2:1; 2:1 kräver ≤567 kr). Zonen 560–570 nåddes intradag mån+tis (568,8/568,1, dayLow 561,6) men stängde åter över tak – ingen retroaktiv fyllning. Jaga ej gap, avvakta rekyl 560–567. Kassa 100 %. Se daglig-260722.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
