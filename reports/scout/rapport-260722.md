@@ -1,0 +1,63 @@
+# Daglig Scout: USA & Krypto
+**Datum:** 2026-07-22
+**Marknadsklimat:** Riskaptiten är tydligt på uppåtsidan efter tisdagens breda chip-rally – Nasdaq stängde +1,3 %, halvledarindexet (SOX) +5,5 % och memory-komplexet ledde (Micron +12 %) samtidigt som AMD lyfte 8 % på ett stort Azure-avtal med Microsoft. Krypto stärks parallellt: BTC bröt 66 000 USD (femveckorshögsta) och ETH klev över 1 900 USD sedan Vita huset enats om ett etikpaket kopplat till CLARITY Act och bitcoin-ETF:erna noterade en femte raka inflödesdag. Allt vilar dock på dagens binära megacap-test: **Alphabet + Tesla rapporterar Q2 efter US-stängning idag (onsdag 22 juli)** – första riktiga AI-capex-facit i skala.
+
+## Marknadsöversikt
+Kurskälla: `state/prices.json` (Yahoo Finance chart API, `generatedAt` 2026-07-21T22:11Z – tisdagens stängning; US-börsen öppnar först 15:30 CET idag, så tisdagsstängningen är senaste verifierade nivå). Dagsrörelser i % avser officiell stängning tisdag 21 juli enligt The Motley Fool/TheStreet/Yahoo Finance.
+
+- **S&P 500 (^GSPC):** 7 509,20 — marketTime 2026-07-21T20:39Z (prices.json). Stängde **+0,89 %** tisdag 21 juli (The Motley Fool, 2026-07-21).
+- **Nasdaq (^IXIC):** 25 837,21 — marketTime 2026-07-21T21:15Z (prices.json). Stängde **+1,29 %** – chip-ledd återhämtning, tredje förlustdagen bruten (The Motley Fool/TheStreet, 2026-07-21).
+- **Dow Jones:** 52 225 — stängde **+0,74 %**, bröt en tre-sessioners förlustserie (TheStreet/The Motley Fool, 2026-07-21). (Ej i prices.json – nyhetskälla.)
+- **BTC-USD:** 66 310,46 USD — marketTime 2026-07-21T22:10Z (prices.json). **Femveckorshögsta över 66 000 USD** (~+3,8 % 24h mot prices.json `previousClose` 63 899 USD). Källa: CoinDesk (2026-07-21).
+- **ETH-USD:** 1 922,32 USD — marketTime 2026-07-21T22:10Z (prices.json). **+~4 % till ~1 935 USD**, håller relativ styrka mot BTC (Benzinga, 2026-07-21).
+- **Premarket onsdag 22 juli:** US-terminer stabila/avvaktande inför Alphabet + Tesla efter stängning; ingen verifierad US-session ännu (scout körs ~07:47 CET, börsöppning 15:30 CET). Ingen tvärsäker premarket-nivå anges – tisdagsstängningen är senaste verifierade data.
+
+## Ekonomiska siffror & kalender
+**Senaste marknadsrörande utfall (förra veckan 13–17 juli, oförändrat sedan gårdagens rapport):**
+- **KPI juni:** headline **3,5 %**, kärna **2,6 %** – mjukare än väntat, utlöste risk-on 15 juli. Källa: CNBC (2026-07-15).
+- **Detaljhandel juni:** **+0,2 % m/m** (väntat +0,2 %) – motståndskraftig konsument. Källa: Capital Brief/Axios, 2026-07-16.
+- **Initial Jobless Claims (v. 11 juli):** **208k** (väntat 217k) – fortsatt stram arbetsmarknad. Källa: DOL/Zacks, 2026-07-16.
+
+**Kommande releaser & händelser (22–24 juli):**
+- **Onsdag 22 juli (efter stängning):** **Alphabet (GOOGL) + Tesla (TSLA)** Q2 – veckans marquee-event, första riktiga AI-capex-testet i skala. GOOGL-konsensus intäkter ~**101 mdr USD** (BofA ~102,1 mdr), driven av Google Cloud-acceleration; TSLA producerade >450k / levererade >480k Q2, konsensus vinst **+25 % å/å**, intäkter ~27 mdr USD (LSEG/Crypto Briefing/Tech Times, 2026-07-19/20). Båda rapporterar EFTER stängning → krypto (24/7) prisdiskonterar reaktionen först. **← mest marknadsrörande denna vecka.**
+- **Torsdag 23 juli (efter stängning):** **Intel (INTC)** Q2 – turnaround-test. Källa: AskTraders/CNBC week-ahead, 2026-07-20.
+- **Torsdag 23 juli (08:30 ET):** **Initial Jobless Claims** + **Durable Goods Orders (juni)** (ev. även förhandsestimat Q2 BNP/kärn-PCE). Källa: Investing.com/Trading Economics-kalender, 2026-07-20.
+- **AMD "Advancing AI 2026"** 22–23 juli i San Francisco – produktevent, potentiell fortsatt katalysator för chip-komplexet. Källa: Invezz/FX Leaders, 2026-07-21.
+- **FOMC 28–29 juli** (räntebesked 29 juli 14:00 ET) → Fed i blackout-period. Källa: Federal Reserve FOMC-kalender.
+
+## Aktuella händelser & katalysatorer
+- **AMD landar sitt största AI-avtal hittills (21 juli):** Microsoft ska driftsätta **AMD:s Helios rack-scale-plattform** (Instinct MI455X-GPU:er, EPYC Venice-CPU:er, Pensando-nätverk, ROCm-mjukvara) i Azure-datacenter för AI-inferens, och sällar sig därmed till Meta, OpenAI och Oracle som tidiga kunder. Leveranser väntas H2 2026. **AMD +7,9 % till 543,10 USD** på beskedet. Källa: TheStreet/Invezz/Yahoo Finance, 2026-07-21. **← dagens starkaste enskilda bolagskatalysator.**
+- **Memory-lett chip-rally (21 juli):** Philadelphia Semiconductor-index **+5,5 %**, SMH ~+4 %. **Micron +12 %** och **SanDisk +14 %** i en minnesledd uppgång; bred halvledarstyrka bröt marknadens tre-dagars förlustserie. Bekräftar tesen att förra veckans ras var värdering/hävstång, inte fundamenta. Källa: The Motley Fool/TheStreet, 2026-07-21.
+- **Krypto: Vita huset backar CLARITY Act-etikpaket → BTC över 66k (20–21 juli):** Bitcoin klev till femveckorshögsta över 66 000 USD sedan Vita huset enats om ett **etikpaket kopplat till CLARITY Act**; Polymarket höjde oddsen för att marknadsstruktur-lagen antas i år till **43 %** (från rekordlåga nivåer förra veckan). Ingen lagtext publicerad ännu. Källa: Benzinga, 2026-07-21.
+- **Bitcoin-ETF:er: femte raka inflödesdagen (20–21 juli):** US spot-bitcoin-ETF:er tog in **~227 mln USD 20 juli** (femte raka nettoinflödesdagen – första gången sedan slutet av april), ~727 mln USD över veckan. Ether-ETF:er +38 mln USD, ledda av BlackRocks ETHA. Källa: CoinDesk/The Coin Republic, 2026-07-21.
+- **Megacap-tech in i rapportfönstret (22 juli):** Alphabet + Tesla ikväll inleder Magnificent Seven-cykeln; gruppen väntas leverera blandad EPS-tillväxt ~28 % å/å för kvartalet – en tydlig inbromsning mot tidigare perioder, vilket höjer insatsen för varje enskild rapport. Källa: Crypto Briefing/Tech Times, 2026-07-20.
+
+## Uppföljning av tidigare case
+- **COIN (rapport-260721):** 160,43 → **175,85 USD** (+9,6 %, prices.json marketTime 2026-07-21T20:00Z). Sprang hårt i takt med kryptorallyt (dayHigh 181,49) på CLARITY-medvind och ETF-inflöden – exakt tesen. → **INTAKT (stärkt).**
+- **TSLA (rapport-260721):** 369,57 → **378,93 USD** (+2,5 %, prices.json 2026-07-21T20:00Z). Firmade inför Q2-rapporten IKVÄLL (onsdag 22 juli efter stängning); binär katalysator kvarstår oförändrad. → **INTAKT.**
+- **IREN (rapport-260721):** ~39,42 (tidigare EJ VERIFIERAD, nyhetsnivå) → **41,29 USD nu VERIFIERAD** (prices.json marketTime 2026-07-21T20:00Z, +4,7 % mot nyhetsnivån). Tickern finns nu i prices.json → verifierad kurs bekräftar miner-/AI-compute-tesen. → **INTAKT.**
+
+## Dagens case
+
+### Case 1: Advanced Micro Devices (AMD / NASDAQ)
+**Katalysator:** Microsoft meddelade 21 juli att man ska driftsätta **AMD:s Helios rack-scale AI-infrastruktur** (MI455X-GPU + EPYC Venice + Pensando + ROCm) i Azure för AI-inferens åt sig själv och molnkunder – AMD:s hittills största AI-avtal. AMD +7,9 % på beskedet, och bolaget håller sitt **"Advancing AI 2026"-event 22–23 juli** där fler besked väntas. Källa: TheStreet/Invezz/Yahoo Finance, 2026-07-21.
+**Bull case:** Avtalet cementerar AMD som en trovärdig **tredje AI-infraleverantör** hos hyperscalers (efter Nvidia och Microsofts egna Maia) – hyperscalers vill ha en andrakälla och AMD blir hedgen. Helios integrerar GPU, CPU, nätverk och mjukvara i en färdig rack, vilket höjer intäkten per system och ROCm-mjukvarans "stickiness". Leveransstart H2 2026 ger konkret intäktsvisibilitet, och Advancing AI-eventet idag/imorgon kan lägga på fler kundnamn. Bekräftad, bolagsdriven katalysator (ej rykte).
+**Bear case:** Aktien har redan sprungit ~8 % på nyheten – "buy the rumor"-risk in i eventet. Nvidia dominerar fortfarande inferens- och träningsmarknaden och Microsoft ersätter inte Nvidia, bara adderar; AMD:s andel kan förbli marginell. Om ikvällens Alphabet/Tesla-rapporter sår tvivel om AI-capex-avkastning drabbas hela komplexet – och AMD är högbeta i en sådan risk-off. Hög värdering prisar redan in AI-optimism.
+**Setup:** Kurs **544,43 USD** (marketTime 2026-07-21T20:00Z, prices.json), +7,9 % tisdag (nyhetsnivå ~543,10 USD, TheStreet). Momentum-/eventdriven setup: chip-komplexet leder (SOX +5,5 % tisdag), men positionera med definierad risk eftersom Advancing AI-eventet + megacap-rapporterna gör de närmaste 48h binära. Källa: prices.json + TheStreet, 2026-07-21.
+
+### Case 2: Alphabet (GOOGL / NASDAQ)
+**Katalysator:** Alphabet rapporterar Q2 **ikväll (onsdag 22 juli) efter stängning** tillsammans med Tesla – veckans marquee-event och första riktiga AI-capex-facit. Konsensus intäkter ~**101 mdr USD** (BofA ~102,1 mdr), driven av accelererande Google Cloud-tillväxt. Källa: Crypto Briefing/Tech Times, 2026-07-20.
+**Bull case:** Google Cloud-acceleration + sökannonser med stark prissättningsförmåga gör Alphabet till en av de mest lönsamma AI-capex-spenderarna – en beat kan validera hela hyperscaler-tesen och lyfta komplexet (jfr AMD/chip-studsen). Aktien **konsoliderade lägre in i rapporten** (prices.json GOOGL 347,15 USD, marketTime 2026-07-21T20:00Z, dayLow 347,02 – stängde nära dagslägsta medan chip rallade), vilket sänker förväntansribban något inför en potentiell positiv överraskning.
+**Bear case:** Extremt binär – optionsmarknaden prisar in en stor rörelse. Efter förra veckans värderingsras straffas höjd capex utan tydlig avkastning hårt; marknaden är känslig för "spend utan payoff". Regulatorisk risk (antitrust) och en Mag7-EPS-inbromsning till ~28 % å/å höjer ribban för att motivera värderingen. "In-line" räcker sannolikt inte.
+**Setup:** Kurs **347,15 USD** (marketTime 2026-07-21T20:00Z, prices.json), handlade ned mot dagslägsta 347,02 tisdag medan bredare marknad steg – klassisk pre-earnings-avriskning. Rapporten är en binär katalysator efter stängning idag: positionera endast med tydligt definierad risknivå, eller avvakta facit. Källa: prices.json, 2026-07-21 + Crypto Briefing, 2026-07-20.
+
+### Case 3: Coinbase (COIN / NASDAQ)
+**Katalysator:** Vita huset enades 21 juli om ett **etikpaket kopplat till CLARITY Act**, vilket lyfte Polymarket-oddsen för att kryptomarknadsstruktur-lagen antas i år till 43 %; BTC bröt 66 000 USD (femveckorshögsta) och US bitcoin-ETF:er noterade en femte raka inflödesdag (~727 mln USD på veckan). Som störst reglerad US-krypto­börs är Coinbase den mest direkta noterade vinnaren på minskad regulatorisk osäkerhet + stigande volymer. Källa: Benzinga/CoinDesk, 2026-07-21.
+**Bull case:** Regulatorisk klarhet sänker den existentiella "SEC-risk"-rabatten på COIN och kan låsa upp institutionella flöden (förvaring, staking, tokenisering). Bolaget är hävstång på hela kryptocykeln – stigande volymer/priser lyfter både handelsintäkter och räntenetto på stablecoin-reserver. Medvind från ETF-inflödesstreak och ETH:s relativa styrka.
+**Bear case:** Aktien har **redan sprungit +9,6 % (till 175,85 USD)** på nyheten – utsträckt och sårbar för "buy the rumor, sell the news" om lagtext dröjer (ännu ingen publicerad; oddsen bara 43 %). COIN är högbeta-proxy: en bred risk-off (svag Alphabet/Tesla ikväll, Iran-återfall) drar ned aktien oproportionerligt. Värderingen prisar redan in betydande cykeloptimism.
+**Setup:** Kurs **175,85 USD** (marketTime 2026-07-21T20:00Z, prices.json), +9,6 % tisdag (dayHigh 181,49 → stängde under toppen). Momentum-/nyhetsdriven; bekräftas mot BTC-ledarskap (~66k) och nästa steg i lagstiftningsprocessen. Systerexponering: MSTR **101,95 USD** (+4,5 % mot föregående stängning, samma tidsstämpel). Källa: prices.json + Benzinga, 2026-07-21.
+
+## Makro- & sektorfaktorer att bevaka
+Bilden domineras av tre trådar. **AI-capex (avgörande idag):** Alphabet + Tesla efter stängning ikväll är veckans lackmustest – tisdagens chip-rally (SOX +5,5 %, AMD-Microsoft-avtalet, Micron +12 %) visar att marknaden är beredd att köpa en trovärdig efterfrågesignal, men efter förra veckans värderingsras är den samtidigt extremt känslig för capex utan payoff. Utfallet styr momentum i både AMD- och Alphabet-caset. **Krypto/reglering:** CLARITY Act-etikpaketet + femte raka ETF-inflödesdagen + ETH-ledarskapet är dagens starkaste enskilda tema och driver COIN/MSTR – men lagtext saknas och oddsen är bara 43 %, så temat är momentum, inte fullbordat faktum. **Ränta/makro:** disinflationen är i grunden intakt (juni-KPI 3,5 %/2,6 % kärna) och konsumenten motståndskraftig; torsdagens jobless claims + durable goods och framför allt **FOMC 28–29 juli** avgör räntebanan (Fed nu i blackout). Geopolitik/energi (Iran/Hormuz) har tonats ned som marknadsdrivare denna vecka i takt med att megacap-earnings tagit över rubrikerna, men förblir en tvåvägsrisk. Inga ryktesdrivna case idag – alla tre vilar på verifierade katalysatorer (bekräftat Microsoft-avtal, bekräftat earnings-datum, Vita hus-besked) och verifierade prices.json-kurser.
+
+Detta är automatiserat beslutsstöd, inte finansiell rådgivning.
