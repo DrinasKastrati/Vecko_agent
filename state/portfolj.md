@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-23 06:40 UTC (LÄGE B – daglig bevakning: inga öppna innehav. Saab-entryn EJ TRIGGAD – senast verifierad kurs 586,80 kr (onsdagens stängning, marketTime 2026-07-22 15:29 UTC) ligger klart över taket 572 kr (+2,6 %) och ger R/R endast 0,73:1 (<2:1; 2:1 kräver ≤567 kr). Caset springer ifrån entryn – tredje stängningen i rad över tak, nu accelererande. Jaga ej gap, avvakta rekyl 560–567; omvärderas vid rotationen mån 27/7. Kassa 100 %. Se daglig-260723.md)
+**Senast uppdaterad:** 2026-07-24 06:40 UTC (LÄGE B – daglig bevakning: inga öppna innehav. Saab-entryn EJ TRIGGAD – senast verifierad kurs 597,00 kr (torsdagens stängning, marketTime 2026-07-23 15:29 UTC) ligger +4,4 % över taket 572 kr och ger R/R endast 0,42:1 (<2:1; 2:1 kräver ≤567 kr). Hela torsdagens intervall 584,70–602,90 låg över tak – caset accelererar ifrån entryn. Jaga ej gap, avvakta rekyl 560–567; omvärderas vid LÄGE A-rotationen mån 27/7. Kassa 100 %. Se daglig-260724.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
@@ -15,7 +15,7 @@
 *Nivåerna är planen från veckorapport-260720.md (referens ur `state/prices.json`, marketTime 17/7). Justeras proportionellt mot faktisk verifierad öppningskurs innan position öppnas. ~~Moreld (MORLD.OL) rekyl-ben v29 (≤ 19,20 NOK) – aldrig triggad, kurs 21,50 NOK 17/7 låg ~12 % över nivån; utgår ur pending vid v30-rotationen, kvar som bubblare.~~*
 
 ## Kassa
-100 % (ingen öppen position). Saab-entryn (≤ 572 kr) är ännu EJ TRIGGAD – senast verifierad kurs 586,80 kr (onsdagens stängning, marketTime 2026-07-22 15:29 UTC) ligger klart över taket (+2,6 %), R/R nu 0,73:1; jaga ej gap. 50 % av kapitalet är öronmärkt för Saab och tas in så snart en verifierbar kurs ≤ 572 kr (helst rekyl 560–570) föreligger → då 50 % Saab / 50 % kassa. Inget andra nordiskt case klarar R/R ≥ 2:1.
+100 % (ingen öppen position). Saab-entryn (≤ 572 kr) är ännu EJ TRIGGAD – senast verifierad kurs 597,00 kr (torsdagens stängning, marketTime 2026-07-23 15:29 UTC) ligger klart över taket (+4,4 %), R/R nu 0,42:1; jaga ej gap. 50 % av kapitalet är öronmärkt för Saab och tas in så snart en verifierbar kurs ≤ 572 kr (helst rekyl 560–570) föreligger → då 50 % Saab / 50 % kassa. Inget andra nordiskt case klarar R/R ≥ 2:1.
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |
