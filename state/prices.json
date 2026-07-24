@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T20:44:36.789Z",
+  "generatedAt": "2026-07-24T22:16:45.382Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning.",
   "tickerCount": 33,
@@ -79,14 +79,14 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 63925.97,
+      "price": 64096.33,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-24T13:54:47.000Z",
+      "marketTime": "2026-07-24T22:16:31.000Z",
       "marketState": null,
       "previousClose": 65230.027,
       "dayHigh": 65713.91,
-      "dayLow": 64182.797,
+      "dayLow": 63725.547,
       "source": "Yahoo Finance (chart API)"
     },
     "COIN": {
@@ -115,14 +115,14 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1848.24,
+      "price": 1858.19,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-07-24T13:54:46.000Z",
+      "marketTime": "2026-07-24T22:16:30.000Z",
       "marketState": null,
       "previousClose": 1903.7589,
       "dayHigh": 1907.2332,
-      "dayLow": 1858.5846,
+      "dayLow": 1848.8887,
       "source": "Yahoo Finance (chart API)"
     },
     "GOOGL": {
@@ -362,7 +362,7 @@
       "price": 7411.98,
       "currency": "USD",
       "exchange": "SNP",
-      "marketTime": "2026-07-24T20:20:01.000Z",
+      "marketTime": "2026-07-24T21:26:35.000Z",
       "marketState": null,
       "previousClose": 7457.69,
       "dayHigh": 7460.98,
@@ -374,7 +374,7 @@
       "price": 24975.824,
       "currency": "USD",
       "exchange": "Nasdaq GIDS",
-      "marketTime": "2026-07-24T20:44:34.000Z",
+      "marketTime": "2026-07-24T21:15:59.000Z",
       "marketState": null,
       "previousClose": 25520.24,
       "dayHigh": 25222.139,
