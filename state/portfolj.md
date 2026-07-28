@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-27 06:40 UTC (LÄGE A – veckorotation v31: 100 % kassa. Saab (SAAB-B.ST) re-prisad till aktivt primärcase med en genuint nåbar entry ≤ 585 kr (ref. fredagens stängning 587,40 kr, marketTime 2026-07-24 15:29 UTC) – tillämpar v30-lärdomen att inte sätta en tight limit långt under marknaden på ett bekräftat katalysatornamn. Stop 560 / mål 635, R/R 2,0:1, planerad vikt 50 %. Triggas i LÄGE B. Inget andra nordiskt case klarar R/R ≥ 2:1 nära sin nivå → 50 % öronmärks Saab, resten kassa. Se veckorapport-260727.md)
+**Senast uppdaterad:** 2026-07-28 06:40 UTC (LÄGE B – daglig bevakning: 100 % kassa oförändrad. Saab-pending EJ TRIGGAD – verifierad kurs 601 kr (prices.json, marketTime 2026-07-27 15:29 UTC) > entry ≤ 585 och > planens tak 597 (jaga ej gap upp). Tesen intakt/stärkt (MS Overweight + Nato GlobalEye-besked 2026-07-28) men jagas ej per disciplin; nivån omvärderas nästa rotation. Se daglig-260728.md. Föregående: LÄGE A veckorotation v31 – Saab re-prisad till aktivt primärcase, entry ≤ 585 kr, stop 560 / mål 635, R/R 2,0:1, planerad vikt 50 %, se veckorapport-260727.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
