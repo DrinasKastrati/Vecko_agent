@@ -1,5 +1,5 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-28 06:40 UTC (LÄGE B – daglig bevakning: 100 % kassa oförändrad. Saab-pending EJ TRIGGAD – verifierad kurs 601 kr (prices.json, marketTime 2026-07-27 15:29 UTC) > entry ≤ 585 och > planens tak 597 (jaga ej gap upp). Tesen intakt/stärkt (MS Overweight + Nato GlobalEye-besked 2026-07-28) men jagas ej per disciplin; nivån omvärderas nästa rotation. Se daglig-260728.md. Föregående: LÄGE A veckorotation v31 – Saab re-prisad till aktivt primärcase, entry ≤ 585 kr, stop 560 / mål 635, R/R 2,0:1, planerad vikt 50 %, se veckorapport-260727.md)
+**Senast uppdaterad:** 2026-07-29 06:40 UTC (LÄGE B – daglig bevakning: 100 % kassa oförändrad. Saab-pending EJ TRIGGAD – verifierad kurs 615,4 kr (prices.json, marketTime 2026-07-28 15:29 UTC), +5,2 % ÖVER entry ≤ 585 och långt över planens tak 597 (jaga ej gap upp). Tesen intakt/stärkt (fortsatt rally, riktkurser 780/800) men jagas ej; nivån praktiskt ostrukbar v31 → omvärderas vid rotation måndag 2026-08-03. Se daglig-260729.md. Föregående: LÄGE A veckorotation v31 – Saab re-prisad till aktivt primärcase, entry ≤ 585 kr, stop 560 / mål 635, R/R 2,0:1, planerad vikt 50 %, se veckorapport-260727.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
