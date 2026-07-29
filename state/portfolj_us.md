@@ -1,5 +1,5 @@
 # Portfölj – US-rotation (USD)
-**Senast uppdaterad:** 2026-07-28 (LÄGE B daglig bevakning – BEHÅLL JPM @ 356,20 USD, +5,38 % sedan entry (prices.json/Yahoo, marketTime 2026-07-27T20:00:03Z, mån stängning; pre-market 28/7 ~357,01 USD, Nasdaq). Tesen (Great Rotation in i finans) intakt, kursen inom plan – varken stop 345,00 eller mål 366,00 korsad intradag/pre-/after-hours. Stop hålls medvetet oförändrad på 345,00 (drar ej snävare in i FOMC ons 29/7). Inga aktiva intradag-signaler (alerts.json). Kassa 55 % oförändrad. Se `reports/us_daily/us-daglig-260728.md`.)
+**Senast uppdaterad:** 2026-07-29 (LÄGE B daglig bevakning – BEHÅLL JPM @ 357,31 USD, +5,71 % sedan entry (prices.json/Yahoo, marketTime 2026-07-28T20:00:02Z, tis stängning; after-hours 28/7 ~355,93 USD, pre-market ~357,01 USD, Investing.com). Rotationstesen förstärkt: JPM +3,50 % tis samtidigt som Nasdaq −3,72 %. Kursen inom plan – varken stop 345,00 eller mål 366,00 korsad intradag/pre-/after-hours. Stop hålls medvetet oförändrad på 345,00 (drar ej snävare in i FOMC ons 29/7 kl 14:00 ET, håll-konsensus ~62 %). Inga aktiva intradag-signaler (alerts.json). Kassa 55 % oförändrad. Se `reports/us_daily/us-daglig-260729.md`.)
 **Ackumulerad avkastning sedan start:** 0 % (baslinje – ingen position har ännu stängts)
 
 ## Aktuellt innehav
