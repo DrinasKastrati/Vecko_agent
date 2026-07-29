@@ -1,0 +1,58 @@
+# Daglig Scout: USA & Krypto
+**Datum:** 2026-07-29
+**Marknadsklimat:** Nervöst men tudelat: **minneshalvledarna kraschar** (Micron −8,9 %, SK Hynix −14,6 %) på Kina-utbudsrädsla efter CXMT-börsnoteringen och Philadelphia-halvledarindexet (SOX) föll in i **björnmarknad**, samtidigt som de stora plattformsbolagen (GOOGL +2,2 %, AAPL, MSFT) *stabiliserades* och breda index knappt rörde sig. Marknaden håller andan inför **FOMC-beskedet idag onsdag 14:00 ET** (Warsh) och **MSFT + META-rapporterna ikväll** – två binära triggers på samma dag. Krypto ligger stilla under ytan; ETH visar fortsatt relativstyrka mot BTC via ETF-flöden.
+
+## Marknadsöversikt
+Kurskälla: `state/prices.json` (Yahoo Finance chart API, `generatedAt` 2026-07-28T22:15Z). Idag är **onsdag 29 juli**; senaste verifierade aktienivå är **tisdagens (28 juli) stängning**. **OBS dataintegritet (återkommande & idag akut):** `previousClose`-fältet i prices.json är denna vecka fastfruset på **förra måndagens (21 juli) nivåer** för flera tickers → att räkna dagsrörelse mot `previousClose` ger falska ~vecko-långa ras (t.ex. MU −15 %, TSLA −19 %, INTC −18 % skulle vara felaktiga artefakter). Därför beräknas **alla dagsrörelser nedan mot verifierade måndagsstängningar ur `state/price_history.json`** (07-27 → 07-28), och absoluta nivåer anges ur prices.json (verifierad marketTime).
+
+- **S&P 500 (^GSPC):** 7 428,78 — marketTime 2026-07-28T21:10Z (prices.json). **+0,21 %** mot måndagens 7 413,18. Brett index höll trots chip-raset – megacaps kompenserade. Källa: prices.json + price_history.json, 2026-07-28.
+- **Nasdaq (^IXIC):** 24 876,91 — marketTime 2026-07-28T21:15Z (prices.json). **−0,22 %** mot måndagens 24 932,08. Kumulativt har Nasdaq-100 glidit in i **korrektion** (−10 % från topp) under de senaste sessionernas chip-svaghet. Källa: prices.json + NBC News/CNBC, 2026-07-28.
+- **BTC-USD:** 63 946,19 USD — marketTime 2026-07-28T22:15Z (prices.json). **−0,79 %** mot måndagens 64 666,49 (intradag ner ~−2,8 % enligt nyhetskälla); fortsatt i intervall strax under 65k, ingen egen katalysator. Källa: prices.json + Cryptobriefing, 2026-07-28.
+- **ETH-USD:** 1 921,31 USD — marketTime 2026-07-28T22:15Z (prices.json). **−0,79 %** mot måndagens 1 936,61; höll ovan 1 900 och testade inte om 2 000-utbrottet, men **relativstyrkan mot BTC består via ETF-flöden** (se nedan). Källa: prices.json + BitcoinFoundation/Cryptobriefing, 2026-07-27/28.
+
+## Ekonomiska siffror & kalender
+**Senaste marknadsrörande utfall:**
+- **KPI juni:** headline **3,5 %**, kärna **2,6 %** – mjukare än väntat, disinflationen i grunden intakt. Källa: CNBC (2026-07-15).
+- **Kärn-PCE (t.o.m. 24 juli-kalender):** headline-PCE ~3,65 % å/å, **kärn-PCE 0,19 % m/m / 3,33 % å/å** – sticky men inte accelererande. Källa: Investing.com-kalender (2026-07-24).
+
+**Kommande releaser & händelser (29 juli–1 aug):**
+- **FOMC-besked IDAG onsdag 29/7:** statement **14:00 ET**, presskonferens ordf. Kevin Warsh **14:30 ET**. Konsensus: **hökaktig hold** (styrränta oförändrad, intervall 3,50–3,75 %), >75 % sannolikhet för hold i prediktionsmarknaderna. Junis "dot plot" vände hökaktigt (median årsskifte 2026 höjd till **3,8 %** från 3,4 %). **← veckans mest marknadsrörande event.** Källa: Federal News Network/Kiplinger/CME, 2026-07-27/28.
+- **MSFT (fiskala Q4) + META (Q2) IKVÄLL onsdag 29/7 efter stängning.** MSFT: konsensus-EPS ~4,22–4,24 / intäkter ~87,5–87,67 mdr (Azure-tillväxt + AI-capex i fokus). META: EPS ~7,18–7,24, intäkter ~60,22 mdr (~+27 % å/å) men EPS-tillväxt ~flat (~+1 %) – gapet topline/bottomline är säsongens Meta-story. Källa: TipRanks/PrimeXBT/S&P Global, 2026-07-27/28.
+- **Q2 BNP (advance) + juni-PCE:** båda **torsdag 30 juli 08:30 ET** – facit på tillväxt och Feds favorit-inflationsmått dagen efter FOMC. Samma kväll rapporterar **AAPL (fiskala Q3) + AMZN (Q2) AMC**. Källa: Investing.com/Kiplinger-kalender, 2026-07-27.
+
+## Aktuella händelser & katalysatorer
+- **Minneshalvledar-krasch, ny konkret katalysator (28 juli):** Den kinesiska minnestillverkaren **CXMT (ChangXin Memory Technologies) gjorde en blockbuster-börsdebut** → utbudsöverskotts-rädsla i DRAM/minne. **SanDisk −14 %, Micron/Seagate/AMD/ARM >−8 %, Intel ~−6 %, Western Digital ~−7 %; SK Hynix −14,6 % och Samsung −13 % i Asien.** Philadelphia-halvledarindexet (SOX) föll i **björnmarknad** (−20 % från topp). Källa: CNBC "SK Hynix plunges… chip sell-off deepens" + FX Leaders "Micron dives below $800", 2026-07-28. **← dagens tyngsta katalysator.**
+- **Kina-hotet bredare:** utöver CXMT lyfter medierna Kinas framsteg i **minne OCH litografi-utrustning** – marknaden omvärderar prissättningsmakten i hela minneskomplexet, inte bara en engångsdipp. Källa: CNBC/Forex News, 2026-07-28.
+- **Megacaps kopplade loss från chip-raset (28 juli):** GOOGL **+2,2 %** (326,56 → 333,71), AAPL **+0,9 %** (336,91 → 340,08), MSFT **+1,1 %** (389,10 → 393,35); NVDA **oförändrad +0,25 %** (196,51 → 197,01) trots minneskarnage runt omkring – tydlig divergens plattform vs minne. Källa: prices.json + price_history.json (marketTime 2026-07-28T20:00Z).
+- **Krypto-ETF-divergens (28 juli):** Spot-**BTC-ETF:er nettoutflöde −11,64 MUSD** (BlackRock IBIT −8,82M) medan spot-**ETH-ETF:er nettoinflöde +9,23 MUSD** (BlackRock ETHA) – en fjärde raka relativstyrke-signal för ETH. Källa: Cryptobriefing, 2026-07-28.
+- **Energibolagen rapporterar in i oljeraset (denna vecka):** XOM/CVX Q2 medan oljepremien deflateras efter USA–Iran-pausen (se uppföljning). Källa: Seeking Alpha earningskalender, 2026-07-26.
+
+## Uppföljning av tidigare case
+- **META (rapport-260728):** 593,87 → **593,41 USD** (marketTime 2026-07-28T20:00Z, prices.json), **−0,08 % (flat)**. Höll emot hela chip-raset inför kvällens rapport (Q2 + "Meta Compute"). Binärt utfall IKVÄLL 29/7 AMC. → **INTAKT (avvaktar rapport ikväll).**
+- **ETH-USD (rapport-260728):** 1 936,61 → **1 921,31 USD** (marketTime 2026-07-28T22:15Z, prices.json), **−0,79 %**. Testade inte om 2 000-utbrottet men höll ovan 1 900 och ETF-inflödet fortsätter (+9,2M vs BTC:s utflöde). → **INTAKT men lätt FÖRSVAGAD (utbrottet 2 000 uteblev; FOMC idag är riskfiltret).**
+- **NVDA (rapport-260728):** 196,51 → **197,01 USD** (marketTime 2026-07-28T20:00Z, prices.json), **+0,25 %**. Stod stilla mitt i minneskraschen (MU/AMD −8 %) – exakt "minne ≠ Nvidias efterfrågan"-tesen bekräftades. → **INTAKT (relativstyrkan stärker tesen).**
+
+## Dagens case
+
+### Case 1: Micron Technology (MU / NASDAQ)
+**Katalysator:** MU föll **−8,9 %** tisdag (900,20 → 820,53, bröt under 800 intradag) sedan kinesiska **CXMT:s blockbuster-börsdebut** utlöste rädsla för minnesutbudsöverskott; hela minneskomplexet + SOX i björnmarknad. Verifierad, bekräftad katalysator (ej rykte). Källa: FX Leaders/CNBC, 2026-07-28.
+**Bull case:** AI-driven **HBM-efterfrågan** (high-bandwidth memory för GPU:er) är strukturellt tight och CXMT ligger flera generationer efter på HBM – en makro/sentiment-driven utförsäljning som inte träffar Microns faktiska orderbok kan vara ett klassiskt oversold-läge. En hökaktig-men-lugn FOMC + starka megacap-rapporter (bekräftad AI-capex) kan snabbt vända sentimentet i AI-infra.
+**Bear case:** Minne är cykliskt/råvaruliknande och priselastiskt – CXMT + kinesisk kapacitetsutbyggnad är ett reellt, flerårigt utbudshot mot prissättningsmakten, inte bara en dagsdipp. SOX i björnmarknad + "monstrous, margined" belånad avveckling kan pressa vidare. Fånga inte fallande kniv före FOMC och megacap-rapporterna – vänta på stabilisering.
+**Setup:** Tisdagsstängning **820,53 USD** (marketTime 2026-07-28T20:00Z, prices.json), −8,9 % mot måndagens 900,20; trend: 990 (23/7) → 820 på tre sessioner. Avvakta verifierad stabilisering ovan 800; definiera risk mot fortsatt Asien-/minnessvaghet. Källa: prices.json + price_history.json, 2026-07-28.
+
+### Case 2: Microsoft (MSFT / NASDAQ)
+**Katalysator:** **Fiskala Q4-rapporten IKVÄLL onsdag 29/7 efter stängning** (konsensus-EPS ~4,22–4,24, intäkter ~87,5–87,67 mdr). Binär trigger som blir marknadens första facit på om AI-capex omvandlas till **Azure-molntillväxt** – direkt relevant mitt i AI-infra-oron. Källa: TipRanks/PrimeXBT, 2026-07-27/28.
+**Bull case:** MSFT stod emot chip-raset tisdag (+1,1 %) och är den renaste "AI-monetiserings"-exponeringen: Azure är kommersiell ryggrad för OpenAI. En Azure-beat + capex-guidning som visar payoff kan re-rata hela AI-infra-komplexet och punktera minnes-/Kina-narrativet som pressar chippen. Diversifierad kassako (Office/Windows) begränsar nedsidan.
+**Bear case:** "Sell the news"-risk efter stark uppladdning; om Azure-tillväxten saktar eller capex-guidningen skruvas upp UTAN tydlig intäktsplan straffas aktien (som Alphabet tidigare). Hökaktig FOMC samma eftermiddag pressar värderingskänsliga megacaps oavsett. Rapport + FOMC samma dag = förhöjd tvåvägs-volatilitet.
+**Setup:** Tisdagsstängning **393,35 USD** (marketTime 2026-07-28T20:00Z, prices.json), +1,1 % mot måndagens 389,10. Binär post-earnings-setup: avvakta verifierad reaktion efter kvällens rapport OCH FOMC-tonen innan positionering. Källa: prices.json + price_history.json + TipRanks, 2026-07-28.
+
+### Case 3: Ethereum (ETH-USD / on-chain)
+**Katalysator:** Fjärde raka sessionen med **ETH-ETF-nettoinflöde (+9,23 MUSD, BlackRock ETHA) medan BTC-ETF:er blöder (−11,64 MUSD)** – strukturell rotation mot ETH bekräftad i flödesdata trots att aktie-/chip-svagheten tyngt riskaptiten. Källa: Cryptobriefing, 2026-07-28.
+**Bull case:** Verifierbar relativstyrka (ETF-flöde + rekordhög staking som binder utbud) skiljer ETH från BTC:s stiltje; ett genombrott ovan **2 000 USD** (testat 27/7) öppnar tekniskt mot ~2 500. En icke-hökaktig FOMC + disinflation stöttar riskaptiten och kan trigga utbrottet.
+**Bear case:** Efter ~+25–30 % på en månad är ETH tekniskt utsträckt; 2 000 har fungerat som motstånd och utbrottet uteblev senast. En hökaktig FOMC idag eller att aktie-/chiprouten spiller över i krypto kan reversera ETF-flödet snabbt. Rally delvis buret av short-likvidationer är sårbart när flödet vänder.
+**Setup:** Verifierad nivå **1 921,31 USD** (marketTime 2026-07-28T22:15Z, prices.json), −0,79 % mot måndagens 1 936,61; håller ovan 1 900. Bevaka **2 000 USD** som utbrottsnivå och **FOMC 14:00 ET** som primärt riskfilter. Källa: prices.json + BitcoinFoundation/Cryptobriefing, 2026-07-27/28.
+
+## Makro- & sektorfaktorer att bevaka
+Dagen domineras av **tre samtidiga trådar**. **Halvledare/minne (epicentrum):** raset är nu en konkret, verifierad utbudschock – CXMT:s börsdebut + Kinas framsteg i minne/litografi drev SOX in i björnmarknad och minnesnamnen −8 till −14 %. Frågan är oversold-washout vs strukturellt prissättnings-hot; NVDA:s flathet visar att marknaden (ännu) skiljer minne från GPU-efterfrågan. **Ränta/FOMC (binär risk idag 14:00 ET):** disinflationen är i grunden intakt (KPI 3,5 %/2,6 % kärna, kärn-PCE 3,33 %) men Warsh-Fedens hökaktiga dot plot (median 3,8 %) adderar riskpremie; en hökaktig ton förvärrar chip-/megacap-svagheten, juni-PCE + Q2-BNP (tors) är facit. **Megacap-rapporter (binärt ikväll):** MSFT + META efter stängning avgör om AI-capex-oron dämpas eller eskalerar – de stod emot chip-raset tisdag, men förväntansbilden är hög. **Krypto (egen väg):** ETH:s ETF-inflöde vs BTC:s utflöde är den tydligaste verifierbara divergensen; 2 000 USD är utbrottsnivån, FOMC riskfiltret. **Inga ryktesdrivna case idag** – CXMT-noteringen, MSFT-rapporten och ETF-flödena vilar alla på bekräftade katalysatorer och verifierade prices.json-nivåer. Sammantaget: **avvakta** tills FOMC + kvällens rapporter givit facit innan man tar tydlig riktning i chip- eller megacap-caset.
+
+Detta är automatiserat beslutsstöd, inte finansiell rådgivning.
