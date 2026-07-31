@@ -14,6 +14,11 @@ och rapportflöde samt trovärdiga marknadsrykten.
 
 ## STRIKTA INSTRUKTIONER FÖR FILHANTERING
 1. Läs `config/fokus_scout.md` för mina preferenser (USA + krypto).
+1b. LÄRDOMAR: läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som gäller scouten
+   (case-urval, bevakningskällor) i dagens scanning. Referera lärdomens ID i caset när den
+   påverkat urvalet. Filen skrivs ENDAST av miss-retron (`prompts/retroprompt.md`) – ändra
+   den aldrig härifrån. En lärdom får ALDRIG tolkas som sänkt kursverifieringskrav eller
+   mjukare källkritik.
 2. Läs `templates/scout_case.md`. Denna fil är en strikt MALL – du får ALDRIG modifiera,
    ändra eller skriva över den.
 3. Skapa alltid en rapportfil för DAGENS datum i mappen `reports/scout/`, döpt exakt

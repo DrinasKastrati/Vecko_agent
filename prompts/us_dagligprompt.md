@@ -27,6 +27,11 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 
 ## STRIKTA INSTRUKTIONER FÖR FILHANTERING
 1. Läs `config/fokus_us_rotation.md` för grundpreferenser (US-universum, USD, sektorteman).
+1b. LÄRDOMAR (gäller BÅDA lägena): läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som
+   gäller US-boken i dagens scanning/beslut. Referera lärdomens ID (t.ex. "L-3") i motiveringen
+   när den påverkat ett beslut. Filen skrivs ENDAST av miss-retron (`prompts/retroprompt.md`) –
+   ändra den aldrig härifrån. En lärdom får ALDRIG tolkas som sänkt kursverifieringskrav eller
+   borttagen risk-regel.
 2. Läs `state/portfolj_us.md` – aktuellt US-innehav, kassa och historik (USD). Filen SKA
    uppdateras vid varje körning enligt "PORTFÖLJFILEN" nedan. Rör ALDRIG `state/portfolj.md`
    (det är den nordiska boken).
@@ -91,8 +96,9 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
    som hållits 5 handelsdagar säljs enligt rotationsregeln om de inte på nytt kvalificerar som
    topp 2 (markera då "BEHÅLL"). Flytta stängda positioner till Historik, uppdatera ackumulerad
    avkastning (USD).
-0b. LÄRDOMAR: läs "Lärdom"-fältet i de 4 senaste `reports/us_weekly/`-rapporterna. Låt 1–2
-   återkommande misstag påverka veckans urval; nämn kort vilken lärdom som tillämpats.
+0b. LÄRDOMAR: läs "Lärdom"-fältet i de 4 senaste `reports/us_weekly/`-rapporterna SAMT de aktiva
+   lärdomarna i `state/lessons.md` (miss-retrons destillat). Låt 1–2 återkommande misstag påverka
+   veckans urval; nämn kort vilken lärdom som tillämpats (med L-ID där det finns).
 1. BRED SCANNING (bruttolista 10–15 kandidater):
    a) KATALYSATORER senaste 5 handelsdagarna: earnings beats + höjd guidance, FDA/regulatoriska
       godkännanden, stora kontrakt/ordrar, bekräftade M&A/bud, indexinkludering (S&P/Nasdaq-100),

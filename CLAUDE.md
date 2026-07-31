@@ -265,6 +265,23 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   Testsviten: 119 tester, gröna. Kapital-splitten är nu det ENDA som allokerings-routinen rör –
   aktievalen sköts fortsatt av respektive boks rotation.
 
+- ✅ 2026-07-31 (miss-retro): **nionde delen** – en veckovis LÄRANDE-loop som granskar veckans
+  stora vinnare som INGEN routine fångade (t.ex. Microsoft efter stark rapport), spårar VAR i
+  tratten de föll bort och destillerar generaliserbara processregler. Ny prompt
+  `prompts/retroprompt.md` (körs fredag kväll/helg via Drens routines): STEG 1 hitta 3–5 missar
+  (nyhetssök + `price_history.json`-veckorörelser; miss = varken ägd, pending/bubblare eller
+  scout-case; rörelser utan katalysator = brus), STEG 2 traceback med klassificering
+  A UTANFÖR UNIVERSUM / B SEDD MEN FÖRKASTAD / C SEDD MEN RANKAD UNDER / D SIGNAL FILTRERAD,
+  STEG 3 facit-filter (PROCESSFEL kräver signal tillgänglig FÖRE rörelsen + generaliserbar regel;
+  annars ACCEPTABELT UTFALL → "Ingen ändring" – skydd mot hindsight-överanpassning), STEG 4 max
+  2 nya lärdomar/vecka till nya `state/lessons.md` (max 10 aktiva, L-ID, arkiv append-only,
+  ENDAST retron får skriva i filen; lärdomar aldrig ticker-specifika, får ALDRIG sänka
+  kursverifiering/risk-regler). Rapport: `reports/retro/retro-yymmdd.md` enligt nya strikta
+  `templates/retro_mall.md`. **Loopen stängd:** dagligprompt/us_dagligprompt fick 1b LÄRDOMAR
+  (läs lessons.md i båda lägena, referera L-ID i motiveringar) + utökad 0b; scoutprompt fick 1b.
+  Retron rör ALDRIG portföljer/watchlists (genererar inga case). Dashboard-integration av
+  retro-rapporterna är EJ byggd (valfritt; okända filnamn ignoreras av parsern).
+
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
   ligger nu på GitHub main (verifierat mot raw) – Pages kör nya dashboarden.
@@ -290,10 +307,11 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia var `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
 - ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\Vecko_agent`. Node v24 på plats,
   testsviten 119/119 grön. **KVAR på nya datorn:** kör `setup_autopush.bat` en gång (Task Scheduler-
-  tasken "VeckoAgent AutoPush" finns inte här), och peka om de schemalagda Cowork-taskarna
-  (`vecko-agent-us-rotation`, `vecko-agent-allokering`, scout/nordisk) till den nya sökvägen.
-- **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
-  och alert-historik byggdes 2026-07-17.)
+  tasken "VeckoAgent AutoPush" finns inte här). Schemaläggningen sköts via Drens routines
+  (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas eller pekas om.
+- **Valfria förbättringar (ej byggda):** daglig digest-notis; dashboard-flik för miss-retrons
+  rapporter (`reports/retro/`). (Jämför två tickers, fulltextsökning och alert-historik byggdes
+  2026-07-17; miss-retron byggdes 2026-07-31.)
 
 ---
 

@@ -16,6 +16,7 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
 
 ## STRIKTA INSTRUKTIONER FÖR FILHANTERING
 1. Läs `config/fokus.md` för grundpreferenser. För denna strategi gäller HELA Norden som universum och alla sektorer är tillåtna – `config/fokus.md`:s teman är endast tiebreaker.
+1b. LÄRDOMAR (gäller BÅDA lägena): läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som gäller den nordiska boken i dagens scanning/beslut. Nämn i rapportens motiveringar när en lärdom påverkat ett beslut (referera dess ID, t.ex. "L-3"). Filen skrivs ENDAST av miss-retron (`prompts/retroprompt.md`) – ändra den aldrig härifrån. En lärdom får ALDRIG tolkas som sänkt kursverifieringskrav eller borttagen risk-regel.
 2. Läs `state/portfolj.md` – den innehåller aktuellt innehav, kassa och historik. Filen SKA uppdateras vid varje körning enligt reglerna under "PORTFÖLJFILEN" nedan.
 3. Läs rätt mall: `templates/vecko_rapport.md` (måndagar) eller `templates/daglig_mall.md` (övriga dagar). Båda är strikta MALLAR som du ALDRIG får modifiera, ändra eller skriva över.
 4. Skapa rapportfilen för DAGENS datum: måndagar i mappen `reports/weekly/` döpt "veckorapport-yymmdd.md", övriga handelsdagar i mappen `reports/daily/` döpt "daglig-yymmdd.md". Exempel: `reports/daily/daglig-260714.md`. Finns filen för dagens datum redan (t.ex. vid omkörning): skriv över/uppdatera DEN filen – skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
@@ -41,7 +42,7 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
 
 ## LÄGE A – VECKOROTATION (måndagar)
 0. FACIT: hämta färsk kurs för varje innehav i `state/portfolj.md` (i första hand ur `state/prices.json`), beräkna utfall sedan entry, kontrollera om stop-loss eller målkurs träffats. Innehav som hållits 5 handelsdagar säljs enligt rotationsregeln, om de inte på nytt kvalificerar sig som topp 2 (markera då "BEHÅLL"). Flytta stängda positioner till Historik och uppdatera ackumulerad avkastning.
-0b. LÄRDOMAR: läs "Lärdom"-fältet i de senaste 4 veckorapporterna i `reports/weekly/`. Identifiera 1–2 återkommande misstag och låt dem påverka veckans urval; nämn kort i facit-sektionen vilken lärdom som tillämpats denna vecka.
+0b. LÄRDOMAR: läs "Lärdom"-fältet i de senaste 4 veckorapporterna i `reports/weekly/` SAMT de aktiva lärdomarna i `state/lessons.md` (miss-retrons destillat). Identifiera 1–2 återkommande misstag och låt dem påverka veckans urval; nämn kort i facit-sektionen vilken lärdom som tillämpats denna vecka (med L-ID där det finns).
 1. BRED SCANNING (bygg bruttolista, 10–15 kandidater):
    a) KATALYSATORER senaste 5 handelsdagarna: rapporter som slog förväntningarna, omvända vinstvarningar, stora ordrar/kontrakt, regulatoriska godkännanden (FDA/EMA/CE), större insiderköp, återköpsprogram, bekräftade bud/förvärv, indexinkluderingar.
    b) RYKTEN & TIDIGA SIGNALER: M&A-rykten, budspekulationer, aktivister, VD-byten. KÄLLKRAV: endast etablerade finansmedier (Bloomberg, Reuters, Wall Street Journal, Financial Times, CNBC, Dagens Industri, Affärsvärlden, EFN, Placera, E24, Dagens Næringsliv, Børsen, Kauppalehti) med hänvisning till initierade källor. Ignorera HELT X/Twitter, Reddit, Flashback, anonyma bloggar och forum.
