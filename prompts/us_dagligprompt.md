@@ -160,8 +160,10 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
 7. Skriv rapporten enligt `templates/us_daglig_mall.md` (spara i `reports/us_daily/`). Håll den kort –
    ett tydligt beslut per aktie, inte en ny djupanalys.
 8. Uppdatera `state/portfolj_us.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall %
-   och skäl; vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan; vid BEHÅLL uppdateras
-   bara "Senast uppdaterad".
+   och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja
+   alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation;
+   dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan;
+   vid BEHÅLL uppdateras bara "Senast uppdaterad".
 
 ## PORTFÖLJFILEN (state/portfolj_us.md) – UPPDATERINGSREGLER
 1. Läs ALLTID in hela filen innan du ändrar något.

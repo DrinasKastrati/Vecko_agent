@@ -69,6 +69,8 @@
       return mk("case", m);
     if ((m = name.match(/^rapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
       return mk("scout", m);
+    if ((m = name.match(/^retro-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
+      return mk("retro", m);
     if ((m = name.match(/^us-daglig-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
       return mk("us_daily", m);
     if ((m = name.match(/^us-veckorapport-(\d{2})(\d{2})(\d{2})(?:_(\d+))?\.md$/i)))
@@ -505,6 +507,63 @@
     return (w != null && w > 0 && w <= 100) ? w / 100 : 0.5;
   }
 
+  // ---- lessons.md (miss-retrons lärdomar) --------------------------------
+  // Läser "## Aktiva lärdomar" + "## Arkiv"-tabellerna. Radobjekt per kolumnnamn.
+  function parseLessons(md){
+    const out = { active: [], archived: [] };
+    if (!md) return out;
+    for (const s of splitSections(md)){
+      const h = s.heading.toLowerCase();
+      const t = parseTables(s.body)[0];
+      if (!t) continue;
+      const rows = t.rows.map(r => rowObj(t.header, r))
+        .filter(o => Object.values(o).some(v => v && !/^[–\-]$/.test(v)));
+      if (h.startsWith("aktiva")) out.active = rows;
+      else if (h.startsWith("arkiv")) out.archived = rows;
+    }
+    return out;
+  }
+
+  // ---- equity-serie per affär (kedjad, viktad) ---------------------------
+  // En punkt per STÄNGD position (kronologiskt på "Stängd"-datum): kumulativ
+  // avkastning kedjad med per-affär-vikt. Ger tätare kurva än veckopunkterna.
+  function buildTradeSeries(history){
+    const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    const dated = rows
+      .map(o => ({ o, d: String(o["Stängd"] || "").slice(0, 10) }))
+      .filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x.d))
+      .sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
+    let chain = 1; const pts = [];
+    for (const { o, d } of dated){
+      const p = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
+      if (p == null) continue;
+      chain *= (1 + weightFrac(o) * p / 100);
+      pts.push({ date: d, value: Math.round((chain - 1) * 10000) / 100, name: stripMd(o["Aktie"]), pct: p });
+    }
+    return pts;
+  }
+
+  // ---- månadsutfall (heatmap i Avkastning) -------------------------------
+  // Grupperar stängda affärer per "Stängd"-månad; kedjar viktade utfall inom
+  // månaden. Returnerar äldst→nyast: [{month:"2026-07", pct, trades, wins}].
+  function buildMonthlyStats(history){
+    const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    const map = new Map();
+    for (const o of rows){
+      const mo = String(o["Stängd"] || "").slice(0, 7);
+      if (!/^\d{4}-\d{2}$/.test(mo)) continue;
+      const p = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
+      if (p == null) continue;
+      const m = map.get(mo) || { month: mo, chain: 1, trades: 0, wins: 0 };
+      m.chain *= (1 + weightFrac(o) * p / 100);
+      m.trades++; if (p > 0) m.wins++;
+      map.set(mo, m);
+    }
+    return [...map.values()]
+      .sort((a, b) => (a.month < b.month ? -1 : 1))
+      .map(m => ({ month: m.month, pct: Math.round((m.chain - 1) * 10000) / 100, trades: m.trades, wins: m.wins }));
+  }
+
   // ---- trade-statistik (från Historik) ----------------------------------
   function computeTradeStats(history){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
@@ -548,7 +607,8 @@
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
-    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn
+    computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
+    parseLessons, buildTradeSeries, buildMonthlyStats
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

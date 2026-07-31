@@ -4,8 +4,10 @@
    ============================================================ */
 (function (root) {
   "use strict";
-  const strip = (root.VParse && root.VParse.stripMd) ||
-                (typeof require !== "undefined" && require("./vparse.js").stripMd);
+  const VPref = root.VParse ||
+                (typeof require !== "undefined" && require("./vparse.js"));
+  const strip = VPref.stripMd;
+  const numPct = VPref.firstNumberPct;
 
   function esc(s){
     return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
@@ -281,7 +283,14 @@
     const cols = Object.keys(portfolio.history[0]);
     const head = cols.map(c => `<th title="Klicka för att sortera">${esc(c)}</th>`).join("");
     const rows = portfolio.history.map(r =>
-      `<tr>${cols.map(c => `<td>${esc(strip(r[c]))}</td>`).join("")}</tr>`).join("");
+      `<tr>${cols.map(c => {
+        const v = strip(r[c]);
+        if (/utfall/i.test(c)){
+          const n = numPct(v);
+          if (n != null) return `<td><span class="${n > 0 ? "pos" : n < 0 ? "neg" : ""}">${esc(v)}</span></td>`;
+        }
+        return `<td>${esc(v)}</td>`;
+      }).join("")}</tr>`).join("");
     return `<div class="tbl-wrap"><table class="tbl tbl--sort"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
   }
   function renderBubblare(weekly){
@@ -443,19 +452,64 @@
     if (!s || !s.trades)
       return `<div class="empty">Inga stängda affärer ännu – statistiken fylls i när positioner stängs.</div>`;
     const pf = s.profitFactor == null ? "–" : (s.profitFactor === Infinity ? "∞" : s.profitFactor.toFixed(2));
-    const cell = (label, val, cls, sub) =>
-      `<div class="stat"><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
+    const cell = (label, val, cls, sub, tip) =>
+      `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
     return `<div class="stat-grid">
-      ${cell("Affärer", String(s.trades), "", s.wins + " vinst / " + s.losses + " förlust")}
-      ${cell("Träffsäkerhet", s.winRate != null ? Math.round(s.winRate * 100) + " %" : "–", s.winRate >= 0.5 ? "pos" : "")}
-      ${cell("Snittvinst", s.avgWin != null ? esc(signPct(s.avgWin)) : "–", "pos")}
-      ${cell("Snittförlust", s.avgLoss != null ? esc(signPct(s.avgLoss)) : "–", "neg")}
-      ${cell("Profit factor", pf, s.profitFactor >= 1 ? "pos" : "neg")}
-      ${cell("Bästa / sämsta", esc((s.best != null ? signPct(s.best) : "–") + " / " + (s.worst != null ? signPct(s.worst) : "–")))}
-      ${cell("Snitt hålltid", s.avgHoldDays != null ? Math.round(s.avgHoldDays) + " dgr" : "–")}
-      ${cell("Mål / stopp / rot.", s.byReason.target + " / " + s.byReason.stop + " / " + s.byReason.rotation, "", "orsak till stängning")}
+      ${cell("Affärer", String(s.trades), "", s.wins + " vinst / " + s.losses + " förlust", "Antal stängda positioner i historiken")}
+      ${cell("Träffsäkerhet", s.winRate != null ? Math.round(s.winRate * 100) + " %" : "–", s.winRate >= 0.5 ? "pos" : "", "", "Andel stängda affärer med positivt utfall")}
+      ${cell("Snittvinst", s.avgWin != null ? esc(signPct(s.avgWin)) : "–", "pos", "", "Genomsnittligt utfall för vinstaffärerna")}
+      ${cell("Snittförlust", s.avgLoss != null ? esc(signPct(s.avgLoss)) : "–", "neg", "", "Genomsnittligt utfall för förlustaffärerna")}
+      ${cell("Profit factor", pf, s.profitFactor >= 1 ? "pos" : "neg", "", "Summa vinster delat med summa förluster – över 1,0 = strategin tjänar mer än den förlorar")}
+      ${cell("Bästa / sämsta", esc((s.best != null ? signPct(s.best) : "–") + " / " + (s.worst != null ? signPct(s.worst) : "–")), "", "", "Största vinsten respektive största förlusten per affär")}
+      ${cell("Snitt hålltid", s.avgHoldDays != null ? Math.round(s.avgHoldDays) + " dgr" : "–", "", "", "Genomsnittligt antal kalenderdagar från entry till stängning")}
+      ${cell("Mål / stopp / rot.", s.byReason.target + " / " + s.byReason.stop + " / " + s.byReason.rotation, "", "orsak till stängning", "Hur positionerna stängts: målkurs nådd / stop-loss / veckorotation")}
     </div>
-    <div class="stat-note">Grov kedjad avkastning (50 % vikt/affär): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
+    <div class="stat-note">Kedjad avkastning (per-affär-vikt): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
+  }
+
+  // ---- lärdomskort (Retro-fliken, ur state/lessons.md) -------------------
+  function lessonCol(o, re){
+    const k = Object.keys(o || {}).find(key => re.test(key));
+    return k ? strip(o[k]) : "";
+  }
+  function renderLessons(lessons){
+    const act = (lessons && lessons.active) || [];
+    const arch = (lessons && lessons.archived) || [];
+    if (!act.length && !arch.length)
+      return `<div class="empty">Inga lärdomar ännu – fylls på när miss-retron körts (fredag kväll/helg).</div>`;
+    const cards = act.map(o => {
+      const id = lessonCol(o, /^id$/i);
+      const date = lessonCol(o, /^datum$/i);
+      const src = lessonCol(o, /källa/i);
+      const rule = lessonCol(o, /^regel$/i);
+      const scope = lessonCol(o, /gäller/i);
+      return `<div class="lesson">
+        <div class="lesson-top">${id ? `<span class="lesson-id">${esc(id)}</span>` : ""}${scope ? `<span class="lesson-scope">${esc(scope)}</span>` : ""}</div>
+        <div class="lesson-rule">${esc(rule || "–")}</div>
+        <div class="lesson-meta">${esc(date)}${src ? " · " + esc(src) : ""}</div>
+      </div>`;
+    }).join("");
+    return (act.length ? `<div class="lesson-wrap">${cards}</div>`
+                       : `<div class="empty">Inga aktiva lärdomar just nu.</div>`)
+      + (arch.length ? `<div class="stat-note">${arch.length} arkiverad${arch.length > 1 ? "e" : ""} lärdom${arch.length > 1 ? "ar" : ""} – se <code>state/lessons.md</code>.</div>` : "");
+  }
+
+  // ---- månadsheatmap (Avkastning) ----------------------------------------
+  function renderMonthlyHeatmap(months){
+    if (!months || !months.length)
+      return `<div class="empty">Inget månadsutfall ännu – fylls i när positioner stängs.</div>`;
+    const MO = ["jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"];
+    const max = Math.max.apply(null, months.map(m => Math.abs(m.pct))) || 1;
+    const cells = months.map(m => {
+      const mi = parseInt(m.month.slice(5), 10) - 1;
+      const label = (MO[mi] || m.month.slice(5)) + " " + m.month.slice(0, 4);
+      const a = (0.16 + 0.62 * Math.abs(m.pct) / max).toFixed(2);
+      const bg = m.pct > 0 ? `rgba(16,185,129,${a})` : m.pct < 0 ? `rgba(239,68,68,${a})` : "rgba(148,163,184,.14)";
+      return `<div class="hm-cell" style="background:${bg}" title="${m.trades} affär${m.trades > 1 ? "er" : ""}, ${m.wins} vinst – kedjat viktat utfall inom månaden">
+        <span class="hm-m">${esc(label)}</span><span class="hm-v">${esc(signPct(m.pct))}</span><span class="hm-t">${m.trades} affär${m.trades > 1 ? "er" : ""}</span>
+      </div>`;
+    }).join("");
+    return `<div class="hm-wrap">${cells}</div>`;
   }
 
   // ---- sökresultat (fulltextsökning i Rapporter) -------------------------
@@ -469,7 +523,8 @@
   function renderSearchResults(results, query){
     if (!results || !results.length)
       return `<div class="empty">Inga träffar på "${esc(query)}" i rapporterna.</div>`;
-    const TYPE = { daily: "Daglig", weekly: "Vecko", scout: "Scout", analysis: "Analys", case: "Case" };
+    const TYPE = { daily: "Daglig", weekly: "Vecko", scout: "Scout", analysis: "Analys", case: "Case",
+                   retro: "Retro", us_daily: "US-daglig", us_weekly: "US-vecko" };
     return `<div class="sr-list">` + results.map(r =>
       `<button type="button" class="sr-hit" data-open-report="${esc(r.meta.name)}" data-rtype="${esc(r.meta.type)}">
         <span class="sr-head"><span class="chip">${esc(TYPE[r.meta.type] || r.meta.type)}</span><b>${esc(r.meta.dateISO)}</b> — ${esc(r.meta.label)}<span class="sr-count">${r.count} träff${r.count > 1 ? "ar" : ""}</span></span>
@@ -550,7 +605,8 @@
   const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
-    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal };
+    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal,
+    renderLessons, renderMonthlyHeatmap };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

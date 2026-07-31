@@ -238,7 +238,15 @@
   .card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
   #chartWrap{position:relative;height:270px;margin-top:4px}
   #chartNote{color:var(--faint);font-size:12px;margin-top:9px}
-  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;border-radius:12px}
+  /* Scroll-skuggor: visar att tabellen fortsätter utanför kanten (mobil). */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;border-radius:12px;
+    background:
+      linear-gradient(90deg,var(--bg-main) 30%,transparent) left/44px 100%,
+      linear-gradient(270deg,var(--bg-main) 30%,transparent) right/44px 100%,
+      radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.55),transparent) left/16px 100%,
+      radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.55),transparent) right/16px 100%;
+    background-repeat:no-repeat;
+    background-attachment:local,local,scroll,scroll}
   .tbl{border-collapse:collapse;width:100%;font-size:12.5px}
   .tbl th,.tbl td{border:1px solid var(--border);padding:8px 11px;text-align:left}
   .tbl th{background:var(--panel3);color:#DCE4F0}
@@ -246,7 +254,32 @@
   .bubbl li{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 13px;
     font-size:12.7px;color:#CBD5E1;position:relative;padding-left:30px}
   .bubbl li::before{content:"◆";position:absolute;left:12px;color:var(--purple);font-size:10px;top:12px}
-  .empty{color:var(--faint);font-size:13px;padding:14px 2px;font-style:italic}
+  .empty{color:var(--faint);font-size:13px;padding:14px 16px;font-style:italic;
+    background:var(--panel2);border:1px dashed var(--border2);border-radius:11px}
+
+  /* ---- lärdomskort (Retro-fliken) ---- */
+  .lesson-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+  .lesson{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
+  .lesson-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}
+  .lesson-id{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--purple);
+    background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.35);border-radius:6px;padding:2px 8px}
+  .lesson-scope{font-size:10px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+  .lesson-rule{font-size:12.8px;color:#CBD5E1}
+  .lesson-meta{margin-top:9px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+
+  /* ---- månadsheatmap (Avkastning) ---- */
+  .hm-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-bottom:14px}
+  .hm-cell{border-radius:10px;padding:9px 11px;border:1px solid var(--border)}
+  .hm-m{display:block;font-size:10.5px;color:rgba(255,255,255,.85);letter-spacing:.03em}
+  .hm-v{display:block;font-family:var(--mono);font-size:14px;font-weight:700;color:#fff;margin-top:3px}
+  .hm-t{display:block;font-size:9.5px;color:rgba(255,255,255,.65);margin-top:2px}
+
+  /* ---- laddningsskelett (visas under första hämtningen) ---- */
+  .skel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px;margin-top:8px}
+  .skel{height:88px;border-radius:14px;border:1px solid var(--border);
+    background:linear-gradient(100deg,var(--panel2) 40%,var(--panel3) 50%,var(--panel2) 60%);
+    background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+  @keyframes shimmer{to{background-position:-200% 0}}
 
   .px-card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-top:14px}
   .px-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:11px}
@@ -442,6 +475,18 @@
     .footer{flex-direction:column;align-items:flex-start;gap:6px}
     /* modaler ska rensa botten-baren */
     .modal{padding:14px 14px calc(74px + env(safe-area-inset-bottom))}
+    .modal-box{width:100%;max-height:calc(100vh - 100px);overflow:auto}
+    .modal-chart{height:230px}
+    /* större tryckytor för chips/kort på touch */
+    .an-chip{padding:12px 13px;min-height:48px}
+    .px-item{padding:11px 12px}
+    .rtype{padding:9px 14px}
+    .sr-hit{padding:13px 14px}
+    /* heatmap + lärdomar: två kolumner på telefon */
+    .hm-wrap{grid-template-columns:repeat(2,1fr)}
+    .lesson-wrap{grid-template-columns:1fr}
+    /* diagrammet lite lägre på små skärmar */
+    #chartWrap{height:220px}
   }
   @media(max-width:400px){
     .brand h1{font-size:13px}
@@ -482,6 +527,7 @@
     <a href="#analys" data-view="analys" data-short="Analys">Analys</a>
     <a href="#kurser" data-view="kurser" data-short="Kurser">Kurser</a>
     <a href="#avkastning" data-view="avkastning" data-short="Avkast.">Avkastning</a>
+    <a href="#retro" data-view="retro" data-short="Retro">Retro</a>
   </nav>
 
   <div class="wrap">
@@ -571,14 +617,31 @@
         <div id="chartWrap"><canvas id="returnChart"></canvas></div>
         <div id="chartNote"></div>
       </div>
+      <h3 class="sub">Månadsutfall <span class="sub-date">nordiska boken · kedjat viktat utfall per månad</span></h3>
+      <div id="monthly"></div>
       <h3 class="sub">Historik (stängda positioner)</h3>
       <div id="history"></div>
       <div id="bubblare"></div>
     </section>
 
+    <section class="view" id="view-retro" data-view="retro">
+      <div class="sec-head"><h2>Retro &amp; lärdomar</h2><span class="hint">veckans missade vinnare · vad systemet lär sig</span></div>
+      <h3 class="sub">Aktiva lärdomar <span class="sub-date">ur state/lessons.md · skrivs endast av miss-retron</span></h3>
+      <div id="lessonsBody"></div>
+      <h3 class="sub">Retro-rapporter</h3>
+      <div class="report-ctrl">
+        <select id="retroSelect"></select>
+        <a id="retroGhLink" class="btn" target="_blank" rel="noopener" href="#">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.4-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.4-5.28 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <div id="retroBody" class="report"></div>
+    </section>
+
     <div class="footer">
       <span class="disclaimer">Detta är automatiserat beslutsstöd, inte finansiell rådgivning.</span>
-      <span class="kbd-hint">Kortkommandon: 1–7 flikar · R uppdatera</span>
+      <span class="kbd-hint">Kortkommandon: 1–9 flikar · R uppdatera · Esc stänger</span>
       <span>Data hämtas live från <a id="repoFoot" target="_blank" rel="noopener" href="#">DrinasKastrati/Vecko_agent</a> · uppdateras när roboten pushar.</span>
     </div>
   </div>

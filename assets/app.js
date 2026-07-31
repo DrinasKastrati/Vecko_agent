@@ -14,7 +14,7 @@
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
         metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null, alerts: null,
-        portfolioUs: null, usDailies: [], usWeeklies: [], allocation: null,
+        portfolioUs: null, usDailies: [], usWeeklies: [], allocation: null, lessons: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -63,12 +63,13 @@
         const alertsPath = paths.find(p => /(^|\/)alerts\.json$/i.test(p));
         const portfUsPath = paths.find(p => /(^|\/)portfolj_us\.md$/i.test(p));
         const allocPath = paths.find(p => /(^|\/)allocation\.json$/i.test(p));
+        const lessonsPath = paths.find(p => /(^|\/)lessons\.md$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -80,7 +81,8 @@
           portfUsPath ? this.getMd(portfUsPath).catch(() => null) : Promise.resolve(null),
           Promise.all(udMetas.map(m => this.getMd(m.path))),
           Promise.all(uwMetas.map(m => this.getMd(m.path))),
-          allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null)
+          allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null),
+          lessonsPath ? this.getMd(lessonsPath).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -95,6 +97,7 @@
         this.state.usDailies  = udMetas.map((m, i) => this.P.parseDaily(udMds[i], m));
         this.state.usWeeklies = uwMetas.map((m, i) => this.P.parseWeekly(uwMds[i], m));
         this.state.allocation = alloc;
+        this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -158,10 +161,12 @@
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
       const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
+      const moEl = this.el("monthly"); if (moEl) moEl.innerHTML = R.renderMonthlyHeatmap(this.P.buildMonthlyStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();
+      this.renderRetro();
       this.el("repoFoot").href = this.repoURL;
       this.setupReportPicker();
       this.drawChart();
@@ -449,6 +454,26 @@
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
     }
 
+    // ---- Retro & Lärdomar (miss-retron, ny flik) ----
+    renderRetro() {
+      const lb = this.el("lessonsBody");
+      if (lb) lb.innerHTML = this.R.renderLessons(this.state.lessons);
+      const sel = this.el("retroSelect"); if (!sel) return;
+      const metas = this.state.metas.filter(m => m.type === "retro");
+      sel.innerHTML = metas.map((m, i) => `<option value="${this.R.esc(m.name)}"${i === 0 ? " selected" : ""}>${this.R.esc(m.dateISO)} — ${this.R.esc(m.label)}</option>`).join("");
+      if (sel.value) this.showRetroReport(sel.value);
+      else this.el("retroBody").innerHTML = '<div class="empty">Inga retro-rapporter ännu – skapas när miss-retron kört (fredag kväll/helg).</div>';
+    }
+    async showRetroReport(name) {
+      const meta = this.state.metas.find(m => m.name === name);
+      const body = this.el("retroBody"); if (!body) return;
+      if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
+      const gh = this.el("retroGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
+      body.innerHTML = '<div class="empty">Hämtar…</div>';
+      try { body.innerHTML = this.mdToHtml(await this.getMd(meta.path)); }
+      catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
+    }
+
     // ---- report viewer ----
     setupReportPicker() {
       const sel = this.el("reportSelect");
@@ -552,6 +577,7 @@
       const canvas = this.el("returnChart");
       if (!canvas || !root.Chart) { if (this.el("chartWrap")) this.el("chartWrap").style.display = "none"; this.el("chartNote").textContent = root.Chart ? "" : "Diagram kunde inte laddas (offline?)."; return; }
       const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
+      const trades = this.P.buildTradeSeries(this.state.portfolio.history);
       const benches = [];
       const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX");
       const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC");
@@ -560,6 +586,7 @@
 
       // gemensam datumaxel (union), carry-forward-mappning per serie
       const labelSet = new Set(strat.map(p => p.date));
+      trades.forEach(p => labelSet.add(p.date));
       benches.forEach(b => b.pts.forEach(p => labelSet.add(p.date)));
       const labels = [...labelSet].sort();
       const data = this.P.seriesOnLabels(labels, strat);
@@ -574,6 +601,18 @@
       grd.addColorStop(0, "rgba(16,185,129,0.25)"); grd.addColorStop(1, "rgba(16,185,129,0)");
       if (this.state.chart) this.state.chart.destroy();
       const datasets = [{ label: "Strategin (%)", data, borderColor: "#10B981", backgroundColor: grd, fill: true, tension: 0.25, pointRadius: 3, pointBackgroundColor: "#10B981", borderWidth: 2, spanGaps: true }];
+      if (trades.length >= 2){
+        // per-affär-kurva: en punkt per stängd position (kedjad, viktad)
+        const tradeByDate = new Map(trades.map(p => [p.date, p]));
+        datasets.push({
+          label: "Per affär (kedjad)", data: this.P.seriesOnLabels(labels, trades),
+          borderColor: "#F59E0B", borderWidth: 1.5, borderDash: [3, 3],
+          fill: false, tension: 0, spanGaps: true,
+          pointRadius: labels.map(d => tradeByDate.has(d) ? 4 : 0),
+          pointBackgroundColor: "#F59E0B",
+          _tradeByDate: tradeByDate
+        });
+      }
       benches.forEach(b => datasets.push({
         label: b.label, data: this.P.seriesOnLabels(labels, b.pts),
         borderColor: b.color, borderDash: [5, 4], borderWidth: 1.5,
@@ -586,7 +625,11 @@
           responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { display: benches.length > 0, labels: { color: "#94A3B8", boxWidth: 18, usePointStyle: false } },
-            tooltip: { callbacks: { label: c => " " + c.dataset.label + ": " + c.parsed.y + " %" } }
+            tooltip: { callbacks: { label: c => {
+              const t = c.dataset._tradeByDate && c.dataset._tradeByDate.get(c.label);
+              const extra = t ? " (" + t.name + " " + (t.pct > 0 ? "+" : "") + t.pct + " %)" : "";
+              return " " + c.dataset.label + ": " + c.parsed.y + " %" + extra;
+            } } }
           },
           scales: {
             x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8" } },
@@ -597,9 +640,16 @@
     }
 
     // ---- status / ui ----
+    // Laddningsskelett i tomma vyer under första hämtningen (i stället för tomrum).
+    showSkeletons() {
+      const sk = n => `<div class="skel-grid">${Array.from({ length: n }, () => '<div class="skel"></div>').join("")}</div>`;
+      [["kpis", 4], ["totalBody", 4], ["holdings", 2], ["feed", 2], ["scoutBody", 2], ["usBody", 4]].forEach(([id, n]) => {
+        const el = this.el(id); if (el && !el.childElementCount) el.innerHTML = sk(n);
+      });
+    }
     setStatus(kind, err) {
       const dot = this.el("liveDot"), txt = this.el("statusTxt");
-      if (kind === "loading") { dot.className = "dot dot--load"; txt.textContent = "Hämtar…"; }
+      if (kind === "loading") { dot.className = "dot dot--load"; txt.textContent = "Hämtar…"; this.showSkeletons(); }
       else if (kind === "ok") { dot.className = "dot dot--live"; txt.textContent = "Live"; this.el("updated").textContent = "Uppdaterad " + this.nowStr(); }
       else if (kind === "error") {
         dot.className = "dot dot--err"; txt.textContent = "Fel";
@@ -633,6 +683,8 @@
       this.el("reportSelect").addEventListener("change", e => this.showReport(e.target.value));
       const usSel = this.el("usReportSelect");
       if (usSel) usSel.addEventListener("change", e => this.showUsReport(e.target.value));
+      const reSel = this.el("retroSelect");
+      if (reSel) reSel.addEventListener("change", e => this.showRetroReport(e.target.value));
       this.el("rawToggle").addEventListener("change", () => { const b = this.el("reportBody"); const md = b.dataset.raw || ""; if (!md) return; b.innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md); });
       document.querySelectorAll(".rtype").forEach(btn => btn.addEventListener("click", () => {
         document.querySelectorAll(".rtype").forEach(b => b.classList.remove("on"));

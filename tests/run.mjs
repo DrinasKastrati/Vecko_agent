@@ -289,5 +289,53 @@ ok("renderTotal blended uses split", VR.renderTotal(totBooks, 0.7).includes(VR.s
 ok("renderTotal baseline meta note", VR.renderTotal(totBooks, 0.5, { dynamic: false }).includes("baslinje 50/50"));
 ok("renderTotal no meta = no rationale row", !VR.renderTotal(totBooks, 0.5).includes("alloc-meta"));
 
+// ---- miss-retro: filnamn, lessons.md, Retro-fliken ----
+ok("parseFilename retro", VP.parseFilename("retro-260731.md").type === "retro" && VP.parseFilename("retro-260731.md").dateISO === "2026-07-31");
+ok("parseFilename retro no scout-clash", VP.parseFilename("rapport-260731.md").type === "scout");
+const lessonsMd = [
+  "# Lärdomar", "> Max 10 aktiva.",
+  "## Aktiva lärdomar",
+  "| ID | Datum | Källa (retro) | Regel | Gäller |", "|---|---|---|---|---|",
+  "| L-1 | 2026-07-31 | retro-260731 | Väg in after-hours-rapporter i scanningen | US, Scout |",
+  "## Arkiv (append-only)",
+  "| ID | Datum | Arkiverad | Skäl | Regel |", "|---|---|---|---|---|",
+  "| L-0 | 2026-07-24 | 2026-07-31 | motbevisad | Gammal regel |"
+].join("\n");
+const ls = VP.parseLessons(lessonsMd);
+ok("parseLessons active", ls.active.length === 1 && ls.active[0]["ID"] === "L-1" && ls.active[0]["Gäller"] === "US, Scout");
+ok("parseLessons archive", ls.archived.length === 1 && ls.archived[0]["ID"] === "L-0");
+ok("parseLessons empty", VP.parseLessons("").active.length === 0 && VP.parseLessons(null).active.length === 0);
+const lsHtml = VR.renderLessons(ls);
+ok("renderLessons card", lsHtml.includes("L-1") && lsHtml.includes("after-hours") && lsHtml.includes("lesson-id"));
+ok("renderLessons archive note", lsHtml.includes("1 arkiverad"));
+ok("renderLessons empty", VR.renderLessons(null).includes("Inga lärdomar"));
+ok("searchResults retro type", VR.renderSearchResults(
+  [{ meta: { name: "retro-260731.md", type: "retro", dateISO: "2026-07-31", label: "31 jul", sortKey: 20260731 }, count: 1, snippets: ["x"] }], "x"
+).includes("Retro"));
+
+// ---- equity-kurva per affär + månadsheatmap ----
+const eqHist = [
+  { "Stängd": "2026-07-17", "Aktie": "Alleima", "Utfall %": "+6,39 %", "Vikt": "50 %" },
+  { "Stängd": "2026-08-05", "Aktie": "Saab", "Utfall %": "-2,0 %", "Vikt": "60 %" },
+  { "Stängd": "2026-08-12", "Aktie": "Volvo", "Utfall %": "+4,0 %", "Vikt": "50 %" }
+];
+const eq = VP.buildTradeSeries(eqHist);
+ok("tradeSeries count+order", eq.length === 3 && eq[0].date === "2026-07-17" && eq[2].date === "2026-08-12");
+ok("tradeSeries chained", Math.abs(eq[1].value - ((1 + 0.5 * 0.0639) * (1 - 0.6 * 0.02) - 1) * 100) < 0.011);
+ok("tradeSeries meta", eq[0].name === "Alleima" && Math.abs(eq[0].pct - 6.39) < 1e-9);
+ok("tradeSeries empty", VP.buildTradeSeries([]).length === 0 && VP.buildTradeSeries(null).length === 0);
+ok("tradeSeries skips undated", VP.buildTradeSeries([{ "Aktie": "X", "Utfall %": "+1 %" }]).length === 0);
+const mo = VP.buildMonthlyStats(eqHist);
+ok("monthly groups", mo.length === 2 && mo[0].month === "2026-07" && mo[1].month === "2026-08");
+ok("monthly chain in month", Math.abs(mo[1].pct - ((1 - 0.6 * 0.02) * (1 + 0.5 * 0.04) - 1) * 100) < 0.011);
+ok("monthly trades/wins", mo[1].trades === 2 && mo[1].wins === 1);
+const hmHtml = VR.renderMonthlyHeatmap(mo);
+ok("heatmap cells", hmHtml.includes("hm-cell") && hmHtml.includes("jul 2026") && hmHtml.includes("aug 2026"));
+ok("heatmap empty", VR.renderMonthlyHeatmap([]).includes("Inget månadsutfall"));
+
+// ---- UI-polish: tooltips + färgkodad historik ----
+ok("tradeStats tooltip", VR.renderTradeStats(ts).includes('title="Summa vinster'));
+ok("history utfall colored", VR.renderHistory(p).includes('class="pos"') && VR.renderHistory(p).includes('class="neg"'));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

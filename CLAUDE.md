@@ -279,8 +279,25 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   kursverifiering/risk-regler). Rapport: `reports/retro/retro-yymmdd.md` enligt nya strikta
   `templates/retro_mall.md`. **Loopen stängd:** dagligprompt/us_dagligprompt fick 1b LÄRDOMAR
   (läs lessons.md i båda lägena, referera L-ID i motiveringar) + utökad 0b; scoutprompt fick 1b.
-  Retron rör ALDRIG portföljer/watchlists (genererar inga case). Dashboard-integration av
-  retro-rapporterna är EJ byggd (valfritt; okända filnamn ignoreras av parsern).
+  Retron rör ALDRIG portföljer/watchlists (genererar inga case). Dashboard-integration byggdes
+  samma dag (se webb-paketet nedan).
+
+- ✅ 2026-07-31 (webb-paket): **avkastning uppdateras vid varje SÄLJ** – LÄGE B punkt 8 i
+  dagligprompt/us_dagligprompt kräver nu att "Ackumulerad avkastning sedan start" räknas om
+  DIREKT i samma körning som ett SÄLJ (inte bara i måndagens FACIT); dashboardens KPI läser
+  redan fältet live ur portfolj-filerna. **Ny flik "Retro"** (10:e fliken): aktiva lärdomar ur
+  `state/lessons.md` som kort med L-ID-pill (`VParse.parseLessons` + `VRender.renderLessons`)
+  + rapportväljare för `reports/retro/` (parseFilename fick typ `retro`; sökningen taggar nu
+  även retro/us_daily/us_weekly). **Avkastning:** equity-kurva PER AFFÄR (`buildTradeSeries`:
+  en punkt per stängd position, kedjad med per-affär-vikt; orange streckad serie i diagrammet
+  med affärens namn+utfall i tooltip) och **månadsheatmap** (`buildMonthlyStats` +
+  `renderMonthlyHeatmap`: kedjat viktat utfall per "Stängd"-månad, grön/röd intensitet).
+  **Mobil:** scroll-skuggor på breda tabeller (background-attachment-tricket), större
+  tryckytor (an-chip/px-item/rtype/sr-hit), modal maxhöjd + lägre diagram, heatmap 2 kolumner.
+  **UI-polish:** laddningsskelett (shimmer) i tomma vyer under första hämtningen, tooltips på
+  alla handelsstatistik-kort (profit factor förklarad m.m.), färgkodad Utfall %-kolumn i
+  Historik, `.empty`-tomlägen som streckade boxar, kortkommando-hinten rättad (1–9 + Esc).
+  Testsviten: 140 tester, gröna.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
@@ -309,9 +326,9 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   testsviten 119/119 grön. **KVAR på nya datorn:** kör `setup_autopush.bat` en gång (Task Scheduler-
   tasken "VeckoAgent AutoPush" finns inte här). Schemaläggningen sköts via Drens routines
   (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas eller pekas om.
-- **Valfria förbättringar (ej byggda):** daglig digest-notis; dashboard-flik för miss-retrons
-  rapporter (`reports/retro/`). (Jämför två tickers, fulltextsökning och alert-historik byggdes
-  2026-07-17; miss-retron byggdes 2026-07-31.)
+- **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
+  och alert-historik byggdes 2026-07-17; miss-retron + Retro-fliken, per-affär-equity-kurvan,
+  månadsheatmapen och sälj-triggad avkastningsuppdatering byggdes 2026-07-31.)
 
 ---
 

@@ -70,7 +70,7 @@ Gör följande för VARJE innehav i `state/portfolj.md`:
 5. Motivera varje beslut i 1–3 meningar med hänvisning till kurs (med tidsstämpel) och/eller nyhet (med datum och källa).
 6. Riskjusteringar: stop-loss får flyttas UPP (t.ex. till entry när positionen är +5 %, eller trailing under nya stöd) men ALDRIG ned. Målkurs får endast höjas vid extraordinär ny katalysator, med tydlig motivering.
 7. Skriv dagens rapport enligt `templates/daglig_mall.md` (spara i `reports/daily/`). Håll den kort – målet är ett tydligt beslut per aktie, inte en ny djupanalys.
-8. Uppdatera `state/portfolj.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall i % och skäl; vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan; vid BEHÅLL uppdateras bara "Senast uppdaterad".
+8. Uppdatera `state/portfolj.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall i % och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation; dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan; vid BEHÅLL uppdateras bara "Senast uppdaterad".
 
 ## PORTFÖLJFILEN (state/portfolj.md) – UPPDATERINGSREGLER
 1. Läs ALLTID in hela filen innan du ändrar något.
