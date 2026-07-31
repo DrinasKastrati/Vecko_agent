@@ -1,21 +1,21 @@
 # Portfölj – Nordisk Rotation
-**Senast uppdaterad:** 2026-07-30 06:40 UTC (LÄGE B – daglig bevakning: 100 % kassa oförändrad. Saab-pending EJ TRIGGAD – verifierad kurs 599,6 kr (prices.json, marketTime 2026-07-29 15:29 UTC), +2,5 % över entry ≤ 585. NYTT: onsdagens rekyl förde tillbaka Saab mot entryn – dayLow 585,4 kr nuddade nivån men triggade inte (0,4 kr över ≤ 585); entryn åter genuint nåbar. Aktiv alert JPM SÄLJ = US-boken, ej nordisk (ingen åtgärd här). Bevaka torsdagens morgonhämtning: verifierad kurs ≤ 585 utlöser KÖP 50 % Saab. Se daglig-260730.md. Föregående: LÄGE B 2026-07-29, Saab 615,4 (bedömd ostrukbar); LÄGE A veckorotation v31 – Saab re-prisad till aktivt primärcase, entry ≤ 585 kr, stop 560 / mål 635, R/R 2,0:1, planerad vikt 50 %, se veckorapport-260727.md)
+**Senast uppdaterad:** 2026-07-31 06:40 UTC (LÄGE B – daglig bevakning: Saab-entryn ≤ 585 kr TRIGGAD. Verifierad dayLow 583,3 kr under torsdagens (2026-07-30) session (prices.json, marketTime 2026-07-30 15:29 UTC) korsade entrytaket ≤ 585 → KÖP verkställt: 50 % Saab @ 585 kr, entry-datum 2026-07-30, stop 560 / mål 635 / R/R 2,0:1. Vid senaste verifierade kurs 591,3 kr (samma stämpel) står positionen +1,08 %; stop och mål ej nådda; tesen (rekord­orderstock 317,7 mdr + Q2-beat + uppgraderingsvåg) intakt → BEHÅLL. Kassa 100 % → 50 %. Ingen binär händelse inom 2 handelsdagar. Se daglig-260731.md. Föregående: LÄGE B 2026-07-30, 100 % kassa, Saab-pending EJ TRIGGAD (599,6 kr); LÄGE A veckorotation v31 – Saab aktivt primärcase, entry ≤ 585 kr, se veckorapport-260727.md)
 **Ackumulerad avkastning sedan start:** +3,19 % (Alleima +6,39 % × 50 % vikt; första stängda positionen)
 
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Vikt | Anteckning |
 |---|---|---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — | — | Ingen öppen position ännu. Saab-entryn (nedan) aktiveras i LÄGE B när verifierad kurs ≤ 585 kr finns. |
+| Saab | SAAB-B.ST | Nasdaq Stockholm | 2026-07-30 | 585 kr | 560 kr | 635 kr | 50 % | Pending v31-entry ≤ 585 kr triggad (dayLow 583,3 kr, prices.json marketTime 2026-07-30 15:29 UTC). Senaste verifierade kurs 591,3 kr (+1,08 %). Tes: rekordorderstock 317,7 mdr + Q2-beat + uppgraderingsvåg (600–700). Stop får flyttas upp till entry vid +5 %; jaga ej gap. |
 
 ### Pending veckorotation v31 (beslutad i veckorapport-260727.md)
 | Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |
 |---|---|---|---|---|---|---|---|---|
-| Saab | SAAB-B.ST | Nasdaq Stockholm | Köp vid verifierad kurs ≤ 585 kr (ref. fredagens stängning 587,40 kr, prices.json 2026-07-24T15:29:40Z). Jaga EJ gap upp >597; annars stannar kapitalet i kassa | 560 kr | 635 kr | 1:2,0 | 50 % | AKTIVT primärcase v31 – Q2 rekordorderstock 317,7 mdr + uppgraderingsvåg (MS 700 / DNB 630 / Pareto 645 / SHB 600). Re-prisad nära marknaden (v30-lärdom). Triggas i LÄGE B; resten kassa |
+| Saab | SAAB-B.ST | Nasdaq Stockholm | Köp vid verifierad kurs ≤ 585 kr (ref. fredagens stängning 587,40 kr, prices.json 2026-07-24T15:29:40Z). Jaga EJ gap upp >597; annars stannar kapitalet i kassa | 560 kr | 635 kr | 1:2,0 | 50 % | ✅ TRIGGAD 2026-07-30 (dayLow 583,3 kr ≤ 585, prices.json marketTime 2026-07-30 15:29 UTC) → KÖP verkställt, se Aktuellt innehav (50 % Saab @ 585 kr). Inga pending kvar. |
 
 *Nivåerna är planen från veckorapport-260727.md (referens ur `state/prices.json`, marketTime 2026-07-24). Målet höjt från 621 till 635 kr mot den bekräftade uppgraderingsvågen (600–700). Justeras proportionellt mot faktisk verifierad kurs innan position öppnas. ~~v30-planen entry ≤ 572 kr / stop 540 / mål 621 – aldrig triggad; Saab gapade ifrån hela v30 (stängde 574–597), re-prisas v31.~~ ~~Moreld (MORLD.OL) rekyl-ben v29 (≤ 19,20 NOK) – aldrig triggad; utgår, kvar som bubblare.~~*
 
 ## Kassa
-100 % (ingen öppen position). Saab-entryn re-prisad v31 till ≤ 585 kr (ref. fredagens stängning 587,40 kr, marketTime 2026-07-24 15:29 UTC) – en genuint nåbar nivå (0,4 % under stängning; handlades intradag ned till 583,50 fredag). 50 % av kapitalet är öronmärkt för Saab och tas in i LÄGE B så snart en verifierbar kurs ≤ 585 kr föreligger → då 50 % Saab / 50 % kassa (stop 560 / mål 635, R/R 2,0:1). Jaga ej gap upp >597. Inget andra nordiskt case klarar R/R ≥ 2:1 nära sin nivå → resten kassa som aktivt val.
+50 % (efter att Saab-entryn ≤ 585 kr triggades 2026-07-30 → 50 % Saab / 50 % kassa). Resterande 50 % hålls som aktivt val: inget andra nordiskt case klarar R/R ≥ 2:1 nära sin verifierade nivå. Nästa allokeringsöversyn i LÄGE A (måndag 2026-08-03, v32-rotation).
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |
