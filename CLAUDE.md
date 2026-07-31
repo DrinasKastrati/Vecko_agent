@@ -268,7 +268,7 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - ✅ 2026-07-31 (miss-retro): **nionde delen** – en veckovis LÄRANDE-loop som granskar veckans
   stora vinnare som INGEN routine fångade (t.ex. Microsoft efter stark rapport), spårar VAR i
   tratten de föll bort och destillerar generaliserbara processregler. Ny prompt
-  `prompts/retroprompt.md` (körs fredag kväll/helg via Drens routines): STEG 1 hitta 3–5 missar
+  `prompts/miss_retro.md` (körs fredag kväll/helg via Drens routines): STEG 1 hitta 3–5 missar
   (nyhetssök + `price_history.json`-veckorörelser; miss = varken ägd, pending/bubblare eller
   scout-case; rörelser utan katalysator = brus), STEG 2 traceback med klassificering
   A UTANFÖR UNIVERSUM / B SEDD MEN FÖRKASTAD / C SEDD MEN RANKAD UNDER / D SIGNAL FILTRERAD,

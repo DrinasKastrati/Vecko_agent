@@ -29,7 +29,7 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 1. Läs `config/fokus_us_rotation.md` för grundpreferenser (US-universum, USD, sektorteman).
 1b. LÄRDOMAR (gäller BÅDA lägena): läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som
    gäller US-boken i dagens scanning/beslut. Referera lärdomens ID (t.ex. "L-3") i motiveringen
-   när den påverkat ett beslut. Filen skrivs ENDAST av miss-retron (`prompts/retroprompt.md`) –
+   när den påverkat ett beslut. Filen skrivs ENDAST av miss-retron (`prompts/miss_retro.md`) –
    ändra den aldrig härifrån. En lärdom får ALDRIG tolkas som sänkt kursverifieringskrav eller
    borttagen risk-regel.
 2. Läs `state/portfolj_us.md` – aktuellt US-innehav, kassa och historik (USD). Filen SKA
