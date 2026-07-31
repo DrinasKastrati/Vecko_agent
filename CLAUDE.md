@@ -194,9 +194,9 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   tickerformat-krav (bindestreck) tillagt i båda prompterna.
 - ✅ 2026-07-11 (Översikt v2): statusrad (datum/läge/beslut-chips + nedräkning till nästa
   schemalagda körning), positionsmätare stopp→entry→nu→mål på innehavskorten, besluts-historik
-  som färgpunkter (senaste 10 dagliga rapporterna). OBS: nedräkningen speglar Cowork-schemat
-  HÅRDKODAT i `vparse.js` (`nextRoutineRun`: scout 07:47 dagligen, rotation mån–fre 08:40) –
-  uppdatera funktionen om tasken schemaläggs om. Testsviten: 50 tester, gröna.
+  som färgpunkter (senaste 10 dagliga rapporterna). OBS: nedräkningen speglar schemat HÅRDKODAT i
+  `vparse.js` (`nextRoutineRun`) – uppdatera funktionen om en routine schemaläggs om. Aktuell
+  uppsättning står i avsnitt 5b under "SCHEMAT". Testsviten: 50 tester, gröna.
 - ✅ 2026-07-12: allt ovan pushat till main och live på Pages. Schemalagda routinerna i drift:
   scout skrev `rapport-260712.md` (första automatiska körningen), `daglig-260711.md` (helgnotis).
 
@@ -491,7 +491,25 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   `config/watchlist_us.txt` (Hormuz-/oljecaset).
 - ✅ **GitHub-inställningar:** verifierat klart – både `analys_queue.yml` (issue #2 → kö → analys)
   och `prices.yml` har committat till main, dvs. write-permissions + Issues fungerar.
-- ✅ **Schemaläggning (verifierat i drift):** Cowork scheduled tasks skapade 2026-07-11:
+- ✅ **SCHEMAT (gäller 2026-07-31, speglat i `nextRoutineRun`):** fem routines schemaläggs, en körs
+  manuellt, en ska aldrig köras. Tider i CEST.
+  | Routine | När | Prompt |
+  |---|---|---|
+  | Scout USA & krypto | dagligen **07:47** | `prompts/scoutprompt.md` |
+  | Nordisk rotation | mån–fre **08:40** | `prompts/dagligprompt.md` |
+  | US-rotation | mån–fre **15:00** | `prompts/us_dagligprompt.md` |
+  | Kapitalallokering | måndag **15:30** | `prompts/allokering.md` |
+  | Miss-retro | lördag **10:00** | `prompts/miss_retro.md` |
+
+  Ordningen styrs av vilka Actions som måste ha skrivit sin fil först: kurser 05:00 + 06:00 UTC
+  (och var 30:e min 07–20 UTC), nyheter från 05:17 UTC varannan timme. Därför ligger nordiska
+  rotationen 08:40 (efter kurser, före Stockholm 09:00) och US-rotationen 15:00 (före 15:30 CEST).
+  **Allokeringen måste ligga efter BÅDA veckorotationerna** – därav måndag 15:30.
+  **Miss-retron ligger på lördag, inte fredag kväll:** fredagens US-stängningskurser skrivs
+  21:10 UTC (23:10 CEST), så en lördagskörning har komplett facit för båda böckerna.
+  `prompts/analysprompt.md` körs MANUELLT när kön har poster. `prompts/veckoprompt.md` är utgången
+  och får ALDRIG schemaläggas (skapade dubbletter).
+- ✅ **Schemaläggning (historik):** Cowork scheduled tasks skapade 2026-07-11:
   `vecko-agent-scout-usa-krypto` (dagligen 07:47) och `vecko-agent-nordisk-rotation` (mån–fre
   08:40, efter prices-cronen, före börsöppning). Scoutens första körning 2026-07-12 producerade
   `reports/scout/rapport-260712.md`; helgkörningen 260711 hanterade stängda börser korrekt.

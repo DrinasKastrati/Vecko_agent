@@ -199,6 +199,15 @@ const nr = VP.nextRoutineRun(new Date(2026, 6, 11, 12, 0)); // lördag 11 jul 12
 ok("nextRun weekend->scout", nr && nr.label === "scout" && nr.when === "sön 07:47");
 const nr2 = VP.nextRoutineRun(new Date(2026, 6, 13, 8, 0)); // måndag 08:00
 ok("nextRun monday->rotation", nr2 && nr2.label === "rotation" && nr2.when === "mån 08:40");
+// allokering (måndag 15:30, efter båda veckorotationerna) + retro (lördag 10:00)
+const nr3 = VP.nextRoutineRun(new Date(2026, 6, 13, 15, 10)); // måndag 15:10
+ok("nextRun monday 15:10 -> allokering", nr3 && nr3.label === "allokering" && nr3.when === "mån 15:30");
+const nr4 = VP.nextRoutineRun(new Date(2026, 6, 13, 14, 50)); // måndag 14:50 – us-rotation först
+ok("nextRun us-rotation före allokering", nr4 && nr4.label === "us-rotation" && nr4.when === "mån 15:00");
+const nr5 = VP.nextRoutineRun(new Date(2026, 6, 11, 8, 0));   // lördag 08:00
+ok("nextRun saturday -> retro", nr5 && nr5.label === "retro" && nr5.when === "lör 10:00");
+const nr6 = VP.nextRoutineRun(new Date(2026, 6, 14, 15, 10)); // tisdag 15:10 – ingen allokering
+ok("nextRun ingen allokering på tisdag", nr6 && nr6.label === "scout" && nr6.when === "ons 07:47");
 ok("renderStatusRow chips", VR.renderStatusRow(
   { dateISO: "2026-07-10", mode: "LÄGE B – bevakning", market: "x", holdings: [{ decision: "BEHÅLL" }, { decision: "BEHÅLL" }] },
   { label: "scout", when: "sön 07:47", rel: "om 19 tim" }

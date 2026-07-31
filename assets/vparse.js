@@ -433,9 +433,13 @@
         const t = new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, m);
         if (t > n) cands.push({ t, label });
       };
+      // Schemat speglar Drens routines. Ordningen är styrd av vilka Actions som
+      // måste ha skrivit sin fil först (kurser 05/06 UTC, nyheter från 05:17 UTC).
       add(7, 47, "scout");
-      if (dow >= 1 && dow <= 5) add(8, 40, "rotation");
-      if (dow >= 1 && dow <= 5) add(15, 0, "us-rotation"); // före US-öppning (CEST)
+      if (dow >= 1 && dow <= 5) add(8, 40, "rotation");      // efter kurshämtning, före Stockholm 09:00
+      if (dow >= 1 && dow <= 5) add(15, 0, "us-rotation");   // före US-öppning 15:30 (CEST)
+      if (dow === 1) add(15, 30, "allokering");              // måndag, efter BÅDA veckorotationerna
+      if (dow === 6) add(10, 0, "retro");                    // lördag: fredagens US-stängning (21:10 UTC) finns i price_history
     }
     if (!cands.length) return null;
     cands.sort((a, b) => a.t - b.t);
