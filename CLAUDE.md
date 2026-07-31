@@ -370,6 +370,43 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   resp. `us` (valfri range, t.ex. `5y`). Rena funktioner (parseCandles/momentumAt/isWeekStart/
   simulateTrade/backtestUniverse/buyHoldPct) exporterade + testade. Testsviten: 168 tester.
 
+- ✅ 2026-07-31 (avkastningspaket – 7 åtgärder mot faktiska läckor i systemet):
+  **(1) Backtestet kört för första gången** (`reports/backtest/backtest-260731-{nordic,us}.md`,
+  5 år, 30 symboler per marknad, 259/258 veckor). Resultat: BRUTTO ligger skelettet under sitt
+  benchmark i båda marknaderna (nordic bäst +22,6 % vs ^OMX +36,3 %; us bäst +61,4 % vs
+  ^GSPC +70,9 %) och NETTO efter courtage är allt kraftigt negativt (−36 % resp. −76 %).
+  Slutsats: ramverket bär inte sin egen vikt – LLM-urvalet måste tillföra HELA edgen, och
+  omsättningstakten (~100 affärer/år) är den enskilt största kostnaden. Nordiskt grid föredrog
+  SMALASTE stoppen (−3 %/+6 %, PF 1,08), US-gridet de BREDASTE (20d/−5 %/+10 %, PF 1,13).
+  **(2) Kostnader modellerade:** ny `config/kostnader.json` (nordic 0,25 % rundtur; us 0,25 % +
+  0,5 % växlingspåslag). `VParse.costFor/netPct`, `computeTradeStats(history, costPct)` ger
+  netChainedPct/netWinRate/netProfitFactor/costDragPct, `buildTradeSeries(history, costPct)` ger
+  nettokurva med `grossPct` kvar per punkt, nytt stat-kort "Netto efter kostnad".
+  `backtest.mjs` läser samma config (`params.costPct`). Bruttotalen är orörda.
+  **(3) Valutan redovisad:** `USDSEK=X` tillagd i `config/watchlist_us.txt`, `VParse.fxRate`
+  + valutarad i Total-vyn som säger explicit att blended-talet är EXKL. valutaeffekt (historiken
+  kan inte räknas om – växelkursen per affär är inte loggad).
+  **(4) Beslutsloggen fungerar:** `state/decisions.json` backfylld med de 5 historiska
+  besluten (märkta `"source": "backfill-260731"`), ny `.github/scripts/validate-decisions.mjs`
+  (schema, enum, SÄLJ-fält, append-only mot föregående commit) körs i `test.yml`, och watchdogen
+  larmar om dagens rapport pushas UTAN rader i loggen. Prompterna pekar nu på validatorn i
+  stället för bara `JSON.parse`.
+  **(5) Nyhetsingestionen live:** `cision-se` (HTTP 404) och `businesswire-tech` (tomt RSS-skal)
+  var döda – ersatta med `sec-8k` (EDGAR Atom, kräver kontakt-UA → `uaFor()`), `fed-press` och
+  `globenewswire-earnings`. 6/6 flöden gröna, 137 poster. Ett flöde som svarar 200 men 0 poster
+  flaggas nu som "0 poster – kontrollera URL" i stället för att tystna. Watchdogen larmar om
+  `news_feed.json` är > 6 h gammal.
+  **(6) Prompt-kalibrering (båda rotationerna):** ny sektion "NIVÄER & OMSÄTTNING" med
+  backtestade stoppband (nordic 3–5 %, us 4–6 %), **kostnadströskel** (entry→mål minst 6 %
+  nordiskt / 8 % i US-boken) och **BEHÅLL som standardval** – 5-dagarsregeln säljer inte längre
+  automatiskt, rotation kräver stop/mål, punkterad tes eller ≥ 2 poäng bättre nytt case.
+  **(7) Delat entry (4a i båda prompterna):** halva vikten köps direkt vid rotationen, andra
+  halvan som villkorad limit i Pending. Motverkar att kapitalet blir stående (Saab v30, Moreld,
+  XOM triggade aldrig). Undantag vid gap > 3 % eller binär händelse inom 2 dagar.
+  Dessutom: 1g0 NYHETSDRIVEN KANDIDATGENERERING (minst 5 kandidater ur `news_feed.json` innan
+  scanning ur minnet) i båda rotationsprompterna.
+  Testsviten: 213 tester; sim: 31 kontroller. Båda gröna på Drens dator 2026-07-31.
+
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
   ligger nu på GitHub main (verifierat mot raw) – Pages kör nya dashboarden.

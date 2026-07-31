@@ -96,6 +96,8 @@ ok("nordisk: KPI:er", txt("kpis").includes("Ackumulerad avkastning"));
 ok("nordisk: innehav", txt("holdings").includes("hold"));
 ok("total: blended", txt("totalBody").includes("Blended avkastning"));
 ok("total: kapitalfördelning", txt("totalBody").includes("alloc-seg"));
+ok("total: valutaupplysning", txt("totalBody").includes("exkl. valutaeffekt"));
+ok("kostnader: config laddad", dash.state.costs && dash.state.costs.nordic && dash.state.costs.nordic.roundTripPct > 0);
 ok("us: bok eller tomläge", txt("usBody").length > 20);
 
 // Retro & lärdomar
@@ -105,6 +107,7 @@ ok("retro: rapporten renderad", txt("retroBody").length > 100);
 
 // Avkastning
 ok("avkastning: handelsstatistik", txt("tradeStats").includes("Profit factor"));
+ok("avkastning: nettoavkastning efter kostnad", txt("tradeStats").includes("Netto efter kostnad"));
 ok("avkastning: månadsheatmap", txt("monthly").includes("hm-cell"));
 ok("avkastning: riskmått", txt("riskStats").includes("Max drawdown"));
 ok("avkastning: färgkodad historik", txt("history").includes('class="pos"'));

@@ -69,7 +69,10 @@ export function simulateTrade(candles, i, stopPct, targetPct, holdDays){
 // Kör hela skelettet över universumet. candlesBySym = { SYM: candles[] }.
 // params = { lookback, stopPct, targetPct, holdDays, topN, weight }.
 export function backtestUniverse(candlesBySym, params){
-  const P = Object.assign({ lookback: 20, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2, weight: 0.5 }, params);
+  // costPct = rundturskostnad (courtage + spread) i PROCENT per affär, dras från
+  // varje affärs utfall så att kedjat resultat är netto – annars ser en strategi
+  // med 50 affärer/år mycket bättre ut än den är.
+  const P = Object.assign({ lookback: 20, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2, weight: 0.5, costPct: 0 }, params);
   const syms = Object.keys(candlesBySym).filter(s => (candlesBySym[s] || []).length > P.lookback + 10);
   if (!syms.length) return null;
   // gemensam datumaxel = symbolen med flest candles
@@ -97,6 +100,8 @@ export function backtestUniverse(candlesBySym, params){
     for (const p of picks){
       const tr = simulateTrade(candlesBySym[p.s], p.si, P.stopPct, P.targetPct, P.holdDays);
       if (!tr) continue;
+      tr.grossPct = tr.retPct;
+      tr.retPct = tr.retPct - P.costPct;   // netto efter courtage/spread
       trades.push(Object.assign({ sym: p.s, date }, tr));
       wkRet += P.weight * tr.retPct;
     }
@@ -159,10 +164,18 @@ async function main(){
   }
   const benchCandles = await fetchCandles(bench, range);
 
+  // Transaktionskostnad ur config/kostnader.json (rundtur i procent per affär).
+  let costPct = 0;
+  try {
+    const c = JSON.parse(readFileSync("config/kostnader.json", "utf8"));
+    const b = market === "us" ? c.us : c.nordic;
+    costPct = (Number(b.roundTripPct) || 0) + (Number(b.fxSpreadPct) || 0);
+  } catch { console.log("Ingen config/kostnader.json – räknar brutto."); }
+
   const grid = [];
   for (const lookback of [10, 20])
     for (const [stopPct, targetPct] of [[0.03, 0.06], [0.04, 0.08], [0.05, 0.10]])
-      grid.push({ lookback, stopPct, targetPct });
+      grid.push({ lookback, stopPct, targetPct, costPct });
 
   const results = grid.map(p => backtestUniverse(candlesBySym, p)).filter(Boolean);
   const bh = buyHoldPct(benchCandles);
@@ -172,7 +185,7 @@ async function main(){
   const ymd = String(today.getFullYear()).slice(2) + String(today.getMonth() + 1).padStart(2, "0") + String(today.getDate()).padStart(2, "0");
   const lines = [];
   lines.push(`# Backtest av mekaniska skelettet – ${market} (${range})`);
-  lines.push(`**Datum:** ${today.toISOString().slice(0, 10)} | **Universum:** ${syms.length} symboler | **Benchmark (${bench}) köp-och-behåll:** ${f(bh)} %`);
+  lines.push(`**Datum:** ${today.toISOString().slice(0, 10)} | **Universum:** ${syms.length} symboler | **Benchmark (${bench}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${costPct.toFixed(2)} % per affär (netto)`);
   lines.push("");
   lines.push("> Momentum-proxy (positiv " + "lookback-avkastning, topp 2) ersätter LLM:ens case-urval.");
   lines.push("> Resultatet validerar RAMVERKET (rotationstakt, stop-/målnivåer, 5-dagars håll) – inte strategin som helhet.");

@@ -10,8 +10,16 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+// SEC:s access-policy kräver en User-Agent som deklarerar kontaktuppgift; en
+// browser-UA ger 403 mot deras EDGAR-flöden.
+const SEC_UA = "Vecko_agent/1.0 (kastratidrinas@gmail.com)";
 const MAX_ITEMS = 300;         // tak i news_feed.json
 const MAX_AGE_H = 48;          // äldre poster än så rensas
+
+// Rätt User-Agent per värd (sec.gov kräver kontakt-UA, övriga vill ha browser-UA).
+export function uaFor(url){
+  return /(^|\/\/|\.)sec\.gov(\/|$|:)/i.test(String(url || "")) ? SEC_UA : UA;
+}
 
 // ---- pure helpers (testbara) ------------------------------------------
 function textBetween(block, tag){
@@ -91,11 +99,13 @@ async function main(){
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 20000);
-      const r = await fetch(f.url, { headers: { "User-Agent": UA, "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" }, signal: ctrl.signal });
+      const r = await fetch(f.url, { headers: { "User-Agent": uaFor(f.url), "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" }, signal: ctrl.signal });
       clearTimeout(timer);
       if (!r.ok){ status[f.name] = "HTTP " + r.status; continue; }
       const items = parseRss(await r.text(), f.name);
-      status[f.name] = items.length + " poster";
+      // 200 men noll poster = trasig/utgången flödes-URL (t.ex. Business Wire som
+      // svarar med ett tomt RSS-skal). Flaggas så den inte tystnar oupptäckt.
+      status[f.name] = items.length ? items.length + " poster" : "0 poster – kontrollera URL";
       fresh = fresh.concat(items);
     } catch (e) {
       status[f.name] = "fel: " + String(e && e.message || e).slice(0, 60);

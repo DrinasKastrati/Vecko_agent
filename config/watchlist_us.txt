@@ -11,6 +11,11 @@
 ^OMX
 # ^OMX = OMXS30 – nordiskt benchmark för avkastnings-overlayen i dashboarden.
 
+# --- Valuta ---
+USDSEK=X
+# USD/SEK – us-boken är USD-denominerad. Kursen visas i Total-vyn så att det
+# framgår vilken valutaeffekt den blendade avkastningen INTE innehåller.
+
 # --- Stora USA-aktier ---
 AAPL
 MSFT

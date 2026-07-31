@@ -14,7 +14,7 @@
       this.apiTree = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/trees/${cfg.branch}?recursive=1`;
       this.state = {
         metas: [], dailies: [], weeklies: [], portfolio: null, feed: null, prices: null, scouts: [], queue: null, priceHistory: null, alerts: null,
-        portfolioUs: null, usDailies: [], usWeeklies: [], allocation: null, lessons: null,
+        portfolioUs: null, usDailies: [], usWeeklies: [], allocation: null, lessons: null, costs: null,
         md: new Map(), chart: null, reportType: "daily"
       };
     }
@@ -64,12 +64,13 @@
         const portfUsPath = paths.find(p => /(^|\/)portfolj_us\.md$/i.test(p));
         const allocPath = paths.find(p => /(^|\/)allocation\.json$/i.test(p));
         const lessonsPath = paths.find(p => /(^|\/)lessons\.md$/i.test(p));
+        const costsPath = paths.find(p => /(^|\/)kostnader\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -82,7 +83,8 @@
           Promise.all(udMetas.map(m => this.getMd(m.path))),
           Promise.all(uwMetas.map(m => this.getMd(m.path))),
           allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null),
-          lessonsPath ? this.getMd(lessonsPath).catch(() => null) : Promise.resolve(null)
+          lessonsPath ? this.getMd(lessonsPath).catch(() => null) : Promise.resolve(null),
+          costsPath ? this.fetchJSON(this.raw(costsPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -98,6 +100,7 @@
         this.state.usWeeklies = uwMetas.map((m, i) => this.P.parseWeekly(uwMds[i], m));
         this.state.allocation = alloc;
         this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
+        this.state.costs = costs || this.P.DEFAULT_COSTS;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -160,7 +163,8 @@
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
-      const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
+      const cost = this.P.costFor("nordic", S.costs);
+      const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history, cost));
       const rsEl = this.el("riskStats"); if (rsEl) rsEl.innerHTML = R.renderRiskStats(this.P.computeRiskStats(S.portfolio.history));
       const moEl = this.el("monthly"); if (moEl) moEl.innerHTML = R.renderMonthlyHeatmap(this.P.buildMonthlyStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
@@ -421,6 +425,9 @@
         split = a.nordic;
         meta = { dynamic: true, rationale: a.rationale, updatedAt: a.updatedAt, week: a.week };
       }
+      // Valutan: us-boken redovisas i USD. Vi kan inte räkna om historiken (kursen
+      // vid varje affär är inte loggad), så vi visar vad som exkluderas.
+      meta.fx = this.P.fxRate(S.prices);
       el.innerHTML = this.R.renderTotal(books, split, meta);
     }
 
@@ -634,7 +641,7 @@
       const canvas = this.el("returnChart");
       if (!canvas || !root.Chart) { if (this.el("chartWrap")) this.el("chartWrap").style.display = "none"; this.el("chartNote").textContent = root.Chart ? "" : "Diagram kunde inte laddas (offline?)."; return; }
       const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
-      const trades = this.P.buildTradeSeries(this.state.portfolio.history);
+      const trades = this.P.buildTradeSeries(this.state.portfolio.history, this.P.costFor("nordic", this.state.costs));
       const benches = [];
       const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX");
       const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC");

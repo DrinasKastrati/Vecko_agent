@@ -17,11 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # föregående commit krävs för append-only-kontrollen nedan
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Kör testsviten (rena funktioner, ingen nätåtkomst)
         run: node tests/run.mjs
+      - name: Validera beslutsdatabasen (schema + append-only mot föregående commit)
+        run: |
+          git show HEAD~1:state/decisions.json > /tmp/decisions-base.json 2>/dev/null || true
+          if [ -s /tmp/decisions-base.json ]; then
+            node .github/scripts/validate-decisions.mjs --base /tmp/decisions-base.json
+          else
+            node .github/scripts/validate-decisions.mjs
+          fi
       - name: Syntaxkontrollera alla JS-moduler
         run: |
           node --check assets/vparse.js
@@ -31,3 +41,6 @@ jobs:
           node --check .github/scripts/alerts.mjs
           node --check .github/scripts/digest.mjs
           node --check .github/scripts/watchdog.mjs
+          node --check .github/scripts/fetch-news.mjs
+          node --check .github/scripts/backtest.mjs
+          node --check .github/scripts/validate-decisions.mjs

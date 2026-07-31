@@ -14,6 +14,29 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
 - **Varje avvikelse från 50/50 MÅSTE motiveras skriftligt** (varför högre/lägre conviction: styrka i katalysator, teknik, risk/reward, makro). Tvinga aldrig upp exponering – lägre conviction ⇒ mer kassa.
 - Ange ALLTID vikten (% av kapitalet) per position i `state/portfolj.md` (kolumnen "Vikt") och i veckorapporten. Vikten sparas per affär och används i avkastningsberäkningen.
 
+## NIVÅER & OMSÄTTNING (kalibrerat mot backtest 2026-07-31)
+Underlag: `reports/backtest/backtest-260731-nordic.md` – det mekaniska skelettet (momentum-proxy,
+topp 2, 5 dagars håll) kört över 5 år och 259 veckor på 30 nordiska storbolag.
+1. **STOPPBREDD:** −3 % stop / +6 % mål gav bäst resultat i gridet (PF 1,08 brutto) och blev
+   sämre ju bredare stoppen sattes. Håll dig därför i bandet **stop 3–5 % under entry** och sätt
+   stoppen tekniskt (strax under stöd) inom det bandet. Bredda ALDRIG stoppen med motiveringen
+   "ge caset luft" – data säger tvärtom. Målet ≥ 2× stoppavståndet (R/R-kravet 2:1 är oförändrat).
+2. **KOSTNADSTRÖSKEL (ny, hård regel):** rundturskostnaden står i `config/kostnader.json`
+   (nordisk bok ~0,25 % per affär). Ett case får bara väljas om avståndet entry → mål är
+   **minst 6 %**, dvs. ≥ 20× rundturskostnaden. Ett case med 3 % uppsida är efter courtage och
+   spread inte värt en position, hur fin katalysatorn än är. Skriv ut avståndet i handelsplanen.
+3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** samma backtest blir kraftigt negativt när
+   courtage räknas in (−36 % netto i den bästa kombinationen), enbart för att veckorotation av
+   2 positioner ger ~100 affärer per år. Därför gäller: **BEHÅLL är standardvalet** för ett
+   innehav vars tes är intakt och vars stop/mål inte träffats – även när hålltiden passerat
+   5 handelsdagar. Rotera ut en position ENDAST om (a) stop eller mål träffats, (b) tesen är
+   punkterad, eller (c) ett nytt case har MINST 2 poäng högre totalpoäng i urvalsmodellen.
+   Motivera varje rotation som inte beror på (a) eller (b) skriftligt i veckorapporten.
+4. **REDOVISA BRUTTO OCH NETTO:** när du anger utfall i rapporten, ange bruttoutfallet som
+   vanligt men nämn att dashboardens nettosiffra drar rundturskostnaden. Sänk aldrig
+   kursverifieringskravet för att få fler affärer – lösningen på få affärer är bredare
+   kandidatinflöde (punkt 1g0), inte lägre beviskrav.
+
 ## STRIKTA INSTRUKTIONER FÖR FILHANTERING
 1. Läs `config/fokus.md` för grundpreferenser. För denna strategi gäller HELA Norden som universum och alla sektorer är tillåtna – `config/fokus.md`:s teman är endast tiebreaker.
 1b. LÄRDOMAR (gäller BÅDA lägena): läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som gäller den nordiska boken i dagens scanning/beslut. Nämn i rapportens motiveringar när en lärdom påverkat ett beslut (referera dess ID, t.ex. "L-3"). Filen skrivs ENDAST av miss-retron (`prompts/miss_retro.md`) – ändra den aldrig härifrån. En lärdom får ALDRIG tolkas som sänkt kursverifieringskrav eller borttagen risk-regel.
@@ -37,12 +60,12 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
 2. VERIFIERA TIDSSTÄMPELN: `marketTime` ska vara från idag, eller från senaste handelsdagens stängning om börsen ännu inte öppnat. Saknas tickern i `state/prices.json`, saknar den `price`, eller är `marketTime` äldre än så: försök en reservkälla direkt (Yahoo Finance https://finance.yahoo.com/quote/<TICKER> med suffix .ST/.OL/.CO/.HE, Google Finance, Avanza). Går ingen färsk kurs att verifiera – följ punkt 4. Nya kandidater som inte finns i `state/prices.json` kan läggas till i `config/watchlist.txt` så hämtas de inför nästa körning.
 3. Ange ALLTID källa + tidsstämpel för varje kurs i rapporten (för prices.json: ange `source` och `marketTime`). Använd ALDRIG kurser ur nyhetsartiklar, cachade sökträffar eller ditt eget minne – de är ofta inaktuella.
 4. Om ingen färsk kurs kan verifieras för ett innehav: skriv "KURS EJ VERIFIERAD" och fatta inget SÄLJ-/KÖP-beslut baserat på kursnivån den dagen.
-5. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av `.github/workflows/news.yml` ur pressmeddelande-RSS: MFN, Cision, GlobeNewswire m.fl.). Skanna rubrikerna efter innehaven, kandidater, deras sektorer och konkurrenter – detta är den PRIMÄRA nyhetsradarn och täcker flödet systematiskt i stället för sökmotorslump. En rubrik som ska användas i ett beslut måste först verifieras via sin länk (datum + avsändare); kurskraven är oförändrade. Websök (punkt 5b) är komplement för kontext och sådant som inte är pressmeddelanden.
+5. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av `.github/workflows/news.yml` ur pressmeddelande-RSS: MFN, GlobeNewswire, PR Newswire, SEC 8-K och Fed-pressmeddelanden – flödeslistan står i `config/news_feeds.txt`, och filens `feeds`-fält visar status per flöde: står det "0 poster – kontrollera URL" är flödet trasigt och ska rapporteras, inte tyst ignoreras). Skanna rubrikerna efter innehaven, kandidater, deras sektorer och konkurrenter – detta är den PRIMÄRA nyhetsradarn och täcker flödet systematiskt i stället för sökmotorslump. En rubrik som ska användas i ett beslut måste först verifieras via sin länk (datum + avsändare); kurskraven är oförändrade. Websök (punkt 5b) är komplement för kontext och sådant som inte är pressmeddelanden.
 5b. NYHETER (websök): inkludera alltid dagens datum i sökfrågorna. I läge B prioriteras nyheter från senaste 24 timmarna, i läge A senaste 5 handelsdagarna. Kontrollera publiceringsdatum på VARJE artikel innan den används – en träff utan verifierbart datum behandlas inte som färsk. Sök på både svenska och engelska samt direkt i bolagens pressmeddelandeflöden (IR-sidor, MFN, Cision, GlobeNewswire).
 6. Kontrollera alltid också kommande kända händelser: har något innehav rapport, ex-datum eller kapitalmarknadsdag idag eller imorgon?
 
 ## LÄGE A – VECKOROTATION (måndagar)
-0. FACIT: hämta färsk kurs för varje innehav i `state/portfolj.md` (i första hand ur `state/prices.json`), beräkna utfall sedan entry, kontrollera om stop-loss eller målkurs träffats. Innehav som hållits 5 handelsdagar säljs enligt rotationsregeln, om de inte på nytt kvalificerar sig som topp 2 (markera då "BEHÅLL"). Flytta stängda positioner till Historik och uppdatera ackumulerad avkastning.
+0. FACIT: hämta färsk kurs för varje innehav i `state/portfolj.md` (i första hand ur `state/prices.json`), beräkna utfall sedan entry, kontrollera om stop-loss eller målkurs träffats. **Innehav som hållits 5 handelsdagar säljs INTE automatiskt** – enligt sektionen "NIVÅER & OMSÄTTNING" är BEHÅLL standardvalet så länge tesen är intakt och varken stop eller mål träffats. Sälj vid rotationen endast om (a) stop/mål träffats, (b) tesen är punkterad, eller (c) ett nytt case har minst 2 poäng högre totalpoäng i urvalsmodellen. Flytta stängda positioner till Historik och uppdatera ackumulerad avkastning.
 0b. LÄRDOMAR: läs "Lärdom"-fältet i de senaste 4 veckorapporterna i `reports/weekly/` SAMT de aktiva lärdomarna i `state/lessons.md` (miss-retrons destillat). Identifiera 1–2 återkommande misstag och låt dem påverka veckans urval; nämn kort i facit-sektionen vilken lärdom som tillämpats denna vecka (med L-ID där det finns).
 1. BRED SCANNING (bygg bruttolista, 10–15 kandidater):
    a) KATALYSATORER senaste 5 handelsdagarna: rapporter som slog förväntningarna, omvända vinstvarningar, stora ordrar/kontrakt, regulatoriska godkännanden (FDA/EMA/CE), större insiderköp, återköpsprogram, bekräftade bud/förvärv, indexinkluderingar.
@@ -51,11 +74,25 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
    d) MAKRO & GEOPOLITIK: räntebesked och signaler (Fed, ECB, Riksbanken, Norges Bank), inflations- och arbetsmarknadsdata, amerikansk handels- och tullpolitik inklusive utspel från Trump-administrationen, konflikter/sanktioner, olja/gas (→ Oslo), valutor (USD/SEK, EUR/SEK, NOK), metaller och frakt. Definiera vilka nordiska sektorer som har MEDVIND respektive MOTVIND kommande vecka.
    e) KONKURRENT- & VÄRDEKEDJEANALYS: kartlägg hela kedjan när en katalysator träffar ett bolag (t.ex. amerikansk halvledarrapport → nordiska underleverantörer; oljepris → Oslo-energi; bud → omvärdering av konkurrenter).
    f) VECKANS TRIGGERS FRAMÅT: rapporter, makrodata, ex-datum, indexrebalanseringar kommande 5 handelsdagar.
+   g0) NYHETSDRIVEN KANDIDATGENERERING (OBLIGATORISKT, GÖR DENNA FÖRST): gå igenom `state/news_feed.json` för de senaste 5 handelsdagarna INNAN du skannar ur minnet. Filtrera fram poster som rör nordiska noterade bolag (MFN-flödet är nordiskt; i de internationella flödena känns de igen på bolagsnamn/ticker). Klassificera varje relevant rubrik mot katalysator-enumen i `state/decisions.json` (earnings/order/ma_rumor/regulatory/insider/buyback/index/macro/turnaround/other) och lyft in minst **5 kandidater** därifrån i bruttolistan – fler om flödet ger fler. Syftet: bruttolistan ska vara DATADRIVEN, inte begränsad till bolag du råkar minnas. Redovisa i veckorapporten hur många kandidater som kom ur nyhetsflödet respektive ur egen scanning. Är `news_feed.json` äldre än 24 timmar eller saknas: skriv det explicit i rapporten och fortsätt med websök som reserv.
    g) BUBBLAR-ÅTERBRUK (OBLIGATORISKT): förra veckorapportens bubblarlista (senaste filen i `reports/weekly/`) SKA in i bruttolistan och poängsättas som alla andra kandidater – idéer får inte dö tyst vid rotationen. Redovisa utfallet i rapportens Bubblare-sektion ("Förra veckans bubblare": VALD / RANKAD UNDER / STRUKEN med skäl per ticker). En bubblare vars katalysator punkterats stryks med en rads motivering.
 2. TEKNISK FILTRERING av samtliga kandidater med faktiska värden: RSI(14) helst 50–70 (>75 kräver exceptionell katalysator; <40 endast turnaround med färsk katalysator); MACD (12,26,9) – färskt bullish kors/stigande histogram är plus; kurs över EMA20/EMA50, helst EMA20>EMA50>EMA200; volym >1,5× 20-dagarssnittet; definiera närmaste stöd (bas för stop-loss) och motstånd (bas för målkurs); LIKVIDITETSKRAV: snittomsättning ≥ 3 MSEK/dag (kritiskt för First North) – annars stryks kandidaten.
 3. URVAL AV TOPP 2: poängsätt 1–10 på katalysator (35 %), teknisk setup (30 %), makromedvind (15 %), risk/reward (20 %). Krav: risk/reward minst 2:1. Max 1 av 2 val får vara ryktesdrivet. Undvik två bolag med identisk riskprofil om likvärdigt alternativ finns. Tvinga ALDRIG fram case – hellre 1 aktie + kassa eller enbart kassa med makromotivering.
 3b. POSITIONSVIKTER: bestäm vikt per vald aktie enligt "POSITIONSSTORLEK" ovan. Använd totalpoängen från urvalet som conviction-signal: jämna poäng ⇒ 50/50; tydligt starkare case ⇒ upp till 60/40; bara ett case som håller ⇒ 1 aktie + kassa; inget som håller ⇒ 100 % kassa. Skriv ut vikterna och en kort motivering till varje avvikelse från 50/50.
 4. RAPPORT enligt `templates/vecko_rapport.md`, inklusive komplett handelsplan per case (entry, stop-loss strax under stöd, målkurs, risk/reward) och 3–5 BUBBLARE – bubblarlistan är veckans ersättarlista för läge B. (Tips: lägg gärna in de tickers du bevakar i `config/watchlist.txt` så finns färska kurser i prices.json nästa körning.)
+4a. DELAT ENTRY (ersätter allt-eller-inget-limit): historiken visar att rena limit-entries ofta
+   ALDRIG triggar och att kapitalet då blir stående (Saab v30 ≤ 572 kr, Moreld v29 ≤ 19,20 NOK och
+   XOM avfördes alla utan att en enda aktie köptes). Dela därför varje valt case i två ben:
+   - **Ben 1 – halva den planerade vikten, köps direkt** vid rotationen till verifierad
+     marknadskurs. Ingen limit. Detta ben säkerställer att caset faktiskt får exponering.
+   - **Ben 2 – andra halvan, villkorad limit** på rekylnivån, skriven som en vanlig rad i
+     Pending-sektionen (samma ticker, "Planerad vikt" = resterande halva). Triggar den inte inom
+     5 handelsdagar avförs benet och den delen stannar i kassa.
+   Undantag där HELA positionen får läggas som limit: aktien har gapat upp > 3 % samma dag, eller
+   en binär händelse (rapport, besked) infaller inom 2 handelsdagar. Motivera undantaget skriftligt.
+   Efter att båda benen fyllts: räkna om entry som viktat snitt och justera stop/mål proportionellt
+   i `state/portfolj.md`. Kostnadsneutralt: courtaget är procentuellt, så två halva köp kostar
+   detsamma som ett helt (minimicourtaget slår bara på mycket små belopp).
 4b. VILLKORADE BUBBLAR-PLANER (aktiverar intradag-monitorn för idéerna): du FÅR lägga max 2 av bubblarna som pending-planer i `state/portfolj.md`:s Pending-sektion, med explicit entry-villkor (verifierad kurs ≤/≥ X), planerad stop-loss, målkurs, R/R (minst 2:1) och planerad vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn (`monitor.yml`) läser Pending och larmar automatiskt när nivån korsas – noll tokens. En bubblar-plan som inte triggats inom 5 handelsdagar AVFÖRS vid nästa rotation (stryk med ~~…~~, radera aldrig). Lägg ALDRIG fler än 2 och aldrig planer utan fullständiga nivåer.
 5. Uppdatera `state/portfolj.md` med det nya innehavet och eventuell kassa.
 
@@ -85,8 +122,11 @@ Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/d
 3. `price` = den verifierade kursen beslutet fattades på (tal, ingen valutasträng). `rsi` från
    den tekniska filtreringen om tillgänglig, annars null. `weight` som andel (0.5 = 50 %).
 4. Vid SÄLJ: fyll `outcomePct` (utfall i % som tal) och `holdDays` (handelsdagar).
-5. VALIDERA innan commit: `node -e "JSON.parse(require('fs').readFileSync('state/decisions.json','utf8'))"`
-   – går den inte igenom, laga filen INNAN du committar. Committa filen tillsammans med rapporten.
+5. VALIDERA innan commit: `node .github/scripts/validate-decisions.mjs` (kontrollerar schema,
+   enum-värden, obligatoriska fält vid SÄLJ och att inga historiska rader ändrats – enbart
+   JSON.parse räcker INTE). Går den inte igenom, laga filen INNAN du committar. Samma validering
+   körs i CI vid varje push, och watchdogen larmar om en rapport pushas utan rader för samma dag.
+   Committa filen tillsammans med rapporten.
 Syftet: efter ~15–20 stängda affärer kan retron svara statistiskt på vilka katalysatortyper och
 setup-typer som faktiskt tjänar pengar – logga därför ärligt och konsekvent, även AVVAKTA.
 

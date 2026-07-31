@@ -3,7 +3,11 @@
 # Flöden som fallerar hoppas över tyst – status per flöde loggas i state/news_feed.json
 # under "feeds", så byt/justera URL:er här när något slutar fungera.
 globenewswire|https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20about%20Public%20Companies
+globenewswire-earnings|https://www.globenewswire.com/RssFeed/subjectcode/22-Earnings%20Releases%20And%20Operating%20Results/feedTitle/GlobeNewswire%20-%20Earnings
 prnewswire|https://www.prnewswire.com/rss/news-releases-list.rss
-cision-se|https://news.cision.com/se/ss/rss
 mfn|https://mfn.se/all/s.rss
-businesswire-tech|https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJeGVtRVw==
+sec-8k|https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&company=&dateb=&owner=include&count=40&output=atom
+fed-press|https://www.federalreserve.gov/feeds/press_all.xml
+# Utgångna flöden (verifierade döda 2026-07-31 – lämnas kvar som varning, lägg inte tillbaka):
+#   cision-se|https://news.cision.com/se/ss/rss            -> HTTP 404 (MFN täcker samma nordiska pressreleaser)
+#   businesswire-tech|https://feed.businesswire.com/...    -> HTTP 200 men tomt skal: "RSS channel ID is not available"

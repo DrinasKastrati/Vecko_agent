@@ -463,8 +463,12 @@
       ${cell("Bästa / sämsta", esc((s.best != null ? signPct(s.best) : "–") + " / " + (s.worst != null ? signPct(s.worst) : "–")), "", "", "Största vinsten respektive största förlusten per affär")}
       ${cell("Snitt hålltid", s.avgHoldDays != null ? Math.round(s.avgHoldDays) + " dgr" : "–", "", "", "Genomsnittligt antal kalenderdagar från entry till stängning")}
       ${cell("Mål / stopp / rot.", s.byReason.target + " / " + s.byReason.stop + " / " + s.byReason.rotation, "", "orsak till stängning", "Hur positionerna stängts: målkurs nådd / stop-loss / veckorotation")}
+      ${cell("Netto efter kostnad", s.netChainedPct != null ? esc(signPct(s.netChainedPct)) : "–",
+        s.netChainedPct > 0 ? "pos" : s.netChainedPct < 0 ? "neg" : "",
+        s.costPct ? "−" + s.costPct.toFixed(2) + " % per affär" : "ingen kostnad satt",
+        "Kedjad avkastning efter courtage och spread enligt config/kostnader.json – det är den här siffran som motsvarar vad depån faktiskt visar")}
     </div>
-    <div class="stat-note">Kedjad avkastning (per-affär-vikt): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
+    <div class="stat-note">Kedjad avkastning (per-affär-vikt): ${esc(signPct(s.chainedPct))} brutto · ${esc(signPct(s.netChainedPct))} netto${s.costDragPct ? ` (kostnadsdrag ${esc(signPct(-Math.abs(s.costDragPct)))})` : ""} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra, som är brutto.</div>`;
   }
 
   // ---- riskmått (Avkastning) ---------------------------------------------
@@ -575,6 +579,17 @@
       allocMeta = `<div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> ${esc(strip(meta.rationale) || "–")}`
         + `<span class="alloc-meta-t">satt av allokerings-routinen${upd ? " · " + esc(upd) : ""}${meta.week ? " · " + esc(meta.week) : ""}</span></div>`;
     }
+    // Valutaupplysning: us-boken är USD-denominerad och blended-talet räknar
+    // procent mot procent. För en SEK-depå tillkommer USD/SEK-rörelsen – den
+    // redovisas här i stället för att tyst antas vara noll.
+    const fx = meta && meta.fx;
+    const fxNote = fx && fx.rate != null
+      ? `<div class="fx-meta"><span class="fx-meta-k">Valuta</span> US-boken redovisas i USD – blended-talet ovan är <strong>exkl. valutaeffekt</strong>. `
+        + `USD/SEK ${esc(fx.rate.toFixed(2))}${fx.changePct != null ? ` (${esc(signPct(fx.changePct))} idag)` : ""}. `
+        + `En SEK-depå får US-avkastningen multiplicerad med valutarörelsen sedan respektive affär.`
+        + `<span class="fx-meta-t">växelkurs ur prices.json${fx.marketTime ? " · " + esc(String(fx.marketTime).slice(0, 10)) : ""}</span></div>`
+      : `<div class="fx-meta"><span class="fx-meta-k">Valuta</span> US-boken redovisas i USD – blended-talet är <strong>exkl. valutaeffekt</strong>. `
+        + `Lägg <code>USDSEK=X</code> i <code>config/watchlist_us.txt</code> så visas växelkursen här.</div>`;
     const rows = [];
     books.forEach((b, i) => real(b).forEach(o => {
       const tk = (o["Yahoo-ticker"] || "").trim().toUpperCase();
@@ -590,6 +605,7 @@
     return kpis
       + `<h3 class="sub">Kapitalfördelning</h3>${alloc}${allocMeta}`
       + `<h3 class="sub">Alla positioner</h3>${tbl}`
+      + fxNote
       + `<div class="stat-note">Blended = böckernas ackumulerade avkastning viktad med kapitalfördelningen (${books.map((b, i) => b.label + " " + Math.round(weights[i] * 100) + " %").join(" / ")}). Rena procenttal – ingen valutaomräkning. P/L per position ur prices.json.</div>`;
   }
 

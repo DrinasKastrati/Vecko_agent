@@ -524,10 +524,33 @@
     return out;
   }
 
+  // ---- transaktionskostnader ---------------------------------------------
+  // Rundturskostnad (courtage + spread, samt växlingspåslag för us-boken) i
+  // procent av positionens värde. Läses ur config/kostnader.json; fallback här
+  // gör att alla funktioner fungerar även om filen saknas.
+  const DEFAULT_COSTS = { nordic: { roundTripPct: 0.25 },
+                          us: { roundTripPct: 0.25, fxSpreadPct: 0.5 } };
+
+  function costFor(book, costs){
+    const c = (costs || DEFAULT_COSTS)[book === "us" ? "us" : "nordic"] ||
+              DEFAULT_COSTS[book === "us" ? "us" : "nordic"];
+    const rt = Number(c.roundTripPct) || 0;
+    const fx = Number(c.fxSpreadPct) || 0;
+    return rt + fx;
+  }
+
+  // Bruttoutfall i procent -> nettoutfall efter rundturskostnad.
+  // Kostnaden tas på hela positionen, alltså INNAN vikten appliceras.
+  function netPct(grossPct, costPct){
+    if (grossPct == null || isNaN(grossPct)) return null;
+    return grossPct - (Number(costPct) || 0);
+  }
+
   // ---- equity-serie per affär (kedjad, viktad) ---------------------------
   // En punkt per STÄNGD position (kronologiskt på "Stängd"-datum): kumulativ
   // avkastning kedjad med per-affär-vikt. Ger tätare kurva än veckopunkterna.
-  function buildTradeSeries(history){
+  // costPct (valfri) dras från varje affärs bruttoutfall -> nettokurva.
+  function buildTradeSeries(history, costPct){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
     const dated = rows
       .map(o => ({ o, d: String(o["Stängd"] || "").slice(0, 10) }))
@@ -535,10 +558,11 @@
       .sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
     let chain = 1; const pts = [];
     for (const { o, d } of dated){
-      const p = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
-      if (p == null) continue;
+      const gross = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
+      if (gross == null) continue;
+      const p = netPct(gross, costPct);
       chain *= (1 + weightFrac(o) * p / 100);
-      pts.push({ date: d, value: Math.round((chain - 1) * 10000) / 100, name: stripMd(o["Aktie"]), pct: p });
+      pts.push({ date: d, value: Math.round((chain - 1) * 10000) / 100, name: stripMd(o["Aktie"]), pct: p, grossPct: gross });
     }
     return pts;
   }
@@ -602,14 +626,19 @@
   }
 
   // ---- trade-statistik (från Historik) ----------------------------------
-  function computeTradeStats(history){
+  // costPct (valfri): rundturskostnad i procent per affär. Anges den redovisas
+  // även netto-varianterna – bruttotalen lämnas orörda så jämförelser bakåt håller.
+  function computeTradeStats(history, costPct){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
+    const cost = Number(costPct) || 0;
     const out = { trades:0, wins:0, losses:0, winRate:null, avgWin:null, avgLoss:null,
       profitFactor:null, best:null, worst:null, avgHoldDays:null,
-      byReason:{ target:0, stop:0, rotation:0, other:0 }, chainedPct:null, sumPct:null };
+      byReason:{ target:0, stop:0, rotation:0, other:0 }, chainedPct:null, sumPct:null,
+      costPct: cost, netChainedPct: null, netWinRate: null, netProfitFactor: null, costDragPct: null };
     if (!rows.length) return out;
     const pcts = [], holds = [];
     let sumWin = 0, sumLoss = 0, chain = 1;
+    let netChain = 1, netWins = 0, netSumWin = 0, netSumLoss = 0;
     for (const o of rows){
       const reasonKey = Object.keys(o).find(k => /sk[aä]l/i.test(k));
       const reason = String((reasonKey && o[reasonKey]) || "").toLowerCase();
@@ -622,6 +651,9 @@
         out.trades++; pcts.push(p);
         if (p > 0){ out.wins++; sumWin += p; } else if (p < 0){ out.losses++; sumLoss += p; }
         chain *= (1 + weightFrac(o) * p / 100); // per-affär vikt (default 50 %)
+        const np = netPct(p, cost);
+        netChain *= (1 + weightFrac(o) * np / 100);
+        if (np > 0){ netWins++; netSumWin += np; } else if (np < 0){ netSumLoss += np; }
       }
       const d1 = Date.parse(String(o["Entry-datum"] || "").slice(0, 10));
       const d2 = Date.parse(String(o["Stängd"] || "").slice(0, 10));
@@ -635,8 +667,30 @@
     out.best = Math.max.apply(null, pcts); out.worst = Math.min.apply(null, pcts);
     out.sumPct = pcts.reduce((a, b) => a + b, 0);
     out.chainedPct = (chain - 1) * 100;
+    out.netChainedPct = (netChain - 1) * 100;
+    out.costDragPct = out.chainedPct - out.netChainedPct;
+    out.netWinRate = netWins / out.trades;
+    out.netProfitFactor = netSumLoss !== 0 ? Math.abs(netSumWin / netSumLoss) : (netSumWin > 0 ? Infinity : null);
     if (holds.length) out.avgHoldDays = holds.reduce((a, b) => a + b, 0) / holds.length;
     return out;
+  }
+
+  // ---- valuta (us-boken är USD-denominerad) ------------------------------
+  // Total-vyn blandar två böcker som RENA procenttal. För en svensk depå är
+  // us-bokens avkastning dessutom beroende av USD/SEK. Vi kan inte räkna om
+  // historiken (växelkursen vid varje affär är inte loggad), så funktionen
+  // returnerar dagens kurs + dygnsrörelse för att kunna redovisa vad som
+  // EXKLUDERAS – inte för att smyga in en justering.
+  function fxRate(prices, pair){
+    const q = prices && prices.quotes && prices.quotes[pair || "USDSEK=X"];
+    if (!q || q.price == null) return null;
+    const prev = q.previousClose;
+    return {
+      pair: pair || "USDSEK=X",
+      rate: q.price,
+      changePct: (prev && prev > 0) ? (q.price / prev - 1) * 100 : null,
+      marketTime: q.marketTime || null
+    };
   }
 
   const API = {
@@ -645,7 +699,8 @@
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
     computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
-    parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats
+    parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats,
+    costFor, netPct, fxRate, DEFAULT_COSTS
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

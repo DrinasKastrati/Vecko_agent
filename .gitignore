@@ -19,3 +19,7 @@ package-lock.json
 .env
 .env.local
 auto_push.log
+
+# watchdog.mjs skriver hit när RUNNER_TEMP saknas (dvs. vid lokal körning) –
+# i Actions hamnar filen i runnerns temp-katalog och ska aldrig committas.
+watchdog.json

@@ -21,7 +21,10 @@ export function latestReportDate(files, prefix){
 }
 
 // Ren funktion (testas i tests/run.mjs): avgör vilka larm som ska öppnas.
-export function checkStale({ now, pricesGeneratedAt, latestDaily, latestWeekly, latestScout }){
+// latestDecisionDate/newsGeneratedAt är valfria – utelämnas de görs ingen
+// kontroll (håller äldre anrop bakåtkompatibla).
+export function checkStale(opts){
+  const { now, pricesGeneratedAt, latestDaily, latestWeekly, latestScout } = opts;
   const problems = [];
   const n = now instanceof Date ? now : new Date(now);
   const dow = n.getUTCDay();
@@ -50,19 +53,56 @@ export function checkStale({ now, pricesGeneratedAt, latestDaily, latestWeekly, 
       body: "Ingen scout-rapport för idag är pushad (senaste: " + (latestScout || "ingen") + "). " +
         "Var Claude-appen igång vid 07:47? Är rapporten skriven men inte pushad?" });
 
+  // Beslutsloggen: en pushad rapport UTAN motsvarande rad i decisions.json betyder
+  // att routinen hoppade över loggningen – då dör kalibreringsunderlaget tyst.
+  if ("latestDecisionDate" in opts && nordic === today && opts.latestDecisionDate !== today)
+    problems.push({ key: "decisions", title: "Watchdog: beslutsloggen saknar dagens rader",
+      body: "Dagens rapport är pushad men `state/decisions.json` har ingen rad för idag (senaste: " +
+        (opts.latestDecisionDate || "ingen") + "). Rotationsprompterna kräver en rad per beslut, " +
+        "även AVVAKTA – utan dem kan retrons beslutsstatistik aldrig kalibrera poängvikterna." });
+
+  // Nyhetsflödet: news.yml kör varannan timme vardagar, så >6 h = actionen är nere.
+  if ("newsGeneratedAt" in opts){
+    const nt = opts.newsGeneratedAt ? Date.parse(opts.newsGeneratedAt) : NaN;
+    if (isNaN(nt) || (n.getTime() - nt) > 6 * 3600 * 1000)
+      problems.push({ key: "news", title: "Watchdog: news_feed.json är inaktuell",
+        body: "`state/news_feed.json` har generatedAt `" + (opts.newsGeneratedAt || "saknas") +
+          "` (äldre än 6 h på en vardag). Kontrollera Actions → \"Hämta nyheter\" och " +
+          "`feeds`-statusen i filen – routinerna använder den som PRIMÄR nyhetsradar." });
+  }
+
   return problems;
+}
+
+// Senaste datum i decisions.json som yymmdd, eller null.
+export function latestDecisionYmd(db){
+  const rows = (db && db.decisions) || [];
+  let best = null;
+  for (const r of rows){
+    const m = String(r && r.date || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) continue;
+    const ymd = m[1].slice(2) + m[2] + m[3];
+    if (!best || ymd > best) best = ymd;
+  }
+  return best;
 }
 
 function main(){
   let gen = null;
   try { gen = JSON.parse(readFileSync("state/prices.json", "utf8")).generatedAt || null; } catch {}
+  let newsGen = null;
+  try { newsGen = JSON.parse(readFileSync("state/news_feed.json", "utf8")).generatedAt || null; } catch {}
+  let decisions = null;
+  try { decisions = latestDecisionYmd(JSON.parse(readFileSync("state/decisions.json", "utf8"))); } catch {}
   const ls = d => { try { return readdirSync(d); } catch { return []; } };
   const problems = checkStale({
     now: new Date(),
     pricesGeneratedAt: gen,
     latestDaily: latestReportDate(ls("reports/daily"), "daglig"),
     latestWeekly: latestReportDate(ls("reports/weekly"), "veckorapport"),
-    latestScout: latestReportDate(ls("reports/scout"), "rapport")
+    latestScout: latestReportDate(ls("reports/scout"), "rapport"),
+    latestDecisionDate: decisions,
+    newsGeneratedAt: newsGen
   });
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");

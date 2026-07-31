@@ -161,6 +161,25 @@ ok("watchdog missing daily", probs.some(p => p.key === "daily"));
 ok("watchdog scout ok", !probs.some(p => p.key === "scout"));
 const probs2 = WD.checkStale({ now: "2026-07-18T10:30:00Z", pricesGeneratedAt: "2026-07-10T05:00:00Z", latestDaily: "260710", latestWeekly: null, latestScout: null });
 ok("watchdog weekend quiet", probs2.length === 0);
+// nya kontroller: beslutslogg + nyhetsflöde (valfria fält – utelämnade = tyst)
+const wdBase = { now: "2026-07-17T10:30:00Z", pricesGeneratedAt: "2026-07-17T05:00:00Z",
+                 latestDaily: "260717", latestWeekly: "260713", latestScout: "260717" };
+ok("watchdog utan nya fält = oförändrat tyst", WD.checkStale(wdBase).length === 0);
+ok("watchdog larmar när beslutsloggen saknar dagens rader",
+  WD.checkStale({ ...wdBase, latestDecisionDate: "260716" }).some(p => p.key === "decisions"));
+ok("watchdog tyst när beslutsloggen är i fas",
+  !WD.checkStale({ ...wdBase, latestDecisionDate: "260717" }).some(p => p.key === "decisions"));
+ok("watchdog larmar inte om beslut när rapporten ändå saknas",
+  !WD.checkStale({ ...wdBase, latestDaily: "260716", latestWeekly: null, latestDecisionDate: "260716" })
+    .some(p => p.key === "decisions"));
+ok("watchdog larmar på gammalt nyhetsflöde",
+  WD.checkStale({ ...wdBase, newsGeneratedAt: "2026-07-17T02:00:00Z" }).some(p => p.key === "news"));
+ok("watchdog tyst på färskt nyhetsflöde",
+  !WD.checkStale({ ...wdBase, newsGeneratedAt: "2026-07-17T09:00:00Z" }).some(p => p.key === "news"));
+ok("watchdog larmar när news_feed.json saknas helt",
+  WD.checkStale({ ...wdBase, newsGeneratedAt: null }).some(p => p.key === "news"));
+ok("latestDecisionYmd", WD.latestDecisionYmd({ decisions: [{ date: "2026-07-14" }, { date: "2026-07-30" }] }) === "260730"
+  && WD.latestDecisionYmd({ decisions: [] }) === null && WD.latestDecisionYmd(null) === null);
 
 // ---- statusrad, positionsmätare, besluts-historik ----
 const g = VP.computeGauge(100, 90, 120, 110);
@@ -219,6 +238,7 @@ ok("extractUsCaseTickers nasdaq", FP.extractUsCaseTickers("Case 1: NVIDIA (NVDA 
 ok("parseChart price", FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 10, currency: "USD", regularMarketTime: 1700000000 } }] } }, "X").price === 10);
 ok("updatePriceHistory export", typeof FP.updatePriceHistory === "function");
 ok("fetchStooq export", typeof FP.fetchStooq === "function");
+ok("collectUsTickers plockar upp valutaparet", FP.collectUsTickers().includes("USDSEK=X"));
 
 // ---- US-rotation (egen USD-bok) ----
 ok("parseFilename us_daily", VP.parseFilename("us-daglig-260717.md").type === "us_daily");
@@ -357,10 +377,87 @@ ok("renderRiskStats empty", VR.renderRiskStats(rsEmpty).includes("Inga stängda 
 ok("tradeStats tooltip", VR.renderTradeStats(ts).includes('title="Summa vinster'));
 ok("history utfall colored", VR.renderHistory(p).includes('class="pos"') && VR.renderHistory(p).includes('class="neg"'));
 
+// ---- transaktionskostnader + valuta ----
+const costHist = [
+  { "Stängd": "2026-01-05", "Aktie": "A", "Utfall %": "+6 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-12", "Aktie": "B", "Utfall %": "-4 %", "Vikt": "50 %" }
+];
+ok("costFor läser nordic ur config", VP.costFor("nordic", { nordic: { roundTripPct: 0.3 } }) === 0.3);
+ok("costFor adderar växlingspåslag för us",
+  Math.abs(VP.costFor("us", { us: { roundTripPct: 0.25, fxSpreadPct: 0.5 } }) - 0.75) < 1e-9);
+ok("costFor faller tillbaka på default", VP.costFor("nordic", null) === VP.DEFAULT_COSTS.nordic.roundTripPct);
+ok("costFor okänd bok = nordic", VP.costFor("xyz", null) === VP.costFor("nordic", null));
+ok("netPct drar kostnaden", Math.abs(VP.netPct(6, 0.25) - 5.75) < 1e-9 && VP.netPct(null, 0.25) === null);
+ok("netPct utan kostnad = brutto", VP.netPct(6) === 6);
+const tsGross = VP.computeTradeStats(costHist);
+const tsNet = VP.computeTradeStats(costHist, 0.25);
+ok("computeTradeStats brutto oförändrad", Math.abs(tsGross.chainedPct - tsNet.chainedPct) < 1e-9);
+ok("computeTradeStats netto lägre än brutto", tsNet.netChainedPct < tsNet.chainedPct);
+ok("computeTradeStats kostnadsdrag redovisas",
+  Math.abs(tsNet.costDragPct - (tsNet.chainedPct - tsNet.netChainedPct)) < 1e-9 && tsNet.costPct === 0.25);
+ok("computeTradeStats utan kostnad = netto lika brutto",
+  Math.abs(tsGross.netChainedPct - tsGross.chainedPct) < 1e-9 && tsGross.costPct === 0);
+ok("computeTradeStats netto vänder vinnare till förlorare vid hög kostnad",
+  VP.computeTradeStats([{ "Stängd": "2026-01-05", "Aktie": "A", "Utfall %": "+0,2 %", "Vikt": "50 %" }], 0.5).netWinRate === 0);
+const seriesNet = VP.buildTradeSeries(costHist, 0.25);
+ok("buildTradeSeries netto + brutto per punkt",
+  Math.abs(seriesNet[0].pct - 5.75) < 1e-9 && Math.abs(seriesNet[0].grossPct - 6) < 1e-9);
+ok("buildTradeSeries utan kostnad oförändrad",
+  Math.abs(VP.buildTradeSeries(costHist)[0].pct - 6) < 1e-9);
+const fxq = { quotes: { "USDSEK=X": { price: 9.5, previousClose: 9.4, marketTime: "2026-07-31T15:00:00Z" } } };
+ok("fxRate läser paret", (() => { const f = VP.fxRate(fxq); return f.rate === 9.5 && Math.abs(f.changePct - 1.0638) < 0.001; })());
+ok("fxRate saknat par = null", VP.fxRate({ quotes: {} }) === null && VP.fxRate(null) === null);
+ok("renderTradeStats visar netto", VR.renderTradeStats(tsNet).includes("Netto efter kostnad"));
+ok("renderTradeStats visar kostnaden per affär", VR.renderTradeStats(tsNet).includes("0.25 % per affär"));
+const totalFx = VR.renderTotal(
+  [{ label: "Nordisk", portfolio: { accum: 3.19, holdings: [] } }, { label: "US", portfolio: { accum: 0.89, holdings: [] } }],
+  0.5, { dynamic: false, fx: VP.fxRate(fxq) });
+ok("renderTotal visar valutaupplysning", totalFx.includes("exkl. valutaeffekt") && totalFx.includes("9.50"));
+ok("renderTotal utan fx ber om USDSEK",
+  VR.renderTotal([{ label: "Nordisk", portfolio: { accum: 1, holdings: [] } }], 0.5, { dynamic: false }).includes("USDSEK=X"));
+ok("config/kostnader.json finns och är giltig", (() => {
+  const c = JSON.parse(readFileSync(resolve(root, "config/kostnader.json"), "utf8"));
+  return c.nordic.roundTripPct > 0 && c.us.roundTripPct > 0 && c.us.fxSpreadPct > 0;
+})());
+ok("watchlist_us innehåller USDSEK=X",
+  /^USDSEK=X$/m.test(readFileSync(resolve(root, "config/watchlist_us.txt"), "utf8")));
+
 // ---- beslutsdatabasen (state/decisions.json) ----
 const decRaw = readFileSync(resolve(root, "state/decisions.json"), "utf8");
 const dec = JSON.parse(decRaw);
 ok("decisions.json parsar + schema", dec.version === 1 && Array.isArray(dec.decisions));
+
+// ---- validering av beslutsdatabasen (validate-decisions.mjs) ----
+const VD = await mod(".github/scripts/validate-decisions.mjs");
+ok("validateDb: repots egen fil är giltig", VD.validateDb(dec).errors.length === 0);
+ok("validateDb: filen är backfylld, inte tom", VD.validateDb(dec).count >= 5);
+const goodRow = {
+  date: "2026-07-30", book: "nordic", mode: "B", ticker: "SAAB-B.ST", action: "KÖP",
+  price: 585, currency: "SEK", weight: 0.5, entry: 585, stop: 560, target: 635, rr: 2,
+  catalystType: "order", sector: "Försvar", rsi: null, reason: "Triggad plan.", lessonIds: []
+};
+ok("validateDecision godkänner giltig rad", VD.validateDecision(goodRow, 0).length === 0);
+ok("validateDecision fångar okänd catalystType",
+  VD.validateDecision({ ...goodRow, catalystType: "hype" }, 0).some(e => /catalystType/.test(e)));
+ok("validateDecision fångar vikt i procent",
+  VD.validateDecision({ ...goodRow, weight: 50 }, 0).some(e => /andel 0–1/.test(e)));
+ok("validateDecision fångar ogiltigt datum",
+  VD.validateDecision({ ...goodRow, date: "30/7 2026" }, 0).some(e => /åååå-mm-dd/.test(e)));
+ok("validateDecision fångar okänd action",
+  VD.validateDecision({ ...goodRow, action: "HÅLL" }, 0).some(e => /action/.test(e)));
+ok("validateDecision kräver outcomePct+holdDays vid SÄLJ", (() => {
+  const e = VD.validateDecision({ ...goodRow, action: "SÄLJ" }, 0);
+  return e.some(x => /outcomePct/.test(x)) && e.some(x => /holdDays/.test(x));
+})());
+ok("validateDecision fångar för lång reason",
+  VD.validateDecision({ ...goodRow, reason: "x".repeat(201) }, 0).some(e => /max 200/.test(e)));
+ok("isAppendOnly: tillägg sist är OK",
+  VD.isAppendOnly([goodRow], [goodRow, { ...goodRow, ticker: "VOLV-B.ST" }]));
+ok("isAppendOnly: ändrad historisk rad fångas",
+  !VD.isAppendOnly([goodRow], [{ ...goodRow, price: 999 }]));
+ok("isAppendOnly: raderad rad fångas", !VD.isAppendOnly([goodRow, goodRow], [goodRow]));
+ok("alla backfyllda rader är märkta med source",
+  dec.decisions.filter(r => r.source === "backfill-260731").length === dec.decisions.length);
 
 // ---- nyhetsingestion (fetch-news.mjs, rena funktioner) ----
 const NW = await mod(".github/scripts/fetch-news.mjs");
@@ -385,6 +482,15 @@ ok("mergeNews dedupe på url", mergedNews.filter(i => i.u === "https://x.se/a").
 ok("mergeNews åldersrensning", !mergedNews.some(i => i.u === "https://x.se/old"));
 ok("mergeNews tak", NW.mergeNews([], rssItems, nowIso, 48, 1).length === 1);
 ok("parseFeedList", (() => { const f = NW.parseFeedList("# kommentar\nmfn|https://mfn.se/rss\nrad-utan-pipe\n"); return f.length === 1 && f[0].name === "mfn"; })());
+ok("uaFor sec.gov får kontakt-UA", /kastratidrinas@gmail\.com/.test(NW.uaFor("https://www.sec.gov/cgi-bin/browse-edgar?output=atom")));
+ok("uaFor övriga får browser-UA", /Mozilla/.test(NW.uaFor("https://mfn.se/all/s.rss")) && /Mozilla/.test(NW.uaFor("https://notsec.gov.example.com/x")));
+ok("news_feeds.txt: döda flöden borta, nya på plats", (() => {
+  const t = readFileSync(resolve(root, "config/news_feeds.txt"), "utf8");
+  const live = NW.parseFeedList(t);
+  const names = live.map(f => f.name);
+  return !names.includes("cision-se") && !names.includes("businesswire-tech") &&
+         names.includes("sec-8k") && names.includes("fed-press") && live.length >= 5;
+})());
 
 // ---- backtest (backtest.mjs, rena funktioner) ----
 const BT = await mod(".github/scripts/backtest.mjs");

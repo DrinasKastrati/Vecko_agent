@@ -158,7 +158,10 @@ export function collectUsTickers(){
   for (const line of watch.split("\n")){
     const t = line.trim().toUpperCase();
     if (!t || t.startsWith("#")) continue;
-    if (/^\^?[A-Z]{1,6}$/.test(t) || /^[A-Z0-9]{2,6}-USD$/.test(t) || /^[A-Z]{1,5}\.[A-Z]{1,2}$/.test(t)) set.add(t);
+    // Sista mönstret = valutapar i Yahoo-format (USDSEK=X) – us-boken är
+    // USD-denominerad och dashboardens Total-vy visar kursen.
+    if (/^\^?[A-Z]{1,6}$/.test(t) || /^[A-Z0-9]{2,6}-USD$/.test(t) || /^[A-Z]{1,5}\.[A-Z]{1,2}$/.test(t) ||
+        /^[A-Z]{6}=X$/.test(t)) set.add(t);
   }
   for (const t of extractUsCaseTickers(newestScout())) set.add(t);
   // US-rotationens egna innehav/case (så deras kurser garanterat hämtas):
@@ -194,6 +197,7 @@ export async function fetchStooq(sym, fetchImpl = globalThis.fetch){
   let s = null;
   if (/^[A-Z]{1,6}$/.test(sym)) s = sym.toLowerCase() + ".us";
   else if (/^[A-Z0-9]{2,6}-USD$/.test(sym)) s = sym.replace("-", "").toLowerCase();
+  else if (/^[A-Z]{6}=X$/.test(sym)) s = sym.slice(0, 6).toLowerCase();   // USDSEK=X -> usdsek
   else if (/\.ST$/.test(sym)) s = sym.toLowerCase();
   if (!s) return null;
   const url = `https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;

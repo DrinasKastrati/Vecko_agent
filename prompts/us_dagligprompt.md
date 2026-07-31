@@ -25,6 +25,27 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 - Ange ALLTID vikten (% av kapitalet) per position i `state/portfolj_us.md` (kolumnen "Vikt") och i
   veckorapporten. Vikten sparas per affär och används i avkastningsberäkningen.
 
+## NIVÅER & OMSÄTTNING (kalibrerat mot backtest 2026-07-31)
+Underlag: `reports/backtest/backtest-260731-us.md` – mekaniska skelettet (momentum-proxy, topp 2,
+5 dagars håll) över 5 år och 258 veckor på 30 stora US-bolag.
+1. **STOPPBREDD:** till skillnad från nordiska boken presterade US-gridet BÄST med den bredaste
+   kombinationen, 20 dagars lookback / −5 % stop / +10 % mål (PF 1,13 brutto, +61 % kedjat).
+   Använd därför bandet **stop 4–6 % under entry**, satt tekniskt inom bandet, med mål
+   ≥ 2× stoppavståndet. US-aktier rör sig mer per dag än nordiska – en 3 %-stop stoppas ut på brus.
+2. **KOSTNADSTRÖSKEL (ny, hård regel):** us-boken betalar BÅDE courtage och växlingspåslag –
+   ~0,75 % rundtur enligt `config/kostnader.json`, tre gånger den nordiska bokens. Ett case får
+   bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.
+   Skriv ut avståndet i handelsplanen.
+3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** med växlingspåslaget inräknat blir samma
+   backtest kraftigt negativt (−76 % netto i bästa kombinationen) enbart av omsättningstakten.
+   Därför gäller: **BEHÅLL är standardvalet** för ett innehav vars tes är intakt och vars
+   stop/mål inte träffats – även efter 5 handelsdagar. Rotera ut ENDAST om (a) stop eller mål
+   träffats, (b) tesen är punkterad, eller (c) ett nytt case har MINST 2 poäng högre totalpoäng.
+   Motivera varje rotation som inte beror på (a) eller (b) skriftligt i veckorapporten.
+4. **VALUTAN:** boken redovisas i USD. Den ackumulerade avkastningen är därmed EXKLUSIVE
+   USD/SEK-effekten – påstå aldrig att den motsvarar avkastningen i en svensk depå. Växelkursen
+   finns som `USDSEK=X` i `state/prices.json` och visas i dashboardens Total-vy.
+
 ## STRIKTA INSTRUKTIONER FÖR FILHANTERING
 1. Läs `config/fokus_us_rotation.md` för grundpreferenser (US-universum, USD, sektorteman).
 1b. LÄRDOMAR (gäller BÅDA lägena): läs `state/lessons.md` och tillämpa de AKTIVA lärdomar som
@@ -84,7 +105,7 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
    sökträffar eller ditt eget minne.
 5. Om ingen färsk kurs kan verifieras för ett innehav: skriv "KURS EJ VERIFIERAD" och fatta inget
    kursbaserat SÄLJ-/KÖP-beslut den dagen.
-6. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av news-actionen ur pressmeddelande-RSS: GlobeNewswire, PR Newswire, Business Wire m.fl.). Skanna rubrikerna efter innehaven, kandidater, sektorer och konkurrenter – primär nyhetsradar. Rubriker som används i beslut verifieras via länken (datum + avsändare); kurskraven oförändrade. Websök (6b) är komplement.
+6. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av news-actionen ur pressmeddelande-RSS: GlobeNewswire inkl. earnings-flödet, PR Newswire, SEC 8-K-registreringar och Fed-pressmeddelanden – flödeslistan står i `config/news_feeds.txt`, och filens `feeds`-fält visar status per flöde: "0 poster – kontrollera URL" betyder trasigt flöde och ska rapporteras, inte tyst ignoreras. Business Wire och Cision är UTGÅNGNA och borttagna). Skanna rubrikerna efter innehaven, kandidater, sektorer och konkurrenter – primär nyhetsradar. Rubriker som används i beslut verifieras via länken (datum + avsändare); kurskraven oförändrade. Websök (6b) är komplement.
 6b. NYHETER (websök): inkludera alltid dagens datum i sökfrågorna. Läge B = senaste 24h, läge A = senaste 5
    handelsdagarna. Kontrollera publiceringsdatum på VARJE artikel. Sök i bolagens IR-flöden,
    PR Newswire, Business Wire, GlobeNewswire samt SEC-filings (8-K, Form 4).
@@ -93,9 +114,11 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 
 ## LÄGE A – VECKOROTATION (måndagar)
 0. FACIT: hämta färsk kurs (inkl. pre-/after-hours enligt datakraven) för varje innehav i
-   `state/portfolj_us.md`, beräkna utfall sedan entry, kontrollera om stop/mål träffats. Innehav
-   som hållits 5 handelsdagar säljs enligt rotationsregeln om de inte på nytt kvalificerar som
-   topp 2 (markera då "BEHÅLL"). Flytta stängda positioner till Historik, uppdatera ackumulerad
+   `state/portfolj_us.md`, beräkna utfall sedan entry, kontrollera om stop/mål träffats.
+   **Innehav som hållits 5 handelsdagar säljs INTE automatiskt** – enligt "NIVÅER & OMSÄTTNING"
+   är BEHÅLL standardvalet så länge tesen är intakt och varken stop eller mål träffats. Sälj vid
+   rotationen endast om (a) stop/mål träffats, (b) tesen är punkterad, eller (c) ett nytt case har
+   minst 2 poäng högre totalpoäng. Flytta stängda positioner till Historik, uppdatera ackumulerad
    avkastning (USD).
 0b. LÄRDOMAR: läs "Lärdom"-fältet i de 4 senaste `reports/us_weekly/`-rapporterna SAMT de aktiva
    lärdomarna i `state/lessons.md` (miss-retrons destillat). Låt 1–2 återkommande misstag påverka
@@ -116,6 +139,15 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
       AVGO/TSM/MU/kraftbolag; oljespik → XOM/CVX; ränterörelse → banker/tillväxt).
    f) VECKANS TRIGGERS FRAMÅT: earnings (before/after close), makrodata, ex-datum, index-rebalans
       kommande 5 handelsdagar.
+   g0) NYHETSDRIVEN KANDIDATGENERERING (OBLIGATORISKT, GÖR DENNA FÖRST): gå igenom
+      `state/news_feed.json` för de senaste 5 handelsdagarna INNAN du skannar ur minnet.
+      SEC 8-K-flödet är särskilt värdefullt (rapporter, avtal, ledningsförändringar, M&A
+      registreras där först) och GlobeNewswires earnings-flöde fångar rapportöverraskningar.
+      Klassificera varje relevant rubrik mot katalysator-enumen i `state/decisions.json` och
+      lyft in minst **5 kandidater** därifrån i bruttolistan. Bruttolistan ska vara DATADRIVEN,
+      inte begränsad till bolag du råkar minnas. Redovisa i veckorapporten hur många kandidater
+      som kom ur nyhetsflödet respektive ur egen scanning. Är filen äldre än 24 timmar eller
+      saknas: skriv det explicit och använd websök som reserv.
    g) SCOUT-INFLÖDE (OBLIGATORISKT): läs de 5 senaste scout-rapporterna i `reports/scout/`
       (sektionerna "Dagens case" + "Uppföljning av tidigare case"). Varje US-AKTIE-case (ej
       krypto, ej index) med tes INTAKT SKA in i bruttolistan och poängsättas som övriga
@@ -138,6 +170,19 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 4. RAPPORT enligt `templates/us_vecko_rapport.md`, inkl. komplett handelsplan per case (entry,
    stop strax under stöd, mål, R/R) och 3–5 BUBBLARE (ersättarlista för läge B). Lägg gärna
    bevakade tickers i `config/watchlist_us.txt` så finns färska kurser nästa körning.
+4a. DELAT ENTRY (ersätter allt-eller-inget-limit): rena limit-entries triggar ofta aldrig och
+   kapitalet blir stående (XOM v30 ≤ 142,00 USD avfördes utan en enda aktie köpt; boken har stått
+   i 100 % kassa sedan 2026-07-30). Dela därför varje valt case i två ben:
+   - **Ben 1 – halva den planerade vikten, köps direkt** vid rotationen till verifierad
+     marknadskurs. Ingen limit.
+   - **Ben 2 – andra halvan, villkorad limit** på rekylnivån som en vanlig rad i Pending-sektionen
+     (samma ticker, "Planerad vikt" = resterande halva). Ej triggad inom 5 handelsdagar ⇒ avförs,
+     den delen stannar i kassa.
+   Undantag där HELA positionen får läggas som limit: aktien har gapat upp > 3 % samma dag, eller
+   en binär händelse (rapport, Fed-besked, FDA) infaller inom 2 handelsdagar – US-boken har fler
+   sådana kluster än den nordiska, så undantaget kommer att användas oftare. Motivera skriftligt.
+   Efter att båda benen fyllts: räkna om entry som viktat snitt och justera stop/mål proportionellt
+   i `state/portfolj_us.md`.
 4b. VILLKORADE BUBBLAR-PLANER: du FÅR lägga max 2 av bubblarna som pending-planer i
    `state/portfolj_us.md`:s Pending-sektion med explicit entry-villkor (verifierad kurs ≤/≥ $X),
    planerad stop, mål, R/R (minst 2:1) och vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn
@@ -187,8 +232,9 @@ Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/d
 APPEND-ONLY (ändra/radera aldrig befintliga rader), `catalystType` ur enum-listan i filens
 `comment`-fält (aldrig egna värden), `price` som tal i USD, `weight` som andel (0.5 = 50 %),
 vid SÄLJ fylls `outcomePct` + `holdDays`. VALIDERA innan commit:
-`node -e "JSON.parse(require('fs').readFileSync('state/decisions.json','utf8'))"` – laga filen
-om den inte parsar. Committa tillsammans med rapporten.
+`node .github/scripts/validate-decisions.mjs` (schema, enum-värden, SÄLJ-fält och append-only –
+enbart JSON.parse räcker INTE). Laga filen om valideringen fallerar. Samma kontroll körs i CI, och
+watchdogen larmar om dagens rapport pushas utan rader i loggen. Committa tillsammans med rapporten.
 
 ## PORTFÖLJFILEN (state/portfolj_us.md) – UPPDATERINGSREGLER
 1. Läs ALLTID in hela filen innan du ändrar något.
