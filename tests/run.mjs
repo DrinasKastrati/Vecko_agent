@@ -4,15 +4,17 @@
    hämtaren. Kör: node tests/run.mjs   (kräver ingen nätåtkomst)
    ============================================================ */
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 globalThis.window = {};
 const load = f => new Function("window", readFileSync(resolve(root, "assets", f), "utf8"))(globalThis.window);
+// Windows: dynamisk import kräver file://-URL, inte "C:\..." (Node ≥ 22 vägrar absolut sökväg)
+const mod = p => import(pathToFileURL(resolve(root, p)).href);
 load("vparse.js"); load("vrender.js");
 const VP = globalThis.window.VParse, VR = globalThis.window.VRender;
-const FP = await import(resolve(root, ".github/scripts/fetch-prices.mjs"));
+const FP = await mod(".github/scripts/fetch-prices.mjs");
 
 let pass = 0, fail = 0;
 const ok = (name, cond) => { if (cond) pass++; else { fail++; console.log("  FAIL:", name); } };
@@ -127,7 +129,7 @@ ok("searchResults mark+open", srHtml.includes("<mark>Alleima</mark>") && srHtml.
 ok("searchResults empty", VR.renderSearchResults([], "xyz").includes("Inga träffar"));
 
 // ---- alert-historik ----
-const AL = await import(resolve(root, ".github/scripts/alerts.mjs"));
+const AL = await mod(".github/scripts/alerts.mjs");
 const hist = AL.mergeHistory(
   { active: [{ ticker: "ALLEI.ST", type: "KÖP", reason: "entry-villkor uppfyllt", level: 97 }], history: [] },
   [], "2026-07-16T10:00:00Z");
@@ -138,7 +140,7 @@ ok("renderAlerts history", VR.renderAlerts({ active: [], history: hist }).includ
 ok("renderAlerts empty still empty", VR.renderAlerts({ active: [], history: [] }) === "");
 
 // ---- digest + watchdog (rena funktioner) ----
-const DG = await import(resolve(root, ".github/scripts/digest.mjs"));
+const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",
   "**Marknadsläget i korthet:** Lugnt.", "",
   "## Innehav 1: Alleima (ALLEI.ST / Nasdaq Stockholm)", "",
@@ -151,7 +153,7 @@ ok("digest title", dg.title.includes("2026-07-17"));
 ok("digest decision", dg.body.includes("Alleima") && dg.body.includes("BEHÅLL"));
 ok("digest pending", dg.body.includes("Pending-planer") && dg.body.includes("EJ TRIGGAD"));
 ok("digest market", dg.body.includes("Lugnt"));
-const WD = await import(resolve(root, ".github/scripts/watchdog.mjs"));
+const WD = await mod(".github/scripts/watchdog.mjs");
 ok("watchdog latest date", WD.latestReportDate(["daglig-260715.md", "daglig-260716.md", "x.md"], "daglig") === "260716");
 const probs = WD.checkStale({ now: "2026-07-17T10:30:00Z", pricesGeneratedAt: "2026-07-15T05:00:00Z", latestDaily: "260716", latestWeekly: "260713", latestScout: "260717" });
 ok("watchdog stale prices", probs.some(p => p.key === "prices"));

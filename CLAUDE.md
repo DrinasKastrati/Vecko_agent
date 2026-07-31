@@ -3,8 +3,8 @@
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
 **Senast uppdaterad:** 2026-07-17.
-**AKTIV ARBETSKOPIA:** `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför OneDrive – arbeta HÄR).
-Den gamla kopian under OneDrive är utfasad.
+**AKTIV ARBETSKOPIA:** `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31 – arbeta HÄR).
+Tidigare kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` samt den under OneDrive) är utfasade.
 
 ---
 
@@ -287,7 +287,11 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
 - **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
-- ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia är `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
+- ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia var `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
+- ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\Vecko_agent`. Node v24 på plats,
+  testsviten 119/119 grön. **KVAR på nya datorn:** kör `setup_autopush.bat` en gång (Task Scheduler-
+  tasken "VeckoAgent AutoPush" finns inte här), och peka om de schemalagda Cowork-taskarna
+  (`vecko-agent-us-rotation`, `vecko-agent-allokering`, scout/nordisk) till den nya sökvägen.
 - **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
   och alert-historik byggdes 2026-07-17.)
 
@@ -323,8 +327,9 @@ ta bort skyddet.
 
 ## 8. Var filerna ligger
 Allt ligger nu i repot (branch `main`) enligt strukturen i avsnitt 2 – inga lösa filer utanför.
-Drens AKTIVA lokala arbetskopia: `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför OneDrive).
-Den gamla kopian i OneDrive-mappen är utfasad – gör inga ändringar där. Eventuella
+Drens AKTIVA lokala arbetskopia: `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31).
+Äldre kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` och OneDrive-mappen) är utfasade – gör
+inga ändringar där. Eventuella
 `SETUP.md` / `MIGRATION.md` är historiska (migreringen är gjord) och kan ignoreras.
 
 ---
