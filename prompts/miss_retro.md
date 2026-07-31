@@ -103,6 +103,13 @@ Mäter om idégenereringen levererar: hur gick idéerna som flaggades men INTE k
    valda casen tydligt i ≥ 3 retros i rad är det en lärdomskandidat (då om RANKNINGEN i
    poängmodellen, aldrig "köp fler idéer"). Notera löpande sviten i rapporten.
 
+## STEG 3d – BESLUTSSTATISTIK (när underlag finns)
+Läs `state/decisions.json`. När databasen innehåller ≥ 15 SÄLJ-rader: sammanställ utfall per
+`catalystType` (snittutfall, träffsäkerhet, antal) och per `book`, och redovisa de 2–3
+starkaste/svagaste kategorierna under "Träffbild" i rapporten. Mönster här är lärdomskandidater
+för POÄNGMODELLENS viktning (katalysator/teknik/makro/RR) – men kräv ≥ 8 affärer i en kategori
+innan den bedöms, annars är det brus. Före 15 SÄLJ-rader: skriv endast antal loggade beslut.
+
 ## STEG 4 – DESTILLERA LÄRDOMAR
 1. Max 2 NYA lärdomar per retro, och endast ur missar, exits ELLER idéflödets facit (≥ 3 veckors
    svit) bedömda som PROCESSFEL. Hellre noll än en tveksam.

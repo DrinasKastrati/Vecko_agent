@@ -37,7 +37,8 @@ Strategin: portföljen består normalt av upp till 2 aktier som roteras varje ve
 2. VERIFIERA TIDSSTÄMPELN: `marketTime` ska vara från idag, eller från senaste handelsdagens stängning om börsen ännu inte öppnat. Saknas tickern i `state/prices.json`, saknar den `price`, eller är `marketTime` äldre än så: försök en reservkälla direkt (Yahoo Finance https://finance.yahoo.com/quote/<TICKER> med suffix .ST/.OL/.CO/.HE, Google Finance, Avanza). Går ingen färsk kurs att verifiera – följ punkt 4. Nya kandidater som inte finns i `state/prices.json` kan läggas till i `config/watchlist.txt` så hämtas de inför nästa körning.
 3. Ange ALLTID källa + tidsstämpel för varje kurs i rapporten (för prices.json: ange `source` och `marketTime`). Använd ALDRIG kurser ur nyhetsartiklar, cachade sökträffar eller ditt eget minne – de är ofta inaktuella.
 4. Om ingen färsk kurs kan verifieras för ett innehav: skriv "KURS EJ VERIFIERAD" och fatta inget SÄLJ-/KÖP-beslut baserat på kursnivån den dagen.
-5. NYHETER: inkludera alltid dagens datum i sökfrågorna. I läge B prioriteras nyheter från senaste 24 timmarna, i läge A senaste 5 handelsdagarna. Kontrollera publiceringsdatum på VARJE artikel innan den används – en träff utan verifierbart datum behandlas inte som färsk. Sök på både svenska och engelska samt direkt i bolagens pressmeddelandeflöden (IR-sidor, MFN, Cision, GlobeNewswire).
+5. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av `.github/workflows/news.yml` ur pressmeddelande-RSS: MFN, Cision, GlobeNewswire m.fl.). Skanna rubrikerna efter innehaven, kandidater, deras sektorer och konkurrenter – detta är den PRIMÄRA nyhetsradarn och täcker flödet systematiskt i stället för sökmotorslump. En rubrik som ska användas i ett beslut måste först verifieras via sin länk (datum + avsändare); kurskraven är oförändrade. Websök (punkt 5b) är komplement för kontext och sådant som inte är pressmeddelanden.
+5b. NYHETER (websök): inkludera alltid dagens datum i sökfrågorna. I läge B prioriteras nyheter från senaste 24 timmarna, i läge A senaste 5 handelsdagarna. Kontrollera publiceringsdatum på VARJE artikel innan den används – en träff utan verifierbart datum behandlas inte som färsk. Sök på både svenska och engelska samt direkt i bolagens pressmeddelandeflöden (IR-sidor, MFN, Cision, GlobeNewswire).
 6. Kontrollera alltid också kommande kända händelser: har något innehav rapport, ex-datum eller kapitalmarknadsdag idag eller imorgon?
 
 ## LÄGE A – VECKOROTATION (måndagar)
@@ -73,6 +74,21 @@ Gör följande för VARJE innehav i `state/portfolj.md`:
 6. Riskjusteringar: stop-loss får flyttas UPP (t.ex. till entry när positionen är +5 %, eller trailing under nya stöd) men ALDRIG ned. Målkurs får endast höjas vid extraordinär ny katalysator, med tydlig motivering.
 7. Skriv dagens rapport enligt `templates/daglig_mall.md` (spara i `reports/daily/`). Håll den kort – målet är ett tydligt beslut per aktie, inte en ny djupanalys.
 8. Uppdatera `state/portfolj.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall i % och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation; dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan; vid BEHÅLL uppdateras bara "Senast uppdaterad".
+
+## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena
+Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/decisions.json`
+(en rad per innehavsbeslut i LÄGE B; en rad per KÖP/SÄLJ/valt case i LÄGE A). Regler:
+1. APPEND-ONLY: befintliga rader får ALDRIG ändras, raderas eller sorteras om. Nya rader läggs
+   sist. Schemat står i filens `comment`-fält – följ det exakt.
+2. `book`: "nordic". `catalystType`: välj NÄRMASTE enum-värde (earnings/order/ma_rumor/
+   regulatory/insider/buyback/index/macro/turnaround/other) – hitta aldrig på nya värden.
+3. `price` = den verifierade kursen beslutet fattades på (tal, ingen valutasträng). `rsi` från
+   den tekniska filtreringen om tillgänglig, annars null. `weight` som andel (0.5 = 50 %).
+4. Vid SÄLJ: fyll `outcomePct` (utfall i % som tal) och `holdDays` (handelsdagar).
+5. VALIDERA innan commit: `node -e "JSON.parse(require('fs').readFileSync('state/decisions.json','utf8'))"`
+   – går den inte igenom, laga filen INNAN du committar. Committa filen tillsammans med rapporten.
+Syftet: efter ~15–20 stängda affärer kan retron svara statistiskt på vilka katalysatortyper och
+setup-typer som faktiskt tjänar pengar – logga därför ärligt och konsekvent, även AVVAKTA.
 
 ## PORTFÖLJFILEN (state/portfolj.md) – UPPDATERINGSREGLER
 1. Läs ALLTID in hela filen innan du ändrar något.

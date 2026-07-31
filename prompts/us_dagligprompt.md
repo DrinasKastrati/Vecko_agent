@@ -84,7 +84,8 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
    sökträffar eller ditt eget minne.
 5. Om ingen färsk kurs kan verifieras för ett innehav: skriv "KURS EJ VERIFIERAD" och fatta inget
    kursbaserat SÄLJ-/KÖP-beslut den dagen.
-6. NYHETER: inkludera alltid dagens datum i sökfrågorna. Läge B = senaste 24h, läge A = senaste 5
+6. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (fylls varannan timme av news-actionen ur pressmeddelande-RSS: GlobeNewswire, PR Newswire, Business Wire m.fl.). Skanna rubrikerna efter innehaven, kandidater, sektorer och konkurrenter – primär nyhetsradar. Rubriker som används i beslut verifieras via länken (datum + avsändare); kurskraven oförändrade. Websök (6b) är komplement.
+6b. NYHETER (websök): inkludera alltid dagens datum i sökfrågorna. Läge B = senaste 24h, läge A = senaste 5
    handelsdagarna. Kontrollera publiceringsdatum på VARJE artikel. Sök i bolagens IR-flöden,
    PR Newswire, Business Wire, GlobeNewswire samt SEC-filings (8-K, Form 4).
 7. Kontrollera kommande kända händelser: har något innehav rapport (before/after close), ex-datum,
@@ -179,6 +180,15 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation;
    dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan;
    vid BEHÅLL uppdateras bara "Senast uppdaterad".
+
+## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena
+Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/decisions.json`
+(delas med nordiska boken – sätt `book`: "us"). Samma regler som nordiska prompten:
+APPEND-ONLY (ändra/radera aldrig befintliga rader), `catalystType` ur enum-listan i filens
+`comment`-fält (aldrig egna värden), `price` som tal i USD, `weight` som andel (0.5 = 50 %),
+vid SÄLJ fylls `outcomePct` + `holdDays`. VALIDERA innan commit:
+`node -e "JSON.parse(require('fs').readFileSync('state/decisions.json','utf8'))"` – laga filen
+om den inte parsar. Committa tillsammans med rapporten.
 
 ## PORTFÖLJFILEN (state/portfolj_us.md) – UPPDATERINGSREGLER
 1. Läs ALLTID in hela filen innan du ändrar något.

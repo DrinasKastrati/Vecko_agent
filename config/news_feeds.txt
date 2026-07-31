@@ -1,0 +1,9 @@
+# Nyhetsflöden (RSS/Atom) som fetch-news.mjs läser varje körning.
+# Format: namn|url   (rader som börjar med # ignoreras)
+# Flöden som fallerar hoppas över tyst – status per flöde loggas i state/news_feed.json
+# under "feeds", så byt/justera URL:er här när något slutar fungera.
+globenewswire|https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20about%20Public%20Companies
+prnewswire|https://www.prnewswire.com/rss/news-releases-list.rss
+cision-se|https://news.cision.com/se/ss/rss
+mfn|https://mfn.se/all/s.rss
+businesswire-tech|https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJeGVtRVw==

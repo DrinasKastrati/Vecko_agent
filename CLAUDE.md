@@ -342,6 +342,34 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   bubblar-planer" (parse-säkra fältrader); retro_mall fick "## Idéflödets facit". Inga
   JS-ändringar – testsvit/sim opåverkade (149/28).
 
+- ✅ 2026-07-31 (datadrivet fundament – 3 delar):
+  **(1) Beslutsdatabas:** nya `state/decisions.json` (version 1, append-only, schema i filens
+  comment-fält: date/book/mode/ticker/action/price/weight/entry/stop/target/rr/catalystType-enum/
+  sector/rsi/holdDays/outcomePct/reason/lessonIds). Båda rotationsprompterna fick sektionen
+  BESLUTSDATABASEN: en rad per beslut varje körning (även AVVAKTA), aldrig ändra befintliga
+  rader, JSON-validering med `node -e` före commit. miss_retro fick STEG 3d BESLUTSSTATISTIK
+  (vid ≥ 15 SÄLJ-rader: utfall per catalystType/book → lärdomskandidater för poängmodellens
+  viktning; ≥ 8 affärer per kategori krävs, annars brus). Syfte: kalibrera 35/30/15/20-vikterna
+  mot data i stället för känsla.
+  **(2) Nyhetsingestion (dödar kategori A-missar):** ny nyckellös Action `news.yml` (varannan
+  timme vardagar) + `fetch-news.mjs` (LLM-fri): läser RSS/Atom ur nya `config/news_feeds.txt`
+  (MFN, Cision, GlobeNewswire, PR Newswire, Business Wire; format namn|url, fallerande flöden
+  hoppas över med status i JSON:en) → `state/news_feed.json` (dedupe på url, 48h-fönster, max
+  300 poster, per-feed-status för felsökning). Rena funktioner parseRss/mergeNews/parseFeedList
+  exporterade + testade. Alla tre prompterna fick "NYHETSFLÖDET FÖRST": news_feed.json är
+  PRIMÄR nyhetsradar, rubriker verifieras via länken innan beslut, websök blir komplement.
+  OBS: kontrollera `feeds`-statusen i news_feed.json efter första körningen och justera
+  URL:er i news_feeds.txt om något flöde ger fel.
+  **(3) Backtest av mekaniska skelettet:** nya `.github/scripts/backtest.mjs` + universum-filer
+  `config/backtest_universe_{nordic,us}.txt` (~30 likvida namn per marknad). Simulerar RAMVERKET
+  utan LLM-omdöme (momentum-proxy: topp 2 på lookback-avkastning varje måndag, entry på öppning,
+  stop/mål i %, max 5 dagars håll, konservativ stop-före-mål + gap-hantering) över en parameter-
+  grid (lookback 10/20 × stop/mål 3/6, 4/8, 5/10 %) och skriver `reports/backtest/backtest-
+  yymmdd-<marknad>.md` med träff %, PF, kedjat utfall, max DD och benchmark-jämförelse (^OMX/
+  ^GSPC). Körs MANUELLT på Drens dator (kräver nät): `node .github/scripts/backtest.mjs nordic`
+  resp. `us` (valfri range, t.ex. `5y`). Rena funktioner (parseCandles/momentumAt/isWeekStart/
+  simulateTrade/backtestUniverse/buyHoldPct) exporterade + testade. Testsviten: 168 tester.
+
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
   ligger nu på GitHub main (verifierat mot raw) – Pages kör nya dashboarden.

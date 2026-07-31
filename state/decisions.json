@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "comment": "Strukturerad beslutslogg. APPEND-ONLY: rader läggs till av rotations-routinerna vid varje körning, befintliga rader får ALDRIG ändras eller raderas (undantag: outcomePct/holdDays fylls i på KÖP-radens motsvarande SÄLJ-rad skrivs som ny rad). Schema per rad: date (åååå-mm-dd), book (nordic|us), mode (A|B), ticker (Yahoo-format), action (KÖP|SÄLJ|BEHÅLL|AVVAKTA), price (verifierad kurs, tal), currency, weight (0–1), entry/stop/target (tal eller null), rr (tal eller null), catalystType (earnings|order|ma_rumor|regulatory|insider|buyback|index|macro|turnaround|other), sector (kort text), rsi (tal eller null), holdDays (tal, endast SÄLJ), outcomePct (tal, endast SÄLJ), reason (max 200 tecken), lessonIds (array av L-id som tillämpats).",
+  "decisions": []
+}

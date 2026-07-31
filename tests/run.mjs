@@ -357,5 +357,72 @@ ok("renderRiskStats empty", VR.renderRiskStats(rsEmpty).includes("Inga stängda 
 ok("tradeStats tooltip", VR.renderTradeStats(ts).includes('title="Summa vinster'));
 ok("history utfall colored", VR.renderHistory(p).includes('class="pos"') && VR.renderHistory(p).includes('class="neg"'));
 
+// ---- beslutsdatabasen (state/decisions.json) ----
+const decRaw = readFileSync(resolve(root, "state/decisions.json"), "utf8");
+const dec = JSON.parse(decRaw);
+ok("decisions.json parsar + schema", dec.version === 1 && Array.isArray(dec.decisions));
+
+// ---- nyhetsingestion (fetch-news.mjs, rena funktioner) ----
+const NW = await mod(".github/scripts/fetch-news.mjs");
+const rssXml = [
+  "<rss><channel>",
+  "<item><title><![CDATA[Bolag AB: Q2 &amp; rapport]]></title><link>https://x.se/a</link><pubDate>Fri, 31 Jul 2026 10:00:00 GMT</pubDate></item>",
+  "<item><title>Andra nyheten</title><link>https://x.se/b</link><pubDate>Fri, 31 Jul 2026 09:00:00 GMT</pubDate></item>",
+  "</channel></rss>"
+].join("");
+const rssItems = NW.parseRss(rssXml, "test");
+ok("parseRss rss items", rssItems.length === 2 && rssItems[0].t === "Bolag AB: Q2 & rapport" && rssItems[0].u === "https://x.se/a");
+ok("parseRss rss date", rssItems[0].d && rssItems[0].d.startsWith("2026-07-31"));
+const atomItems = NW.parseRss('<feed><entry><title>Atom-nyhet</title><link href="https://a.com/x"/><updated>2026-07-31T08:00:00Z</updated></entry></feed>', "atom");
+ok("parseRss atom link href", atomItems.length === 1 && atomItems[0].u === "https://a.com/x");
+ok("parseRss trasig xml", NW.parseRss("inte xml alls", "x").length === 0 && NW.parseRss(null, "x").length === 0);
+const nowIso = "2026-07-31T12:00:00Z";
+const mergedNews = NW.mergeNews(
+  [{ t: "Gammal titel", u: "https://x.se/a", d: "2026-07-31T06:00:00Z", src: "old" },
+   { t: "För gammal", u: "https://x.se/old", d: "2026-07-28T06:00:00Z", src: "old" }],
+  rssItems, nowIso, 48, 300);
+ok("mergeNews dedupe på url", mergedNews.filter(i => i.u === "https://x.se/a").length === 1 && mergedNews[0].src !== "old");
+ok("mergeNews åldersrensning", !mergedNews.some(i => i.u === "https://x.se/old"));
+ok("mergeNews tak", NW.mergeNews([], rssItems, nowIso, 48, 1).length === 1);
+ok("parseFeedList", (() => { const f = NW.parseFeedList("# kommentar\nmfn|https://mfn.se/rss\nrad-utan-pipe\n"); return f.length === 1 && f[0].name === "mfn"; })());
+
+// ---- backtest (backtest.mjs, rena funktioner) ----
+const BT = await mod(".github/scripts/backtest.mjs");
+ok("parseCandles", (() => {
+  const j = { chart: { result: [{ timestamp: [1753912800, 1753999200], indicators: { quote: [{ open: [10, 11], high: [12, 13], low: [9, 10], close: [11, 12] }] } }] } };
+  const c = BT.parseCandles(j);
+  return c.length === 2 && c[0].o === 10 && c[1].c === 12 && /^\d{4}-\d{2}-\d{2}$/.test(c[0].d);
+})());
+ok("parseCandles null-hål filtreras", BT.parseCandles({ chart: { result: [{ timestamp: [1, 2], indicators: { quote: [{ open: [10, null], high: [12, 13], low: [9, 10], close: [11, 12] }] } }] } }).length === 1);
+const trC = [
+  { d: "2026-01-05", o: 100, h: 104, l: 99, c: 103 },
+  { d: "2026-01-06", o: 103, h: 111, l: 102, c: 110 },
+  { d: "2026-01-07", o: 110, h: 112, l: 109, c: 111 },
+  { d: "2026-01-08", o: 111, h: 112, l: 110, c: 111 },
+  { d: "2026-01-09", o: 111, h: 112, l: 110, c: 111 }
+];
+const trTarget = BT.simulateTrade(trC, 0, 0.05, 0.10, 5);
+ok("simulateTrade målträff", trTarget.reason === "mål" && Math.abs(trTarget.retPct - 10) < 1e-9 && trTarget.days === 2);
+const trStop = BT.simulateTrade([{ d: "2026-01-05", o: 100, h: 101, l: 94, c: 95 }], 0, 0.05, 0.10, 5);
+ok("simulateTrade stopträff", trStop.reason === "stop" && Math.abs(trStop.retPct + 5) < 1e-9);
+const trGap = BT.simulateTrade([{ d: "2026-01-05", o: 100, h: 101, l: 99, c: 100 }, { d: "2026-01-06", o: 92, h: 93, l: 91, c: 92 }], 0, 0.05, 0.10, 5);
+ok("simulateTrade stop-gap till gap-kurs", trGap.reason === "stop-gap" && Math.abs(trGap.retPct + 8) < 1e-9);
+const flat = ["2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09"].map(d => ({ d, o: 100, h: 101, l: 99.5, c: 100.5 }));
+const trRot = BT.simulateTrade(flat, 0, 0.05, 0.10, 5);
+ok("simulateTrade rotation efter 5 dgr", trRot.reason === "rotation" && trRot.days === 5);
+ok("isWeekStart helg-gap", BT.isWeekStart([{ d: "2026-01-09" }, { d: "2026-01-12" }], 1) === true && BT.isWeekStart([{ d: "2026-01-06" }, { d: "2026-01-07" }], 1) === false);
+ok("momentumAt", (() => {
+  const c = [100, 102, 104, 106, 108, 110].map((v, i) => ({ d: "2026-01-0" + (i + 1), c: v }));
+  return Math.abs(BT.momentumAt(c, 5, 5) - 0.08) < 1e-9 && BT.momentumAt(c, 2, 5) === null;
+})());
+ok("backtestUniverse syntetiskt universum", (() => {
+  const dts = []; let dt = new Date("2026-01-05T12:00:00Z");
+  while (dts.length < 40){ const dow = dt.getUTCDay(); if (dow >= 1 && dow <= 5) dts.push(dt.toISOString().slice(0, 10)); dt = new Date(+dt + 86400e3); }
+  const up = dts.map((dd, i) => ({ d: dd, o: 100 + i, h: 101.2 + i, l: 99 + i, c: 100.5 + i }));
+  const bt = BT.backtestUniverse({ X: up }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2 });
+  return bt && bt.weeks >= 4 && bt.trades >= 4 && bt.winRate === 1 && bt.chainedPct > 0 && bt.maxDrawdownPct === 0;
+})());
+ok("buyHoldPct", Math.abs(BT.buyHoldPct([{ c: 100 }, { c: 110 }]) - 10) < 1e-9 && BT.buyHoldPct([]) === null);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -51,6 +51,10 @@ och rapportflöde samt trovärdiga marknadsrykten.
    kurs att verifiera – skriv "KURS EJ VERIFIERAD" och undvik tvärsäkra prisnivåer.
 3. Ange ALLTID källa + datum för varje nyhet och källa + tidsstämpel för varje kurs.
    Använd ALDRIG kurser ur nyhetsartiklar, cachade sökträffar eller ditt eget minne.
+4. NYHETSFLÖDET FÖRST: läs `state/news_feed.json` (pressmeddelande-RSS, fylls varannan timme
+   av news-actionen) och skanna rubrikerna som PRIMÄR råvara för case-jakten – det täcker
+   flödet systematiskt. Rubriker som bygger ett case verifieras via länken (datum + avsändare)
+   innan de används; källkritik-reglerna nedan gäller oförändrat.
 
 ## KÄLLKRITIK & BRUSFILTRERING (hård)
 - Rykten godkänns ENDAST från etablerade finansmedier (Bloomberg, Reuters, WSJ, FT, CNBC,
