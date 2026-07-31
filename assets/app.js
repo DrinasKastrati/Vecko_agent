@@ -161,12 +161,14 @@
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
       const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history));
+      const rsEl = this.el("riskStats"); if (rsEl) rsEl.innerHTML = R.renderRiskStats(this.P.computeRiskStats(S.portfolio.history));
       const moEl = this.el("monthly"); if (moEl) moEl.innerHTML = R.renderMonthlyHeatmap(this.P.buildMonthlyStats(S.portfolio.history));
       this.el("history").innerHTML = R.renderHistory(S.portfolio);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();
       this.renderRetro();
+      this.renderHem();
       this.el("repoFoot").href = this.repoURL;
       this.setupReportPicker();
       this.drawChart();
@@ -454,6 +456,61 @@
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
     }
 
+    // ---- Hem: handlingsytan (innehav + dagens beslut + vad som händer) ----
+    renderHem() {
+      const S = this.state, R = this.R, P = this.P;
+      const main = this.el("hemMain"), rail = this.el("hemRail");
+      if (!main || !rail) return;
+      const st = this.el("hemStatus");
+      if (st) st.innerHTML = R.renderStatusRow(S.dailies[0] || null, P.nextRoutineRun(new Date()));
+
+      // Vänsterspalten: båda böckernas innehav, beslut och pending-planer.
+      const nAcc = S.portfolio && S.portfolio.accum;
+      const uAcc = S.portfolioUs && S.portfolioUs.accum;
+      const accTag = a => a == null ? "" : `<span class="acc ${a > 0 ? "pos" : a < 0 ? "neg" : ""}" style="color:${a > 0 ? "var(--green)" : a < 0 ? "var(--red)" : "var(--muted)"}">${R.signPct(a)}</span>`;
+      let html = `<div class="book-block"><div class="book-h"><span class="bk bk--n"></span>Nordisk bok${accTag(nAcc)}</div>`
+        + R.renderHoldings(S.dailies[0] || null, S.portfolio || { holdings: [], pending: [] }, this.buildLiveMap(), this.buildDecisionMap(S.dailies[0] || null), P.diffDailies(S.dailies[0], S.dailies[1]))
+        + `</div>`;
+      if (S.portfolioUs) {
+        html += `<div class="book-block"><div class="book-h"><span class="bk bk--u"></span>US-bok${accTag(uAcc)}</div>`
+          + R.renderHoldings(S.usDailies[0] || null, S.portfolioUs, this.liveMapFor(S.portfolioUs, S.usDailies[0]), {}, P.diffDailies(S.usDailies[0], S.usDailies[1]))
+          + `</div>`;
+      }
+      main.innerHTML = html;
+
+      // Högerspalten: bevakning, radar, senaste nytt, lärdomar.
+      const esc = R.esc;
+      const card = (title, body, count, moreView, moreLabel) =>
+        `<div class="rail-card"><div class="rail-t">${esc(title)}${count != null ? `<span class="n">${count}</span>` : ""}</div>${body}`
+        + (moreView ? `<button type="button" class="rail-more" data-goto-view="${esc(moreView)}">${esc(moreLabel || "Visa allt")} →</button>` : "") + `</div>`;
+      let railHtml = "";
+
+      const watch = [].concat((S.dailies[0] && S.dailies[0].watch) || [], (S.usDailies[0] && S.usDailies[0].watch) || []);
+      railHtml += card("Bevakning inför imorgon",
+        watch.length ? `<ul class="rail-list">${watch.slice(0, 6).map(w => `<li>${esc(P.stripMd(w))}</li>`).join("")}</ul>`
+                     : `<div class="empty">Inget särskilt flaggat.</div>`, watch.length || null);
+
+      const radar = (S.weeklies[0] && S.weeklies[0].radar) || [];
+      railHtml += card("Veckans radar",
+        radar.length ? `<ul class="rail-list">${radar.slice(0, 5).map(r => `<li><b>${esc(r.day || "•")}</b> ${esc(P.stripMd(r.text).slice(0, 160))}</li>`).join("")}</ul>`
+                     : `<div class="empty">Ingen radar i senaste veckorapporten.</div>`, radar.length || null, "nyheter", "Nyheter & radar");
+
+      const news = (S.feed && S.feed.news) || [];
+      railHtml += card("Senaste nytt",
+        news.length ? `<ul class="rail-list rail-news">${news.slice(0, 4).map(n =>
+            `<li><span class="d">${esc(n.date)}</span><span class="s">${esc(n.subject)}</span> — ${esc(n.text.slice(0, 130))}${n.text.length > 130 ? "…" : ""}</li>`).join("")}</ul>`
+                    : `<div class="empty">Inga nya bolagsnyheter.</div>`, news.length || null, "nyheter", "Alla nyheter");
+
+      const lessons = (S.lessons && S.lessons.active) || [];
+      if (lessons.length) {
+        const lcol = (o, re) => { const k = Object.keys(o).find(x => re.test(x)); return k ? P.stripMd(o[k]) : ""; };
+        railHtml += card("Aktiva lärdomar",
+          `<ul class="rail-list">${lessons.slice(0, 3).map(o => `<li><b>${esc(lcol(o, /^id$/i))}</b> ${esc(lcol(o, /^regel$/i).slice(0, 110))}…</li>`).join("")}</ul>`,
+          lessons.length, "retro", "Retro & lärdomar");
+      }
+      rail.innerHTML = railHtml;
+    }
+
     // ---- Retro & Lärdomar (miss-retron, ny flik) ----
     renderRetro() {
       const lb = this.el("lessonsBody");
@@ -643,7 +700,7 @@
     // Laddningsskelett i tomma vyer under första hämtningen (i stället för tomrum).
     showSkeletons() {
       const sk = n => `<div class="skel-grid">${Array.from({ length: n }, () => '<div class="skel"></div>').join("")}</div>`;
-      [["kpis", 4], ["totalBody", 4], ["holdings", 2], ["feed", 2], ["scoutBody", 2], ["usBody", 4]].forEach(([id, n]) => {
+      [["hemMain", 4], ["hemRail", 2], ["kpis", 4], ["totalBody", 4], ["holdings", 2], ["feed", 2], ["scoutBody", 2], ["usBody", 4]].forEach(([id, n]) => {
         const el = this.el(id); if (el && !el.childElementCount) el.innerHTML = sk(n);
       });
     }
@@ -661,7 +718,7 @@
     // ---- wiring ----
     showView(view) {
       const views = [...document.querySelectorAll(".view")];
-      if (!views.some(v => v.dataset.view === view)) view = "oversikt";
+      if (!views.some(v => v.dataset.view === view)) view = views.some(v => v.dataset.view === "hem") ? "hem" : "oversikt";
       views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
       document.querySelectorAll(".subnav a").forEach(l => l.classList.toggle("active", l.dataset.view === view));
       try { history.replaceState(null, "", "#" + view); } catch (e) {}
@@ -715,6 +772,8 @@
         }
         const tp = e.target.closest("[data-goto-ticker]");
         if (tp) { this.gotoTicker(tp.dataset.gotoTicker); return; }
+        const gv = e.target.closest("[data-goto-view]");
+        if (gv) { this.showView(gv.dataset.gotoView); return; }
         const th = e.target.closest(".tbl--sort th");
         if (th) { this.sortTable(th); return; }
         const sr = e.target.closest("[data-open-report]");
@@ -766,9 +825,10 @@
       this.initNav(); this.initEvents(); this.load(false);
       // Tickande nedräkning till nästa körning (statusraden på Översikt).
       setInterval(() => {
-        const el = this.el("statusRow");
-        if (el && this.state.dailies.length)
-          el.innerHTML = this.R.renderStatusRow(this.state.dailies[0] || null, this.P.nextRoutineRun(new Date()));
+        if (!this.state.dailies.length) return;
+        const row = this.R.renderStatusRow(this.state.dailies[0] || null, this.P.nextRoutineRun(new Date()));
+        const el = this.el("statusRow"); if (el) el.innerHTML = row;
+        const hs = this.el("hemStatus"); if (hs) hs.innerHTML = row;
       }, 30000);
       // Lätt alerts-poll var 5:e minut (banner + ev. skrivbordsnotis).
       setInterval(() => this.pollAlerts(), 300000);

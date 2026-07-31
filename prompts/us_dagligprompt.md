@@ -115,6 +115,14 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
       AVGO/TSM/MU/kraftbolag; oljespik → XOM/CVX; ränterörelse → banker/tillväxt).
    f) VECKANS TRIGGERS FRAMÅT: earnings (before/after close), makrodata, ex-datum, index-rebalans
       kommande 5 handelsdagar.
+   g) SCOUT-INFLÖDE (OBLIGATORISKT): läs de 5 senaste scout-rapporterna i `reports/scout/`
+      (sektionerna "Dagens case" + "Uppföljning av tidigare case"). Varje US-AKTIE-case (ej
+      krypto, ej index) med tes INTAKT SKA in i bruttolistan och poängsättas som övriga
+      kandidater – scouten genererar idéer, rotationen beslutar. Redovisa i rapportens
+      Bubblare-sektion ("Scout-inflöde": VALD / RANKAD UNDER / STRUKEN med skäl per case).
+   h) BUBBLAR-ÅTERBRUK (OBLIGATORISKT): förra US-veckorapportens bubblarlista (senaste filen i
+      `reports/us_weekly/`) SKA in i bruttolistan och poängsättas. Redovisa utfallet i
+      Bubblare-sektionen ("Förra veckans bubblare": VALD / RANKAD UNDER / STRUKEN med skäl).
 2. TEKNISK FILTRERING med faktiska värden: RSI(14) helst 50–70 (>75 kräver exceptionell katalysator;
    <40 endast turnaround med färsk katalysator); MACD(12,26,9) färskt bullish kors/stigande histogram;
    kurs över EMA20/EMA50, helst EMA20>EMA50>EMA200; volym >1,5× 20-dagarssnittet; närmaste stöd
@@ -129,6 +137,11 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
 4. RAPPORT enligt `templates/us_vecko_rapport.md`, inkl. komplett handelsplan per case (entry,
    stop strax under stöd, mål, R/R) och 3–5 BUBBLARE (ersättarlista för läge B). Lägg gärna
    bevakade tickers i `config/watchlist_us.txt` så finns färska kurser nästa körning.
+4b. VILLKORADE BUBBLAR-PLANER: du FÅR lägga max 2 av bubblarna som pending-planer i
+   `state/portfolj_us.md`:s Pending-sektion med explicit entry-villkor (verifierad kurs ≤/≥ $X),
+   planerad stop, mål, R/R (minst 2:1) och vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn
+   larmar automatiskt när nivån korsas (noll tokens). Ej triggad inom 5 handelsdagar → AVFÖRS
+   vid nästa rotation (stryk med ~~…~~, radera aldrig). Aldrig fler än 2, aldrig utan nivåer.
 5. Uppdatera `state/portfolj_us.md` med nytt innehav och ev. kassa.
 
 ## LÄGE B – DAGLIG BEVAKNING (tisdag–fredag)
@@ -151,9 +164,11 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    - BEHÅLL om: tesen intakt och kursen inom plan. Ange om läget stärkts/försvagats sedan igår. Har
      innehavet en BINÄR händelse (earnings, FDA-besked, dom) inom 2 handelsdagar: motivera EXPLICIT
      varför positionen hålls genom eventet, eller sälj i förväg.
-   - KÖP endast i två fall: (a) ersättningsköp från senaste us-veckorapportens bubblarlista om en
+   - KÖP endast i tre fall: (a) ersättningsköp från senaste us-veckorapportens bubblarlista om en
      position sålts i förtid och bubblaren nu uppfyller ALLA krav (katalysator + teknik + likviditet
-     + 2:1), eller (b) ett entry-villkor från veckorapporten som nu triggats.
+     + 2:1), (b) ett entry-villkor från veckorapporten som nu triggats, eller (c) en villkorad
+     BUBBLAR-plan i Pending som TRIGGATS mot verifierad kurs OCH ledig kapacitet finns (< 2
+     innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering.
 5. Motivera varje beslut i 1–3 meningar med hänvisning till kurs (tidsstämpel) och/eller nyhet (datum + källa).
 6. Riskjusteringar: stop-loss får flyttas UPP (t.ex. till entry vid +5 %, eller trailing under nya
    stöd) men ALDRIG ned. Målkurs höjs endast vid extraordinär ny katalysator, med tydlig motivering.

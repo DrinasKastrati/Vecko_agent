@@ -333,6 +333,26 @@ const hmHtml = VR.renderMonthlyHeatmap(mo);
 ok("heatmap cells", hmHtml.includes("hm-cell") && hmHtml.includes("jul 2026") && hmHtml.includes("aug 2026"));
 ok("heatmap empty", VR.renderMonthlyHeatmap([]).includes("Inget månadsutfall"));
 
+// ---- riskmått (max drawdown, sviter, volatilitet, payoff) ----
+const riskHist = [
+  { "Stängd": "2026-01-05", "Aktie": "A", "Utfall %": "+10 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-12", "Aktie": "B", "Utfall %": "-4 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-19", "Aktie": "C", "Utfall %": "-6 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-26", "Aktie": "D", "Utfall %": "+8 %", "Vikt": "50 %" }
+];
+const rs = VP.computeRiskStats(riskHist);
+ok("risk maxDrawdown", rs.maxDrawdownPct != null && Math.abs(rs.maxDrawdownPct - 4.94) < 0.02);
+ok("risk streaks", rs.lossStreak === 2 && rs.winStreak === 1);
+ok("risk stdev", Math.abs(rs.stdevPct - 7.07) < 0.01);
+ok("risk payoff", Math.abs(rs.payoff - 1.8) < 1e-9);
+const rsEmpty = VP.computeRiskStats([]);
+ok("risk empty", rsEmpty.trades === 0 && rsEmpty.maxDrawdownPct === null && VP.computeRiskStats(null).trades === 0);
+ok("risk only wins no payoff", VP.computeRiskStats([{ "Stängd": "2026-01-05", "Aktie": "A", "Utfall %": "+5 %" }]).payoff === null);
+const rsHtml = VR.renderRiskStats(rs);
+ok("renderRiskStats cells", rsHtml.includes("Max drawdown") && rsHtml.includes("Payoff ratio") && rsHtml.includes("−4.94 %"));
+ok("renderRiskStats tooltip", rsHtml.includes('title="Största tappet'));
+ok("renderRiskStats empty", VR.renderRiskStats(rsEmpty).includes("Inga stängda affärer"));
+
 // ---- UI-polish: tooltips + färgkodad historik ----
 ok("tradeStats tooltip", VR.renderTradeStats(ts).includes('title="Summa vinster'));
 ok("history utfall colored", VR.renderHistory(p).includes('class="pos"') && VR.renderHistory(p).includes('class="neg"'));

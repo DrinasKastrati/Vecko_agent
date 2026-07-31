@@ -68,9 +68,44 @@ Bedöm varje miss: **PROCESSFEL eller ACCEPTABELT UTFALL?**
 - En strategi som ska fånga ALLA vinnare tar ALL risk – målet är att laga systematiska hål,
   inte att jaga varje utfall.
 
+## STEG 3b – SÄLJ-FACIT (exits under perioden)
+Missarna ovan täcker aktier som aldrig köptes – detta steg granskar den andra halvan: hur bra
+var veckans FÖRSÄLJNINGAR? Gå igenom varje rad i BÅDA portföljfilernas Historik ("Stängd" inom
+granskningsperioden, `state/portfolj.md` + `state/portfolj_us.md`):
+1. Hämta verifierad kurs ~5 handelsdagar EFTER exitdatumet ur `state/price_history.json` /
+   `state/prices.json` (källa + tidsstämpel; har färre dagar passerat – använd senaste
+   tillgängliga och ange antal dagar). Kan efterkursen inte verifieras: markera
+   "EJ VERIFIERAD" och gör ingen bedömning av den exiten.
+2. Beräkna EFTERUTFALL: kursutveckling från exitkurs till efterkursen, i %.
+3. Klassificera exakt en bedömning per exit:
+   - **BRA EXIT:** kursen föll, stod still eller steg obetydligt efter sälj.
+   - **NEUTRAL:** liten uppgång inom brus (< ~5 % Norden / < ~4 % US).
+   - **LÄMNADE PÅ BORDET:** kursen steg ≥ ~5 % (Norden) / ≥ ~4 % (US) inom fönstret.
+4. Samma facit-filter som STEG 3: LÄMNADE PÅ BORDET är PROCESSFEL ENDAST om en daterad signal
+   fanns FÖRE säljbeslutet som talade för fortsatt innehav OCH en generaliserbar regel hade
+   behållit positionen utan höjd risk (t.ex. trailing stop under stigande stöd i stället för
+   hård målkurs vid intakt momentum). Rotationssälj enligt 5-dagarsregeln som sedan stiger är
+   normalt ACCEPTABELT UTFALL – regeln är design, inte ett misstag.
+5. SKYDD: en stop-loss som träffades och där kursen sedan vände upp är KOSTNADEN för skyddet,
+   inte ett processfel – sälj-facit får ALDRIG generera lärdomar som mjukar upp stoppdisciplin,
+   sänker stoppar eller uppmuntrar att "ge det lite till". Lärdomar härifrån delar budgeten
+   max 2 nya/vecka i STEG 4 och konkurrerar med missarnas lärdomar på samma villkor.
+
+## STEG 3c – IDÉFLÖDETS FACIT (bubblare & scout-case)
+Mäter om idégenereringen levererar: hur gick idéerna som flaggades men INTE köptes?
+1. Utvärdera (a) bubblarna i den nordiska och US-veckorapporten från FÖRRA veckan (de har nu
+   haft ~5 handelsdagar), och (b) scout-case publicerade för 5–10 handelsdagar sedan.
+2. Per idé: kurs vid flaggning (ur rapporten eller `price_history.json`) → verifierad kurs nu
+   (källa + tidsstämpel). Kan någon sida inte verifieras: "EJ VERIFIERAD", ingen bedömning.
+3. Sammanställ TRÄFFBILD: snittutfall för idéerna vs snittutfall för de VALDA casen samma
+   period, samt andel idéer över/under ±5 %. Redovisa i mallens sektion "## Idéflödets facit".
+4. FACIT-FILTER: en enskild vecka är BRUS – dra inga slutsatser. Först när idéflödet slagit de
+   valda casen tydligt i ≥ 3 retros i rad är det en lärdomskandidat (då om RANKNINGEN i
+   poängmodellen, aldrig "köp fler idéer"). Notera löpande sviten i rapporten.
+
 ## STEG 4 – DESTILLERA LÄRDOMAR
-1. Max 2 NYA lärdomar per retro, och endast ur missar bedömda som PROCESSFEL. Hellre noll än en
-   tveksam.
+1. Max 2 NYA lärdomar per retro, och endast ur missar, exits ELLER idéflödets facit (≥ 3 veckors
+   svit) bedömda som PROCESSFEL. Hellre noll än en tveksam.
 2. En lärdom ska vara: GENERALISERBAR (aldrig ticker-specifik, aldrig "köp X"), TESTBAR (det går
    att se i efterhand om den tillämpats) och FÖRENLIG MED SKYDDEN – den får ALDRIG sänka kravet
    på verifierad kurs, aldrig instruera ändring av mallarna och aldrig ta bort risk-regler

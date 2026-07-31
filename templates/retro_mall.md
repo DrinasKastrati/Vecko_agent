@@ -1,7 +1,8 @@
 # Miss-retro: veckans post-mortem
 **Vecka:** [v NN] | **Datum:** [ÅÅÅÅ-MM-DD] | **Period granskad:** [ÅÅÅÅ-MM-DD – ÅÅÅÅ-MM-DD]
 **Sammanfattning:** [2–3 meningar: hur många kandidater granskades, hur många bedömdes som
-PROCESSFEL respektive ACCEPTABELT UTFALL, och hur många nya lärdomar som skrevs (0–2).]
+PROCESSFEL respektive ACCEPTABELT UTFALL, utfallet av sälj-facit (antal exits, varav
+LÄMNADE PÅ BORDET), och hur många nya lärdomar som skrevs (0–2).]
 
 ## Datagrund
 [Vilka filer och källor som lästs: veckorapporter, dagliga rapporter, scout-rapporter,
@@ -37,6 +38,31 @@ utanför strategins avsikt, eller skulle kräva överanpassning.]
 
 ### Miss 2: […]
 ### Miss 3: […]
+
+## Sälj-facit (exits under perioden)
+[En rad per position stängd under perioden (båda böckerna). Efterkurs = verifierad kurs ~5
+handelsdagar efter exit (källa + tidsstämpel; ange färre dagar om så är fallet). Bedömning:
+BRA EXIT / NEUTRAL / LÄMNADE PÅ BORDET. Skriv "Inga exits under perioden." om historiken
+saknar stängda positioner i fönstret.]
+
+| Aktie (bok) | Exit-datum | Exitkurs | Efterkurs (källa, tid) | Efterutfall % | Skäl vid sälj | Bedömning |
+|---|---|---|---|---|---|---|
+
+[Per exit bedömd LÄMNADE PÅ BORDET: samma facit-filter som för missar – **PROCESSFEL** (daterad
+signal före säljbeslutet + generaliserbar regel som behållit positionen utan höjd risk) eller
+**ACCEPTABELT UTFALL** (t.ex. rotationsregeln är design; stop-loss som träffades är kostnaden
+för skyddet – aldrig lärdomar som mjukar upp stoppdisciplin). Motivera i 1–3 meningar.]
+
+## Idéflödets facit (bubblare & scout-case)
+[Utvärdering av idéer som flaggades men inte köptes: förra veckans bubblare (båda böckerna)
+och scout-case från 5–10 handelsdagar sedan. Kurs vid flaggning → verifierad kurs nu.
+Skriv "Inga utvärderingsbara idéer denna vecka." om underlag saknas.]
+
+| Idé (källa) | Flaggad (datum, kurs) | Nu (kurs, källa/tid) | Utfall % | Jämfört med valda case |
+|---|---|---|---|---|
+
+**Träffbild:** [snittutfall idéer vs valda case samma period; andel idéer över/under ±5 %]
+**Svit:** [t.ex. "Idéflödet slog de valda casen 1 vecka i rad (3 krävs för lärdomskandidat)" – en enskild vecka är brus]
 
 ## Diskvalificerade kandidater
 [Rörelser som granskats men INTE är missar: systemet ägde dem, hade dem som pending/bubblare

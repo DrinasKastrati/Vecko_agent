@@ -299,6 +299,49 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   Historik, `.empty`-tomlägen som streckade boxar, kortkommando-hinten rättad (1–9 + Esc).
   Testsviten: 140 tester, gröna.
 
+- ✅ 2026-07-31 (design-overhaul): **helt ny layout** – centrerade flik-designen ersatt av
+  SIDOPANEL + full skärmbredd ("Quant Deck"-tema: förfinad mörk palett, sky-accent #38BDF8,
+  grupperad meny Portfölj/Analys/Data, aktiv-indikator med glow). **Ny startvy "Hem"**
+  (default, 11:e vyn): vänsterspalt med BÅDA böckernas innehav/dagens beslut/pending (bok-
+  rubriker med ackumulerad avkastning), högerspalt ("rail") med Bevakning inför imorgon,
+  Veckans radar, Senaste nytt och Aktiva lärdomar – alla med hopp-länkar till respektive vy
+  (`data-goto-view`, delegerat klick i app.js). `renderHem()` i app.js komponerar allt av
+  BEFINTLIGA renderare (renderHoldings/renderStatusRow m.fl.) ⇒ vrender orörd, alla 140
+  enhetstester opåverkade. Mobil: sidopanelen blir scrollbar botten-bar (data-short-etiketter).
+  showView-fallback ändrad till "hem"; statusraden tickar i både Nordisk- och Hem-vyn.
+  **Nytt simuleringstest `tests/sim.mjs`** (jsdom, körs INTE i CI): bootar HELA appen med
+  mockad fetch som serverar repots riktiga filer, verifierar Live-status, alla 11 vyer,
+  navigering och fallback – 27 kontroller. Körs lokalt: `npm i jsdom && node tests/sim.mjs`
+  (package.json/package-lock/node_modules gitignoreras). Verifierat 2026-07-31 på Drens
+  dator: 140/140 enhetstester + 27/27 sim gröna.
+
+- ✅ 2026-07-31 (sälj-facit + riskmått): **lärloopen täcker nu exits.** `prompts/miss_retro.md`
+  fick STEG 3b SÄLJ-FACIT: varje position stängd under perioden utvärderas mot verifierad kurs
+  ~5 handelsdagar efter exit → BRA EXIT / NEUTRAL / LÄMNADE PÅ BORDET (trösklar ~5 % Norden /
+  ~4 % US), med samma facit-filter som missarna (rotationssälj som stiger = normalt ACCEPTABELT;
+  stop-loss som vänder upp = kostnaden för skyddet – lärdomar får ALDRIG mjuka upp stopp-
+  disciplin). Lärdomsbudgeten max 2/vecka delas mellan missar och exits. `templates/retro_mall.md`
+  fick sektionen "## Sälj-facit (exits under perioden)" (tabell + bedömning). **Riskmått i
+  Avkastning:** `VParse.computeRiskStats` (max drawdown på kedjade equity-kurvan, längsta
+  förlust-/vinstsvit, volatilitet per affär (stddev), payoff ratio) + `VRender.renderRiskStats`
+  (stat-kort med tooltips) i ny sektion under Handelsstatistik (`#riskStats`). Testsviten:
+  149 tester; sim: 28 kontroller.
+
+- ✅ 2026-07-31 (idé-pipeline): **bubblare & scout-case kopplade till besluten.**
+  (A) OBLIGATORISKT INFLÖDE i LÄGE A: dagligprompt fick 1g BUBBLAR-ÅTERBRUK (förra veckans
+  bubblare SKA in i bruttolistan, utfall redovisas som VALD/RANKAD UNDER/STRUKEN);
+  us_dagligprompt fick 1g SCOUT-INFLÖDE (US-aktie-case med tes INTAKT ur de 5 senaste
+  scout-rapporterna SKA poängsättas – scouten genererar, rotationen beslutar) + 1h
+  bubblar-återbruk. (B) VILLKORADE BUBBLAR-PLANER: båda rotationerna FÅR lägga max 2 bubblare
+  som pending-planer med explicita nivåer, märkta "BUBBLARE" – befintliga `monitor.yml` larmar
+  då intradag utan tokens; KÖP-regeln i LÄGE B fick fall (c) (triggad bubblar-plan + ledig
+  kapacitet); ej triggad på 5 handelsdagar → avförs. (C) IDÉFLÖDETS FACIT: miss_retro fick
+  STEG 3c (förra veckans bubblare + 5–10 dagar gamla scout-case utvärderas mot verifierad kurs;
+  träffbild idéer vs valda case; enskild vecka = brus, ≥ 3 veckors svit krävs för lärdom om
+  rankningen). Vecko-mallarna fick fälten "Förra veckans bubblare"/"Scout-inflöde"/"Villkorade
+  bubblar-planer" (parse-säkra fältrader); retro_mall fick "## Idéflödets facit". Inga
+  JS-ändringar – testsvit/sim opåverkade (149/28).
+
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
   ligger nu på GitHub main (verifierat mot raw) – Pages kör nya dashboarden.

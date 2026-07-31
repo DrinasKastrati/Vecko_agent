@@ -54,6 +54,9 @@
 2. [TICKER] – [...]
 3. [TICKER] – [...]
 
+**Förra veckans bubblare:** [per ticker: VALD / RANKAD UNDER / STRUKEN (skäl) – eller "Första veckan, inga tidigare bubblare"]
+**Villkorade bubblar-planer:** [max 2: TICKER, entry-villkor, stop/mål/R/R/vikt (speglar Pending i portfolj.md) – eller "Inga"]
+
 ## Veckans radar (kommande 5 handelsdagar)
 * [Dag] – [Händelse, t.ex. räntebesked/rapport/makrodata] – [Potentiell påverkan på casen]
 

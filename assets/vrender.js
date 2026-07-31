@@ -467,6 +467,21 @@
     <div class="stat-note">Kedjad avkastning (per-affär-vikt): ${esc(signPct(s.chainedPct))} · summa utfall: ${esc(signPct(s.sumPct))} — jämför med routinens angivna ackumulerade siffra.</div>`;
   }
 
+  // ---- riskmått (Avkastning) ---------------------------------------------
+  function renderRiskStats(r){
+    if (!r || !r.trades)
+      return `<div class="empty">Inga stängda affärer ännu – riskmåtten fylls i när positioner stängs.</div>`;
+    const cell = (label, val, cls, sub, tip) =>
+      `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
+    const dd = r.maxDrawdownPct;
+    return `<div class="stat-grid">
+      ${cell("Max drawdown", dd != null ? "−" + dd.toFixed(2) + " %" : "–", dd > 0 ? "neg" : "", "topp till dal", "Största tappet från en toppnivå i den kedjade equity-kurvan (per-affär-vikt) innan ny topp nåddes")}
+      ${cell("Längsta förlustsvit", String(r.lossStreak), r.lossStreak >= 3 ? "neg" : "", r.winStreak ? "längsta vinstsvit: " + r.winStreak : "", "Flest förlustaffärer i rad (kronologiskt på stängningsdatum)")}
+      ${cell("Volatilitet per affär", r.stdevPct != null ? "± " + r.stdevPct.toFixed(2) + " %" : "–", "", "standardavvikelse", "Spridningen i utfall per affär – högre = mer slagig strategi")}
+      ${cell("Payoff ratio", r.payoff != null ? r.payoff.toFixed(2) : "–", r.payoff >= 1.5 ? "pos" : r.payoff != null && r.payoff < 1 ? "neg" : "", "snittvinst / snittförlust", "Hur mycket en genomsnittlig vinst ger i förhållande till en genomsnittlig förlust – över 1,5 ger marginal även vid medioker träffsäkerhet")}
+    </div>`;
+  }
+
   // ---- lärdomskort (Retro-fliken, ur state/lessons.md) -------------------
   function lessonCol(o, re){
     const k = Object.keys(o || {}).find(key => re.test(key));
@@ -606,7 +621,7 @@
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal,
-    renderLessons, renderMonthlyHeatmap };
+    renderLessons, renderMonthlyHeatmap, renderRiskStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

@@ -564,6 +564,43 @@
       .map(m => ({ month: m.month, pct: Math.round((m.chain - 1) * 10000) / 100, trades: m.trades, wins: m.wins }));
   }
 
+  // ---- riskmått (från Historik + equity-serien) --------------------------
+  // Max drawdown mäts på den kedjade equity-kurvan (per-affär-vikt, samma som
+  // buildTradeSeries). Volatilitet = populations-stddev av per-affär-utfall
+  // (rådata, oviktat). Payoff = snittvinst / |snittförlust|.
+  function computeRiskStats(history){
+    const pts = buildTradeSeries(history);
+    const out = { trades: pts.length, maxDrawdownPct: null, lossStreak: 0, winStreak: 0,
+      stdevPct: null, payoff: null };
+    if (!pts.length) return out;
+    let peak = 1, maxDd = 0;
+    for (const p of pts){
+      const eq = 1 + p.value / 100;
+      if (eq > peak) peak = eq;
+      const dd = 1 - eq / peak;
+      if (dd > maxDd) maxDd = dd;
+    }
+    out.maxDrawdownPct = Math.round(maxDd * 10000) / 100;
+    let ls = 0, ws = 0;
+    const wins = [], losses = [], all = [];
+    for (const p of pts){
+      all.push(p.pct);
+      if (p.pct > 0){ wins.push(p.pct); ws++; ls = 0; }
+      else if (p.pct < 0){ losses.push(p.pct); ls++; ws = 0; }
+      else { ls = 0; ws = 0; }
+      if (ls > out.lossStreak) out.lossStreak = ls;
+      if (ws > out.winStreak) out.winStreak = ws;
+    }
+    const mean = all.reduce((a, b) => a + b, 0) / all.length;
+    out.stdevPct = Math.round(Math.sqrt(all.reduce((a, b) => a + (b - mean) * (b - mean), 0) / all.length) * 100) / 100;
+    if (wins.length && losses.length){
+      const aw = wins.reduce((a, b) => a + b, 0) / wins.length;
+      const al = losses.reduce((a, b) => a + b, 0) / losses.length;
+      out.payoff = Math.round((aw / Math.abs(al)) * 100) / 100;
+    }
+    return out;
+  }
+
   // ---- trade-statistik (från Historik) ----------------------------------
   function computeTradeStats(history){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
@@ -608,7 +645,7 @@
     computeTradeStats, buildFeed, buildReturnSeries,
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
     computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
-    parseLessons, buildTradeSeries, buildMonthlyStats
+    parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;
