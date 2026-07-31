@@ -311,6 +311,65 @@
       .map(p => ({ date: String(p[0]), value: Math.round((Number(p[1]) / base - 1) * 10000) / 100 }));
   }
 
+  // ---- benchmark över EN affärs hållperiod (alpha) -----------------------
+  // Senast kända stängning på eller före `date` i price_history.series[sym].
+  // Carry-forward eftersom entry-/exitdatum kan falla på en helg eller helgdag.
+  function closeOnOrBefore(series, date){
+    if (!Array.isArray(series) || !date) return null;
+    let best = null;
+    for (const p of series){
+      if (!p || p[0] == null || isNaN(Number(p[1]))) continue;
+      const d = String(p[0]);
+      if (d <= date && (!best || d > best[0])) best = [d, Number(p[1])];
+    }
+    return best ? best[1] : null;
+  }
+
+  // Benchmarkets avkastning i procent mellan två datum. null om historiken
+  // inte täcker perioden – då redovisas alpha som okänt i stället för noll.
+  function benchReturnPct(priceHistory, sym, fromDate, toDate){
+    const series = priceHistory && priceHistory.series && priceHistory.series[sym];
+    if (!Array.isArray(series) || !series.length) return null;
+    const first = String(series[0][0] || "");
+    if (!fromDate || !toDate || fromDate < first) return null;  // före historikens start
+    const a = closeOnOrBefore(series, fromDate), b = closeOnOrBefore(series, toDate);
+    if (a == null || b == null || !a) return null;
+    return (b / a - 1) * 100;
+  }
+
+  // Alpha per stängd affär: utfall − benchmark över SAMMA hållperiod.
+  // Returnerar { ALPHA_KEY: {benchPct, alphaPct} } nycklat på "entry|stängd|aktie".
+  function alphaKey(o){
+    return [String(o["Entry-datum"] || "").slice(0, 10), String(o["Stängd"] || "").slice(0, 10),
+            stripMd(o["Aktie"] || "")].join("|");
+  }
+  function computeAlpha(history, priceHistory, benchSym){
+    const out = {};
+    for (const o of history || []){
+      if (!o || !o["Aktie"] || /^[–\-]$/.test(String(o["Aktie"]).trim())) continue;
+      const pct = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
+      const from = String(o["Entry-datum"] || "").slice(0, 10);
+      const to = String(o["Stängd"] || "").slice(0, 10);
+      const bench = benchReturnPct(priceHistory, benchSym, from, to);
+      out[alphaKey(o)] = {
+        benchPct: bench,
+        alphaPct: (pct != null && bench != null) ? pct - bench : null
+      };
+    }
+    return out;
+  }
+
+  // Aggregerat: hur många affärer slog sitt benchmark, och snitt-alpha.
+  function computeAlphaStats(history, priceHistory, benchSym){
+    const map = computeAlpha(history, priceHistory, benchSym);
+    const vals = Object.values(map).map(v => v.alphaPct).filter(v => v != null);
+    if (!vals.length) return { trades: 0, beat: 0, beatRate: null, avgAlphaPct: null, sumAlphaPct: null };
+    const beat = vals.filter(v => v > 0).length;
+    const sum = vals.reduce((a, b) => a + b, 0);
+    return { trades: vals.length, beat, beatRate: beat / vals.length,
+             avgAlphaPct: sum / vals.length, sumAlphaPct: sum };
+  }
+
   // Mappa en {date,value}-serie på en gemensam label-axel med carry-forward
   // (senast kända värde behålls tills ett nytt kommer; null före första punkten).
   function seriesOnLabels(labels, series){
@@ -700,7 +759,8 @@
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
     computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
     parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats,
-    costFor, netPct, fxRate, DEFAULT_COSTS
+    costFor, netPct, fxRate, DEFAULT_COSTS,
+    benchReturnPct, computeAlpha, computeAlphaStats, alphaKey
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

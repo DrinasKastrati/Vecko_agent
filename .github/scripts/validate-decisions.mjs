@@ -34,6 +34,13 @@ export function validateDecision(row, i){
   if (isNum(row.weight) && (row.weight < 0 || row.weight > 1)) e.push(at("weight är en andel 0–1, inte procent"));
   for (const f of ["entry", "stop", "target", "rr", "rsi"])
     if (!isNumOrNull(row[f])) e.push(at(`${f} måste vara tal eller null`));
+  // Fält som tillkom 2026-07-31 – valfria, men måste vara tal när de finns.
+  for (const f of ["horizonDays", "benchPct", "alphaPct", "realizedRr"])
+    if (f in row && !isNumOrNull(row[f])) e.push(at(`${f} måste vara tal eller null`));
+  if (isNum(row.horizonDays) && row.horizonDays <= 0) e.push(at("horizonDays måste vara > 0"));
+  if (isNum(row.benchPct) && isNum(row.outcomePct) && isNum(row.alphaPct) &&
+      Math.abs(row.alphaPct - (row.outcomePct - row.benchPct)) > 0.011)
+    e.push(at("alphaPct stämmer inte med outcomePct − benchPct"));
   if (row.catalystType != null && !CATALYST_TYPES.includes(row.catalystType))
     e.push(at(`catalystType "${row.catalystType}" finns inte i enum (${CATALYST_TYPES.join("|")})`));
   if (row.action === "SÄLJ"){

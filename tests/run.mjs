@@ -239,6 +239,12 @@ ok("parseChart price", FP.parseChart({ chart: { result: [{ meta: { regularMarket
 ok("updatePriceHistory export", typeof FP.updatePriceHistory === "function");
 ok("fetchStooq export", typeof FP.fetchStooq === "function");
 ok("collectUsTickers plockar upp valutaparet", FP.collectUsTickers().includes("USDSEK=X"));
+ok("collectUsTickers plockar upp US-sleeven", FP.collectUsTickers().includes("SPY"));
+ok("collectTickers plockar upp nordiska sleeven", FP.collectTickers().includes("XACT-OMXS30.ST"));
+ok("extractTickers fångar ETF med långt efterled",
+  FP.extractTickers("Indexsleeve (XACT-OMXS30.ST) 40 %").includes("XACT-OMXS30.ST"));
+ok("extractTickers plockar fortfarande inte skräp ur 'BAHN B.ST'",
+  !FP.extractTickers("BAHN B.ST").includes("B.ST"));
 
 // ---- US-rotation (egen USD-bok) ----
 ok("parseFilename us_daily", VP.parseFilename("us-daglig-260717.md").type === "us_daily");
@@ -376,6 +382,41 @@ ok("renderRiskStats empty", VR.renderRiskStats(rsEmpty).includes("Inga stängda 
 // ---- UI-polish: tooltips + färgkodad historik ----
 ok("tradeStats tooltip", VR.renderTradeStats(ts).includes('title="Summa vinster'));
 ok("history utfall colored", VR.renderHistory(p).includes('class="pos"') && VR.renderHistory(p).includes('class="neg"'));
+
+// ---- alpha mot benchmark (punkt 3) ----
+const phAlpha = { series: { "^OMX": [
+  ["2026-01-05", 100], ["2026-01-06", 101], ["2026-01-07", 102],
+  ["2026-01-08", 104], ["2026-01-09", 105], ["2026-01-12", 110]
+] } };
+ok("benchReturnPct rak period", Math.abs(VP.benchReturnPct(phAlpha, "^OMX", "2026-01-05", "2026-01-09") - 5) < 1e-9);
+ok("benchReturnPct carry-forward över helg",
+  Math.abs(VP.benchReturnPct(phAlpha, "^OMX", "2026-01-05", "2026-01-11") - 5) < 1e-9);
+ok("benchReturnPct före historikens start = null",
+  VP.benchReturnPct(phAlpha, "^OMX", "2025-12-01", "2026-01-09") === null);
+ok("benchReturnPct okänd ticker = null", VP.benchReturnPct(phAlpha, "^GSPC", "2026-01-05", "2026-01-09") === null);
+ok("benchReturnPct utan historik = null", VP.benchReturnPct(null, "^OMX", "2026-01-05", "2026-01-09") === null);
+const alphaHist = [
+  { "Stängd": "2026-01-09", "Aktie": "Vinnare (A.ST)", "Entry-datum": "2026-01-05", "Utfall %": "+8 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-09", "Aktie": "Eftersläntrare (B.ST)", "Entry-datum": "2026-01-05", "Utfall %": "+2 %", "Vikt": "50 %" },
+  { "Stängd": "2026-01-09", "Aktie": "Utanför historiken (C.ST)", "Entry-datum": "2025-11-01", "Utfall %": "+30 %", "Vikt": "50 %" }
+];
+const am = VP.computeAlpha(alphaHist, phAlpha, "^OMX");
+ok("computeAlpha positiv alpha", Math.abs(am[VP.alphaKey(alphaHist[0])].alphaPct - 3) < 1e-9);
+ok("computeAlpha negativ alpha när index slog affären",
+  Math.abs(am[VP.alphaKey(alphaHist[1])].alphaPct + 3) < 1e-9);
+ok("computeAlpha okänd period ger null, inte 0",
+  am[VP.alphaKey(alphaHist[2])].alphaPct === null && am[VP.alphaKey(alphaHist[2])].benchPct === null);
+const as = VP.computeAlphaStats(alphaHist, phAlpha, "^OMX");
+ok("computeAlphaStats räknar bara mätbara affärer", as.trades === 2 && as.beat === 1);
+ok("computeAlphaStats snitt", Math.abs(as.avgAlphaPct) < 1e-9 && Math.abs(as.sumAlphaPct) < 1e-9);
+ok("computeAlphaStats tom historik", VP.computeAlphaStats([], phAlpha, "^OMX").trades === 0);
+const histHtml = VR.renderHistory({ history: alphaHist }, am, "OMXS30");
+ok("renderHistory alpha-kolumner", histHtml.includes("OMXS30") && histHtml.includes("Alpha"));
+ok("renderHistory omätbar affär visar streck", histHtml.includes('class="faint">–'));
+ok("renderHistory utan alphaMap oförändrad",
+  !VR.renderHistory({ history: alphaHist }).includes("Alpha"));
+ok("renderAlphaStats kort", VR.renderAlphaStats(as, "OMXS30").includes("Snitt-alpha") && VR.renderAlphaStats(as, "OMXS30").includes("Slog index"));
+ok("renderAlphaStats tomläge", VR.renderAlphaStats({ trades: 0 }, "OMXS30").includes("Ingen alpha-mätning"));
 
 // ---- transaktionskostnader + valuta ----
 const costHist = [

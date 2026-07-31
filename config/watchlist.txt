@@ -5,6 +5,11 @@
 # Färre tickers = lägre risk för API-throttling.
 # OBS: index som ^OMX ligger i watchlist_us.txt (samma hämtare, annat filter).
 
+# --- Indexsleeve (oallokerat kapital parkeras här, ALDRIG på konto) ---
+XACT-OMXS30.ST
+# XACT OMXS30 – används av nordiska rotationen som sleeve. Kursen måste alltid
+# finnas i prices.json eftersom sleeven redovisas som ett innehav.
+
 # --- Aktiva bevakningar (bubblare inför kommande rotation) ---
 SF.ST
 HNSA.ST

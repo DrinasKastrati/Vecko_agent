@@ -11,6 +11,11 @@
 ^OMX
 # ^OMX = OMXS30 – nordiskt benchmark för avkastnings-overlayen i dashboarden.
 
+# --- Indexsleeve (oallokerat USD-kapital parkeras här, ALDRIG på konto) ---
+SPY
+# S&P 500 ETF – används av US-rotationen som sleeve. Kursen måste alltid finnas
+# i prices.json eftersom sleeven redovisas som ett innehav.
+
 # --- Valuta ---
 USDSEK=X
 # USD/SEK – us-boken är USD-denominerad. Kursen visas i Total-vyn så att det

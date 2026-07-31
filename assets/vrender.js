@@ -277,21 +277,56 @@
   }
 
   // ---- history + bubblare ----------------------------------------------
-  function renderHistory(portfolio){
+  // alphaMap (valfri): { "entry|stängd|aktie": {benchPct, alphaPct} } från
+  // VParse.computeAlpha. Ges den, läggs två kolumner till: benchmarkets
+  // avkastning över SAMMA hållperiod och affärens alpha mot den.
+  function renderHistory(portfolio, alphaMap, benchLabel){
     if (!portfolio.history.length)
       return `<div class="empty">Inga stängda positioner ännu – strategin är i baslinjeläge (0 %).</div>`;
     const cols = Object.keys(portfolio.history[0]);
-    const head = cols.map(c => `<th title="Klicka för att sortera">${esc(c)}</th>`).join("");
-    const rows = portfolio.history.map(r =>
-      `<tr>${cols.map(c => {
+    const extra = alphaMap
+      ? `<th title="Benchmarkets avkastning över exakt samma hållperiod">${esc(benchLabel || "Index")}</th>`
+        + `<th title="Affärens utfall minus benchmarkets – positiv siffra = urvalet tillförde något utöver marknaden">Alpha</th>`
+      : "";
+    const head = cols.map(c => `<th title="Klicka för att sortera">${esc(c)}</th>`).join("") + extra;
+    const cell = n => n == null
+      ? `<td class="faint">–</td>`
+      : `<td><span class="${n > 0 ? "pos" : n < 0 ? "neg" : ""}">${esc(signPct(n))}</span></td>`;
+    const rows = portfolio.history.map(r => {
+      const a = alphaMap ? alphaMap[alphaKeyOf(r)] : null;
+      return `<tr>${cols.map(c => {
         const v = strip(r[c]);
         if (/utfall/i.test(c)){
           const n = numPct(v);
           if (n != null) return `<td><span class="${n > 0 ? "pos" : n < 0 ? "neg" : ""}">${esc(v)}</span></td>`;
         }
         return `<td>${esc(v)}</td>`;
-      }).join("")}</tr>`).join("");
+      }).join("")
+      + (alphaMap ? cell(a && a.benchPct) + cell(a && a.alphaPct) : "")}</tr>`;
+    }).join("");
     return `<div class="tbl-wrap"><table class="tbl tbl--sort"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  // Samma nyckel som VParse.alphaKey (vrender får inte bero på VParse).
+  function alphaKeyOf(o){
+    return [String(o["Entry-datum"] || "").slice(0, 10), String(o["Stängd"] || "").slice(0, 10),
+            strip(o["Aktie"] || "")].join("|");
+  }
+
+  // ---- alpha-sammanfattning (Avkastning) --------------------------------
+  function renderAlphaStats(a, benchLabel){
+    if (!a || !a.trades)
+      return `<div class="empty">Ingen alpha-mätning ännu – kräver stängda affärer vars hållperiod täcks av <code>price_history.json</code>.</div>`;
+    const cell = (label, val, cls, sub, tip) =>
+      `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
+    return `<div class="stat-grid">
+      ${cell("Snitt-alpha", esc(signPct(a.avgAlphaPct)), a.avgAlphaPct > 0 ? "pos" : "neg", "per affär mot " + esc(benchLabel || "index"),
+        "Genomsnittligt utfall MINUS benchmarkets avkastning över samma hållperiod. Det är den här siffran som visar om aktieurvalet tillför något – absolut avkastning gör det inte.")}
+      ${cell("Slog index", a.beat + " / " + a.trades, a.beatRate >= 0.5 ? "pos" : "neg",
+        a.beatRate != null ? Math.round(a.beatRate * 100) + " % av affärerna" : "",
+        "Hur många stängda affärer som gick bättre än benchmark under exakt sin hållperiod")}
+      ${cell("Summa alpha", esc(signPct(a.sumAlphaPct)), a.sumAlphaPct > 0 ? "pos" : "neg", "oviktat",
+        "Summan av alla affärers alpha – grov indikation på total meravkastning från urvalet")}
+    </div>`;
   }
   function renderBubblare(weekly){
     if (!weekly || !weekly.bubblare.length) return "";
@@ -637,7 +672,7 @@
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal,
-    renderLessons, renderMonthlyHeatmap, renderRiskStats };
+    renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

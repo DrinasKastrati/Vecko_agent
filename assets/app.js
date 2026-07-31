@@ -167,7 +167,11 @@
       const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history, cost));
       const rsEl = this.el("riskStats"); if (rsEl) rsEl.innerHTML = R.renderRiskStats(this.P.computeRiskStats(S.portfolio.history));
       const moEl = this.el("monthly"); if (moEl) moEl.innerHTML = R.renderMonthlyHeatmap(this.P.buildMonthlyStats(S.portfolio.history));
-      this.el("history").innerHTML = R.renderHistory(S.portfolio);
+      // Alpha: utfall mot ^OMX över exakt samma hållperiod per affär.
+      const alphaMap = this.P.computeAlpha(S.portfolio.history, S.priceHistory, "^OMX");
+      const alphaEl = this.el("alphaStats");
+      if (alphaEl) alphaEl.innerHTML = R.renderAlphaStats(this.P.computeAlphaStats(S.portfolio.history, S.priceHistory, "^OMX"), "OMXS30");
+      this.el("history").innerHTML = R.renderHistory(S.portfolio, alphaMap, "OMXS30");
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();

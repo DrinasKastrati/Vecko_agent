@@ -10,7 +10,9 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 // Basen kräver minst 2 tecken: annars plockas skräp som "B.ST" ur text skriven
 // med mellanslag ("BAHN B.ST") – klassaktier ska skrivas med bindestreck (BAHN-B.ST).
-const TICKER_RE = /\b[A-Z0-9]{2,6}(?:-[A-Z0-9]{1,3})?\.(?:ST|OL|CO|HE)\b/gi;
+// Efterledet tillåter upp till 6 tecken så att ETF:er som XACT-OMXS30.ST
+// (indexsleeven) fångas, inte bara klassbokstäver som SAAB-B.ST.
+const TICKER_RE = /\b[A-Z0-9]{2,6}(?:-[A-Z0-9]{1,6})?\.(?:ST|OL|CO|HE)\b/gi;
 
 // ---- pure helpers (testbara) ------------------------------------------
 export function extractTickers(text){
@@ -75,7 +77,7 @@ export function collectTickers(){
   for (const t of extractCaseTickers(portf))  tickers.add(t);
   for (const line of watch.split("\n")){
     const t = line.trim().toUpperCase();
-    if (t && !t.startsWith("#") && /^[A-Z0-9-]{1,10}\.(ST|OL|CO|HE)$/.test(t)) tickers.add(t);
+    if (t && !t.startsWith("#") && /^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)) tickers.add(t);
   }
   return [...tickers].sort();
 }

@@ -110,6 +110,8 @@ ok("avkastning: handelsstatistik", txt("tradeStats").includes("Profit factor"));
 ok("avkastning: nettoavkastning efter kostnad", txt("tradeStats").includes("Netto efter kostnad"));
 ok("avkastning: månadsheatmap", txt("monthly").includes("hm-cell"));
 ok("avkastning: riskmått", txt("riskStats").includes("Max drawdown"));
+ok("avkastning: alpha mot index", txt("alphaStats").includes("Snitt-alpha") || txt("alphaStats").includes("Ingen alpha-mätning"));
+ok("historik: alpha-kolumn mot OMXS30", txt("history").includes("Alpha"));
 ok("avkastning: färgkodad historik", txt("history").includes('class="pos"'));
 
 // Kurser + nyheter + scout

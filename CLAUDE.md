@@ -2,20 +2,25 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-07-17.
+**Senast uppdaterad:** 2026-07-31.
 **AKTIV ARBETSKOPIA:** `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31 – arbeta HÄR).
 Tidigare kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` samt den under OneDrive) är utfasade.
 
 ---
 
 ## 1. Vad projektet är
-Ett automatiserat system för aktie-beslutsstöd, i sex delar:
+Ett automatiserat system för aktie-beslutsstöd. Sex ursprungliga delar beskrivs nedan; delarna
+7–9 (US-rotation, allokerings-routine, miss-retro) tillkom senare och beskrivs i avsnitt 5.
+Stödinfrastruktur som inte är egna "delar": nyhetsingestion (`news.yml` → `news_feed.json`),
+beslutslogg (`decisions.json` + validator) och backtest (`backtest.mjs`).
 
 1. **Routinen** – en schemalagd Claude-körning som varje handelsdag (LÄGE B) bevakar innehav och
    varje måndag (LÄGE A) gör en full veckorotation. Den läser preferenser/tillstånd/mallar,
    skriver en markdown-rapport + uppdaterar portföljen och committar direkt till `main`.
-   Strategin: alltid exakt 2 nordiska aktier viktade 50/50, roteras varje vecka; dagligt beslut
-   per aktie = **KÖP / SÄLJ / BEHÅLL** (eller AVVAKTA om kurs ej kan verifieras).
+   Strategin (sedan 2026-07-31): upp till **4 nordiska aktier à ~25 %** plus en **indexsleeve**
+   (`XACT-OMXS30.ST`) som håller oallokerat kapital; positionerna omprövas varje vecka men säljs
+   INTE automatiskt (BEHÅLL är standardvalet). Dagligt beslut per aktie = **KÖP / SÄLJ / BEHÅLL**
+   (eller AVVAKTA om kurs ej kan verifieras).
 2. **Webb-dashboarden** – en sida som hämtar rapporterna live från repot och visar dem snyggt
    (dagsöversikt, fulla rapporter, nyheter/radar, avkastning). Mörkt "trading-terminal"-tema.
 3. **Pris-hämtaren** – en GitHub Action som hämtar aktiekurser och skriver `state/prices.json`,
@@ -56,38 +61,67 @@ Vecko_agent/
 │  ├─ dagligprompt.md    #   nordisk rotation – enda ingången
 │  ├─ veckoprompt.md     #   UTGÅNGEN stub (skapade dubbletter – schemalägg aldrig)
 │  ├─ scoutprompt.md     #   USA & krypto – daglig scout (fristående kategori)
+│  ├─ us_dagligprompt.md #   US-rotation (egen USD-bok, ~15:00 CET)
+│  ├─ allokering.md      #   veckovis kapitalvikt nordisk/US -> allocation.json
+│  ├─ miss_retro.md      #   veckovis lärloop -> lessons.md + reports/retro/
 │  └─ analysprompt.md    #   aktieanalys på begäran (manuell kö-arbetare, ingen API-nyckel)
 ├─ templates/            # strikta mallar (routinerna får ALDRIG ändra dem)
 │  ├─ vecko_rapport.md
 │  ├─ daglig_mall.md
 │  ├─ case_rapport.md
 │  ├─ scout_case.md      #   USA & krypto-rapportens mall
+│  ├─ us_daglig_mall.md  #   US-rotationens dagliga mall
+│  ├─ us_vecko_rapport.md #  US-rotationens veckomall
+│  ├─ retro_mall.md      #   miss-retrons mall
 │  └─ analys_mall.md     #   mall för aktieanalys på begäran
 ├─ config/               # preferenser + bevakning
 │  ├─ fokus.md           #   nordiska preferenser
 │  ├─ fokus_scout.md     #   USA & krypto-preferenser (scout)
+│  ├─ fokus_us_rotation.md #  US-rotationens preferenser
 │  ├─ watchlist.txt      #   nordiska extra-tickers till pris-hämtaren
-│  └─ watchlist_us.txt   #   USA/krypto-tickers till pris-hämtaren
+│  ├─ watchlist_us.txt   #   USA/krypto-tickers + USDSEK=X till pris-hämtaren
+│  ├─ news_feeds.txt     #   RSS/Atom-flöden (namn|url) som fetch-news.mjs läser
+│  ├─ kostnader.json     #   transaktionskostnad per bok (courtage + växlingspåslag)
+│  └─ backtest_universe_{nordic,us}.txt  # universum för backtest.mjs
 ├─ state/                # levande tillstånd (muteras av routinen / actionen)
 │  ├─ portfolj.md        #   innehav, kassa, ackumulerad avkastning, append-only historik
+│  ├─ portfolj_us.md     #   samma för US-boken (USD)
 │  ├─ prices.json        #   kurser (skrivs av GitHub Action, läses av routinen)
 │  ├─ price_history.json #   rullande kurshistorik (sparklines i dashboarden)
 │  ├─ analysis_queue.json #  analyskö (pending/done); issue-Action fyller, arbetaren tömmer
-│  └─ alerts.json         #  intradag-signaler (skrivs av monitor.yml, visas som dashboard-banner)
+│  ├─ alerts.json        #   intradag-signaler (skrivs av monitor.yml, visas som dashboard-banner)
+│  ├─ allocation.json    #   kapitalvikt nordisk/US (allokerings-routinen)
+│  ├─ lessons.md         #   aktiva lärdomar – skrivs ENDAST av miss-retron
+│  ├─ news_feed.json     #   nyhetsradar (skrivs av news.yml, PRIMÄR källa för routinerna)
+│  └─ decisions.json     #   append-only beslutslogg (kalibreringsunderlag för retron)
 ├─ reports/
 │  ├─ weekly/            #   veckorapport-yymmdd.md (nordisk)
 │  ├─ daily/             #   daglig-yymmdd.md (nordisk)
 │  ├─ scout/             #   rapport-yymmdd.md (USA & krypto)
+│  ├─ us_daily/          #   us-daglig-yymmdd.md
+│  ├─ us_weekly/         #   us-veckorapport-yymmdd.md
+│  ├─ retro/             #   retro-yymmdd.md (miss-retron)
+│  ├─ backtest/          #   backtest-yymmdd-<marknad>.md (körs manuellt, kräver nät)
 │  └─ analysis/          #   analys-TICKER-yymmdd.md (på begäran, cache)
 ├─ tests/
-│  └─ run.mjs            #   testsvit för rena funktioner (node tests/run.mjs)
+│  ├─ run.mjs            #   testsvit för rena funktioner (node tests/run.mjs) – körs i CI
+│  └─ sim.mjs            #   jsdom-simulering av HELA appen (kräver jsdom, körs INTE i CI)
 └─ .github/
-   ├─ workflows/prices.yml       # schemalagd kurshämtning (nordisk + USA/krypto)
+   ├─ workflows/prices.yml       # schemalagd kurshämtning (nordisk + USA/krypto + FX)
    ├─ workflows/auto_merge.yml   # auto-merge av claude/**-brancher till main
    ├─ workflows/analys_queue.yml # issue "analys: TICKER" -> analysis_queue.json (nyckellös)
    ├─ workflows/monitor.yml      # intradag-monitor varje timme börstid -> alerts.json (nyckellös, LLM-fritt)
-   ├─ scripts/fetch-prices.mjs   # hämtar Yahoo-kurser -> state/prices.json
+   ├─ workflows/news.yml         # nyhetsingestion varannan timme -> news_feed.json (nyckellös)
+   ├─ workflows/test.yml         # testsvit + decisions-validering + node --check vid varje push
+   ├─ workflows/digest.yml       # daglig sammanfattning som issue/e-post
+   ├─ workflows/watchdog.yml     # larmar om prices/rapporter/beslutslogg/nyheter tystnat
+   ├─ scripts/fetch-prices.mjs   # hämtar Yahoo-kurser (+stooq-fallback) -> state/prices.json
+   ├─ scripts/fetch-news.mjs     # läser RSS/Atom -> state/news_feed.json
+   ├─ scripts/backtest.mjs       # backtestar mekaniska skelettet -> reports/backtest/
+   ├─ scripts/validate-decisions.mjs # schema + append-only för decisions.json (körs i CI)
    ├─ scripts/queue-add.mjs      # lägger ticker i analysis_queue.json + rätt watchlist
+   ├─ scripts/digest.mjs         # bygger dagens digest (LLM-fritt)
+   ├─ scripts/watchdog.mjs       # hittar tysta fel -> watchdog.json
    └─ scripts/alerts.mjs         # jämför kurser mot stop/mål/entry -> alerts.json (inga tokens)
 ```
 Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
@@ -385,9 +419,12 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   `backtest.mjs` läser samma config (`params.costPct`). Bruttotalen är orörda.
   **(3) Valutan redovisad:** `USDSEK=X` tillagd i `config/watchlist_us.txt`, `VParse.fxRate`
   + valutarad i Total-vyn som säger explicit att blended-talet är EXKL. valutaeffekt (historiken
-  kan inte räknas om – växelkursen per affär är inte loggad).
-  **(4) Beslutsloggen fungerar:** `state/decisions.json` backfylld med de 5 historiska
-  besluten (märkta `"source": "backfill-260731"`), ny `.github/scripts/validate-decisions.mjs`
+  kan inte räknas om – växelkursen per affär är inte loggad). OBS: `fetch-prices.mjs`
+  filtrerade bort valutapar – `collectUsTickers` accepterar nu `^[A-Z]{6}=X$` och `fetchStooq`
+  mappar `USDSEK=X` → `usdsek`. Utan den fixen hämtades paret aldrig (34/35 tickers, FX saknades).
+  **(4) Beslutsloggen fungerar:** `state/decisions.json` backfylld med 6 historiska rader
+  (5 KÖP/SÄLJ ur portföljhistoriken + dagens BEHÅLL Saab, alla märkta
+  `"source": "backfill-260731"`), ny `.github/scripts/validate-decisions.mjs`
   (schema, enum, SÄLJ-fält, append-only mot föregående commit) körs i `test.yml`, och watchdogen
   larmar om dagens rapport pushas UTAN rader i loggen. Prompterna pekar nu på validatorn i
   stället för bara `JSON.parse`.
@@ -396,7 +433,7 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   `globenewswire-earnings`. 6/6 flöden gröna, 137 poster. Ett flöde som svarar 200 men 0 poster
   flaggas nu som "0 poster – kontrollera URL" i stället för att tystna. Watchdogen larmar om
   `news_feed.json` är > 6 h gammal.
-  **(6) Prompt-kalibrering (båda rotationerna):** ny sektion "NIVÄER & OMSÄTTNING" med
+  **(6) Prompt-kalibrering (båda rotationerna):** ny sektion "NIVÅER & OMSÄTTNING" med
   backtestade stoppband (nordic 3–5 %, us 4–6 %), **kostnadströskel** (entry→mål minst 6 %
   nordiskt / 8 % i US-boken) och **BEHÅLL som standardval** – 5-dagarsregeln säljer inte längre
   automatiskt, rotation kräver stop/mål, punkterad tes eller ≥ 2 poäng bättre nytt case.
@@ -404,8 +441,44 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   halvan som villkorad limit i Pending. Motverkar att kapitalet blir stående (Saab v30, Moreld,
   XOM triggade aldrig). Undantag vid gap > 3 % eller binär händelse inom 2 dagar.
   Dessutom: 1g0 NYHETSDRIVEN KANDIDATGENERERING (minst 5 kandidater ur `news_feed.json` innan
-  scanning ur minnet) i båda rotationsprompterna.
-  Testsviten: 213 tester; sim: 31 kontroller. Båda gröna på Drens dator 2026-07-31.
+  scanning ur minnet) i båda rotationsprompterna, och LÄGE A punkt 0 (FACIT) omskriven i båda så
+  den inte längre motsäger BEHÅLL-standarden.
+  Testsviten: **214 tester**; sim: **31 kontroller**; `validate-decisions.mjs` OK (6 rader);
+  watchdogen "Allt friskt". Allt verifierat på Drens dator 2026-07-31.
+  **OBS – inte pushat:** ändringarna ligger lokalt i `C:\Users\drini\code\vecko_agent`. Kör
+  `push.bat` för att publicera. Nya/ändrade tillståndsfiler som följer med: `state/prices.json`
+  (nu med USDSEK=X), `state/news_feed.json` (ny fil), `state/decisions.json`,
+  `reports/backtest/backtest-260731-{nordic,us}.md` (nya).
+
+- ✅ 2026-07-31 (strategipaket – 5 ändringar av hur kapitalet allokeras och mäts):
+  **(1) INDEXSLEEVE ersätter kassa.** Oallokerat kapital parkeras i `XACT-OMXS30.ST` (nordiskt)
+  respektive `SPY` (US) i stället för på konto, redovisat som en egen rad i "Aktuellt innehav"
+  utan stop/mål. Skälet: backtestet visade att index slog skelettet, så tid utanför marknaden är
+  en garanterad kostnad. Frågan strategin svarar på blir därmed den rätta – tillför urvalet något
+  UTÖVER index? Sleevens transaktioner loggas med `catalystType: "index"` och ska filtreras bort
+  ur urvalsstatistiken. Kassa (0 %) tillåts bara om sleeven inte kan handlas.
+  **(2) 4 positioner à 25 % ersätter 2 à 50 %** (conviction-band 15–35 %, max 35 % per aktie,
+  max 2 av 4 ryktesdrivna). Halverar enskild-aktie-variansen och fördubblar takten som
+  beslutsloggen fylls i – med n=2 gick det inte att skilja skicklighet från slump. Färre än 4
+  godkända case fyller bara de platser som håller; resten går till sleeven.
+  **(3) ALPHA MOT INDEX (ren kod).** `VParse.benchReturnPct/computeAlpha/computeAlphaStats`
+  räknar benchmarkets avkastning över varje affärs EXAKTA hållperiod ur `price_history.json`
+  (carry-forward över helger; period utanför historiken ⇒ `null`, aldrig 0). Historik-tabellen
+  fick kolumnerna "OMXS30" och "Alpha", och Avkastning-vyn en ny sektion `#alphaStats`
+  (snitt-alpha, andel affärer som slog index, summa alpha). Första mätningen: Alleima
+  **+6,89 % alpha** (+6,39 % mot OMX −0,50 % under 14–17 juli).
+  **(4) KATALYSATORTYPEN STYR PLANEN.** Ny tabell i båda prompterna: `earnings`/`order`/
+  `regulatory`/`buyback` ⇒ 3–6 veckors horisont, mål 12–15 % (US 14–18 %); `ma_rumor`/`insider`/
+  `index` ⇒ 5–10 dagar, snävare mål och **tidsstopp efter 10 handelsdagar** om tesen inte
+  bekräftats; `macro`/`turnaround`/`other` ⇒ 2–4 veckor. Nytt fält `horizonDays` i beslutsloggen.
+  **(5) MÅLET MÅSTE VARA NÅBART + realiserad R/R loggas.** Målavståndet får vara högst
+  2 × genomsnittlig dagsrörelse × √(handelsdagar i horisonten) – ett analytikerintervall är ett
+  påstående, inte en mätning. Vid SÄLJ loggas `realizedRr` (utfall / planerat stoppavstånd).
+  Validatorn kontrollerar de nya fälten och att `alphaPct = outcomePct − benchPct`.
+  **Infrastruktur som krävdes:** `fetch-prices.mjs` fångade inte ETF-tickers – `TICKER_RE`:s
+  efterled vidgat 3→6 tecken och watchlist-filtret 10→14 tecken, annars hade `XACT-OMXS30.ST`
+  aldrig hämtats. Verifierat: 37/38 tickers, sleeve-kurserna på plats (XACT 486,10 SEK, SPY 747,03).
+  Testsviten: **234 tester**; sim: **33 kontroller**. Allt grönt 2026-07-31.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
@@ -430,10 +503,25 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
 - ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia var `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
-- ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\Vecko_agent`. Node v24 på plats,
-  testsviten 119/119 grön. **KVAR på nya datorn:** kör `setup_autopush.bat` en gång (Task Scheduler-
-  tasken "VeckoAgent AutoPush" finns inte här). Schemaläggningen sköts via Drens routines
-  (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas eller pekas om.
+- ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\vecko_agent` (gemener i
+  mappnamnet på disk). Node v24 på plats. Auto-push-tasken ÄR registrerad här (se punkt 2 nedan) –
+  den tidigare noteringen om att `setup_autopush.bat` återstod stämmer inte. Schemaläggningen
+  sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
+- **KVAR efter avkastningspaketet (2026-07-31):**
+  1. Kör `push.bat` – hela paketet ligger lokalt, inget är pushat.
+  2. ~~Kör `setup_autopush.bat`~~ – **auto-push ÄR aktiv på den här datorn** (verifierat
+     2026-07-31: den committade mitt på ett pågående arbete som "Uppdatering via Cowork …" och
+     startade en `pull --rebase` som konfliktade i `state/prices.json`, `price_history.json` och
+     `news_feed.json`. Konflikterna löstes med den färskare lokala versionen). **Fälla:** kör
+     aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt samtidigt som actionen skriver samma filer
+     – auto-pushen fastnar då i en rebase och lämnar konfliktmarkörer i JSON:en, vilket i sin tur
+     får dashboarden att visa tom Kurser-vy. Kontrollera `git status` innan du felsöker appen.
+  3. Kontrollera att `news.yml` gått grön i Actions efter första schemalagda körningen och att
+     `feeds`-fältet i `state/news_feed.json` inte innehåller "0 poster – kontrollera URL".
+  4. Kör om backtestet när universum eller nivåer ändras:
+     `node .github/scripts/backtest.mjs nordic 5y` (resp. `us 5y`). Kräver nät.
+  5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
+     ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
 - **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
   och alert-historik byggdes 2026-07-17; miss-retron + Retro-fliken, per-affär-equity-kurvan,
   månadsheatmapen och sälj-triggad avkastningsuppdatering byggdes 2026-07-31.)
