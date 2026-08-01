@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"/>
+<title>Vecko_agent – Användarmanual</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm 16mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body{
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.5; color:#16202B; margin:0;
+  }
+  h1,h2,h3,h4{ color:#0B2239; line-height:1.25; margin:0 0 .35em; }
+  h1{ font-size:26pt; letter-spacing:-.5pt; }
+  h2{ font-size:15pt; margin-top:1.6em; padding-bottom:.25em; border-bottom:2px solid #0EA5E9; }
+  h3{ font-size:11.5pt; margin-top:1.2em; color:#0F3B5C; }
+  h4{ font-size:10.5pt; margin-top:1em; color:#334155; }
+  p{ margin:.45em 0; }
+  ul,ol{ margin:.4em 0 .6em; padding-left:1.25em; }
+  li{ margin:.2em 0; }
+  code{ font-family:"Consolas","SF Mono",monospace; font-size:9.5pt; background:#EEF4F9; padding:.5pt 3pt; border-radius:3px; }
+  table{ width:100%; border-collapse:collapse; margin:.6em 0 .9em; font-size:9.5pt; }
+  th,td{ text-align:left; vertical-align:top; padding:5pt 7pt; border-bottom:.6pt solid #D5E0EA; }
+  th{ background:#0B2239; color:#fff; font-weight:600; border-bottom:none; }
+  tbody tr:nth-child(even){ background:#F5F9FC; }
+  .lead{ font-size:11.5pt; color:#334155; }
+  .brk{ page-break-before: always; }
+  h2,h3,h4{ page-break-after: avoid; }
+  table,ul,ol,.box,.card{ page-break-inside: avoid; }
+  .box{ border:.8pt solid #CBD9E5; border-left:4pt solid #0EA5E9; background:#F5FAFD;
+        padding:8pt 11pt; margin:.8em 0; border-radius:3px; }
+  .box.warn{ border-left-color:#E0A008; background:#FFFBF0; }
+  .box.stop{ border-left-color:#DC2626; background:#FEF4F4; }
+  .box h4{ margin-top:0; }
+  .tag{ display:inline-block; font-size:8.5pt; font-weight:700; letter-spacing:.4pt;
+        padding:1.5pt 6pt; border-radius:9pt; color:#fff; }
+  .t-buy{ background:#15803D; } .t-sell{ background:#B91C1C; }
+  .t-hold{ background:#475569; } .t-wait{ background:#B45309; }
+  .cover{ height:250mm; display:flex; flex-direction:column; justify-content:center; }
+  .cover .rule{ width:60mm; height:4pt; background:#0EA5E9; margin:14pt 0 18pt; }
+  .cover .sub{ font-size:13pt; color:#475569; }
+  .cover .meta{ margin-top:auto; font-size:9.5pt; color:#64748B; }
+  .toc ol{ list-style:none; padding-left:0; counter-reset:sec; }
+  .toc li{ counter-increment:sec; padding:3pt 0; border-bottom:.5pt dotted #CBD9E5; }
+  .toc li::before{ content:counter(sec) ". "; color:#0EA5E9; font-weight:700; }
+  .toc .desc{ color:#64748B; }
+  .meter{ font-family:"Consolas",monospace; font-size:9pt; background:#0B2239; color:#E2EAF2;
+          padding:8pt 10pt; border-radius:4px; white-space:pre; overflow:hidden; }
+  .kv td:first-child{ width:32%; font-weight:600; color:#0F3B5C; }
+  .small{ font-size:9pt; color:#64748B; }
+  .disc{ margin-top:1.4em; padding:8pt 11pt; background:#0B2239; color:#E2EAF2; border-radius:4px; font-size:9.5pt; }
+  .steps{ counter-reset:st; list-style:none; padding-left:0; }
+  .steps li{ counter-increment:st; position:relative; padding-left:22pt; margin:.5em 0; }
+  .steps li::before{ content:counter(st); position:absolute; left:0; top:1pt;
+        width:15pt; height:15pt; border-radius:50%; background:#0EA5E9; color:#fff;
+        font-size:8.5pt; font-weight:700; text-align:center; line-height:15pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="small" style="letter-spacing:2pt;text-transform:uppercase">Automatiserat beslutsstöd för aktier</div>
+  <h1>Vecko_agent</h1>
+  <div class="rule"></div>
+  <div class="sub">Användarmanual – så använder du systemet<br/>som investeringsverktyg</div>
+  <div class="meta">
+    Version 1.0 · augusti 2026<br/>
+    Dashboard: drinaskastrati.github.io/Vecko_agent<br/><br/>
+    Den här manualen beskriver hur du <em>använder</em> systemet. Den förutsätter inga
+    tekniska förkunskaper och går inte in på hur det är byggt.
+  </div>
+</section>
+
+<section class="brk toc">
+<h2 style="margin-top:0">Innehåll</h2>
+<ol>
+  <li><b>Vad systemet gör</b> <span class="desc">– och vad det inte gör</span></li>
+  <li><b>Kom igång</b> <span class="desc">– öppna, installera på mobilen, statusraden</span></li>
+  <li><b>Veckans rytm</b> <span class="desc">– vad som händer när</span></li>
+  <li><b>Grundbegreppen</b> <span class="desc">– bok, position, entry, stopp, mål, vikt</span></li>
+  <li><b>Läsa ett innehavskort</b> <span class="desc">– positionsmätaren rad för rad</span></li>
+  <li><b>Besluten</b> <span class="desc">– KÖP, SÄLJ, BEHÅLL, AVVAKTA</span></li>
+  <li><b>Menyn vy för vy</b> <span class="desc">– alla elva vyer</span></li>
+  <li><b>Intradag-signaler och notiser</b></li>
+  <li><b>Mäta om det går bra</b> <span class="desc">– alla nyckeltal förklarade</span></li>
+  <li><b>Beställa analys av en egen aktie</b></li>
+  <li><b>Så lär sig systemet</b> <span class="desc">– Retro &amp; lärdomar</span></li>
+  <li><b>Dagliga rutinen</b> <span class="desc">– fem minuter på morgonen</span></li>
+  <li><b>När något ser konstigt ut</b></li>
+  <li><b>Ordlista</b></li>
+</ol>
+</section>
+
+<section class="brk">
+<h2>1. Vad systemet gör</h2>
+
+<p class="lead">Vecko_agent är ett automatiserat beslutsstöd för aktiehandel. Varje handelsdag
+går AI-routiner igenom marknaden, kurserna och nyhetsflödet, och lämnar ett tydligt besked om
+varje innehav: <b>KÖP</b>, <b>SÄLJ</b> eller <b>BEHÅLL</b>. Allt samlas i en webbsida –
+dashboarden – som du läser på dator eller mobil.</p>
+
+<h3>Vad systemet gör åt dig</h3>
+<ul>
+  <li>Bevakar marknaden varje handelsdag och skriver en rapport med motivering.</li>
+  <li>Väljer ut aktiecase, sätter <b>ingångskurs, stop-loss och målkurs</b> för varje position.</li>
+  <li>Larmar samma dag när en kurs korsar en nivå du bryr dig om.</li>
+  <li>Mäter resultatet – inte bara i procent, utan mot index (slog urvalet marknaden?).</li>
+  <li>Granskar sig själv varje vecka och skriver ned vad det lärt sig.</li>
+</ul>
+
+<h3>Vad systemet inte gör</h3>
+<div class="box stop">
+<h4>Inga riktiga pengar rör sig automatiskt</h4>
+<p>Systemet lägger <b>inga</b> ordrar och är inte kopplat till din depå. Det föreslår – du
+bestämmer och du utför affären hos din bank eller mäklare. Allt du ser är
+<b>automatiserat beslutsstöd, inte finansiell rådgivning.</b></p>
+</div>
+
+<h3>De två portföljerna ("böckerna")</h3>
+<p>Systemet driver två helt separata portföljer med varsin uppsättning regler och rapporter.
+De blandas aldrig ihop.</p>
+
+<table>
+<tr><th style="width:18%">Bok</th><th>Innehåll</th><th style="width:13%">Valuta</th></tr>
+<tr><td><b>Nordisk</b></td><td>Upp till 4 nordiska aktier à ungefär 25 % vardera, plus en indexdel
+  (XACT&nbsp;OMXS30) som håller kapital som inte har ett aktivt case.</td><td>SEK</td></tr>
+<tr><td><b>US</b></td><td>Amerikanska aktier enligt samma modell, med SPY som indexdel.</td><td>USD</td></tr>
+</table>
+
+<div class="box">
+<h4>Varför kapitalet aldrig ligger som kassa</h4>
+<p>Pengar utan aktivt case parkeras i en indexfond i stället för på kontot. Skälet är enkelt:
+över tid stiger index, så tid utanför marknaden är en garanterad kostnad. Det gör också frågan
+skarpare – tillför aktieurvalet något <em>utöver</em> att bara äga index? Det är precis vad
+Alpha-måttet i Avkastning-vyn mäter (avsnitt 9).</p>
+</div>
+</section>
+
+<section class="brk">
+<h2>2. Kom igång</h2>
+
+<h3>Öppna dashboarden</h3>
+<p>Gå till <b>drinaskastrati.github.io/Vecko_agent</b> i valfri webbläsare. Ingen inloggning
+behövs. Sidan hämtar färsk data varje gång du öppnar den.</p>
+
+<h3>Installera som app (rekommenderas på mobil)</h3>
+<ol class="steps">
+  <li>Öppna adressen i mobilens webbläsare.</li>
+  <li>Välj <b>Dela → Lägg till på hemskärmen</b> (iPhone) eller <b>meny → Installera app</b> (Android).</li>
+  <li>Ikonen hamnar bland dina appar och öppnas i helskärm, utan adressfält.</li>
+</ol>
+
+<h3>Statusraden högst upp</h3>
+<table class="kv">
+<tr><td>Grön prick + "Live"</td><td>Dashboarden har kontakt och datan är färsk.</td></tr>
+<tr><td>Kursbadge</td><td>Visar hur gamla kurserna är. Under handelsdagen uppdateras de var
+  30:e minut; på kvällar och helger står de stilla – det är normalt.</td></tr>
+<tr><td><b>🔔 Notiser</b></td><td>Slår på skrivbordsnotiser när en kurs korsar stopp eller mål.
+  Kräver att fliken är öppen i bakgrunden.</td></tr>
+<tr><td><b>Uppdatera</b></td><td>Hämtar allt på nytt direkt. Tangentbord: <code>R</code>.</td></tr>
+</table>
+
+<h3>Navigering</h3>
+<p>Menyn ligger till vänster på dator och som en rad längst ned på mobil, grupperad i
+<b>Portfölj</b>, <b>Analys</b> och <b>Data</b>. Kortkommandon: <code>1</code>–<code>9</code>
+byter vy, <code>R</code> uppdaterar, <code>Esc</code> stänger öppna rutor.</p>
+
+<div class="box warn">
+<h4>Gul varningsbanner: "DATAKÄLLA BLOCKERAD"</h4>
+<p>Betyder att routinen inte kunde verifiera en kurs mot en källa med tidsstämpel och därför
+<em>avstod</em> från att fatta ett kursbaserat beslut. Det är ett inbyggt skydd som fungerar
+som det ska, inte ett fel. Det brukar läka av sig självt vid nästa kurshämtning.</p>
+</div>
+</section>
+
+<section class="brk">
+<h2>3. Veckans rytm</h2>
+
+<p>Allt sker automatiskt. Du behöver inte starta någonting. Tider i svensk tid.</p>
+
+<table>
+<tr><th style="width:22%">När</th><th style="width:26%">Vad</th><th>Vad du får</th></tr>
+<tr><td>Varje dag 07:47</td><td>Scout USA &amp; Krypto</td>
+  <td>Marknadsläget, makrosiffror, 2–3 nya idéer att hålla ögonen på.</td></tr>
+<tr><td>Mån–fre 08:40</td><td>Nordisk rotation</td>
+  <td><b>Måndag:</b> full genomgång – hela portföljen omprövas.<br/>
+      <b>Övriga dagar:</b> bevakning och beslut per innehav.</td></tr>
+<tr><td>Mån–fre 15:00</td><td>US-rotation</td>
+  <td>Samma sak för US-boken, före den amerikanska öppningen.</td></tr>
+<tr><td>Måndag 15:30</td><td>Kapitalallokering</td>
+  <td>Sätter hur veckans kapital fördelas mellan nordisk och US-bok.</td></tr>
+<tr><td>Lördag 10:00</td><td>Miss-retro</td>
+  <td>Veckans facit: vad missades, såldes något för tidigt, vad lär vi oss.</td></tr>
+</table>
+
+<p>Däremellan går kurshämtning var 30:e minut under handelsdagen, nyhetsinsamling varannan
+timme och en larmkontroll varje timme som flaggar när ett innehav korsar en nivå.</p>
+
+<div class="box">
+<h4>Om en rapport saknas en dag</h4>
+<p>Routinerna kör bara när Claude-appen är igång på datorn. Var den avstängd vid körtiden görs
+körningen i stället vid nästa appstart – rapporten kommer, bara senare.</p>
+</div>
+</section>
+
+<section class="brk">
+<h2>4. Grundbegreppen</h2>
+
+<p>Sex begrepp räcker för att läsa allt systemet skriver.</p>
+
+<table class="kv">
+<tr><td>Position</td><td>Ett innehav i en av böckerna. Varje position har en plan: entry, stop-loss
+  och målkurs, satta redan när den köptes.</td></tr>
+<tr><td>Entry</td><td>Kursen positionen köptes på. All avkastning räknas från den.</td></tr>
+<tr><td>Stop-loss</td><td>Golvet. Nås den är caset fel och positionen ska stängas – utan
+  diskussion. Ett stopp flyttas <b>aldrig</b> nedåt för att ge en förlorare mer tid.</td></tr>
+<tr><td>Målkurs</td><td>Taket där tesen anses ha spelat ut. Nås den tas vinsten hem.</td></tr>
+<tr><td>Vikt</td><td>Hur stor del av bokens kapital positionen tar. Normalt ~25 % (fyra
+  positioner), tillåtet spann 15–35 % beroende på hur stark övertygelsen är.</td></tr>
+<tr><td>Katalysator</td><td>Den konkreta händelsen som ska få kursen att röra sig – en rapport,
+  en order, ett myndighetsbesked, ett återköpsprogram. Utan katalysator, inget case.</td></tr>
+</table>
+
+<h3>Katalysatorn styr hur länge positionen hålls</h3>
+<p>Olika sorters händelser rör sig i olika takt, så planen anpassas efter typen:</p>
+
+<table>
+<tr><th style="width:34%">Typ av katalysator</th><th style="width:22%">Horisont</th><th>Kännetecken</th></tr>
+<tr><td>Rapport, order, myndighetsbesked, återköp</td><td>3–6 veckor</td>
+  <td>Konkret och verifierbar. Mål 12–15 % (US 14–18 %).</td></tr>
+<tr><td>Uppköpsrykte, insynshandel, indexändring</td><td>5–10 dagar</td>
+  <td>Snabbt och osäkert. Snävare mål, och positionen stängs efter 10 handelsdagar om tesen
+      inte bekräftats. Max två sådana åt gången.</td></tr>
+<tr><td>Makro, vändningscase, övrigt</td><td>2–4 veckor</td>
+  <td>Bredare och långsammare.</td></tr>
+</table>
+
+<h3>Två ord du möter i rapporterna</h3>
+<table class="kv">
+<tr><td>Pending-plan</td><td>En förberedd affär som ännu inte är gjord: "köp om kursen når X".
+  Triggas nivån flaggas det, annars avförs planen efter fem handelsdagar.</td></tr>
+<tr><td>Bubblare</td><td>Ett case som var nära att väljas men hamnade utanför. Det följs upp
+  veckan efter – blev det bättre än det som faktiskt valdes?</td></tr>
+</table>
+
+<div class="box">
+<h4>Delat entry</h4>
+<p>När en ny position tas köps oftast bara halva vikten direkt. Andra halvan läggs som en
+villkorad plan på en bättre kurs. Det gör att kapitalet kommer i arbete även när det perfekta
+läget aldrig dyker upp.</p>
+</div>
+</section>
+
+<section class="brk">
+<h2>5. Läsa ett innehavskort</h2>
+
+<p>Varje position visas som ett kort med en mätare. Mätaren är hela positionens hälsotillstånd
+i en rad:</p>
+
+<div class="meter">  STOP-LOSS ────────── ENTRY ──●── MÅLKURS
+   142,00 kr          158,50   164,20   178,00
+   golv               köpt     nu       taket</div>
+
+<p>Punkten är dagens kurs. Ligger den till höger om entry går positionen plus, till vänster
+minus. Ju närmare kanterna, desto närmare ett beslut.</p>
+
+<table class="kv">
+<tr><td>Kurs</td><td>Senast verifierade kursen, med hur färsk den är.</td></tr>
+<tr><td>Sedan entry</td><td>Positionens resultat i procent, grönt eller rött, uppdaterat live.</td></tr>
+<tr><td>Vikt</td><td>Positionens andel av boken.</td></tr>
+<tr><td>Stop-loss / Målkurs</td><td>Planens två nivåer, satta vid köpet.</td></tr>
+<tr><td>R/R</td><td>Risk mot vinst: hur många kronor uppsida per krona nedsida. 2,0 betyder att
+  målet ligger dubbelt så långt bort som stoppet. Under 1,5 är sällan värt besväret.</td></tr>
+</table>
+
+<h3>Märkningar du kan se på ett kort</h3>
+<table class="kv">
+<tr><td><b>NY IDAG</b></td><td>Positionen eller planen tillkom i dagens körning.</td></tr>
+<tr><td><b>Ändrat idag</b></td><td>Något i planen skiljer sig från gårdagen – beslut, stopp eller
+  mål. Läs motiveringen i rapporten.</td></tr>
+<tr><td><b>BUBBLARE</b></td><td>En villkorad plan på ett case som inte fick en ordinarie plats.</td></tr>
+<tr><td>Indexdel</td><td>Raden med XACT&nbsp;OMXS30 eller SPY är parkerat kapital, inte ett case.
+  Den har därför varken stopp eller mål.</td></tr>
+</table>
+</section>
+
+<section class="brk">
+<h2>6. Besluten</h2>
+
+<p>Varje handelsdag får varje innehav exakt ett av fyra besked, alltid med motivering.</p>
+
+<table>
+<tr><th style="width:20%">Beslut</th><th>Betyder</th><th style="width:32%">Vad du gör</th></tr>
+<tr><td><span class="tag t-buy">KÖP</span></td>
+  <td>Nytt case, eller andra halvan av ett delat entry, eller en villkorad plan som triggat.
+      Kort med entry, stopp och mål följer alltid med.</td>
+  <td>Läs motiveringen. Håller du med lägger du ordern hos din mäklare på angiven nivå.</td></tr>
+<tr><td><span class="tag t-sell">SÄLJ</span></td>
+  <td>Stopp eller mål nått, tesen punkterad, tidsstoppet ute, eller ett klart bättre case tar
+      platsen.</td>
+  <td>Stäng positionen. Ett träffat stopp är inte förhandlingsbart.</td></tr>
+<tr><td><span class="tag t-hold">BEHÅLL</span></td>
+  <td>Standardvalet. Planen gäller fortfarande och inget har hänt som ändrar den.</td>
+  <td>Ingenting. Att inte agera är ett aktivt och oftast korrekt val.</td></tr>
+<tr><td><span class="tag t-wait">AVVAKTA</span></td>
+  <td>Kursen kunde inte verifieras mot en källa med tidsstämpel, så inget kursbaserat beslut
+      fattades.</td>
+  <td>Ingenting. Beslutet kommer när kursdatan är tillbaka.</td></tr>
+</table>
+
+<div class="box">
+<h4>Varför BEHÅLL är standardvalet</h4>
+<p>Varje affär kostar courtage – och i US-boken dessutom växlingspåslag. Historiska tester visar
+att hög omsättning äter upp hela vinsten. Därför säljs ingenting av ren tidsutlöpning: rotation
+kräver att stoppet eller målet nåtts, att tesen punkterats, eller att ett nytt case är
+mätbart bättre.</p>
+</div>
+
+<h3>Var du hittar besluten</h3>
+<ul>
+  <li><b>Hem</b> – dagens beslut för båda böckerna, direkt på startsidan.</li>
+  <li><b>Nordisk</b> / <b>US-rotation</b> – samma beslut med full detalj och nivåer.</li>
+  <li><b>Rapporter</b> – hela resonemanget bakom, i löptext.</li>
+</ul>
+</section>
+
+<section class="brk">
+<h2>7. Menyn vy för vy</h2>
+
+<h3>Portfölj</h3>
+<table>
+<tr><th style="width:24%">Vy</th><th>Vad du ser</th></tr>
+<tr><td><b>Hem</b></td><td>Startsidan. Vänsterspalten visar båda böckernas innehav med live-kurser
+  och dagens beslut. Högerspalten visar vad som bevakas inför imorgon, veckans radar, senaste
+  nyheterna och aktiva lärdomar. Räcker de flesta dagar.</td></tr>
+<tr><td><b>Total</b></td><td>Båda böckerna hopslagna: samlad avkastning viktad efter
+  kapitalfördelningen, en stapel som visar fördelningen nordisk/US med veckans motivering, och en
+  tabell med alla öppna positioner oavsett bok. Talet är exklusive valutaeffekt – det står
+  utskrivet i vyn.</td></tr>
+<tr><td><b>Nordisk rotation</b></td><td>Den svenska boken i detalj: innehav med positionsmätare,
+  dagens beslut, väntande planer och alla nordiska rapporter.</td></tr>
+<tr><td><b>US-rotation</b></td><td>Detsamma för den amerikanska boken, i USD.</td></tr>
+</table>
+
+<h3>Analys</h3>
+<table>
+<tr><th style="width:24%">Vy</th><th>Vad du ser</th></tr>
+<tr><td><b>USA &amp; Krypto</b></td><td>Scoutens dagliga översikt: marknadsläge, makro och nya
+  case-idéer med tes, bull- och bear-argument. Idéer härifrån kan senare tas upp av US-boken –
+  scouten föreslår, rotationen beslutar.</td></tr>
+<tr><td><b>Aktieanalys</b></td><td>Beställ en fördjupad analys av vilken aktie du vill (avsnitt 10).
+  Tidigare analyser ligger kvar och kan jämföras två och två sida vid sida.</td></tr>
+<tr><td><b>Rapporter</b></td><td>Alla rapporter i fulltext, valbara per typ och datum. Sökfältet
+  söker igenom <em>allt</em> som skrivits – tryck Enter och klicka på en träff.</td></tr>
+<tr><td><b>Nyheter &amp; radar</b></td><td>Nyhetsflödet systemet läser, plus kommande händelser:
+  rapportdatum, besked och annat som kan röra innehaven.</td></tr>
+</table>
+
+<h3>Data</h3>
+<table>
+<tr><th style="width:24%">Vy</th><th>Vad du ser</th></tr>
+<tr><td><b>Kurser</b></td><td>Alla bevakade tickers med kurs, förändring, färskhet och en liten
+  trendkurva. Klicka på en rad för graf över 60 dagar och en direktlänk till Avanza. Går att
+  filtrera och sortera.</td></tr>
+<tr><td><b>Avkastning</b></td><td>Facit: handelsstatistik, riskmått, alpha mot index, kurva över
+  utvecklingen mot OMXS30 och S&amp;P 500, månadsöversikt och alla stängda affärer (avsnitt 9).</td></tr>
+<tr><td><b>Retro &amp; lärdomar</b></td><td>Vad systemet missade i veckan och vilka regler det dragit
+  av det (avsnitt 11).</td></tr>
+</table>
+</section>
+
+<section class="brk">
+<h2>8. Intradag-signaler och notiser</h2>
+
+<p>Rotationerna kör vid fasta tider, men kurser rör sig hela dagen. Därför kontrolleras varje
+timme under börstid om något innehav korsat sitt stopp, sitt mål eller en väntande entry-nivå.
+Händer det visas en <b>signalbanner högst upp</b> i dashboarden.</p>
+
+<table>
+<tr><th style="width:20%">Signal</th><th>Betyder</th><th style="width:30%">Vad du gör</th></tr>
+<tr><td><span class="tag t-sell">SÄLJ</span></td><td>Kursen har gått under stoppet eller nått
+  målet.</td><td>Öppna innehavet, kontrollera kursen och agera enligt planen.</td></tr>
+<tr><td><span class="tag t-buy">KÖP</span></td><td>En väntande plan har nått sin entry-nivå.</td>
+  <td>Läs planen i Nordisk/US-vyn och bestäm om du lägger ordern.</td></tr>
+</table>
+
+<div class="box">
+<h4>Signalen är en flagga, inte ett beslut</h4>
+<p>Larmet är ren räknekonst – det jämför kurs mot nivå och säger att en gräns passerats. Det
+säger inget om <em>varför</em> kursen rörde sig. Bedömningen görs av nästa rotationskörning, som
+motiverar valet i rapporten. Signaler som passerat sparas under "Tidigare signaler".</p>
+</div>
+
+<h3>Notiser på skrivbordet</h3>
+<p>Klicka <b>🔔 Notiser</b> i topbaren och godkänn webbläsarens fråga. Du får då en avisering när
+en ny signal dyker upp. Fliken måste ligga öppen i bakgrunden. Du får också en daglig
+e-postsammanfattning av dagens rapport.</p>
+</section>
+
+<section class="brk">
+<h2>9. Mäta om det går bra</h2>
+
+<p>Allt facit ligger i <b>Avkastning</b>-vyn. Nyckeltalen är i fyra grupper. Håll muspekaren över
+ett kort i dashboarden för en kort förklaring.</p>
+
+<h3>Handelsstatistik – går strategin plus?</h3>
+<table>
+<tr><th style="width:32%">Nyckeltal</th><th>Så tolkar du det</th></tr>
+<tr><td>Träffsäkerhet</td><td>Andel affärer som gav plus. Säger mindre än man tror – en strategi med
+  40 % träff kan gå starkt plus om vinsterna är stora nog.</td></tr>
+<tr><td>Snittvinst / snittförlust</td><td>Genomsnittligt utfall för vinnare respektive förlorare.
+  Snittvinsten bör vara klart större än snittförlusten.</td></tr>
+<tr><td>Profit factor</td><td>Summa vinster delat med summa förluster. <b>Över 1,0</b> = strategin
+  tjänar mer än den förlorar. Över 1,5 är bra.</td></tr>
+<tr><td>Bästa / sämsta</td><td>Största vinst och största förlust per affär. Är sämsta värdet mycket
+  större än stoppavståndet har något gapat förbi stoppet.</td></tr>
+<tr><td>Snitt hålltid</td><td>Genomsnittligt antal dagar en position hålls.</td></tr>
+<tr><td><b>Netto efter kostnad</b></td><td>Avkastningen <em>efter</em> courtage och växlingspåslag.
+  Det här är det ärliga talet – jämför alltid med bruttotalet bredvid.</td></tr>
+</table>
+
+<h3>Riskmått – hur skakig är resan?</h3>
+<table>
+<tr><th style="width:32%">Nyckeltal</th><th>Så tolkar du det</th></tr>
+<tr><td>Max drawdown</td><td>Största tappet från en topp innan en ny topp nåddes. Det här är siffran
+  du behöver kunna sitta igenom utan att hoppa av.</td></tr>
+<tr><td>Längsta förlustsvit</td><td>Flest förluster i rad. Tre i rad är normalt och betyder inte att
+  något är trasigt.</td></tr>
+<tr><td>Volatilitet per affär</td><td>Spridningen i utfall. Högre siffra = mer slagig strategi.</td></tr>
+<tr><td>Payoff ratio</td><td>Snittvinst delat med snittförlust. Över 1,5 ger marginal även med
+  medioker träffsäkerhet.</td></tr>
+</table>
+
+<h3>Alpha mot index – det viktigaste måttet</h3>
+<p>För varje stängd affär räknas vad OMXS30 gjorde under <em>exakt samma</em> hållperiod. Alpha är
+skillnaden.</p>
+<div class="box">
+<p><b>Alpha = affärens utfall − indexets utfall under samma period.</b></p>
+<p>Ett innehav som gav +6,4 % medan index föll −0,5 % har alpha <b>+6,9 %</b>. Positiv alpha
+betyder att aktieurvalet tillförde något utöver att bara äga index. Är alphan negativ över många
+affärer hade indexdelen varit ett bättre val för det kapitalet – och det är just den frågan hela
+systemet är byggt för att svara på.</p>
+</div>
+<p>Vyn visar snitt-alpha per affär, andel affärer som slog index, och summan.</p>
+
+<h3>Utveckling över tid</h3>
+<ul>
+  <li><b>Kurvan</b> – strategins utveckling med OMXS30 och S&amp;P 500 inlagda som jämförelse.
+    Den orange streckade linjen sätter en punkt per stängd affär; håll pekaren över för att se
+    vilken affär och vilket utfall.</li>
+  <li><b>Månadsöversikt</b> – varje månads utfall som en grön eller röd ruta. Ger mönstret på ett
+    ögonkast.</li>
+  <li><b>Historik</b> – varje stängd position med entry, exit, hålltid, utfall, indexets utfall och
+    alpha. Klicka på en kolumnrubrik för att sortera. Här ser du varje enskilt beslut i efterhand.</li>
+</ul>
+
+<div class="box warn">
+<h4>Läs inte för mycket i tidiga siffror</h4>
+<p>Med bara ett fåtal stängda affärer är statistiken brus, inte kunskap. Det behövs i
+storleksordningen 15–20 avslutade affärer innan träffsäkerhet och profit factor säger något om
+skicklighet snarare än tur. Fram till dess: läs motiveringarna, inte procenttalen.</p>
+</div>
+</section>
+
+<section class="brk">
+<h2>10. Beställa analys av en egen aktie</h2>
+
+<p>Du kan när som helst be om en fördjupad analys av vilken aktie som helst – även en som inte
+finns i någon portfölj.</p>
+
+<ol class="steps">
+  <li>Gå till <b>Aktieanalys</b> i menyn.</li>
+  <li>Skriv tickern, till exempel <code>VOLV-B.ST</code>, <code>NVDA</code> eller
+      <code>BTC-USD</code>, och tryck <b>Analysera</b>.</li>
+  <li>Finns analysen redan sparad visas den direkt. Annars öppnas ett förifyllt formulär – skicka
+      in det med ett klick.</li>
+  <li>Analysen skrivs vid nästa körning och dyker upp i vyn. Den sparas och kan läsas om utan
+      väntetid.</li>
+</ol>
+
+<h3>Vad analysen innehåller</h3>
+<ul>
+  <li>Verksamheten och hur bolaget tjänar pengar.</li>
+  <li>Värdering och nyckeltal mot jämförbara bolag.</li>
+  <li>Argument för och emot, plus kommande katalysatorer.</li>
+  <li>Konkret setup: rimlig ingångsnivå, stop-loss och mål.</li>
+  <li><b>Sedan senast</b> – om aktien analyserats tidigare beskrivs vad som ändrats.</li>
+</ul>
+
+<p>En färskhetsmarkering visar hur gammal analysen är. Med <b>Jämför två</b> ställer du två
+sparade analyser bredvid varandra – användbart när du väljer mellan två case.</p>
+</section>
+
+<section class="brk">
+<h2>11. Så lär sig systemet</h2>
+
+<p>Varje lördag går systemet igenom den gångna veckan och letar efter sina egna misstag. Det är
+det som gör att kvaliteten kan förbättras mätbart över tid i stället för att bara variera.</p>
+
+<h3>Tre frågor varje vecka</h3>
+<table>
+<tr><th style="width:26%">Fråga</th><th>Vad som granskas</th></tr>
+<tr><td>Vad missades?</td><td>Veckans stora vinnare som ingen routine fångade – och exakt var i
+  processen de föll bort: utanför bevakningen, sedda men förkastade, eller rankade för lågt.</td></tr>
+<tr><td>Såldes något för tidigt?</td><td>Varje stängd position följs upp cirka en vecka efter
+  exit och bedöms som <b>bra exit</b>, <b>neutral</b> eller <b>lämnade på bordet</b>.</td></tr>
+<tr><td>Var urvalet rätt?</td><td>Bubblarna och scoutens idéer jämförs med det som faktiskt valdes.
+  Gick de förkastade bättre var rankningen fel.</td></tr>
+</table>
+
+<h3>Lärdomar</h3>
+<p>Resultatet blir högst två nya lärdomar per vecka, med ett ID som <code>L-4</code>. De syns i
+Retro-vyn och på Hem, och läses av varje routine vid varje körning. När en motivering hänvisar
+till <code>L-4</code> vet du precis vilken regel som styrde beslutet.</p>
+
+<div class="box">
+<h4>Tre spärrar mot att lura sig själv</h4>
+<ul style="margin-bottom:0">
+  <li>En aktie som steg bevisar inte att processen var fel. Fanns ingen signal <em>innan</em>
+      rörelsen är utfallet acceptabelt och ingen regel ändras.</li>
+  <li>En enskild vecka är brus. Ett mönster måste hålla i flera veckor.</li>
+  <li>En lärdom är alltid en generell processregel – aldrig "köp aktie X". Och den får aldrig
+      mjuka upp kravet på verifierade kurser eller stoppdisciplinen.</li>
+</ul>
+</div>
+</section>
+
+<section class="brk">
+<h2>12. Dagliga rutinen</h2>
+
+<p>Fem minuter på morgonen räcker.</p>
+
+<ol class="steps">
+  <li><b>Öppna Hem.</b> Kolla att statusraden är grön och kursbadgen färsk.</li>
+  <li><b>Läs dagens beslut</b> för båda böckerna. Står det bara BEHÅLL är du klar.</li>
+  <li><b>Vid KÖP eller SÄLJ:</b> öppna Nordisk eller US-rotation, läs motiveringen och nivåerna.
+      Håller du med lägger du ordern hos din mäklare.</li>
+  <li><b>Skumma högerspalten</b> – vad bevakas inför imorgon, finns något i nyhetsflödet som rör
+      dina innehav.</li>
+  <li><b>Under dagen:</b> dyker en signalbanner upp, kontrollera positionen mot planen.</li>
+</ol>
+
+<h3>Varje måndag</h3>
+<ul>
+  <li>Läs veckorapporten under <b>Rapporter</b> – hela portföljen har omprövats och varje val har
+      en skriven motivering.</li>
+  <li>Titta på <b>Total</b> för veckans fördelning mellan böckerna.</li>
+</ul>
+
+<h3>Varje månad</h3>
+<ul>
+  <li>Gå igenom <b>Avkastning</b>. Fokusera på netto efter kostnad, max drawdown och alpha –
+      inte på enskilda affärer.</li>
+  <li>Läs de aktiva lärdomarna i <b>Retro</b> så du känner igen dem i kommande motiveringar.</li>
+</ul>
+</section>
+
+<section class="brk">
+<h2>13. När något ser konstigt ut</h2>
+
+<table>
+<tr><th style="width:36%">Du ser</th><th>Vad det betyder</th></tr>
+<tr><td>Gul banner "DATAKÄLLA BLOCKERAD"</td><td>Kurserna kunde inte verifieras, så inget
+  kursbaserat beslut fattades. Skyddet fungerar som det ska och läker oftast vid nästa
+  kurshämtning.</td></tr>
+<tr><td>Beslutet <b>AVVAKTA</b></td><td>Samma sak för en enskild aktie. Ingen åtgärd.</td></tr>
+<tr><td>Kurserna står stilla</td><td>Normalt utanför börstid, på helger och röda dagar.
+  Kursbadgen visar hur gammal datan är.</td></tr>
+<tr><td>Dagens rapport saknas</td><td>Appen som kör routinerna var avstängd vid körtiden.
+  Körningen sker vid nästa start.</td></tr>
+<tr><td>Sidan visar gammal data</td><td>Tryck <b>Uppdatera</b> eller <code>R</code>. Kvarstår det
+  har den senaste körningen inte publicerats ännu.</td></tr>
+<tr><td>Kurser-vyn är tom</td><td>Kursfilen håller på att skrivas om. Vänta några minuter och
+  uppdatera.</td></tr>
+<tr><td>En rapport ser avhuggen ut</td><td>Klicka <b>Visa mer</b> på kortet, eller läs rapporten i
+  fulltext under Rapporter.</td></tr>
+</table>
+</section>
+
+<section class="brk">
+<h2>14. Ordlista</h2>
+
+<table class="kv">
+<tr><td>Alpha</td><td>Affärens utfall minus indexets utfall under samma period. Måttet på om
+  urvalet tillförde något.</td></tr>
+<tr><td>Benchmark</td><td>Jämförelseindex: OMXS30 för nordiska boken, S&amp;P 500 för US.</td></tr>
+<tr><td>Bok</td><td>En av de två separata portföljerna – nordisk (SEK) eller US (USD).</td></tr>
+<tr><td>Bubblare</td><td>Case som var nära att väljas. Följs upp veckan efter.</td></tr>
+<tr><td>Drawdown</td><td>Tappet från en toppnivå till nästa botten.</td></tr>
+<tr><td>Entry</td><td>Ingångskursen för en position.</td></tr>
+<tr><td>Indexdel (sleeve)</td><td>Kapital utan aktivt case, parkerat i XACT&nbsp;OMXS30 eller SPY.</td></tr>
+<tr><td>Katalysator</td><td>Den händelse som ska få kursen att röra sig.</td></tr>
+<tr><td>Lärdom (L-nummer)</td><td>Processregel systemet dragit ur ett eget misstag.</td></tr>
+<tr><td>Pending-plan</td><td>Förberedd affär som väntar på att en kursnivå nås.</td></tr>
+<tr><td>Profit factor</td><td>Summa vinster delat med summa förluster. Över 1,0 = plus.</td></tr>
+<tr><td>R/R</td><td>Risk/reward – uppsida till målet delat med nedsida till stoppet.</td></tr>
+<tr><td>Rotation</td><td>Måndagens fullständiga omprövning av portföljen.</td></tr>
+<tr><td>Scout</td><td>Den dagliga USA- och kryptogenomgången som föreslår nya idéer.</td></tr>
+<tr><td>Stop-loss</td><td>Nivån där ett felaktigt case stängs. Flyttas aldrig nedåt.</td></tr>
+<tr><td>Ticker</td><td>Aktiens kortnamn, t.ex. <code>VOLV-B.ST</code> eller <code>NVDA</code>.</td></tr>
+<tr><td>Vikt</td><td>Positionens andel av bokens kapital.</td></tr>
+</table>
+
+<div class="disc">
+<b>Viktigt.</b> Allt som Vecko_agent producerar – rapporter, beslut, nivåer, analyser och
+statistik – är automatiserat beslutsstöd, <b>inte finansiell rådgivning</b>. Systemet lägger inga
+ordrar och tar inga positioner åt dig. Historisk avkastning är ingen garanti för framtida
+resultat, och du ansvarar själv för varje affär du väljer att göra.
+</div>
+</section>
+
+</body>
+</html>

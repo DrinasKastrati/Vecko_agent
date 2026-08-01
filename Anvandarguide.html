@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<title>Aktie bot – Användarguide</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  :root{
+    --ink:#12213a; --soft:#4a5f7d; --line:#d6dfeb; --bg:#f4f7fb;
+    --blue:#1f6feb; --green:#0f8a5f; --red:#c0392b; --amber:#b7791f; --purple:#6b4fbb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);font-size:10.6pt;line-height:1.5;background:#fff}
+  .page{max-width:820px;margin:0 auto;padding:22px 26px 40px}
+
+  header.cover{border-bottom:3px solid var(--blue);padding-bottom:14px;margin-bottom:20px}
+  .logo{display:inline-block;vertical-align:middle;margin-right:10px}
+  h1{font-size:23pt;margin:0;letter-spacing:-.3px;display:inline-block;vertical-align:middle}
+  .tag{color:var(--soft);font-size:11pt;margin-top:6px}
+  .meta{color:var(--soft);font-size:8.6pt;margin-top:9px}
+
+  h2{font-size:13.2pt;margin:22px 0 8px;padding-left:9px;border-left:4px solid var(--blue);
+     page-break-after:avoid}
+  h3{font-size:10.8pt;margin:14px 0 5px;color:var(--soft);page-break-after:avoid}
+  p{margin:7px 0}
+  ul{margin:6px 0 6px 18px;padding:0}
+  li{margin:3px 0}
+  strong{color:#0b1526}
+
+  table{border-collapse:collapse;width:100%;margin:9px 0;font-size:9.6pt;page-break-inside:avoid}
+  th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  th{background:var(--bg);font-weight:600}
+  td.k{white-space:nowrap;font-weight:600;width:150px}
+
+  .box{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--blue);
+    border-radius:5px;padding:11px 14px;margin:12px 0;page-break-inside:avoid}
+  .box.warn{border-left-color:var(--amber);background:#fdf8ec}
+  .box.imp{border-left-color:var(--red);background:#fdf1ef}
+  .box h4{margin:0 0 5px;font-size:10.4pt}
+
+  .pillrow{margin:8px 0}
+  .pill{display:inline-block;border-radius:5px;padding:2px 9px;font-size:9pt;font-weight:700;margin-right:6px}
+  .p-kop{background:#e3f5ec;color:var(--green);border:1px solid #a9dcc6}
+  .p-salj{background:#fbe9e6;color:var(--red);border:1px solid #f0bbb2}
+  .p-behall{background:#e6f0fd;color:var(--blue);border:1px solid #b3cdf6}
+  .p-avv{background:#fdf3e0;color:var(--amber);border:1px solid #eed9ac}
+  .p-pend{background:#efeafb;color:var(--purple);border:1px solid #d3c7f2}
+
+  .gauge-demo{margin:10px 0 4px}
+  .gtrack{position:relative;height:11px;border-radius:6px;background:#e7edf5;border:1px solid var(--line)}
+  .gfill{position:absolute;left:0;top:0;bottom:0;width:62%;background:#bfe6d4;border-radius:5px 0 0 5px}
+  .gt{position:absolute;top:-5px;width:2px;height:19px}
+  .glab{display:flex;justify-content:space-between;font-size:8.4pt;color:var(--soft);margin-top:7px}
+
+  .two{display:flex;gap:16px}
+  .two>div{flex:1}
+
+  .steps{counter-reset:s;list-style:none;margin:8px 0 0;padding:0}
+  .steps li{counter-increment:s;position:relative;padding-left:27px;margin:7px 0}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:19px;height:19px;
+    border-radius:50%;background:var(--blue);color:#fff;font-size:8.6pt;font-weight:700;
+    display:flex;align-items:center;justify-content:center}
+
+  footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
+    color:var(--soft);font-size:8.6pt}
+  .disc{color:var(--red);font-weight:600}
+  .brk{page-break-before:always}
+
+  .noprint{position:fixed;top:12px;right:12px;background:var(--blue);color:#fff;border:none;
+    border-radius:7px;padding:10px 16px;font-size:10pt;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.2)}
+  @media print{ .noprint{display:none} body{font-size:10pt} }
+</style>
+</head>
+<body>
+<button class="noprint" onclick="window.print()">Spara som PDF</button>
+<div class="page">
+
+  <header class="cover">
+    <svg class="logo" width="38" height="38" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#12213a"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
+    <h1>Aktie bot – Användarguide</h1>
+    <div class="tag">Så läser du dashboarden: en snabbguide för dig som följer portföljerna på webben.</div>
+    <div class="meta">drinaskastrati.github.io/Vecko_agent &nbsp;·&nbsp; Version augusti 2026</div>
+  </header>
+
+  <h2>Vad är det här?</h2>
+  <p>En robot analyserar aktiemarknaden varje handelsdag och sköter två separata modellportföljer
+  – en <strong>nordisk</strong> och en <strong>amerikansk</strong>. Varje dag tar den ställning till
+  innehaven, letar nya köplägen och skriver rapporter. Webbsidan visar allt detta i realtid.</p>
+
+  <div class="box imp">
+    <h4>Läs det här först</h4>
+    Sidan är <strong>beslutsstöd, inte finansiell rådgivning</strong>. Roboten handlar inte med
+    riktiga pengar – den visar vad den <em>skulle</em> göra. Alla verkliga investeringsbeslut är
+    dina egna, och historisk avkastning är ingen garanti för framtida.
+  </div>
+
+  <h2>Kom igång på 30 sekunder</h2>
+  <ol class="steps">
+    <li>Öppna <strong>drinaskastrati.github.io/Vecko_agent</strong> i valfri webbläsare.</li>
+    <li>Du landar på <strong>Hem</strong> – där ser du allt som är aktuellt just nu.</li>
+    <li>Menyn till vänster (eller längst ned på mobilen) tar dig vidare till detaljerna.</li>
+    <li>Vill du ha den som app: öppna länken i mobilen och välj "Lägg till på hemskärmen".</li>
+  </ol>
+  <p style="color:var(--soft);font-size:9.4pt">Sidan uppdateras av sig själv när roboten kört.
+  Tryck <strong>Uppdatera</strong> uppe till höger om du vill hämta det allra senaste direkt.</p>
+
+  <h2>Startsidan "Hem" – vad du ser</h2>
+  <table>
+    <tr><td class="k">Vänster sida</td><td>Båda portföljerna: vilka aktier som ägs just nu, hur de går, och vilket beslut roboten tog idag för varje innehav.</td></tr>
+    <tr><td class="k">Höger sida</td><td>Vad som är på gång: bevakning inför imorgon, veckans viktiga händelser, senaste nyheterna och de lärdomar roboten dragit.</td></tr>
+    <tr><td class="k">Överst</td><td>Datum, vilket läge roboten kör i, dagens beslut i korthet och nedräkning till nästa körning.</td></tr>
+  </table>
+  <p>Klickar du på en rubrik som "Visa allt" hoppar du vidare till hela listan.</p>
+
+  <h2>Så läser du ett innehavskort</h2>
+  <p>Varje aktie visas som ett kort. Det viktigaste är mätaren:</p>
+  <div class="gauge-demo">
+    <div class="gtrack">
+      <div class="gfill"></div>
+      <span class="gt" style="left:0;background:var(--red)"></span>
+      <span class="gt" style="left:33%;background:var(--soft)"></span>
+      <span class="gt" style="left:62%;background:#12213a"></span>
+      <span class="gt" style="right:0;background:var(--green)"></span>
+    </div>
+    <div class="glab"><span style="color:var(--red)">Stopp (sälj här om det går fel)</span><span>Inköpspris</span><span style="color:var(--green)">Mål (ta vinst här)</span></div>
+  </div>
+  <p>Den mörka markören är <strong>dagens kurs</strong>. Ju längre åt höger, desto närmare
+  vinstmålet. Rör den sig åt vänster närmar sig aktien stoppnivån.</p>
+  <table>
+    <tr><td class="k">Entry</td><td>Priset roboten "köpte" på.</td></tr>
+    <tr><td class="k">Stop-loss</td><td>Nivån där positionen säljs för att begränsa förlusten. Flyttas aldrig nedåt.</td></tr>
+    <tr><td class="k">Målkurs</td><td>Nivån där vinsten tas hem.</td></tr>
+    <tr><td class="k">Vikt</td><td>Hur stor andel av portföljen aktien utgör (oftast runt 25 %).</td></tr>
+    <tr><td class="k">Live</td><td>Aktuell kurs med tidsstämpel, plus hur mycket positionen ligger plus eller minus.</td></tr>
+    <tr><td class="k">Ändrat idag</td><td>Gul rad som visar vad som skiljer mot gårdagen – t.ex. höjd stoppnivå.</td></tr>
+  </table>
+
+  <h2>Färger och märkningar</h2>
+  <div class="pillrow">
+    <span class="pill p-kop">KÖP</span> ny position öppnas &nbsp;
+    <span class="pill p-salj">SÄLJ</span> position stängs &nbsp;
+    <span class="pill p-behall">BEHÅLL</span> ligger kvar, planen gäller
+  </div>
+  <div class="pillrow">
+    <span class="pill p-avv">AVVAKTA</span> kursen kunde inte verifieras – inget beslut tas &nbsp;
+    <span class="pill p-pend">PENDING</span> planerat köp som väntar på rätt pris
+  </div>
+  <p><span style="color:var(--green);font-weight:700">Grönt</span> är vinst eller uppgång,
+  <span style="color:var(--red);font-weight:700">rött</span> är förlust eller nedgång, och
+  <span style="color:var(--amber);font-weight:700">gult</span> betyder "var uppmärksam" –
+  t.ex. ett rykte som inte bekräftats eller en kurs som inte kunnat verifieras.</p>
+
+  <div class="box warn">
+    <h4>Gul varningsruta högst upp?</h4>
+    Då kunde roboten inte få tag på verifierade aktiekurser vid körningen och avstod därför från
+    att fatta beslut. Det är avsiktligt – hellre inget beslut än ett beslut på gammal data.
+    Det brukar lösa sig av sig självt till nästa körning.
+  </div>
+
+  <h2 class="brk">Menyn – vad finns var</h2>
+  <table>
+    <tr><th style="width:150px">Vy</th><th>Använd den när du vill…</th></tr>
+    <tr><td class="k">Hem</td><td>…få hela läget på en skärm. Börja alltid här.</td></tr>
+    <tr><td class="k">Total</td><td>…se hur det går totalt, med båda portföljerna sammanvägda.</td></tr>
+    <tr><td class="k">Nordisk rotation</td><td>…fördjupa dig i de svenska/nordiska innehaven.</td></tr>
+    <tr><td class="k">US-rotation</td><td>…fördjupa dig i de amerikanska innehaven (allt i dollar).</td></tr>
+    <tr><td class="k">USA &amp; Krypto</td><td>…läsa dagens marknadsöversikt och nya idéer som spanas in.</td></tr>
+    <tr><td class="k">Aktieanalys</td><td>…beställa en djupanalys av en aktie du är nyfiken på.</td></tr>
+    <tr><td class="k">Rapporter</td><td>…läsa hela rapporter i original, eller söka i allt som skrivits.</td></tr>
+    <tr><td class="k">Nyheter &amp; radar</td><td>…se vilka nyheter och händelser som driver besluten.</td></tr>
+    <tr><td class="k">Kurser</td><td>…kolla en enskild akties kurs och kursgraf (klicka på kortet).</td></tr>
+    <tr><td class="k">Avkastning</td><td>…se resultatet: statistik, risk och jämförelse mot börsindex.</td></tr>
+    <tr><td class="k">Retro &amp; lärdomar</td><td>…se vad roboten missat och vilka regler den lärt sig av det.</td></tr>
+  </table>
+  <p style="color:var(--soft);font-size:9.4pt">Genvägar på dator: siffrorna <strong>1–9</strong>
+  byter vy, <strong>R</strong> uppdaterar och <strong>Esc</strong> stänger en öppen graf.</p>
+
+  <h2>Beställa en analys av en egen aktie</h2>
+  <ol class="steps">
+    <li>Gå till <strong>Aktieanalys</strong> och skriv aktiens symbol, t.ex. <em>NVDA</em> eller <em>VOLV-B.ST</em>.</li>
+    <li>Finns analysen redan sparad visas den direkt.</li>
+    <li>Annars öppnas en förifylld beställning som du skickar in med ett klick.</li>
+    <li>Analysen dyker upp i listan när den är klar och sparas där för framtiden.</li>
+  </ol>
+  <p>Du kan också klicka på <strong>Jämför två</strong> för att ställa två analyser bredvid varandra.</p>
+
+  <h2>Hur du vet om det går bra</h2>
+  <p>Gå till <strong>Avkastning</strong>. Tre saker säger mest:</p>
+  <table>
+    <tr><td class="k">Kurvan mot index</td><td>Den gröna linjen är strategin, de streckade är OMXS30 och S&amp;P 500. Ligger den gröna över – bra.</td></tr>
+    <tr><td class="k">Alpha</td><td>Hur mycket bättre (eller sämre) än index varje enskild affär gick. Det är här skickligheten syns.</td></tr>
+    <tr><td class="k">Max drawdown</td><td>Största tappet från en topp. Säger hur skakig resan varit, inte bara var den slutade.</td></tr>
+  </table>
+  <p style="color:var(--soft);font-size:9.4pt">Håll de här måtten mot antalet affärer: med bara
+  en handfull avslutade affärer är siffrorna ännu slumpmässiga och säger lite om kvaliteten.</p>
+
+  <h2>Ordlista</h2>
+  <table>
+    <tr><td class="k">Katalysator</td><td>Nyheten som gör att aktien förväntas röra sig – rapport, order, uppköpsrykte.</td></tr>
+    <tr><td class="k">Risk/Reward (R/R)</td><td>Möjlig vinst delat med möjlig förlust. Roboten kräver minst 2:1.</td></tr>
+    <tr><td class="k">Bubblare</td><td>Aktier som nästan valdes in – nästa i kön om en plats blir ledig.</td></tr>
+    <tr><td class="k">Indexsleeve</td><td>Pengar utan aktivt case parkeras i en indexfond i stället för på konto.</td></tr>
+    <tr><td class="k">Rotation</td><td>Varje måndag omprövas innehaven och kapitalet flyttas till de bästa lägena.</td></tr>
+    <tr><td class="k">Träffsäkerhet</td><td>Andel affärer som gav vinst.</td></tr>
+    <tr><td class="k">Profit factor</td><td>Summa vinster delat med summa förluster. Över 1,0 = tjänar mer än den förlorar.</td></tr>
+  </table>
+
+  <h2>Vanliga frågor</h2>
+  <h3>Varför står det samma sak som igår?</h3>
+  <p>Roboten kör bara på handelsdagar. På helger och röda dagar ligger senaste rapporten kvar.</p>
+  <h3>Varför köper den inte fler aktier?</h3>
+  <p>Ett case måste uppfylla alla krav – tydlig katalysator, teknisk setup och minst 2:1 i
+  risk/reward. Håller inget måttet parkeras pengarna hellre i index.</p>
+  <h3>Varför såldes en aktie som sedan fortsatte upp?</h3>
+  <p>Stoppnivåer och mål är bestämda i förväg. Att en såld aktie stiger är priset för att slippa
+  de gånger den i stället faller. Lördagens genomgång utvärderar just sådana exits.</p>
+  <h3>Kan jag lita på siffrorna?</h3>
+  <p>Alla kurser hämtas från verifierade källor med tidsstämpel. Kan en kurs inte verifieras
+  markeras det tydligt och inget beslut fattas på den.</p>
+
+  <footer>
+    <span class="disc">Detta är automatiserat beslutsstöd, inte finansiell rådgivning.</span><br/>
+    Innehållet på sidan skapas automatiskt och kan innehålla fel. Gör alltid din egen bedömning
+    innan du fattar investeringsbeslut.
+  </footer>
+</div>
+</body>
+</html>
