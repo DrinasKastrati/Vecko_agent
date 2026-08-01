@@ -56,9 +56,11 @@ storbolag, netto efter courtage. Den tidigare körningen (`backtest-260731-nordi
    (nordisk bok ~0,25 % per affär). Ett case får bara väljas om avståndet entry → mål är
    **minst 6 %**, dvs. ≥ 20× rundturskostnaden. Ett case med 3 % uppsida är efter courtage och
    spread inte värt en position, hur fin katalysatorn än är. Skriv ut avståndet i handelsplanen.
-3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** samma backtest blir kraftigt negativt när
-   courtage räknas in (−36 % netto i den bästa kombinationen), enbart för att veckorotation av
-   2 positioner ger ~100 affärer per år. Därför gäller: **BEHÅLL är standardvalet** för ett
+3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** samma backtest är negativt netto även i
+   bästa cellen (−21,2 % kedjat) enbart av omsättningstakten – veckorotation av 4 positioner ger
+   ~200 affärer per år, dubbelt mot 2-positionsversionen. Fler positioner är alltså rätt för
+   RISKSPRIDNINGEN men höjer kostnadsdraget, vilket gör hållregeln viktigare, inte mindre
+   viktig. Därför gäller: **BEHÅLL är standardvalet** för ett
    innehav vars tes är intakt och vars stop/mål inte träffats – även när hålltiden passerat
    5 handelsdagar. Rotera ut en position ENDAST om (a) stop eller mål träffats, (b) tesen är
    punkterad, eller (c) ett nytt case har MINST 2 poäng högre totalpoäng i urvalsmodellen.
@@ -106,7 +108,8 @@ storbolag, netto efter courtage. Den tidigare körningen (`backtest-260731-nordi
 - Om samtliga nordiska börser är stängda idag: skapa en kort daglig fil i `reports/daily/` som noterar detta, gör inga beslut.
 
 ## KRAV PÅ FÄRSK DATA (högsta prioritet, gäller båda lägena)
-1. KURSER läses i FÖRSTA HAND från filen `state/prices.json` i repot. Den fylls automatiskt av en GitHub Action (`.github/workflows/prices.yml`) strax före börsöppning – GitHub-köraren har fri nätåtkomst, till skillnad från din egen körmiljö som ofta är spärrad (403) mot kurssajter. För varje ticker finns: `price`, `currency`, `marketTime` (kursens verifierade tidsstämpel i ISO-format), `previousClose`, `dayHigh`, `dayLow` och `source`. Använd `marketTime` som den verifierade tidsstämpeln, och kontrollera även `generatedAt` överst i filen. `previousClose` är föregående SESSIONS stängning och dagsrörelsen är `price / previousClose − 1` (fältet var felaktigt före 2026-08-02 och gav då veckorörelser förklädda till dagsrörelser – misstro därför siffror i äldre rapporter, inte i filen som den ser ut nu).
+1. KURSER läses i FÖRSTA HAND från filen `state/prices.json` i repot. Den fylls automatiskt av en GitHub Action (`.github/workflows/prices.yml`) strax före börsöppning – GitHub-köraren har fri nätåtkomst, till skillnad från din egen körmiljö som ofta är spärrad (403) mot kurssajter. För varje ticker finns: `price`, `currency`, `marketTime` (kursens verifierade tidsstämpel i ISO-format), `previousClose`, `dayHigh`, `dayLow` och `source`. Använd `marketTime` som den verifierade tidsstämpeln, och kontrollera även `generatedAt` överst i filen.
+1a. DAGSRÖRELSE OCH `schemaVersion` (läs innan du räknar någon dagsrörelse): `previousClose` är föregående SESSIONS stängning, så dagsrörelsen är `price / previousClose − 1` – MEN bara om filens fält `schemaVersion` finns (`"2026-08-02-prevclose"` eller senare). Saknas fältet är filen skriven av kod från före rättelsen; `previousClose` pekar då ~en vecka bakåt och en "dagsrörelse" räknad ur den är i själva verket en veckorörelse. Räkna i så fall rörelsen ur daterade stängningar i `state/price_history.json` i stället, och notera i rapporten att prices.json var för gammal. **Påstå ALDRIG att rättelsen är verifierad utifrån en fil som saknar `schemaVersion`** – det gjordes 2026-08-01 och slutsatsen blev fel, eftersom det gamla felvärdet råkade se rimligt ut (601,00 mot korrekta 599,60 för SAAB-B.ST).
 1b. FÄRSKASTE VERSIONEN: kör `git pull` INNAN du läser `state/prices.json` (publikt repo – läsning fungerar utan credentials); pris-actionen kan ha committat en nyare fil än din lokala. Går pull inte: hämta https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/state/prices.json direkt och använd den om dess `generatedAt` är nyare.
 2. VERIFIERA TIDSSTÄMPELN: `marketTime` ska vara från idag, eller från senaste handelsdagens stängning om börsen ännu inte öppnat. Saknas tickern i `state/prices.json`, saknar den `price`, eller är `marketTime` äldre än så: försök en reservkälla direkt (Yahoo Finance https://finance.yahoo.com/quote/<TICKER> med suffix .ST/.OL/.CO/.HE, Google Finance, Avanza). Går ingen färsk kurs att verifiera – följ punkt 4. Nya kandidater som inte finns i `state/prices.json` kan läggas till i `config/watchlist.txt` så hämtas de inför nästa körning.
 3. Ange ALLTID källa + tidsstämpel för varje kurs i rapporten (för prices.json: ange `source` och `marketTime`). Använd ALDRIG kurser ur nyhetsartiklar, cachade sökträffar eller ditt eget minne – de är ofta inaktuella.

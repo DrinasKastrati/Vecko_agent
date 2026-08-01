@@ -43,7 +43,11 @@ och rapportflöde samt trovärdiga marknadsrykten.
    verifierad tidsstämpel och kontrollera `generatedAt` överst i filen. Nya symboler du
    bevakar läggs i `config/watchlist_us.txt` så hämtas de inför nästa körning.
 1a. DAGSRÖRELSE: `previousClose` är föregående SESSIONS stängning, så dagsrörelsen är
-   `price / previousClose − 1`. Fältet var FELAKTIGT före 2026-08-02 – det pekade ~en vecka
+   `price / previousClose − 1` – men bara om filens fält `schemaVersion` finns
+   (`"2026-08-02-prevclose"` eller senare). Saknas fältet är filen skriven av kod från före
+   rättelsen och dagsrörelser får INTE räknas ur den; använd `state/price_history.json` och
+   skriv i rapporten att prices.json var för gammal.
+   Fältet var FELAKTIGT före 2026-08-02 – det pekade ~en vecka
    bakåt och gav falska tal som "MSFT +21,8 %" och "AMD −20 %", vilket den här routinen
    flaggade och gick runt i fyra rapporter i rad. Det är åtgärdat i `fetch-prices.mjs`.
    Ser du ändå ett tal som inte rimmar med en enskild session: räkna om mot daterade

@@ -560,7 +560,19 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   Watchdogen larmar på `movers.json` äldre än 9 dygn (en död lördagsaction tystade annars
   retrons breddsökning). `SAAB.ST` borttagen ur `config/watchlist.txt` – tickern existerar inte
   på Yahoo (bolaget är `SAAB-B.ST`) och stod för hela "1 av 38 misslyckade" i prices.json.
-  Testsviten: **291 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
+  **(10) `prices.json` säger nu vilken kodversion som skrev den.** Natten till 2026-08-02 skrev
+  den nordiska routinen i `daglig-260801.md` att "`prevCloseFrom`-fixen ser ut att ge korrekta
+  värden" – och räknade det på en `prices.json` genererad 22:14 föregående kväll, alltså FÖRE
+  fixen pushades. Det gamla felvärdet (601,00 mot korrekta 599,60 för SAAB-B.ST) såg rimligt ut
+  för en nordisk ticker, så felet passerade som en verifiering. Grundorsaken var att filen inte
+  kunde tala om vilken kod som skapat den. Nytt fält `schemaVersion: "2026-08-02-prevclose"` +
+  utökad `note`; alla tre kursläsande prompter kräver nu fältet innan en dagsrörelse räknas ur
+  filen, med uttryckligt förbud mot att kalla rättelsen verifierad utan det. Bumpa strängen när
+  ett fälts BETYDELSE ändras – inte vid vanliga ändringar.
+  **Om beslutsloggen:** de två körningarna 1–2 aug loggade noll rader, men det är KORREKT –
+  börserna var stängda och rapporterna säger uttryckligen varför. Loggningskravet har existerat
+  i exakt en handelsdag (2026-07-31, backfylld), så **måndag 2026-08-03 är första riktiga testet.**
+  Testsviten: **292 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

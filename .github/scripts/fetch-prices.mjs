@@ -289,8 +289,18 @@ export async function run(fetchImpl = globalThis.fetch){
   const out = {
     generatedAt: new Date().toISOString(),
     source: "Yahoo Finance chart API via GitHub Actions",
+    // VARFÖR schemaVersion finns: 2026-08-02 rättades previousClose (läste tidigare
+    // chartPreviousClose ≈ en vecka bakåt). Samma dag "verifierade" en routine fixen mot en
+    // prices.json som skrivits FÖRE rättelsen – det gamla värdet såg rimligt ut för en nordisk
+    // ticker (601,00 mot korrekta 599,60) och slutsatsen blev fel. Filen kunde inte tala om
+    // vilken kod som skrivit den. Nu kan den. Bumpa strängen när ett fälts BETYDELSE ändras,
+    // inte vid vanliga ändringar.
+    schemaVersion: "2026-08-02-prevclose",
     note: "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). " +
-          "Använd endast om marketTime är från idag eller senaste handelsdagens stängning.",
+          "Använd endast om marketTime är från idag eller senaste handelsdagens stängning. " +
+          "'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). " +
+          "Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då " +
+          "~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
     tickerCount: tickers.length,
     okCount,
     quotes

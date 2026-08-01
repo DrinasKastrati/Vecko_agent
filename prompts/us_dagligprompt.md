@@ -59,7 +59,8 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.
    Skriv ut avståndet i handelsplanen.
 3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** med växlingspåslaget inräknat blir samma
-   backtest kraftigt negativt (−76 % netto i bästa kombinationen) enbart av omsättningstakten.
+   backtest kraftigt negativt (−72,9 % kedjat i bästa cellen, 4 positioner) enbart av
+   omsättningstakten – ~200 affärer per år × 0,75 % rundtur är ~150 % i ren kostnad.
    Därför gäller: **BEHÅLL är standardvalet** för ett innehav vars tes är intakt och vars
    stop/mål inte träffats – även efter 5 handelsdagar. Rotera ut ENDAST om (a) stop eller mål
    träffats, (b) tesen är punkterad, eller (c) ett nytt case har MINST 2 poäng högre totalpoäng.
@@ -121,10 +122,15 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    US-tickers ligger som vanlig symbol (t.ex. `NVDA`), index som `^GSPC`/`^IXIC`. För varje
    ticker finns `price`, `currency`, `marketTime`, `marketState`, `previousClose`, `dayHigh`,
    `dayLow`, `source`. Använd `marketTime` som verifierad tidsstämpel och kontrollera `generatedAt`.
-   `previousClose` är föregående SESSIONS stängning; dagsrörelsen är `price / previousClose − 1`.
-   Fältet var felaktigt före 2026-08-02 (pekade ~en vecka bakåt och gav veckorörelser förklädda
-   till dagsrörelser, t.ex. MSFT "+21,7 %") – misstro därför sådana siffror i ÄLDRE rapporter,
-   men inte filen som den ser ut nu.
+1a. DAGSRÖRELSE OCH `schemaVersion` (läs innan du räknar någon dagsrörelse): `previousClose` är
+   föregående SESSIONS stängning och dagsrörelsen är `price / previousClose − 1` – MEN bara om
+   filens fält `schemaVersion` finns (`"2026-08-02-prevclose"` eller senare). Saknas fältet är
+   filen skriven av kod från före rättelsen; `previousClose` pekade då ~en vecka bakåt och gav
+   veckorörelser förklädda till dagsrörelser (MSFT "+21,7 %" mot verkliga +3,0 %). Räkna då
+   rörelsen ur daterade stängningar i `state/price_history.json` och notera i rapporten att
+   prices.json var för gammal. **Påstå ALDRIG att rättelsen är verifierad utifrån en fil utan
+   `schemaVersion`** – det gjordes 2026-08-01 och slutsatsen blev fel, eftersom felvärdet råkade
+   se rimligt ut för en nordisk ticker.
 1b. FÄRSKASTE VERSIONEN: kör `git pull` INNAN du läser `state/prices.json`; pris-actionen kan ha
    committat en nyare fil. Går pull inte: hämta
    https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/state/prices.json direkt och

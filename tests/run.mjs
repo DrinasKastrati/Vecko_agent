@@ -299,6 +299,10 @@ ok("prevCloseFrom klarar okonsoliderad dagsbar", FP.prevCloseFrom({
 ok("prevCloseFrom faller tillbaka på chartPreviousClose sist",
   FP.prevCloseFrom({ meta: { chartPreviousClose: 80 }, indicators: { quote: [{ close: [95] }] } }) === 80);
 ok("prevCloseFrom null när inget finns", FP.prevCloseFrom({ meta: {} }) === null && FP.prevCloseFrom(null) === null);
+ok("prices.json märks med schemaVersion så läsaren kan se om previousClose är rättad", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  return /schemaVersion:\s*"2026-08-02-prevclose"/.test(src);
+})());
 ok("parseChart använder rätt previousClose",
   FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 100, previousClose: 99, chartPreviousClose: 80 } }] } }, "X")
     .previousClose === 99);
