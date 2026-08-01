@@ -19,7 +19,7 @@ att processen var fel.
 3. Läs hela veckans produktion: senaste veckorapporten i `reports/weekly/` och `reports/us_weekly/`,
    veckans dagliga rapporter i `reports/daily/` och `reports/us_daily/`, veckans scout-rapporter i
    `reports/scout/`, samt `config/watchlist.txt`, `config/watchlist_us.txt`, `state/portfolj.md`,
-   `state/portfolj_us.md`, `state/price_history.json` och `state/lessons.md`.
+   `state/portfolj_us.md`, `state/price_history.json`, `state/movers.json` och `state/lessons.md`.
 4. Skapa rapportfilen för DAGENS datum i `reports/retro/`, döpt exakt "retro-yymmdd.md"
    (ex: `reports/retro/retro-260731.md`). Finns filen redan (omkörning): skriv över DEN –
    skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
@@ -35,8 +35,19 @@ att processen var fel.
    "veckans vinnare Stockholmsbörsen", "biggest weekly gainers S&P 500 / Nasdaq", earnings-beats
    med stora kursreaktioner, budsituationer. Samma källkrav som övriga routiner: endast
    etablerade finansmedier; ignorera HELT X/Twitter, Reddit, forum.
-2. Komplettera med `state/price_history.json`: räkna veckoutveckling för alla spårade tickers
+2. **BÖRJA I `state/movers.json`** (skrivs lördag 06:00 UTC av `movers.yml`, LLM-fritt). Filen
+   listar veckans största rörelser i ett BREDDAT nordiskt universum om ~110 namn – Large och
+   Mid Cap, inte bara de tickers systemet redan bevakar. Detta är den primära missdetektionen
+   för Norden. Gå igenom `movers`-listan uppifrån och pröva varje rad mot punkt 3.
+   Kontrollera `okCount`/`failed`: hämtades färre än ~90 % av universumet är underlaget
+   ofullständigt och det ska stå i rapporten.
+   Saknas filen eller är `asOf` äldre än fredagens stängning: notera det uttryckligen som en
+   åtgärdspunkt (L-3) och fall tillbaka på punkt 1 + 2b.
+2b. Komplettera med `state/price_history.json`: räkna veckoutveckling för alla spårade tickers
    och flagga rörelser > ~10 % (Norden) / > ~8 % (US large cap) som systemet inte ägde.
+   OBS: `price_history.json` täcker bara de ~10 bevakade nordiska tickerna och kan därför per
+   konstruktion inte hitta en vinnare systemet inte redan tittat på – den är ett komplement till
+   `movers.json`, aldrig ett substitut. För USA är nyhetssöket (punkt 1) fortfarande primärt.
 3. En kandidat är en MISS endast om systemet under perioden varken (a) ägde den, (b) hade den
    som pending/bubblare med aktiv plan, eller (c) lyfte den som scout-case. Diskvalificera
    rörelser utan identifierbar katalysator (ren slump/squeeze utan nyhet) – de är brus, inte

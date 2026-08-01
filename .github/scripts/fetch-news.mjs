@@ -85,6 +85,36 @@ export function parseFeedList(txt){
 }
 
 // ---- main --------------------------------------------------------------
+// Ett flöde som svarar 404/5xx eller timeoutar EN gång är oftast en transient
+// störning hos leverantören, inte en död URL: prnewswire levererade 20 poster
+// 2026-07-31T20:37Z, svarade HTTP 404 i körningen 22:17Z samma kväll och är
+// grön igen vid manuell kontroll (2026-08-02). Utan omförsök läses sådant som
+// "flödet är dött" och URL:en byts i onödan. Ett (1) omförsök räcker; att det
+// behövdes redovisas i status så att ett flöde som verkligen dör ändå syns.
+export async function fetchFeedText(url, opts = {}){
+  const {
+    fetchImpl = globalThis.fetch, retries = 1, timeoutMs = 20000, delayMs = 2000,
+    sleep = ms => new Promise(r => setTimeout(r, ms)), ua = uaFor(url)
+  } = opts;
+  let last = "okänt fel";
+  for (let attempt = 0; attempt <= retries; attempt++){
+    if (attempt) await sleep(delayMs);
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+      const r = await fetchImpl(url, { headers: { "User-Agent": ua,
+        "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" },
+        signal: ctrl.signal });
+      clearTimeout(timer);
+      if (r.ok) return { ok: true, text: await r.text(), attempts: attempt + 1 };
+      last = "HTTP " + r.status;
+    } catch (e) {
+      last = "fel: " + String(e && e.message || e).slice(0, 60);
+    }
+  }
+  return { ok: false, status: last, attempts: retries + 1 };
+}
+
 async function main(){
   const feeds = parseFeedList(existsSync("config/news_feeds.txt") ? readFileSync("config/news_feeds.txt", "utf8") : "");
   if (!feeds.length){ console.log("Inga flöden i config/news_feeds.txt – avslutar."); return; }
@@ -96,20 +126,14 @@ async function main(){
   const status = {};
   let fresh = [];
   for (const f of feeds){
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 20000);
-      const r = await fetch(f.url, { headers: { "User-Agent": uaFor(f.url), "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" }, signal: ctrl.signal });
-      clearTimeout(timer);
-      if (!r.ok){ status[f.name] = "HTTP " + r.status; continue; }
-      const items = parseRss(await r.text(), f.name);
-      // 200 men noll poster = trasig/utgången flödes-URL (t.ex. Business Wire som
-      // svarar med ett tomt RSS-skal). Flaggas så den inte tystnar oupptäckt.
-      status[f.name] = items.length ? items.length + " poster" : "0 poster – kontrollera URL";
-      fresh = fresh.concat(items);
-    } catch (e) {
-      status[f.name] = "fel: " + String(e && e.message || e).slice(0, 60);
-    }
+    const res = await fetchFeedText(f.url);
+    const retried = res.attempts > 1 ? " (efter omförsök)" : "";
+    if (!res.ok){ status[f.name] = res.status + " – båda försöken"; continue; }
+    const items = parseRss(res.text, f.name);
+    // 200 men noll poster = trasig/utgången flödes-URL (t.ex. Business Wire som
+    // svarar med ett tomt RSS-skal). Flaggas så den inte tystnar oupptäckt.
+    status[f.name] = (items.length ? items.length + " poster" : "0 poster – kontrollera URL") + retried;
+    fresh = fresh.concat(items);
   }
 
   const merged = mergeNews(old.items, fresh, nowIso);

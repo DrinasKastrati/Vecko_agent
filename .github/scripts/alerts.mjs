@@ -84,6 +84,20 @@ export function mergeHistory(prev, signals, nowISO){
   return [...expired, ...((prev && prev.history) || [])].slice(0, 50);
 }
 
+// HJÄRTSLAG. Filen skrevs tidigare bara när signalmängden ändrades, så
+// generatedAt betydde "senast signalerna ändrades" – inte "senast monitorn
+// kördes". Effekten var att varken dashboarden, dagligprompten eller
+// watchdogen kunde skilja "frisk monitor utan signaler" från "död monitor"
+// (verifierat 2026-08-01: filen 2 dygn gammal trots sex gröna körningar).
+// Lösningen är ett separat checkedAt som stämplas om även vid oförändrat
+// läge – men på sin höjd var maxAgeH:e timme, annars blir det en commit i
+// timmen av ren tidsstämpel. Watchdogen larmar på checkedAt, inte generatedAt.
+export function heartbeatDue(prev, nowISO, maxAgeH = 3){
+  const t = Date.parse((prev && (prev.checkedAt || prev.generatedAt)) || "");
+  if (isNaN(t)) return true;
+  return (Date.parse(nowISO) - t) > maxAgeH * 3600 * 1000;
+}
+
 export async function run(fetchImpl = globalThis.fetch){
   const mdN = existsSync("state/portfolj.md") ? readFileSync("state/portfolj.md", "utf8") : "";
   const mdU = existsSync("state/portfolj_us.md") ? readFileSync("state/portfolj_us.md", "utf8") : "";
@@ -105,15 +119,24 @@ export async function run(fetchImpl = globalThis.fetch){
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/alerts_new.json", JSON.stringify(newOnes) + "\n");
 
   const unchanged = prevSet.size === curSet.size && [...curSet].every(k => prevSet.has(k));
-  if (unchanged){
-    console.log(`Oförändrat (${signals.length} aktiva signaler) – rör inte alerts.json.`);
+  const nowISO = new Date().toISOString();
+  if (unchanged && !heartbeatDue(prev, nowISO)){
+    console.log(`Oförändrat (${signals.length} aktiva signaler), hjärtslag färskt – rör inte alerts.json.`);
     return prev;
   }
-  const out = { generatedAt: new Date().toISOString(), active: signals,
-    history: mergeHistory(prev, signals, new Date().toISOString()) };
+  const out = {
+    // generatedAt = senast signalerna ÄNDRADES; checkedAt = senast monitorn KÖRDE.
+    generatedAt: unchanged ? (prev.generatedAt || nowISO) : nowISO,
+    checkedAt: nowISO,
+    watched: tickers,
+    active: signals,
+    history: unchanged ? (prev.history || []) : mergeHistory(prev, signals, nowISO)
+  };
   mkdirSync("state", { recursive: true });
   writeFileSync(path, JSON.stringify(out, null, 2) + "\n");
-  console.log(`Signaler: ${signals.length} aktiva, ${newOnes.length} nya. Bevakade: ${tickers.join(", ") || "(inga)"}`);
+  console.log(unchanged
+    ? `Oförändrat (${signals.length} aktiva) – hjärtslag stämplat ${nowISO}. Bevakade: ${tickers.join(", ") || "(inga)"}`
+    : `Signaler: ${signals.length} aktiva, ${newOnes.length} nya. Bevakade: ${tickers.join(", ") || "(inga)"}`);
   return out;
 }
 

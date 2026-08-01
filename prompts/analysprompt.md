@@ -20,6 +20,9 @@ slutsats) och spara den som en cachad rapport i git.
       HAND ur `state/prices.json` (verifierad `marketTime`). Saknas den eller är inaktuell – hämta
       via Yahoo Finance och ange källa + tidsstämpel. Kan ingen färsk kurs verifieras: skriv
       "KURS EJ VERIFIERAD".
+   b2. NYHETSFLÖDET FÖRST: sök tickern och bolagsnamnet i `state/news_feed.json` (pressmeddelande-
+      RSS, fylls varannan timme) INNAN du websöker. Pressmeddelanden är primärkällan; websöket i
+      punkt c är komplement för kontext och analys. Rubriker som används verifieras via länken.
    c. RESEARCH (websök; lägg ALLTID in dagens datum i frågorna och kontrollera publiceringsdatum
       på varje källa):
       - FUNDAMENTA: värdering (P/E, EV/EBITDA, P/S), tillväxt (omsättning/vinst), marginaler,

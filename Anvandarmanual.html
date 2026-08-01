@@ -55,6 +55,9 @@
   .steps li::before{ content:counter(st); position:absolute; left:0; top:1pt;
         width:15pt; height:15pt; border-radius:50%; background:#0EA5E9; color:#fff;
         font-size:8.5pt; font-weight:700; text-align:center; line-height:15pt; }
+  figure{ margin:1em 0 1.2em; page-break-inside:avoid; }
+  figure img{ width:100%; max-width:100%; border:.8pt solid #CBD9E5; border-radius:4px; display:block; }
+  figcaption{ font-size:8.5pt; color:#64748B; margin-top:4pt; }
 </style>
 </head>
 <body>
@@ -65,8 +68,9 @@
   <div class="rule"></div>
   <div class="sub">Användarmanual – så använder du systemet<br/>som investeringsverktyg</div>
   <div class="meta">
-    Version 1.0 · augusti 2026<br/>
-    Dashboard: drinaskastrati.github.io/Vecko_agent<br/><br/>
+    Version 1.1 · genererad 2026-08-02<br/>
+    Dashboard: drinaskastrati.github.io/Vecko_agent<br/>
+    Källa: <code>Anvandarmanual.html</code> · renderas om med <code>make-manual.bat</code><br/><br/>
     Den här manualen beskriver hur du <em>använder</em> systemet. Den förutsätter inga
     tekniska förkunskaper och går inte in på hur det är byggt.
   </div>
@@ -166,6 +170,13 @@ behövs. Sidan hämtar färsk data varje gång du öppnar den.</p>
 <b>Portfölj</b>, <b>Analys</b> och <b>Data</b>. Kortkommandon: <code>1</code>–<code>9</code>
 byter vy, <code>R</code> uppdaterar, <code>Esc</code> stänger öppna rutor.</p>
 
+<figure>
+  <img src="docs/manual/hem.png" alt="Dashboardens Hem-vy med innehav, dagens beslut och högerspalt"/>
+  <figcaption>Hem-vyn. Vänster: menyn. Mitten: innehav med positionsmätare och dagens beslut.
+  Höger: bevakning inför imorgon och veckans radar. Högst upp statusraden med kursernas
+  färskhet.</figcaption>
+</figure>
+
 <div class="box warn">
 <h4>Gul varningsbanner: "DATAKÄLLA BLOCKERAD"</h4>
 <p>Betyder att routinen inte kunde verifiera en kurs mot en källa med tidsstämpel och därför
@@ -177,7 +188,9 @@ som det ska, inte ett fel. Det brukar läka av sig självt vid nästa kurshämtn
 <section class="brk">
 <h2>3. Veckans rytm</h2>
 
-<p>Allt sker automatiskt. Du behöver inte starta någonting. Tider i svensk tid.</p>
+<p>Allt sker automatiskt. Du behöver inte starta någonting. Tiderna nedan gällde när manualen
+skrevs (svensk tid) – <b>den alltid aktuella tiden till nästa körning står i statusraden på
+Hem-vyn</b>, så lita på den om de skiljer sig.</p>
 
 <table>
 <tr><th style="width:22%">När</th><th style="width:26%">Vad</th><th>Vad du får</th></tr>
@@ -392,6 +405,12 @@ säger inget om <em>varför</em> kursen rörde sig. Bedömningen görs av nästa
 motiverar valet i rapporten. Signaler som passerat sparas under "Tidigare signaler".</p>
 </div>
 
+<h3>"Monitorn kontrollerad 10:00 UTC"</h3>
+<p>Längst ned i signalrutan står när monitorn senast kontrollerade nivåerna. Raden finns för att
+en tyst rad annars kan betyda två helt olika saker: <em>ingen signal att rapportera</em> eller
+<em>monitorn är död</em>. Är stämpeln grön och färsk fungerar bevakningen. Blir den gul med
+"Monitorn har tystnat" larmar systemet dessutom automatiskt via ett ärende på GitHub.</p>
+
 <h3>Notiser på skrivbordet</h3>
 <p>Klicka <b>🔔 Notiser</b> i topbaren och godkänn webbläsarens fråga. Du får då en avisering när
 en ny signal dyker upp. Fliken måste ligga öppen i bakgrunden. Du får också en daglig
@@ -443,6 +462,22 @@ affärer hade indexdelen varit ett bättre val för det kapitalet – och det ä
 systemet är byggt för att svara på.</p>
 </div>
 <p>Vyn visar snitt-alpha per affär, andel affärer som slog index, och summan.</p>
+
+<figure>
+  <img src="docs/manual/avkastning.png" alt="Avkastning-vyn med handelsstatistik, riskmått och alpha mot index"/>
+  <figcaption>Avkastning-vyn. Handelsstatistiken överst, riskmåtten i mitten, alpha mot index
+  därunder och kurvan mot OMXS30 och S&amp;P 500 längst ned. Med få stängda affärer står flera
+  rutor på "–" eller "∞" – det betyder att underlaget inte räcker, inte att något är fel.</figcaption>
+</figure>
+
+<h3>Beslutsloggen – räcker underlaget?</h3>
+<p>Under statistiken ligger en ruta som visar hur många beslut som loggats, hur många stängda
+affärer som finns att utvärdera, och hur de fördelar sig per <b>katalysatortyp</b> (rapport,
+order, uppköpsrykte …). Mätaren visar hur långt det är kvar till de cirka 15 avslutade affärer
+som krävs innan siffrorna betyder något. Kategorier med för få affärer är märkta <b>brus</b>.</p>
+<p>Rutan finns för att göra en tyst brist synlig: en logg som slutat fyllas ser annars precis ut
+som en logg utan aktivitet. Indexdelens transaktioner räknas aldrig med – de mäter marknaden,
+inte urvalet.</p>
 
 <h3>Utveckling över tid</h3>
 <ul>
@@ -601,6 +636,11 @@ till <code>L-4</code> vet du precis vilken regel som styrde beslutet.</p>
 <tr><td>Ticker</td><td>Aktiens kortnamn, t.ex. <code>VOLV-B.ST</code> eller <code>NVDA</code>.</td></tr>
 <tr><td>Vikt</td><td>Positionens andel av bokens kapital.</td></tr>
 </table>
+
+<p class="small" style="margin-top:1.4em">Manualen beskriver dashboarden som den såg ut
+2026-08-02. Skärmbilderna är tagna från den riktiga sidan med dåvarande data – dina siffror
+skiljer sig. Ändras systemet: uppdatera <code>Anvandarmanual.html</code> och kör
+<code>make-manual.bat</code>, så skrivs PDF:en om.</p>
 
 <div class="disc">
 <b>Viktigt.</b> Allt som Vecko_agent producerar – rapporter, beslut, nivåer, analyser och

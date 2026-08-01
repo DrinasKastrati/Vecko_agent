@@ -368,6 +368,21 @@
   .al-hist summary::-webkit-details-marker{display:none}
   .al-hist summary::before{content:"▸ ";color:var(--faint)}
   .al-hist[open] summary::before{content:"▾ "}
+  /* monitorns hjärtslag – syns även när det inte finns några signaler */
+  .al-mon{display:flex;align-items:center;gap:7px;padding:8px 13px;font-size:11.8px;
+    color:var(--muted);border-top:1px solid var(--border)}
+  .al-mon .al-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
+  .al-mon--stale{color:var(--amber)}
+  .al-mon--stale .al-dot{background:var(--amber)}
+  .al-mon--unknown{color:var(--faint)}
+  .al-mon--unknown .al-dot{background:var(--faint)}
+
+  /* beslutsloggen (Avkastning) */
+  .dl-bar{height:6px;border-radius:4px;background:var(--panel3);overflow:hidden;margin:0 0 16px}
+  .dl-bar span{display:block;height:100%;background:var(--accent-primary);border-radius:4px}
+  .dl-thin{opacity:.68}
+  .dl-flag{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;
+    border-radius:5px;background:rgba(245,158,11,.14);color:var(--amber)}
 
   /* klampad text + "Visa mer" */
   .cw{min-width:0}
@@ -673,6 +688,8 @@
         </div>
         <h3 class="sub">Månadsutfall <span class="sub-date">nordiska boken · kedjat viktat utfall per månad</span></h3>
         <div id="monthly"></div>
+        <h3 class="sub">Beslutsloggen <span class="sub-date">state/decisions.json · underlaget som kalibrerar poängvikterna</span></h3>
+        <div id="decisionStats"></div>
         <h3 class="sub">Historik (stängda positioner)</h3>
         <div id="history"></div>
         <div id="bubblare"></div>

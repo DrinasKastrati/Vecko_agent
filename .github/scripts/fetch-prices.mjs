@@ -172,6 +172,45 @@ export function collectUsTickers(){
   return [...set];
 }
 
+// FÖREGÅENDE STÄNGNING – hämtas ur SERIEN, inte ur chartPreviousClose.
+//
+// Yahoos chart-meta har ett fält som HETER som det vi vill ha men inte är det:
+// `chartPreviousClose` är stängningen före HELA det begärda fönstret, och vi
+// begär range=5d – alltså ~en vecka bakåt. Fältet `previousClose` finns inte i
+// chart-API:ts meta (kontrollerat live 2026-08-02: null för SAAB-B.ST, MSFT och
+// XACT-OMXS30.ST). Att läsa chartPreviousClose som dagsrörelse gav veckorörelser
+// presenterade som dagsrörelser – MSFT chartPrev 381,70 mot faktisk föregående
+// stängning 451,10 blir "+21,7 %" i stället för +3,0 %, exakt den falska siffra
+// scouten flaggade i fyra rapporter.
+//
+// Rätt nivå är den sista stängningen DATERAD FÖRE den session kursen kommer
+// ifrån. Att bara ta näst sista giltiga stängningen räcker inte: när dagens bar
+// ännu inte konsoliderats (close = null, sett på ELUX-B.ST 2026-07-31) skulle
+// det ge en tvåsessionersrörelse. Därför jämförs mot regularMarketTime.
+export function prevCloseFrom(res){
+  const meta = (res && res.meta) || null;
+  if (meta && meta.previousClose != null) return meta.previousClose;
+  const ts = (res && res.timestamp) || [];
+  const q = res && res.indicators && res.indicators.quote && res.indicators.quote[0];
+  const closes = (q && q.close) || [];
+  const day = sec => new Date(sec * 1000).toISOString().slice(0, 10);
+  const cur = meta && meta.regularMarketTime ? day(meta.regularMarketTime) : null;
+
+  let prev = null;
+  for (let i = 0; i < ts.length; i++){
+    const c = closes[i];
+    if (c == null || isNaN(c)) continue;
+    if (cur && day(ts[i]) >= cur) continue;   // hoppa dagens bar (och allt senare)
+    prev = c;
+  }
+  if (prev != null) return prev;
+
+  // Ingen användbar tidsstämpel att jämföra mot: näst sista giltiga stängningen.
+  const valid = closes.filter(v => v != null && !isNaN(v));
+  if (!cur && valid.length >= 2) return valid[valid.length - 2];
+  return (meta && meta.chartPreviousClose != null) ? meta.chartPreviousClose : null;
+}
+
 export function parseChart(json, sym){
   const res = json && json.chart && json.chart.result && json.chart.result[0];
   const meta = res && res.meta;
@@ -184,7 +223,7 @@ export function parseChart(json, sym){
     exchange: meta.fullExchangeName || meta.exchangeName || null,
     marketTime: t,
     marketState: meta.marketState || null,
-    previousClose: meta.chartPreviousClose ?? meta.previousClose ?? null,
+    previousClose: prevCloseFrom(res),
     dayHigh: meta.regularMarketDayHigh ?? null,
     dayLow: meta.regularMarketDayLow ?? null,
     source: "Yahoo Finance (chart API)"

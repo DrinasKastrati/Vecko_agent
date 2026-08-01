@@ -16,12 +16,18 @@ kapitalvikt ovanpå dem.
 2. Läs:
    - Senaste nordiska veckorapporten i `reports/weekly/` (case, conviction, R/R, makromedvind).
    - Senaste US-veckorapporten i `reports/us_weekly/` (samma).
-   - `state/portfolj.md` och `state/portfolj_us.md` (nuvarande innehav, kassa, ackumulerad avkastning).
+   - `state/portfolj.md` och `state/portfolj_us.md` (innehav, sleeve-vikt, ackumulerad avkastning).
    - `state/allocation.json` (förra veckans split + motivering) och de 3–4 senaste veckornas
      `Lärdom`/`Portföljallokering`-fält om de finns.
 3. Väg samman RELATIV attraktivitet mellan de två marknaderna den kommande veckan:
-   - Styrkan och antalet högkvalitativa case i respektive veckorapport (håller båda böckerna 2
-     starka case, eller sitter en i kassa för att inget höll måttet?).
+   - Styrkan och antalet högkvalitativa case i respektive veckorapport. Böckerna håller normalt
+     upp till **4 positioner à ~25 %** plus en indexsleeve (`XACT-OMXS30.ST` nordiskt, `SPY` i
+     US-boken) som bär det kapital som inte har ett aktivt case. **Sleeve-andelen är därför den
+     bästa mätaren på conviction:** en bok med 4 fyllda platser säger något helt annat än en bok
+     som ligger till 75 % i sleeven. Läs av sleeve-vikten i respektive `Aktuellt innehav`.
+     En bok som i praktiken bara är sleeve levererar indexavkastning – vikta ned den mot den bok
+     som faktiskt har case, men kom ihåg att sleeven inte är kassa: nedsidan är marknadens, inte
+     noll.
    - Makromedvind/-motvind per region (Fed vs Riksbank/Norges Bank, USD/SEK, sektorrotation,
      geopolitik, råvaror → Oslo).
    - Momentum i ackumulerad avkastning, men undvik att jaga – en enskild bra/dålig vecka ska INTE

@@ -521,6 +521,44 @@
     </div>`;
   }
 
+  // ---- beslutsloggen (Avkastning) ----------------------------------------
+  // Visar hur långt kalibreringsunderlaget kommit och vad det säger hittills.
+  // Poängen är att en logg som slutat fyllas ska SYNAS – tidigare upptäcktes
+  // det först när miss-retron letade efter statistik som inte fanns.
+  const CATALYST_SV = {
+    earnings: "Rapport", order: "Order", regulatory: "Myndighetsbesked",
+    buyback: "Återköp", ma_rumor: "Uppköpsrykte", insider: "Insynshandel",
+    index: "Indexändring", macro: "Makro", turnaround: "Vändningscase", other: "Övrigt"
+  };
+  function renderDecisionStats(s){
+    if (!s || !s.rows)
+      return `<div class="empty">Beslutsloggen är tom – rotationerna skriver en rad per beslut i <code>state/decisions.json</code>.</div>`;
+    const pct = v => v == null ? "–" : signPct(v);
+    const bar = s.calibratable ? 100 : Math.round(s.closedCount / s.minTotal * 100);
+    const head = `<div class="stat-grid">
+      <div class="stat" title="Alla loggade beslut, inklusive BEHÅLL och AVVAKTA"><div class="stat-l">Loggade beslut</div><div class="stat-v">${s.rows}</div><div class="stat-s">${esc(Object.entries(s.byBook).map(([b, n]) => b + " " + n).join(" · "))}</div></div>
+      <div class="stat" title="Stängda affärer med utfall – sleeve-transaktioner räknas inte, de mäter marknaden och inte urvalet"><div class="stat-l">Utvärderbara SÄLJ</div><div class="stat-v ${s.calibratable ? "pos" : ""}">${s.closedCount} / ${s.minTotal}</div><div class="stat-s">${s.calibratable ? "underlaget räcker" : s.needed + " kvar till kalibrering"}</div></div>
+      <div class="stat" title="Rader som backfyllts i efterhand i stället för att skrivas av en körning"><div class="stat-l">Backfyllda rader</div><div class="stat-v ${s.backfilled === s.rows && s.rows ? "neg" : ""}">${s.backfilled}</div><div class="stat-s">${s.backfilled === s.rows && s.rows ? "ingen live-loggning ännu" : "resten skrivna av körningar"}</div></div>
+      <div class="stat" title="Första och senaste datum i loggen"><div class="stat-l">Period</div><div class="stat-v" style="font-size:15px">${esc(s.firstDate || "–")}</div><div class="stat-s">till ${esc(s.lastDate || "–")}</div></div>
+    </div>
+    <div class="dl-bar" title="Andel av de ${s.minTotal} stängda affärer som krävs innan poängvikterna kan kalibreras mot data"><span style="width:${Math.min(100, bar)}%"></span></div>`;
+    if (!s.byCatalyst.length)
+      return head + `<div class="empty">Inga stängda affärer med utfall ännu – tabellen per katalysatortyp fylls när positioner säljs.</div>`;
+    const rows = s.byCatalyst.map(c => `<tr class="${c.reliable ? "" : "dl-thin"}">
+      <td>${esc(CATALYST_SV[c.type] || c.type)}</td>
+      <td>${c.n}${c.reliable ? "" : ` <span class="dl-flag" title="Under ${s.minPerType} affärer – siffrorna är brus, inte resultat">brus</span>`}</td>
+      <td>${c.winRate == null ? "–" : Math.round(c.winRate * 100) + " %"}</td>
+      <td class="${c.avgPct > 0 ? "pos" : c.avgPct < 0 ? "neg" : ""}">${pct(c.avgPct)}</td>
+      <td class="${c.avgAlphaPct > 0 ? "pos" : c.avgAlphaPct < 0 ? "neg" : ""}">${pct(c.avgAlphaPct)}</td>
+    </tr>`).join("");
+    return head + `<div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Katalysatortyp</th><th title="Antal stängda affärer">Affärer</th><th>Träff</th>
+      <th title="Genomsnittligt utfall per affär">Snittutfall</th>
+      <th title="Genomsnittligt utfall minus index över samma hållperiod">Snitt-alpha</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+      <div class="stat-note">Kategorier med färre än ${s.minPerType} affärer är markerade som brus – de får inte styra poängvikterna. Indexsleevens transaktioner är exkluderade.</div>`;
+  }
+
   // ---- lärdomskort (Retro-fliken, ur state/lessons.md) -------------------
   function lessonCol(o, re){
     const k = Object.keys(o || {}).find(key => re.test(key));
@@ -645,10 +683,18 @@
   }
 
   // ---- intradag-signaler (monitor) -------------------------------------
-  function renderAlerts(alerts){
+  // mon (valfri): VParse.monitorStatus(alerts) – monitorns hjärtslag. Ges den
+  // visas en statusrad ÄVEN när det inte finns några signaler, så att "frisk
+  // monitor utan signaler" går att skilja från "monitorn har tystnat".
+  function renderAlerts(alerts, mon){
     const active = (alerts && alerts.active) || [];
     const hist = (alerts && alerts.history) || [];
-    if (!active.length && !hist.length) return "";
+    const monHtml = mon
+      ? `<div class="al-mon al-mon--${esc(mon.state)}" title="Intradag-monitorn kontrollerar stop-loss, mål och entry-nivåer varje timme under börstid. Hjärtslaget stämplas även när inga signaler finns.">`
+        + `<span class="al-dot"></span>${esc(mon.label)}`
+        + `${mon.watched ? ` · ${mon.watched} bevakade` : ""}</div>`
+      : "";
+    if (!active.length && !hist.length) return monHtml ? `<div class="al-wrap al-wrap--calm">${monHtml}</div>` : "";
     const items = active.map(s => {
       const cls = s.type === "KÖP" ? "al-kop" : "al-salj";
       const px = s.price != null ? (s.price + (s.currency ? " " + s.currency : "")) : "";
@@ -664,15 +710,15 @@
     }).join("");
     const histHtml = hist.length
       ? `<details class="al-hist"><summary>Tidigare signaler (${hist.length})</summary>${histItems}</details>` : "";
-    if (!active.length) return `<div class="al-wrap al-wrap--calm">${histHtml}</div>`;
-    return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}${histHtml}</div>`;
+    if (!active.length) return `<div class="al-wrap al-wrap--calm">${monHtml}${histHtml}</div>`;
+    return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}${monHtml}${histHtml}</div>`;
   }
 
   const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal,
-    renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats };
+    renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

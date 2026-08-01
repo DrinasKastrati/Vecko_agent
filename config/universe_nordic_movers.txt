@@ -1,0 +1,133 @@
+# Breddat nordiskt universum – används ENDAST av .github/scripts/movers.mjs för att
+# hitta veckans stora kursrörelser. Påverkar varken pris-hämtaren, portföljerna,
+# watchlisten eller backtestet.
+#
+# VARFÖR FILEN FINNS: miss-retron kunde tidigare bara leta missar bland de ~10
+# tickers som redan låg i price_history.json – alltså bara bland namn systemet
+# redan tittade på. Kategori A (utanför universum) blev därför det dominerande
+# hålet: Electrolux +22 % på en dag (2026-07-29), Scandi Standard +9,6 %
+# (2026-07-30), Mips +27,8 % och fyra andra rapportreaktioner (16–17 juli)
+# passerade helt osedda. Listan nedan är bredden som gör dem synliga.
+#
+# Yahoo-format med börssuffix, en per rad. Rader som börjar med # ignoreras.
+# Att stå här betyder INTE att aktien får köpas – urvalsreglerna är oförändrade.
+
+# --- Stockholm: OMXS30 ---
+VOLV-B.ST
+ERIC-B.ST
+ATCO-A.ST
+ATCO-B.ST
+SAND.ST
+SEB-A.ST
+SWED-A.ST
+SHB-A.ST
+NDA-SE.ST
+HM-B.ST
+INVE-B.ST
+ABB.ST
+AZN.ST
+SAAB-B.ST
+BOL.ST
+SKF-B.ST
+ALFA.ST
+EVO.ST
+ESSITY-B.ST
+ASSA-B.ST
+EPI-A.ST
+EPI-B.ST
+HEXA-B.ST
+NIBE-B.ST
+SINCH.ST
+TEL2-B.ST
+TELIA.ST
+GETI-B.ST
+ELUX-B.ST
+SCA-B.ST
+ALIV-SDB.ST
+KINV-B.ST
+
+# --- Stockholm: Large/Mid Cap utanför OMXS30 (där missarna brukar ligga) ---
+MIPS.ST
+SCST.ST
+VPLAY-B.ST
+EQT.ST
+RATO-B.ST
+STIL.ST
+CTM.ST
+BOOZT.ST
+SF.ST
+HNSA.ST
+LIFCO-B.ST
+INDT.ST
+LATO-B.ST
+BEIJ-B.ST
+TREL-B.ST
+DOM.ST
+FABG.ST
+CAST.ST
+BALD-B.ST
+SBB-B.ST
+SAGA-B.ST
+ARJO-B.ST
+VITR.ST
+BIOT.ST
+SWEC-B.ST
+NCC-B.ST
+SKA-B.ST
+PEAB-B.ST
+JM.ST
+THULE.ST
+DOMETIC.ST
+HUSQ-B.ST
+AAK.ST
+AXFO.ST
+ICA.ST
+NOLA-B.ST
+CLAS-B.ST
+NEWA-B.ST
+VOLCAR-B.ST
+TRUE-B.ST
+EMBRAC-B.ST
+STAR-B.ST
+G5EN.ST
+PDX.ST
+ALLEI.ST
+
+# --- Oslo ---
+EQNR.OL
+DNB.OL
+YAR.OL
+AKRBP.OL
+MOWI.OL
+KOG.OL
+NHY.OL
+ORK.OL
+TEL.OL
+SALM.OL
+FRO.OL
+SUBC.OL
+AKSO.OL
+MORLD.OL
+
+# --- Köpenhamn ---
+NOVO-B.CO
+MAERSK-B.CO
+DSV.CO
+CARL-B.CO
+VWS.CO
+ORSTED.CO
+GMAB.CO
+COLO-B.CO
+DEMANT.CO
+TRYG.CO
+
+# --- Helsingfors ---
+NOKIA.HE
+KNEBV.HE
+SAMPO.HE
+FORTUM.HE
+NESTE.HE
+UPM.HE
+STERV.HE
+WRT1V.HE
+ORNBV.HE

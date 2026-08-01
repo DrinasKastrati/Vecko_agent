@@ -738,6 +738,103 @@
     return out;
   }
 
+  // ---- beslutsloggen (state/decisions.json) ------------------------------
+  // Loggen är kalibreringsunderlaget: den ska svara på vilka KATALYSATORTYPER
+  // som faktiskt tjänar pengar, så att poängvikterna (35/30/15/20) kan sättas
+  // mot data i stället för känsla. Problemet den löser är att underlaget dör
+  // tyst – 2026-08-02 innehöll filen 6 rader, samtliga backfyllda, trots två
+  // veckors körningar. Genom att visa loggen i dashboarden syns det direkt.
+  function parseDecisions(db){
+    const rows = (db && db.decisions) || [];
+    return rows.filter(r => r && r.ticker && r.action).map(r => ({
+      date: r.date || null,
+      book: r.book || null,
+      ticker: r.ticker,
+      action: String(r.action).toUpperCase(),
+      catalystType: r.catalystType || "other",
+      outcomePct: typeof r.outcomePct === "number" ? r.outcomePct : null,
+      alphaPct: typeof r.alphaPct === "number" ? r.alphaPct : null,
+      holdDays: typeof r.holdDays === "number" ? r.holdDays : null,
+      source: r.source || null
+    }));
+  }
+
+  // Aggregerar SÄLJ-raderna per katalysatortyp. Sleeve-transaktioner
+  // (catalystType "index") räknas ALDRIG med – de mäter marknaden, inte urvalet.
+  // minPerType/minTotal speglar retrons trösklar: under dem är siffrorna brus
+  // och ska presenteras som brus, inte som resultat.
+  function decisionStats(db, opts){
+    const { minTotal = 15, minPerType = 8 } = opts || {};
+    const rows = parseDecisions(db);
+    const closed = rows.filter(r => r.action === "SÄLJ" && r.outcomePct != null && r.catalystType !== "index");
+    const by = {};
+    for (const r of closed){
+      const k = r.catalystType || "other";
+      (by[k] = by[k] || []).push(r);
+    }
+    const byCatalyst = Object.entries(by).map(([type, rs]) => {
+      const wins = rs.filter(r => r.outcomePct > 0).length;
+      const sum = rs.reduce((a, r) => a + r.outcomePct, 0);
+      const alphas = rs.filter(r => r.alphaPct != null);
+      return {
+        type, n: rs.length,
+        winRate: rs.length ? wins / rs.length : null,
+        avgPct: rs.length ? sum / rs.length : null,
+        sumPct: sum,
+        avgAlphaPct: alphas.length ? alphas.reduce((a, r) => a + r.alphaPct, 0) / alphas.length : null,
+        // Under tröskeln är kategorin inte utvärderingsbar – flaggas explicit.
+        reliable: rs.length >= minPerType
+      };
+    }).sort((a, b) => b.n - a.n);
+    const books = {};
+    for (const r of rows) books[r.book || "okänd"] = (books[r.book || "okänd"] || 0) + 1;
+    const dates = rows.map(r => r.date).filter(Boolean).sort();
+    return {
+      rows: rows.length,
+      closedCount: closed.length,
+      minTotal, minPerType,
+      needed: Math.max(0, minTotal - closed.length),
+      calibratable: closed.length >= minTotal,
+      backfilled: rows.filter(r => r.source && /backfill/i.test(r.source)).length,
+      firstDate: dates[0] || null,
+      lastDate: dates[dates.length - 1] || null,
+      byBook: books,
+      byCatalyst
+    };
+  }
+
+  // ---- intradag-monitorns hälsa ------------------------------------------
+  // alerts.json skrevs tidigare bara när signalmängden ändrades, så en tom fil
+  // betydde antingen "frisk monitor utan signaler" eller "monitorn har varit
+  // död sedan i onsdags" – omöjligt att skilja åt. alerts.mjs stämplar nu
+  // checkedAt vid varje körning (minst var 3:e timme under börstid 07-20 UTC
+  // vardagar). Funktionen översätter stämpeln till ett läge dashboarden kan
+  // visa. generatedAt duger INTE som fallback för färskhet – den betyder
+  // fortfarande "senast signalerna ändrades" – men saknas checkedAt helt kör
+  // actionen en version som är äldre än hjärtslags-fixen, och det ska synas.
+  function monitorStatus(alerts, now){
+    if (!alerts) return null;
+    const t = alerts.checkedAt ? Date.parse(alerts.checkedAt) : NaN;
+    const ref = now instanceof Date ? now.getTime() : (now != null ? Date.parse(now) : Date.now());
+    if (isNaN(t)) return { state: "unknown", checkedAt: null, ageH: null,
+      label: "Monitorns hjärtslag saknas" };
+    const ageH = (ref - t) / 3600000;
+    const hhmm = new Date(t).toISOString().slice(11, 16);
+    const day = new Date(t).toISOString().slice(0, 10);
+    // Helg och natt är tysta enligt schema, så gränsen sätts vid 6 h på samma
+    // sätt som watchdogen – då fångas en död monitor utan falsklarm på helger.
+    const dow = new Date(ref).getUTCDay();
+    const weekday = dow >= 1 && dow <= 5;
+    const stale = weekday && ageH > 6;
+    return {
+      state: stale ? "stale" : "fresh",
+      checkedAt: alerts.checkedAt, ageH,
+      watched: Array.isArray(alerts.watched) ? alerts.watched.length : null,
+      label: (stale ? "Monitorn har tystnat – senast kontrollerad " : "Monitorn kontrollerad ")
+        + (ageH > 20 ? day + " " : "") + hhmm + " UTC"
+    };
+  }
+
   // ---- valuta (us-boken är USD-denominerad) ------------------------------
   // Total-vyn blandar två böcker som RENA procenttal. För en svensk depå är
   // us-bokens avkastning dessutom beroende av USD/SEK. Vi kan inte räkna om
@@ -763,8 +860,9 @@
     buildBenchmarkSeries, seriesOnLabels, numFrom, computeHoldingLive,
     computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
     parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats,
-    costFor, netPct, fxRate, DEFAULT_COSTS,
-    benchReturnPct, computeAlpha, computeAlphaStats, alphaKey
+    costFor, netPct, fxRate, DEFAULT_COSTS, monitorStatus,
+    benchReturnPct, computeAlpha, computeAlphaStats, alphaKey,
+    parseDecisions, decisionStats
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

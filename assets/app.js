@@ -65,12 +65,13 @@
         const allocPath = paths.find(p => /(^|\/)allocation\.json$/i.test(p));
         const lessonsPath = paths.find(p => /(^|\/)lessons\.md$/i.test(p));
         const costsPath = paths.find(p => /(^|\/)kostnader\.json$/i.test(p));
+        const decisionsPath = paths.find(p => /(^|\/)decisions\.json$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -84,7 +85,8 @@
           Promise.all(uwMetas.map(m => this.getMd(m.path))),
           allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null),
           lessonsPath ? this.getMd(lessonsPath).catch(() => null) : Promise.resolve(null),
-          costsPath ? this.fetchJSON(this.raw(costsPath)).catch(() => null) : Promise.resolve(null)
+          costsPath ? this.fetchJSON(this.raw(costsPath)).catch(() => null) : Promise.resolve(null),
+          decisionsPath ? this.fetchJSON(this.raw(decisionsPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -101,6 +103,7 @@
         this.state.allocation = alloc;
         this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
         this.state.costs = costs || this.P.DEFAULT_COSTS;
+        this.state.decisions = decisions;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -152,7 +155,7 @@
       const S = this.state, R = this.R;
       const latestDaily = S.dailies[0] || null;
       this.el("banner").innerHTML = R.renderBanner(S.portfolio.note);
-      const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = R.renderAlerts(S.alerts);
+      const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = R.renderAlerts(S.alerts, this.P.monitorStatus(S.alerts));
       const srEl = this.el("statusRow");
       if (srEl) srEl.innerHTML = R.renderStatusRow(latestDaily, this.P.nextRoutineRun(new Date()));
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
@@ -171,6 +174,9 @@
       const alphaMap = this.P.computeAlpha(S.portfolio.history, S.priceHistory, "^OMX");
       const alphaEl = this.el("alphaStats");
       if (alphaEl) alphaEl.innerHTML = R.renderAlphaStats(this.P.computeAlphaStats(S.portfolio.history, S.priceHistory, "^OMX"), "OMXS30");
+      // Beslutsloggen: gör kalibreringsunderlaget synligt (och synligt när det slutat fyllas).
+      const dlEl = this.el("decisionStats");
+      if (dlEl) dlEl.innerHTML = R.renderDecisionStats(this.P.decisionStats(S.decisions));
       this.el("history").innerHTML = R.renderHistory(S.portfolio, alphaMap, "OMXS30");
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
@@ -335,7 +341,7 @@
         if (!this._alertsPath) return;
         const alerts = await this.fetchJSON(this.raw(this._alertsPath));
         this.state.alerts = alerts;
-        const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = this.R.renderAlerts(alerts);
+        const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = this.R.renderAlerts(alerts, this.P.monitorStatus(alerts));
         const act = (alerts && alerts.active) || [];
         if (!act.length) return;
         const key = s => [s.ticker, s.type, s.reason, s.level].join("|");

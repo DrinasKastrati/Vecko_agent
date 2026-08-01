@@ -113,6 +113,10 @@ Underlag: `reports/backtest/backtest-260731-us.md` – mekaniska skelettet (mome
    US-tickers ligger som vanlig symbol (t.ex. `NVDA`), index som `^GSPC`/`^IXIC`. För varje
    ticker finns `price`, `currency`, `marketTime`, `marketState`, `previousClose`, `dayHigh`,
    `dayLow`, `source`. Använd `marketTime` som verifierad tidsstämpel och kontrollera `generatedAt`.
+   `previousClose` är föregående SESSIONS stängning; dagsrörelsen är `price / previousClose − 1`.
+   Fältet var felaktigt före 2026-08-02 (pekade ~en vecka bakåt och gav veckorörelser förklädda
+   till dagsrörelser, t.ex. MSFT "+21,7 %") – misstro därför sådana siffror i ÄLDRE rapporter,
+   men inte filen som den ser ut nu.
 1b. FÄRSKASTE VERSIONEN: kör `git pull` INNAN du läser `state/prices.json`; pris-actionen kan ha
    committat en nyare fil. Går pull inte: hämta
    https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/state/prices.json direkt och
@@ -219,6 +223,13 @@ Underlag: `reports/backtest/backtest-260731-us.md` – mekaniska skelettet (mome
    planerad stop, mål, R/R (minst 2:1) och vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn
    larmar automatiskt när nivån korsas (noll tokens). Ej triggad inom 5 handelsdagar → AVFÖRS
    vid nästa rotation (stryk med ~~…~~, radera aldrig). Aldrig fler än 2, aldrig utan nivåer.
+4c. SLEEVE-MIGRERING (gäller tills den är gjord): står rubriken "Kassa" i `state/portfolj_us.md`
+   på mer än 0 % när rotationen börjar är det kapital från tiden FÖRE sleeve-regeln – boken har
+   stått i 100 % kassa sedan 2026-07-30. Det ska flyttas till SPY-sleeven i DENNA körning, inte
+   vänta på ett bättre aktieläge: tid utanför marknaden är en garanterad kostnad mot index och
+   är hela skälet till att sleeven finns. Logga sleeve-köpet i `state/decisions.json` med
+   `catalystType: "index"` och skriv i rapporten hur stor andel som migrerades. Enda undantaget
+   är att sleeven inte går att handla – motivera då.
 5. Uppdatera `state/portfolj_us.md` med nytt innehav och ev. kassa.
 
 ## LÄGE B – DAGLIG BEVAKNING (tisdag–fredag)
@@ -233,6 +244,14 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    motivering (stryk raden med ~~…~~ i portfolj_us.md – radera aldrig).
 2c. INTRADAG-SIGNALER: läs `state/alerts.json` om den finns. För varje aktiv signal som rör ett
    US-innehav: agera via besluten nedan eller motivera kort varför inte. Ignorera aldrig tyst.
+2c2. MONITORNS HÄLSA (kontrollera FÖRE 2c): `checkedAt` visar när monitorn senast KÖRDE,
+   `generatedAt` bara när signalmängden senast ÄNDRADES. En tom `active`-lista utan färskt
+   `checkedAt` betyder därför inte "lugnt" – den kan lika gärna betyda att monitorn är död. Är
+   `checkedAt` äldre än ~6 timmar under en handelsdag, eller saknas fältet helt (då kör actionen
+   kod äldre än 2026-08-02): behandla intradagsskyddet som FRÅNVARANDE denna körning, kontrollera
+   stop/mål manuellt mot verifierad kurs, och skriv upp defekten som åtgärdspunkt till Dren
+   enligt L-3 (fil + fält + omfång). Extra viktigt i US-boken: monitorn är det enda som bevakar
+   nivåerna mellan 15:00-körningen och nästa dags rapport.
 3. Sök nyheter senaste 24h om bolaget, sektorn och närmaste konkurrenter (samma källkrav som läge A),
    samt makrohändelser som påverkar caset. Inkludera after-hours-rapporter och pre-market-noteringar.
 4. Fatta EXAKT ETT beslut per innehav:
@@ -265,7 +284,12 @@ Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/d
 (delas med nordiska boken – sätt `book`: "us"). Samma regler som nordiska prompten:
 APPEND-ONLY (ändra/radera aldrig befintliga rader), `catalystType` ur enum-listan i filens
 `comment`-fält (aldrig egna värden), `price` som tal i USD, `weight` som andel (0.5 = 50 %),
-vid SÄLJ fylls `outcomePct` + `holdDays`. VALIDERA innan commit:
+vid SÄLJ fylls `outcomePct`, `holdDays` och `realizedRr` (utfall delat med planerat stoppavstånd,
+negativt vid förlust) – samt `benchPct` och `alphaPct` när benchmarkets (`^GSPC`) utveckling över
+EXAKT samma hållperiod går att räkna fram ur `state/price_history.json`. `alphaPct` MÅSTE vara
+`outcomePct − benchPct`, annars faller valideringen; kan perioden inte täckas utelämnas båda
+hellre än att gissa (0 är ett påstående). Vid KÖP fylls `horizonDays` (> 0) enligt
+katalysatortabellen, plus `entry`, `stop`, `target`, `rr` och `weight`. VALIDERA innan commit:
 `node .github/scripts/validate-decisions.mjs` (schema, enum-värden, SÄLJ-fält och append-only –
 enbart JSON.parse räcker INTE). Laga filen om valideringen fallerar. Samma kontroll körs i CI, och
 watchdogen larmar om dagens rapport pushas utan rader i loggen. Committa tillsammans med rapporten.

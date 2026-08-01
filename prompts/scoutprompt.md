@@ -42,6 +42,14 @@ och rapportflöde samt trovärdiga marknadsrykten.
    `BTC-USD`), index som `^GSPC` (S&P 500) / `^IXIC` (Nasdaq). Använd `marketTime` som
    verifierad tidsstämpel och kontrollera `generatedAt` överst i filen. Nya symboler du
    bevakar läggs i `config/watchlist_us.txt` så hämtas de inför nästa körning.
+1a. DAGSRÖRELSE: `previousClose` är föregående SESSIONS stängning, så dagsrörelsen är
+   `price / previousClose − 1`. Fältet var FELAKTIGT före 2026-08-02 – det pekade ~en vecka
+   bakåt och gav falska tal som "MSFT +21,8 %" och "AMD −20 %", vilket den här routinen
+   flaggade och gick runt i fyra rapporter i rad. Det är åtgärdat i `fetch-prices.mjs`.
+   Ser du ändå ett tal som inte rimmar med en enskild session: räkna om mot daterade
+   stängningar i `state/price_history.json` och rapportera defekten enligt L-3 (namnge fil
+   och fält, ange ersättningskälla och kvantifiera omfånget) i stället för att bara skriva
+   runt den.
 1b. FÄRSKASTE VERSIONEN: kör `git pull` INNAN du läser `state/prices.json` – pris-actionen
    kan ha committat en nyare fil än din lokala. Går pull inte: hämta
    https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/state/prices.json

@@ -5,6 +5,8 @@
    - dagens nordiska rapport saknas (routinen/appen har inte kört,
      eller inget har pushats)
    - dagens scout-rapport saknas
+   - state/alerts.json:s checkedAt äldre än 6 h på en vardag (intradag-
+     monitorn nere – utan den larmar inget mellan routinekörningarna)
    Skriver problemlista till $RUNNER_TEMP/watchdog.json; watchdog.yml
    öppnar issues (med dedupe mot redan öppna).
    ============================================================ */
@@ -61,6 +63,22 @@ export function checkStale(opts){
         (opts.latestDecisionDate || "ingen") + "). Rotationsprompterna kräver en rad per beslut, " +
         "även AVVAKTA – utan dem kan retrons beslutsstatistik aldrig kalibrera poängvikterna." });
 
+  // Intradag-monitorn: alerts.mjs stämplar checkedAt minst var 3:e timme under
+  // börstid (07-20 UTC vardagar). Watchdogen kör 10:30 UTC, då är färskaste
+  // tillåtna hjärtslag ~3,5 h gammalt – 6 h ger marginal och fångar ändå en
+  // monitor som dött. Kontrollen finns för att en tyst död monitor annars är
+  // OSYNLIG: filen ser likadan ut som "frisk monitor utan signaler".
+  if ("alertsCheckedAt" in opts){
+    const at = opts.alertsCheckedAt ? Date.parse(opts.alertsCheckedAt) : NaN;
+    if (isNaN(at) || (n.getTime() - at) > 6 * 3600 * 1000)
+      problems.push({ key: "alerts", title: "Watchdog: intradag-monitorn har tystnat",
+        body: "`state/alerts.json` har checkedAt `" + (opts.alertsCheckedAt || "saknas") +
+          "` (äldre än 6 h på en vardag). Kontrollera Actions → \"Intradag-monitor\". " +
+          "Utan monitorn larmar ingenting när ett innehav korsar stop-loss eller mål " +
+          "mellan routinekörningarna. Saknas fältet helt kör actionen en version av " +
+          "`alerts.mjs` som är äldre än hjärtslags-fixen." });
+  }
+
   // Nyhetsflödet: news.yml kör varannan timme vardagar, så >6 h = actionen är nere.
   if ("newsGeneratedAt" in opts){
     const nt = opts.newsGeneratedAt ? Date.parse(opts.newsGeneratedAt) : NaN;
@@ -94,6 +112,11 @@ function main(){
   try { newsGen = JSON.parse(readFileSync("state/news_feed.json", "utf8")).generatedAt || null; } catch {}
   let decisions = null;
   try { decisions = latestDecisionYmd(JSON.parse(readFileSync("state/decisions.json", "utf8"))); } catch {}
+  let alertsAt = null;
+  try {
+    const a = JSON.parse(readFileSync("state/alerts.json", "utf8"));
+    alertsAt = a.checkedAt || null;   // generatedAt duger INTE – se checkStale
+  } catch {}
   const ls = d => { try { return readdirSync(d); } catch { return []; } };
   const problems = checkStale({
     now: new Date(),
@@ -102,6 +125,7 @@ function main(){
     latestWeekly: latestReportDate(ls("reports/weekly"), "veckorapport"),
     latestScout: latestReportDate(ls("reports/scout"), "rapport"),
     latestDecisionDate: decisions,
+    alertsCheckedAt: alertsAt,
     newsGeneratedAt: newsGen
   });
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");

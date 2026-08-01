@@ -180,6 +180,23 @@ ok("watchdog larmar när news_feed.json saknas helt",
   WD.checkStale({ ...wdBase, newsGeneratedAt: null }).some(p => p.key === "news"));
 ok("latestDecisionYmd", WD.latestDecisionYmd({ decisions: [{ date: "2026-07-14" }, { date: "2026-07-30" }] }) === "260730"
   && WD.latestDecisionYmd({ decisions: [] }) === null && WD.latestDecisionYmd(null) === null);
+// monitor-hjärtslag: en tyst död monitor ska larmas, en frisk utan signaler inte
+ok("watchdog larmar på gammalt monitor-hjärtslag",
+  WD.checkStale({ ...wdBase, alertsCheckedAt: "2026-07-17T02:00:00Z" }).some(p => p.key === "alerts"));
+ok("watchdog tyst på färskt hjärtslag",
+  !WD.checkStale({ ...wdBase, alertsCheckedAt: "2026-07-17T07:00:00Z" }).some(p => p.key === "alerts"));
+ok("watchdog larmar när checkedAt saknas helt (gammal alerts.mjs)",
+  WD.checkStale({ ...wdBase, alertsCheckedAt: null }).some(p => p.key === "alerts"));
+
+// ---- monitorns hjärtslag (alerts.mjs) ----
+ok("heartbeat förfaller när stämpeln är gammal",
+  AL.heartbeatDue({ checkedAt: "2026-07-17T05:00:00Z" }, "2026-07-17T10:00:00Z"));
+ok("heartbeat väntar när stämpeln är färsk",
+  !AL.heartbeatDue({ checkedAt: "2026-07-17T09:00:00Z" }, "2026-07-17T10:00:00Z"));
+ok("heartbeat faller tillbaka på generatedAt för filer utan checkedAt",
+  !AL.heartbeatDue({ generatedAt: "2026-07-17T09:30:00Z" }, "2026-07-17T10:00:00Z"));
+ok("heartbeat alltid due utan tidsstämpel", AL.heartbeatDue({}, "2026-07-17T10:00:00Z")
+  && AL.heartbeatDue(null, "2026-07-17T10:00:00Z"));
 
 // ---- statusrad, positionsmätare, besluts-historik ----
 const g = VP.computeGauge(100, 90, 120, 110);
@@ -254,6 +271,29 @@ ok("extractTickers fångar ETF med långt efterled",
   FP.extractTickers("Indexsleeve (XACT-OMXS30.ST) 40 %").includes("XACT-OMXS30.ST"));
 ok("extractTickers plockar fortfarande inte skräp ur 'BAHN B.ST'",
   !FP.extractTickers("BAHN B.ST").includes("B.ST"));
+// previousClose: chartPreviousClose ligger före HELA range=5d-fönstret och gav
+// veckorörelser presenterade som dagsrörelser. previousClose måste vinna.
+ok("prevCloseFrom föredrar previousClose framför chartPreviousClose",
+  FP.prevCloseFrom({ meta: { previousClose: 99, chartPreviousClose: 80 } }) === 99);
+ok("prevCloseFrom härleder ur serien när meta-fältet saknas",
+  FP.prevCloseFrom({ meta: { chartPreviousClose: 80 },
+    indicators: { quote: [{ close: [80, 85, null, 90, 95] }] } }) === 90);
+// dagens bar räknas bort via regularMarketTime (1785542400 = 2026-08-01)
+ok("prevCloseFrom hoppar över dagens bar", FP.prevCloseFrom({
+  meta: { chartPreviousClose: 80, regularMarketTime: 1785542400 },
+  timestamp: [1785283200, 1785369600, 1785542400],   // 2026-07-29, -07-30, -08-01
+  indicators: { quote: [{ close: [90, 95, 99] }] } }) === 95);
+// okonsoliderad dagsbar (close = null) får INTE ge en tvåsessionersrörelse
+ok("prevCloseFrom klarar okonsoliderad dagsbar", FP.prevCloseFrom({
+  meta: { chartPreviousClose: 80, regularMarketTime: 1785542400 },
+  timestamp: [1785283200, 1785369600, 1785542400],
+  indicators: { quote: [{ close: [90, 95, null] }] } }) === 95);
+ok("prevCloseFrom faller tillbaka på chartPreviousClose sist",
+  FP.prevCloseFrom({ meta: { chartPreviousClose: 80 }, indicators: { quote: [{ close: [95] }] } }) === 80);
+ok("prevCloseFrom null när inget finns", FP.prevCloseFrom({ meta: {} }) === null && FP.prevCloseFrom(null) === null);
+ok("parseChart använder rätt previousClose",
+  FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 100, previousClose: 99, chartPreviousClose: 80 } }] } }, "X")
+    .previousClose === 99);
 
 // ---- US-rotation (egen USD-bok) ----
 ok("parseFilename us_daily", VP.parseFilename("us-daglig-260717.md").type === "us_daily");
@@ -540,6 +580,123 @@ ok("news_feeds.txt: döda flöden borta, nya på plats", (() => {
   const names = live.map(f => f.name);
   return !names.includes("cision-se") && !names.includes("businesswire-tech") &&
          names.includes("sec-8k") && names.includes("fed-press") && live.length >= 5;
+})());
+
+// omförsök: ett transient 404 får inte läsas som ett dött flöde
+const noSleep = () => Promise.resolve();
+ok("fetchFeedText lyckas på första försöket", await (async () => {
+  const r = await NW.fetchFeedText("https://x/rss", { sleep: noSleep,
+    fetchImpl: async () => ({ ok: true, status: 200, text: async () => "<rss/>" }) });
+  return r.ok && r.attempts === 1 && r.text === "<rss/>";
+})());
+ok("fetchFeedText gör om ett transient fel och lyckas", await (async () => {
+  let n = 0;
+  const r = await NW.fetchFeedText("https://x/rss", { sleep: noSleep, fetchImpl: async () => {
+    n++;
+    return n === 1 ? { ok: false, status: 404 } : { ok: true, status: 200, text: async () => "<rss/>" };
+  } });
+  return r.ok && r.attempts === 2 && n === 2;
+})());
+ok("fetchFeedText ger upp efter båda försöken", await (async () => {
+  const r = await NW.fetchFeedText("https://x/rss", { sleep: noSleep,
+    fetchImpl: async () => ({ ok: false, status: 404 }) });
+  return !r.ok && r.attempts === 2 && r.status === "HTTP 404";
+})());
+ok("fetchFeedText fångar kastade fel", await (async () => {
+  const r = await NW.fetchFeedText("https://x/rss", { sleep: noSleep,
+    fetchImpl: async () => { throw new Error("timeout"); } });
+  return !r.ok && /timeout/.test(r.status);
+})());
+
+// ---- monitorns hjärtslag i dashboarden ----
+ok("monitorStatus null utan fil", VP.monitorStatus(null) === null);
+ok("monitorStatus okänd när checkedAt saknas", (() => {
+  const m = VP.monitorStatus({ active: [] }, "2026-07-31T12:00:00Z");
+  return m.state === "unknown" && /saknas/.test(m.label);
+})());
+ok("monitorStatus färsk", (() => {
+  const m = VP.monitorStatus({ checkedAt: "2026-07-31T10:00:00Z", active: [] }, "2026-07-31T12:00:00Z");
+  return m.state === "fresh" && /10:00 UTC/.test(m.label);
+})());
+ok("monitorStatus larmar på tystnad (vardag)", (() => {
+  const m = VP.monitorStatus({ checkedAt: "2026-07-30T09:30:00Z" }, "2026-07-31T12:00:00Z");
+  return m.state === "stale" && /tystnat/.test(m.label) && /2026-07-30/.test(m.label);
+})());
+ok("monitorStatus tyst på helgen", (() => {
+  // 2026-08-01 är en lördag – ingen körning schemalagd, inget larm
+  const m = VP.monitorStatus({ checkedAt: "2026-07-31T20:00:00Z" }, "2026-08-01T12:00:00Z");
+  return m.state === "fresh";
+})());
+ok("monitorStatus räknar bevakade tickers",
+  VP.monitorStatus({ checkedAt: "2026-07-31T10:00:00Z", watched: ["A", "B"] }, "2026-07-31T12:00:00Z").watched === 2);
+ok("renderAlerts visar hjärtslag utan signaler", (() => {
+  const html = VR.renderAlerts({ active: [], history: [] },
+    { state: "fresh", label: "Monitorn kontrollerad 10:00 UTC", watched: 2 });
+  return html.includes("Monitorn kontrollerad") && html.includes("al-mon--fresh") && html.includes("2 bevakade");
+})());
+ok("renderAlerts utan mon beter sig som förut",
+  VR.renderAlerts({ active: [], history: [] }) === "");
+
+// ---- beslutsloggen i dashboarden ----
+const decDb = { decisions: [
+  { date: "2026-07-14", book: "nordic", ticker: "ALLEI.ST", action: "KÖP", catalystType: "earnings" },
+  { date: "2026-07-17", book: "nordic", ticker: "ALLEI.ST", action: "SÄLJ", catalystType: "earnings", outcomePct: 6.39, alphaPct: 6.89, source: "backfill-260731" },
+  { date: "2026-07-30", book: "us", ticker: "JPM", action: "SÄLJ", catalystType: "macro", outcomePct: -1.5 },
+  { date: "2026-07-31", book: "nordic", ticker: "XACT-OMXS30.ST", action: "SÄLJ", catalystType: "index", outcomePct: 40 },
+  { date: "2026-07-31", book: "nordic", ticker: "SAAB-B.ST", action: "BEHÅLL", catalystType: "order" }
+] };
+const ds = VP.decisionStats(decDb);
+ok("decisionStats räknar alla rader", ds.rows === 5);
+ok("decisionStats räknar bara utvärderbara SÄLJ", ds.closedCount === 2);
+ok("decisionStats exkluderar indexsleeven ur urvalsstatistiken",
+  !ds.byCatalyst.some(c => c.type === "index"));
+ok("decisionStats vet hur många som fattas till kalibrering",
+  ds.needed === 13 && ds.calibratable === false);
+ok("decisionStats flaggar tunna kategorier som brus", ds.byCatalyst.every(c => c.reliable === false));
+ok("decisionStats räknar backfyllda rader", ds.backfilled === 1);
+ok("decisionStats snittutfall per katalysatortyp", (() => {
+  const e = ds.byCatalyst.find(c => c.type === "earnings");
+  return Math.abs(e.avgPct - 6.39) < 1e-9 && e.winRate === 1 && Math.abs(e.avgAlphaPct - 6.89) < 1e-9;
+})());
+ok("decisionStats fördelning per bok", ds.byBook.nordic === 4 && ds.byBook.us === 1);
+ok("decisionStats tål tom logg", (() => { const z = VP.decisionStats(null); return z.rows === 0 && z.closedCount === 0; })());
+ok("renderDecisionStats tomläge", VR.renderDecisionStats(VP.decisionStats(null)).includes("Beslutsloggen är tom"));
+ok("renderDecisionStats visar tabell och brus-flagga", (() => {
+  const h = VR.renderDecisionStats(ds);
+  return h.includes("Rapport") && h.includes("brus") && h.includes("13 kvar till kalibrering") && !h.includes("Indexändring</td>");
+})());
+
+// ---- breddad rörelsedetektion (movers.mjs, rena funktioner) ----
+const MV = await mod(".github/scripts/movers.mjs");
+ok("parseUniverse hoppar kommentarer och tomrader",
+  (() => { const u = MV.parseUniverse("# rubrik\n\nELUX-B.ST\n  MIPS.ST  \n#SKIP.ST\n");
+    return u.length === 2 && u[0] === "ELUX-B.ST" && u[1] === "MIPS.ST"; })());
+ok("closesFrom plockar stängningar och hoppar hål", (() => {
+  const j = { chart: { result: [{ timestamp: [1753912800, 1753999200, 1754085600],
+    indicators: { quote: [{ close: [100, null, 110] }] } }] } };
+  const c = MV.closesFrom(j);
+  return c.length === 2 && c[0].c === 100 && c[1].c === 110 && /^\d{4}-\d{2}-\d{2}$/.test(c[0].d);
+})());
+ok("closesFrom tål trasig json", MV.closesFrom(null).length === 0 && MV.closesFrom({}).length === 0);
+const mk = arr => arr.map((c, i) => ({ d: "2026-07-" + String(20 + i).padStart(2, "0"), c }));
+ok("moveOver dagsrörelse", Math.abs(MV.moveOver(mk([100, 110]), 1) - 10) < 1e-9);
+ok("moveOver veckorörelse", Math.abs(MV.moveOver(mk([100, 101, 102, 103, 104, 120]), 5) - 20) < 1e-9);
+ok("moveOver null vid för kort historik – aldrig 0", MV.moveOver(mk([100]), 1) === null);
+const ranked = MV.rankMovers({
+  "ELUX-B.ST": mk([100, 100, 100, 100, 100, 122]),   // +22 % dag och vecka
+  "SCST.ST":   mk([100, 101, 102, 103, 104, 114]),   // +9,6 % dag, +14 % vecka
+  "VOLV-B.ST": mk([100, 100, 101, 101, 100, 101])    // lugnt – ska filtreras bort
+}, { weekPct: 8, dayPct: 6 });
+ok("rankMovers filtrerar bort lugna namn", !ranked.some(r => r.symbol === "VOLV-B.ST"));
+ok("rankMovers fångar båda rörelserna", ranked.length === 2);
+ok("rankMovers sorterar störst veckorörelse först", ranked[0].symbol === "ELUX-B.ST");
+ok("rankMovers redovisar utlösande villkor", ranked.every(r => r.trigger === "dag" || r.trigger === "vecka"));
+ok("rankMovers tar med senaste stängning och datum",
+  ranked[0].lastClose === 122 && /^2026-07-\d\d$/.test(ranked[0].lastDate));
+ok("rankMovers tål tomt underlag", MV.rankMovers({}).length === 0 && MV.rankMovers(null).length === 0);
+ok("movers-universumet täcker de historiska missarna", (() => {
+  const u = MV.parseUniverse(readFileSync(resolve(root, "config/universe_nordic_movers.txt"), "utf8"));
+  return ["ELUX-B.ST", "SCST.ST", "MIPS.ST", "EQT.ST", "GETI-B.ST"].every(s => u.includes(s)) && u.length >= 60;
 })());
 
 // ---- backtest (backtest.mjs, rena funktioner) ----
