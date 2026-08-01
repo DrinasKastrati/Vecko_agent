@@ -150,6 +150,12 @@ async function fetchCandles(sym, range){
 async function main(){
   const market = (process.argv[2] || "nordic").toLowerCase();
   const range = process.argv[3] || "2y";
+  // Antal samtidiga positioner. Strategin gick 2026-07-31 från 2 à 50 % till 4 à 25 %, men
+  // gridet simulerade fortfarande 2 – och det är ur det gridet stoppbanden i prompterna är
+  // hämtade. Vikten följer positionsantalet (4 positioner ⇒ 0,25), så kedjningen och
+  // kostnadsdraget per affär blir jämförbara med hur boken faktiskt handlas.
+  const topN = Math.max(1, Number(process.argv[4]) || 4);
+  const weight = 1 / topN;
   const uniFile = market === "us" ? "config/backtest_universe_us.txt" : "config/backtest_universe_nordic.txt";
   const bench = market === "us" ? "^GSPC" : "^OMX";
   if (!existsSync(uniFile)){ console.error("Saknar " + uniFile); process.exit(1); }
@@ -175,17 +181,23 @@ async function main(){
   const grid = [];
   for (const lookback of [10, 20])
     for (const [stopPct, targetPct] of [[0.03, 0.06], [0.04, 0.08], [0.05, 0.10]])
-      grid.push({ lookback, stopPct, targetPct, costPct });
+      grid.push({ lookback, stopPct, targetPct, costPct, topN, weight });
 
   const results = grid.map(p => backtestUniverse(candlesBySym, p)).filter(Boolean);
   const bh = buyHoldPct(benchCandles);
   const f = n => n == null ? "–" : (n > 0 ? "+" : "") + n.toFixed(2);
 
+  // Filnamn och rapportdatum MÅSTE komma ur samma tidszon. Tidigare byggdes ymd av lokala
+  // komponenter medan headern skrev toISOString() (UTC), så en körning strax efter lokal
+  // midnatt gav en fil vid namn 260802 med "Datum: 2026-08-01" i rubriken.
   const today = new Date();
-  const ymd = String(today.getFullYear()).slice(2) + String(today.getMonth() + 1).padStart(2, "0") + String(today.getDate()).padStart(2, "0");
+  const yyyy = String(today.getFullYear()), mm = String(today.getMonth() + 1).padStart(2, "0"),
+        dd = String(today.getDate()).padStart(2, "0");
+  const ymd = yyyy.slice(2) + mm + dd;
+  const todayISO = `${yyyy}-${mm}-${dd}`;
   const lines = [];
   lines.push(`# Backtest av mekaniska skelettet – ${market} (${range})`);
-  lines.push(`**Datum:** ${today.toISOString().slice(0, 10)} | **Universum:** ${syms.length} symboler | **Benchmark (${bench}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${costPct.toFixed(2)} % per affär (netto)`);
+  lines.push(`**Datum:** ${todayISO} | **Universum:** ${syms.length} symboler | **Positioner:** ${topN} à ${(weight * 100).toFixed(0)} % | **Benchmark (${bench}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${costPct.toFixed(2)} % per affär (netto)`);
   lines.push("");
   lines.push("> Momentum-proxy (positiv " + "lookback-avkastning, topp 2) ersätter LLM:ens case-urval.");
   lines.push("> Resultatet validerar RAMVERKET (rotationstakt, stop-/målnivåer, 5-dagars håll) – inte strategin som helhet.");
@@ -202,7 +214,7 @@ async function main(){
   lines.push("*Detta är automatiserat beslutsstöd, inte finansiell rådgivning.*");
 
   mkdirSync("reports/backtest", { recursive: true });
-  const out = `reports/backtest/backtest-${ymd}-${market}.md`;
+  const out = `reports/backtest/backtest-${ymd}-${market}-top${topN}.md`;
   writeFileSync(out, lines.join("\n") + "\n");
   console.log("\nSkrev " + out);
   console.log(lines.slice(6).join("\n"));

@@ -302,7 +302,11 @@ export async function run(fetchImpl = globalThis.fetch){
   return out;
 }
 
-// Rullande prishistorik för sparklines (max 60 punkter/ticker, en per dag).
+// Rullande prishistorik (max 250 punkter/ticker ≈ 1 år, en per dag).
+// Taket var 60 punkter när filen bara matade sparklines. Sedan alpha-mätningen tillkom
+// används serien till att räkna benchmarkets utveckling över varje affärs EXAKTA hållperiod,
+// och katalysator-horisonterna är nu upp till 6 veckor – med 60 punkter föll äldre affärer
+// tyst ur mätningen (perioden utanför historiken ⇒ alpha = null). Retron läser samma fil.
 export function updatePriceHistory(quotes){
   const path = "state/price_history.json";
   let hist = { series: {} };
@@ -314,7 +318,7 @@ export function updatePriceHistory(quotes){
     const arr = hist.series[sym] || (hist.series[sym] = []);
     if (arr.length && arr[arr.length - 1][0] === today) arr[arr.length - 1] = [today, q.price];
     else arr.push([today, q.price]);
-    if (arr.length > 60) hist.series[sym] = arr.slice(-60);
+    if (arr.length > 250) hist.series[sym] = arr.slice(-250);
   }
   hist.generatedAt = new Date().toISOString();
   mkdirSync("state", { recursive: true });

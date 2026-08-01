@@ -39,13 +39,21 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
   filtreras bort ur urvalsstatistiken.
 - **Kassa (0 %) endast** om sleeven inte kan handlas; motivera då i rapporten.
 
-## NIVÅER & OMSÄTTNING (kalibrerat mot backtest 2026-07-31)
-Underlag: `reports/backtest/backtest-260731-us.md` – mekaniska skelettet (momentum-proxy, topp 2,
-5 dagars håll) över 5 år och 258 veckor på 30 stora US-bolag.
-1. **STOPPBREDD:** till skillnad från nordiska boken presterade US-gridet BÄST med den bredaste
-   kombinationen, 20 dagars lookback / −5 % stop / +10 % mål (PF 1,13 brutto, +61 % kedjat).
-   Använd därför bandet **stop 4–6 % under entry**, satt tekniskt inom bandet, med mål
-   ≥ 2× stoppavståndet. US-aktier rör sig mer per dag än nordiska – en 3 %-stop stoppas ut på brus.
+## NIVÅER & OMSÄTTNING (kalibrerat mot backtest, omkört 2026-08-02 med 4 positioner)
+Underlag: `reports/backtest/backtest-260802-us-top4.md` – mekaniska skelettet (momentum-proxy,
+**topp 4 à 25 %**, 5 dagars håll) över 5 år och 258 veckor på 30 stora US-bolag, netto efter
+courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`) simulerade
+2 positioner à 50 % och matchade inte hur boken faktiskt handlas sedan 2026-07-31.
+0. **US-SKELETTET ÄR KLART SÄMRE ÄN DET NORDISKA:** PF 0,65–0,79 netto mot nordiska bokens
+   0,89–0,96, och kedjat utfall −73 % till −86 %. Orsaken är växlingspåslaget: 0,75 % rundtur
+   × ~200 affärer per år äter mer än hela bruttoedgen. Konsekvensen för dig är INTE att sänka
+   kraven för att jaga igen utfallet, utan tvärtom: **var mer selektiv i US-boken än i den
+   nordiska** – färre, större och längre case, och sleeven i stället för ett halvbra case.
+1. **STOPPBREDD:** till skillnad från nordiska boken presterar US-gridet BÄST med den bredaste
+   kombinationen, 20 dagars lookback / −5 % stop / +10 % mål (PF 0,79 netto, minst dåligt
+   kedjat utfall) – samma rangordning som i 2-positionskörningen. Använd bandet
+   **stop 4–6 % under entry**, satt tekniskt inom bandet, med mål ≥ 2× stoppavståndet.
+   US-aktier rör sig mer per dag än nordiska – en 3 %-stop stoppas ut på brus.
 2. **KOSTNADSTRÖSKEL (ny, hård regel):** us-boken betalar BÅDE courtage och växlingspåslag –
    ~0,75 % rundtur enligt `config/kostnader.json`, tre gånger den nordiska bokens. Ett case får
    bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.

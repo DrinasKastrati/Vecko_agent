@@ -540,7 +540,27 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   lärloopen, daglig rutin, felsökning, ordlista) med två inbäddade skärmbilder i `docs/manual/`
   och `make-manual.bat` för omrendering. Ren bruksanvisning – noll git/tester/filstruktur; den
   tekniska driftmanualen ligger kvar i `MANUAL.md`.
-  Testsviten: **288 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
+  **(8) Backtestet matchade inte strategin.** Gridet simulerade fortfarande `topN: 2` /
+  `weight: 0.5` trots att böckerna gick till 4 à 25 % den 2026-07-31 – och det är UR DET GRIDET
+  prompternas hårda stoppband och kostnadströsklar är hämtade. `backtest.mjs` tar nu antal
+  positioner som fjärde argument (default 4, vikt = 1/topN), skriver det i rubriken och i
+  filnamnet (`backtest-yymmdd-<marknad>-top<N>.md`). Båda marknaderna omkörda 5 år:
+  **nordic top4 slår top2 i varje enskild cell** (PF 0,86–0,91 → 0,89–0,96, kedjat −50,5 % →
+  −21,2 % i bästa cellen, max DD −58 % → −40 %) – spridningen gör det den ska, och −3 %/+6 %
+  är fortfarande bästa bandet, så inga nivåregler behövde ändras. **US top4: PF 0,65–0,79**,
+  kedjat −73 % till −86 %, med bredaste kombinationen fortsatt bäst; växlingspåslaget (0,75 %
+  rundtur × ~200 affärer/år) äter hela bruttoedgen. Båda prompternas underlagssektion pekar nu
+  på rätt fil med rätt siffror, och US-prompten säger uttryckligen att slutsatsen är HÖGRE
+  selektivitet, inte jakt på igen-utfall. Bonusfix: filnamnet byggdes av lokalt datum medan
+  rubriken skrev UTC, så en körning efter lokal midnatt gav "260802" med "Datum: 2026-08-01".
+  **(9) Fyra mindre luckor:** US-boken mättes bara med ackumulerad avkastning – US-vyn har nu
+  handelsstatistik, riskmått, alpha mot ^GSPC och historiktabell (samma rena funktioner, US-kostnad
+  inkl. växlingspåslag). `price_history.json` höjt 60 → 250 punkter/ticker (alpha-mätningen föll
+  tyst ur för affärer äldre än 60 dagar, medan katalysator-horisonten är upp till 6 veckor).
+  Watchdogen larmar på `movers.json` äldre än 9 dygn (en död lördagsaction tystade annars
+  retrons breddsökning). `SAAB.ST` borttagen ur `config/watchlist.txt` – tickern existerar inte
+  på Yahoo (bolaget är `SAAB-B.ST`) och stod för hela "1 av 38 misslyckade" i prices.json.
+  Testsviten: **291 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11
@@ -621,7 +641,9 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   3. Kontrollera `feeds`-fältet i `state/news_feed.json`: ett flöde som är verkligt dött visar
      nu "HTTP xxx – båda försöken" (ett enstaka fel görs om automatiskt sedan 2026-08-02).
   4. Kör om backtestet när universum eller nivåer ändras:
-     `node .github/scripts/backtest.mjs nordic 5y` (resp. `us 5y`). Kräver nät.
+     `node .github/scripts/backtest.mjs nordic 5y 4` (resp. `us 5y 4`). Kräver nät. Sista
+     argumentet är antalet positioner – utan det simuleras 4 à 25 %, som böckerna faktiskt
+     handlas. Gridet på 2 positioner (filerna `backtest-260731-*`) är historik.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.

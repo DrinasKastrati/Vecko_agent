@@ -79,6 +79,19 @@ export function checkStale(opts){
           "`alerts.mjs` som är äldre än hjärtslags-fixen." });
   }
 
+  // Veckans rörelser: movers.yml kör lördagar. Filen är miss-retrons PRIMÄRA missdetektion,
+  // så en död action gör att retron tyst tappar hela sin breddsökning. 9 dygn = en hel
+  // lördagskörning har uteblivit (7 dygn + marginal för sen körning).
+  if ("moversGeneratedAt" in opts){
+    const mt = opts.moversGeneratedAt ? Date.parse(opts.moversGeneratedAt) : NaN;
+    if (isNaN(mt) || (n.getTime() - mt) > 9 * 24 * 3600 * 1000)
+      problems.push({ key: "movers", title: "Watchdog: movers.json är inaktuell",
+        body: "`state/movers.json` har generatedAt `" + (opts.moversGeneratedAt || "saknas") +
+          "` (äldre än 9 dygn). Kontrollera Actions → \"Veckans rörelser\". Utan filen faller " +
+          "miss-retron tillbaka på `price_history.json`, som bara täcker de ~10 bevakade " +
+          "nordiska tickerna och därför per konstruktion inte kan hitta en miss utanför dem." });
+  }
+
   // Nyhetsflödet: news.yml kör varannan timme vardagar, så >6 h = actionen är nere.
   if ("newsGeneratedAt" in opts){
     const nt = opts.newsGeneratedAt ? Date.parse(opts.newsGeneratedAt) : NaN;
@@ -112,6 +125,8 @@ function main(){
   try { newsGen = JSON.parse(readFileSync("state/news_feed.json", "utf8")).generatedAt || null; } catch {}
   let decisions = null;
   try { decisions = latestDecisionYmd(JSON.parse(readFileSync("state/decisions.json", "utf8"))); } catch {}
+  let moversAt = null;
+  try { moversAt = JSON.parse(readFileSync("state/movers.json", "utf8")).generatedAt || null; } catch {}
   let alertsAt = null;
   try {
     const a = JSON.parse(readFileSync("state/alerts.json", "utf8"));
@@ -126,6 +141,7 @@ function main(){
     latestScout: latestReportDate(ls("reports/scout"), "rapport"),
     latestDecisionDate: decisions,
     alertsCheckedAt: alertsAt,
+    moversGeneratedAt: moversAt,
     newsGeneratedAt: newsGen
   });
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");

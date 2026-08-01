@@ -188,6 +188,14 @@ ok("watchdog tyst på färskt hjärtslag",
 ok("watchdog larmar när checkedAt saknas helt (gammal alerts.mjs)",
   WD.checkStale({ ...wdBase, alertsCheckedAt: null }).some(p => p.key === "alerts"));
 
+// veckans rörelser: en död lördagsaction får inte tysta retrons breddsökning
+ok("watchdog larmar på gammal movers.json",
+  WD.checkStale({ ...wdBase, moversGeneratedAt: "2026-07-01T06:00:00Z" }).some(p => p.key === "movers"));
+ok("watchdog tyst när movers.json är från senaste lördagen",
+  !WD.checkStale({ ...wdBase, moversGeneratedAt: "2026-07-11T06:00:00Z" }).some(p => p.key === "movers"));
+ok("watchdog larmar när movers.json saknas",
+  WD.checkStale({ ...wdBase, moversGeneratedAt: null }).some(p => p.key === "movers"));
+
 // ---- monitorns hjärtslag (alerts.mjs) ----
 ok("heartbeat förfaller när stämpeln är gammal",
   AL.heartbeatDue({ checkedAt: "2026-07-17T05:00:00Z" }, "2026-07-17T10:00:00Z"));

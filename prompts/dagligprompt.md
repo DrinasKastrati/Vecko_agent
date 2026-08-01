@@ -37,13 +37,21 @@ Strategin: portföljen består normalt av upp till 4 aktier à ~25 %, plus en in
   filtreras bort ur urvalsstatistiken – den är kapitalparkering, inte ett case.
 - **Kassa (0 %) är endast tillåtet** om sleeven av något skäl inte kan handlas; motivera då i rapporten.
 
-## NIVÅER & OMSÄTTNING (kalibrerat mot backtest 2026-07-31)
-Underlag: `reports/backtest/backtest-260731-nordic.md` – det mekaniska skelettet (momentum-proxy,
-topp 2, 5 dagars håll) kört över 5 år och 259 veckor på 30 nordiska storbolag.
-1. **STOPPBREDD:** −3 % stop / +6 % mål gav bäst resultat i gridet (PF 1,08 brutto) och blev
-   sämre ju bredare stoppen sattes. Håll dig därför i bandet **stop 3–5 % under entry** och sätt
-   stoppen tekniskt (strax under stöd) inom det bandet. Bredda ALDRIG stoppen med motiveringen
-   "ge caset luft" – data säger tvärtom. Målet ≥ 2× stoppavståndet (R/R-kravet 2:1 är oförändrat).
+## NIVÅER & OMSÄTTNING (kalibrerat mot backtest, omkört 2026-08-02 med 4 positioner)
+Underlag: `reports/backtest/backtest-260802-nordic-top4.md` – det mekaniska skelettet
+(momentum-proxy, **topp 4 à 25 %**, 5 dagars håll) över 5 år och 259 veckor på 30 nordiska
+storbolag, netto efter courtage. Den tidigare körningen (`backtest-260731-nordic.md`) simulerade
+2 positioner à 50 % och matchade alltså inte hur boken faktiskt handlas sedan 2026-07-31.
+0. **FYRA POSITIONER BEKRÄFTAT AV DATA:** omkörningen slår 2-positionsversionen i VARJE cell i
+   gridet – PF upp (0,86–0,91 → 0,89–0,96), kedjat utfall ungefär halverat i förlust
+   (−50,5 % → −21,2 % i bästa cellen) och max drawdown ned ~15 procentenheter (−58 % → −40 %).
+   Spridningen gör alltså precis det den skulle. Skelettet ligger dock fortfarande under PF 1,0
+   netto: **LLM-urvalet måste tillföra hela edgen** – ramverket bär sig inte självt.
+1. **STOPPBREDD:** −3 % stop / +6 % mål är fortfarande bäst i gridet (PF 0,95–0,96 netto, minst
+   drawdown) och blir sämre ju bredare stoppen sätts – slutsatsen håller alltså även med 4
+   positioner. Håll dig i bandet **stop 3–5 % under entry** och sätt stoppen tekniskt (strax
+   under stöd) inom det bandet. Bredda ALDRIG stoppen med motiveringen "ge caset luft" – data
+   säger tvärtom. Målet ≥ 2× stoppavståndet (R/R-kravet 2:1 är oförändrat).
 2. **KOSTNADSTRÖSKEL (ny, hård regel):** rundturskostnaden står i `config/kostnader.json`
    (nordisk bok ~0,25 % per affär). Ett case får bara väljas om avståndet entry → mål är
    **minst 6 %**, dvs. ≥ 20× rundturskostnaden. Ett case med 3 % uppsida är efter courtage och

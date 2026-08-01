@@ -452,7 +452,21 @@
         const latest = S.usDailies[0] || null;
         const live = this.liveMapFor(p, latest);
         const diff = this.P.diffDailies(S.usDailies[0], S.usDailies[1]);
-        el.innerHTML = R.renderKPIs(p, latest) + R.renderMarket(latest) + R.renderHoldings(latest, p, live, {}, diff);
+        // US-boken mättes tidigare BARA med ackumulerad avkastning – halva systemet saknade
+        // träffsäkerhet, riskmått, alpha och historiktabell. Samma rena funktioner som nordiska
+        // boken, men med US-kostnad (courtage + växlingspåslag) och ^GSPC som benchmark.
+        const usCost = this.P.costFor("us", S.costs);
+        const usAlpha = this.P.computeAlpha(p.history, S.priceHistory, "^GSPC");
+        el.innerHTML = R.renderKPIs(p, latest) + R.renderMarket(latest)
+          + R.renderHoldings(latest, p, live, {}, diff)
+          + '<h3 class="sub">Handelsstatistik <span class="sub-date">US-boken · netto inkl. växlingspåslag</span></h3>'
+          + R.renderTradeStats(this.P.computeTradeStats(p.history, usCost))
+          + '<h3 class="sub">Riskmått <span class="sub-date">ur den kedjade equity-kurvan</span></h3>'
+          + R.renderRiskStats(this.P.computeRiskStats(p.history))
+          + '<h3 class="sub">Alpha mot index <span class="sub-date">utfall minus S&amp;P 500 över samma hållperiod</span></h3>'
+          + R.renderAlphaStats(this.P.computeAlphaStats(p.history, S.priceHistory, "^GSPC"), "S&P 500")
+          + '<h3 class="sub">Historik (stängda positioner)</h3>'
+          + R.renderHistory(p, usAlpha, "S&P 500");
       }
       this.setupUsReportPicker();
     }

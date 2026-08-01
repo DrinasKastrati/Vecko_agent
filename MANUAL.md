@@ -89,8 +89,11 @@ cachas där.
 
 **Köra backtest** (när universum eller stopp/mål-nivåer ändrats, kräver nät):
 
-    node .github/scripts/backtest.mjs nordic 5y
-    node .github/scripts/backtest.mjs us 5y
+    node .github/scripts/backtest.mjs nordic 5y 4
+    node .github/scripts/backtest.mjs us 5y 4
+
+Sista siffran är antalet samtidiga positioner (vikten följer med: 4 ⇒ 25 % per position).
+Utelämnas den används 4, dvs. samma uppsättning som böckerna faktiskt handlas med.
 
 Resultatet hamnar i `reports/backtest/` och syns under Rapporter.
 

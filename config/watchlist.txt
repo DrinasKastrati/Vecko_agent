@@ -22,4 +22,6 @@ NOKIA.HE
 # EQNR.OL
 
 # --- Analys-köade tickers (auto) ---
-SAAB.ST
+# SAAB.ST fanns här men EXISTERAR INTE på Yahoo (bolaget handlas som SAAB-B.ST) och stod för
+# hela "1 av 38 misslyckade" i prices.json. Borttagen 2026-08-02. Analyskön skriver in tickers
+# ordagrant som de köats – kontrollera klassbeteckningen innan en ny rad läggs till här.
