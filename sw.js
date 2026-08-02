@@ -57,6 +57,27 @@ self.addEventListener("fetch", e => {
   // hämta rapporter som inte finns, eller missa dem som gör det.
   if (url.hostname === "api.github.com") return;
 
+  /* CACHEN FÖRST för OFÖRÄNDERLIGA tredjepartsfiler.
+     Nät-först är rätt för VÅRA filer: de pushas utan versionsstämpel i namnet,
+     så cache-först skulle servera gammal kod mot ny data. Det argumentet gäller
+     INTE här – jsdelivr-URL:erna är versionspinnade (chart.js@4.4.3) och Googles
+     typsnittsfiler har innehållshash i sökvägen. Samma URL ger alltid samma
+     byte. Att ändå gå ut på nätet varje gång kostade en rundtur per fil och
+     gjorde att typsnitten kunde byta mitt i renderingen (synligt flimmer). */
+  const IMMUTABLE = ["cdn.jsdelivr.net", "fonts.gstatic.com", "fonts.googleapis.com"];
+  if (IMMUTABLE.indexOf(url.hostname) !== -1) {
+    e.respondWith(
+      caches.match(req).then(hit => hit || fetch(req).then(res => {
+        if (res && (res.ok || res.type === "opaque")) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }))
+    );
+    return;
+  }
+
   e.respondWith(
     fetch(req)
       .then(res => {

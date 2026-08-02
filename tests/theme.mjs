@@ -198,6 +198,22 @@ for (const t of ["deck", "nordlys", "terminal", "enkel"]) {
   ok("hemmode: växeln finns i index.html", (idx.match(/data-hemmode-set=/g) || []).length === 2);
 }
 
+/* Tredjepartsbiblioteken (405 kB) laddas LAT av app.js:lib(). Ligger de som
+   fasta <script> i index.html hämtas de vid varje sidladdning trots att
+   startvyn inte använder en rad av dem – det var orsaken till den sega
+   inladdningen 2026-08-03. */
+{
+  const idx = readFileSync(join(root, "index.html"), "utf8");
+  const app = readFileSync(join(root, "assets", "app.js"), "utf8");
+  const sw = readFileSync(join(root, "sw.js"), "utf8");
+  ok("index.html laddar inga CDN-skript direkt", !/<script[^>]+src="https:\/\/cdn\./.test(idx));
+  for (const lib of ["marked", "chart.js", "lightweight-charts"])
+    ok(`${lib} hämtas via lib() i app.js`, app.includes(lib));
+  ok("lib() har tidsgräns så löftet alltid settlar", /setTimeout\(\(\) => finish\(false\), \d+\)/.test(app));
+  ok("sw.js cachar oföränderlig tredjepart först", sw.includes("cdn.jsdelivr.net") && sw.includes("fonts.gstatic.com"));
+  ok("scrollTo sker utanför vytransitionen", /scrollTo\(0, 0\)[\s\S]{0,200}startViewTransition/.test(app));
+}
+
 ok("assets/manual.css finns", existsSync(join(root, "assets", "manual.css")));
 const manualCss = existsSync(join(root, "assets", "manual.css"))
   ? readFileSync(join(root, "assets", "manual.css"), "utf8") : "";

@@ -7,6 +7,46 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (prestanda: seg inladdning och flimmer vid flikbyte):
+  **Rapporten.** Dren rapporterade att sajten var seg att ladda och flimrade vid flikbyte, och
+  frågade om någon ändring orsakat det.
+  **Svaret var nej – och det gick att visa.** Sessionens webbändringar (enkla vyn, `manual.css`,
+  en rad i `sw.js`) var rent additiva och rörde varken typsnitt, CDN, vytransitioner eller
+  renderingsvägen för övriga vyer. `git diff` mot sessionens startcommit bekräftade det.
+  **Mätning i stället för gissning.** Nätet var inte problemet: alla filer svarade under 330 ms.
+  DOM:en var inte heller problemet – 1 460 noder, `renderAll()` 33 ms, `showView()` 2–3 ms mätt
+  i jsdom. Kvar fanns två strukturella fel som funnits sedan långt tidigare:
+  1. **405 kB tredjeparts-JS på varje sidladdning.** `marked` (35 kB), `chart.js` (206 kB) och
+     `lightweight-charts` (164 kB) låg som fasta `<script>` i `index.html`. Startvyn använder
+     inte en rad av dem: marked behövs först när en rapport öppnas, Chart.js i Avkastning-vyn,
+     Lightweight Charts i kursmodalen.
+  2. **Service workern var nät-först för ALLT**, även versionspinnade jsdelivr-URL:er och Googles
+     typsnittsfiler. Varje besök kostade en nätrundtur per fil, och typsnitten (`display=swap`)
+     hann byta mitt i renderingen – det var flimret vid inladdning.
+  **Åtgärd 1 – lat laddning.** Ny metod `app.js:lib(name)` injicerar skriptet när det behövs,
+  en gång per session. **Med tidsgräns på 8 sekunder:** en `<script>` mot en CDN som varken
+  svarar eller felar ger varken `onload` eller `onerror`, och utan gränsen fastnade rapportvyn på
+  "Hämtar…" i stället för att falla tillbaka på rå markdown. Det felet fångades av
+  `tests/sim.mjs`, inte av tanken.
+  **Åtgärd 2 – cachen först för oföränderlig tredjepart.** Nät-först är rätt för VÅRA filer (de
+  pushas utan versionsstämpel, så cache-först skulle servera gammal kod mot ny data). Argumentet
+  gäller inte `cdn.jsdelivr.net`, `fonts.gstatic.com` eller `fonts.googleapis.com`: samma URL ger
+  alltid samma byte.
+  **Åtgärd 3 – flimret vid flikbyte.** `window.scrollTo(0,0)` låg INUTI
+  `document.startViewTransition()`. Den gamla ögonblicksbilden togs då vid nuvarande
+  scrollposition och den nya vid toppen – skillnaden syntes som ett hopp mitt i toningen.
+  Scrollningen sker nu före övergången, och de layouttvingande stegen (`refreshClamps()` som mäter
+  24 klamp-element, samt `drawChart()`) flyttades till en ny `afterViewSwap()` som körs när
+  toningen är KLAR i stället för mitt i den.
+  **Inte åtgärdat, medvetet:** typsnitten hämtar 16 vikter i fyra familjer. Vikt 500 ser oanvänd
+  ut i en snabb sökning men används som fallback i `font-weight:var(--btn-weight,500)`, så att
+  stryka den vore en tyst utseendeförändring. Med sleeve-cachen i åtgärd 2 hämtas typsnitten
+  ändå bara en gång per enhet.
+  **Tester.** `tests/theme.mjs` (96) larmar nu om ett CDN-skript smyger tillbaka in i
+  `index.html`, om `lib()` tappar sin tidsgräns, om sw.js slutar cacha oföränderlig tredjepart
+  eller om scrollningen flyttar in i övergången igen. `tests/sim.mjs` (109) stubbar biblioteken
+  FÖRE modulerna evalueras – annars väntar varje markdown-väg ut tidsgränsen under boot.
+
 - ✅ 2026-08-02 (enkel vy – Hem svarar på frågan i stället för att visa allt):
   **Problemet.** Hem-vyn visade allt systemet vet: två böcker, ett kort per aktie med kurs,
   stopp, mål, positionsmätare och motivering, plus en högerspalt med bevakning, radar, nyheter

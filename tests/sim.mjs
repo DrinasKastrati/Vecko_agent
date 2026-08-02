@@ -64,6 +64,12 @@ window.fetch = async (url) => {
   return { ok: false, status: 404, text: async () => "", json: async () => ({}) };
 };
 
+/* marked, Chart och Lightweight Charts hamtas i produktion LAT fran CDN av
+   app.js:lib(). I jsdom finns inget nat. Stubben MASTE ligga fore modulerna
+   evalueras: annars vantar retro-/rapportvyn ut lib():s tidsgrans pa 8 s
+   redan under boot, och testerna lasar en tom vy. */
+window.marked ={ parse: md => "<h1>" + md.split("\n")[0].replace(/^#+\s*/, "") + "</h1><p>" + md + '</p><script>alert(1)<\/script>' };
+
 // ---- ladda modulerna i samma ordning som index.html ----
 for (const f of ["vparse.js", "vrender.js", "app.js"])
   window.eval(readFileSync(resolve(root, "assets", f), "utf8"));
@@ -80,6 +86,7 @@ while (doc.getElementById("statusTxt").textContent !== "Live" && Date.now() - t0
 await new Promise(r => setTimeout(r, 600));
 
 // ================= Verifieringar =================
+
 ok("appen når Live-status", doc.getElementById("statusTxt").textContent === "Live");
 ok("fetch mockad och använd", fetchCount > 5);
 
@@ -245,7 +252,7 @@ ok("kurser: Escape stänger modalen", !doc.getElementById("pxModal").classList.c
 
 // ---- Avkastningsdiagrammet (körs om nu när Chart finns) ----
 charts.length = 0;
-dash.drawChart();
+await dash.drawChart();   // async sedan Chart.js laddas lat
 ok("avkastning: diagrammet byggs", charts.length === 1 && charts[0].data.datasets.length >= 1);
 ok("avkastning: strategiserien har punkter", charts[0].data.labels.length >= 1);
 
@@ -261,9 +268,6 @@ const rsel = doc.getElementById("reportSelect");
 ok("rapporter: väljaren fylls med veckorapporter", rsel.options.length > 0);
 ok("rapporter: rapporttext renderad", txt("reportBody").length > 200);
 
-// marked laddas från CDN i produktion och saknas i jsdom – utan stubb faller
-// mdToHtml tillbaka på <pre class="raw"> och rådatatestet mäter ingenting.
-window.marked = { parse: md => "<h1>" + md.split("\n")[0].replace(/^#+\s*/, "") + "</h1><p>" + md + '</p><script>alert(1)<\/script>' };
 
 const raw = doc.getElementById("rawToggle");
 raw.checked = true; change(raw);

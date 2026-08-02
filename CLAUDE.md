@@ -110,6 +110,13 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   OCH WEBBLÄSARE** – inget sparas i repot, inget delas mellan personer. Tema och ljust/mörkt ÄGS
   av `VTheme`; VSettings delegerar dit så det bara finns en sanning. Precedens för läget:
   `?mode=` i URL:en > sparat val > temats standardläge.
+- **Tredjepartsbiblioteken laddas LAT (sedan 2026-08-03).** `marked` (35 kB), `chart.js` (206 kB)
+  och `lightweight-charts` (164 kB) låg som fasta `<script>` i `index.html` och hämtades vid VARJE
+  sidladdning – 405 kB som startvyn inte använder en rad av. De hämtas nu av `app.js:lib(name)`
+  när de faktiskt behövs (rapport öppnas / Avkastning visas / kursmodalen öppnas). **Lägg dem
+  aldrig tillbaka i `index.html`** – `tests/theme.mjs` larmar. `lib()` har en tidsgräns på 8 s och
+  resolvar `false` i stället för att hänga: varje anropsställe har en reserv (rå markdown,
+  "diagram kunde inte laddas"), och en död CDN får aldrig låsa en vy på "Hämtar…".
 - **Offline:** `sw.js` (service worker) cachar appskalet. Strategin är nät-först med cachen som
   reserv, aldrig tvärtom: appen uppdateras genom filpush utan versionsstämplade filnamn, så
   cache-först skulle servera gammal `vparse.js` mot nya rapporter och ge tyst felparsning.

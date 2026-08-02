@@ -193,6 +193,44 @@
     }
     buildLiveMap() { return this.liveMapFor(this.state.portfolio, this.state.dailies[0]); }
 
+    /* ---- LAT LADDNING AV TREDJEPARTSBIBLIOTEK ----------------------------
+       marked, Chart.js och Lightweight Charts låg tidigare som tre <script> i
+       index.html och hämtades vid VARJE sidladdning: 405 kB som ingen behöver
+       för att se startvyn. marked används först när en rapport öppnas, Chart.js
+       i Avkastning-vyn, Lightweight Charts i kursmodalen. Nu hämtas de när de
+       faktiskt behövs, en gång per session.
+
+       Misslyckas hämtningen (offline) resolvar löftet ändå med false – varje
+       anropsställe har redan en reserv (rå markdown respektive "diagram kunde
+       inte laddas"), och en trasig CDN får aldrig sänka hela vyn. */
+    lib(name) {
+      const URLS = {
+        marked: "https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js",
+        Chart: "https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js",
+        LightweightCharts: "https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"
+      };
+      this._libs = this._libs || {};
+      if (root[name]) return Promise.resolve(true);
+      if (this._libs[name]) return this._libs[name];
+      const url = URLS[name];
+      if (!url) return Promise.resolve(false);
+      this._libs[name] = new Promise(resolve => {
+        /* Löftet MÅSTE alltid settla. En <script> mot en CDN som varken svarar
+           eller felar (kapat nät, DNS som hänger) ger varken onload eller
+           onerror – utan tidsgränsen fastnade rapportvyn på "Hämtar…" i stället
+           för att falla tillbaka på rå markdown. Fångades av tests/sim.mjs. */
+        let done = false;
+        const finish = okv => { if (!done) { done = true; resolve(okv); } };
+        const timer = setTimeout(() => finish(false), 8000);
+        const s = document.createElement("script");
+        s.src = url; s.async = true;
+        s.onload = () => { clearTimeout(timer); finish(!!root[name]); };
+        s.onerror = () => { clearTimeout(timer); finish(false); };
+        document.head.appendChild(s);
+      });
+      return this._libs[name];
+    }
+
     /* Enkel eller detaljerad Hem-vy. VSettings äger valet (localStorage, per
        enhet) och speglar det till <html data-hemmode>. Läs alltid attributet –
        då fungerar växlingen även om settings.js inte hunnit initiera. */
@@ -386,11 +424,18 @@
     }
 
     // ---- kurshistorik-modal (klick på kort i Kurser) ----
-    openPxChart(tk) {
+    async openPxChart(tk) {
       const modal = this.el("pxModal");
+      if (!modal) return;
+      /* Diagrambiblioteken hämtas först här – modalen öppnas sällan och de två
+         väger tillsammans 370 kB. Lightweight Charts är förstahandsval; går den
+         inte att hämta försöker vi med Chart.js som reserv. */
+      if (!root.LightweightCharts && !root.Chart) {
+        if (!await this.lib("LightweightCharts")) await this.lib("Chart");
+      }
       // Endera diagrambiblioteket räcker – Lightweight Charts är förstahandsval,
       // Chart.js reserv. Kräv inte Chart.js när LWC finns.
-      if (!modal || !(root.LightweightCharts || root.Chart)) return;
+      if (!(root.LightweightCharts || root.Chart)) return;
       this.el("pxModalTitle").textContent = tk;
       modal.classList.add("open");
       const av = this.el("pxModalAvanza");
@@ -596,6 +641,7 @@
       body.innerHTML = '<div class="empty">Hämtar båda analyserna…</div>';
       const col = async meta => {
         const md = await this.getMd(meta.path);
+        await this.ensureMarked();
         const verdict = this.P.stripMd(this.P.field(md, "Slutsats")).slice(0, 70);
         return '<div class="cmp-col"><div class="an-head"><div><span class="an-tk">' + this.R.esc(meta.ticker) + '</span> <span class="an-date">' + this.R.esc(meta.dateISO) + '</span></div>' +
           (verdict ? '<span class="an-verdict">' + this.R.esc(verdict) + '</span>' : '') + '</div>' +
@@ -668,7 +714,7 @@
       if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
       const gh = this.el("usGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
       body.innerHTML = '<div class="empty">H\u00e4mtar\u2026</div>';
-      try { body.innerHTML = this.mdToHtml(await this.getMd(meta.path)); }
+      try { const md = await this.getMd(meta.path); await this.ensureMarked(); body.innerHTML = this.mdToHtml(md); }
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
     }
 
@@ -805,7 +851,7 @@
       if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
       const gh = this.el("retroGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
       body.innerHTML = '<div class="empty">Hämtar…</div>';
-      try { body.innerHTML = this.mdToHtml(await this.getMd(meta.path)); }
+      try { const md = await this.getMd(meta.path); await this.ensureMarked(); body.innerHTML = this.mdToHtml(md); }
       catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
     }
 
@@ -824,6 +870,7 @@
       try {
         const md = await this.getMd(meta.path);
         this.el("reportBody").dataset.raw = md;
+        await this.ensureMarked();
         this.el("reportBody").innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md);
         this.buildReportRail(md, meta);
       } catch (e) {
@@ -895,6 +942,11 @@
       this._tocOff = () => target.removeEventListener("scroll", mark);
       mark();
     }
+    /* Väntar in marked innan markdown renderas. Anropas före varje mdToHtml
+       som gäller ett helt dokument – den synkrona mdToHtml behålls oförändrad
+       så alla befintliga anrop fortsätter fungera (då utan formatering, precis
+       som när CDN:et var nere tidigare). */
+    ensureMarked() { return this.lib("marked"); }
     mdToHtml(md) {
       let html;
       try { html = root.marked ? root.marked.parse(md) : '<pre class="raw">' + this.R.esc(md) + '</pre>'; }
@@ -946,6 +998,7 @@
       body.innerHTML = '<div class="empty">Hämtar…</div>';
       try {
         const md = await this.getMd(meta.path);
+        await this.ensureMarked();
         const verdict = this.P.stripMd(this.P.field(md, "Slutsats")).slice(0, 70);
         const price = this.P.stripMd(this.P.field(md, "Kurs")).slice(0, 90);
         const head = '<div class="an-head"><div><span class="an-tk">' + this.R.esc(meta.ticker) + '</span> <span class="an-date">' + this.R.esc(meta.dateISO) + '</span></div>' +
@@ -976,8 +1029,9 @@
     }
 
     // ---- chart (strategi + benchmark-overlay) ----
-    drawChart() {
+    async drawChart() {
       const canvas = this.el("returnChart");
+      if (canvas) await this.lib("Chart");   // hämtas först när Avkastning öppnas
       if (!canvas || !root.Chart) { if (this.el("chartWrap")) this.el("chartWrap").style.display = "none"; this.el("chartNote").textContent = root.Chart ? "" : "Diagram kunde inte laddas (offline?)."; return; }
       const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
       const trades = this.P.buildTradeSeries(this.state.portfolio.history, this.P.costFor("nordic", this.state.costs));
@@ -1080,11 +1134,26 @@
       // rörelse – byts vyn direkt som förut.
       const reduce = (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches)
         || document.documentElement.getAttribute("data-motion") === "off";   // valet i Inställningar
+      /* Rulla till toppen FÖRE övergången. Låg scrollningen kvar inuti
+         startViewTransition togs den gamla ögonblicksbilden vid nuvarande
+         scrollposition och den nya vid toppen – skillnaden syntes som ett
+         hopp/flimmer mitt i toningen. */
+      try { root.scrollTo(0, 0); } catch (e) {}
       if (document.startViewTransition && !reduce) {
-        document.startViewTransition(() => this.swapView(view));
+        const t = document.startViewTransition(() => this.swapView(view));
+        /* Mätningarna (klamp-höjder) och diagramritningen görs EFTER att
+           toningen är klar. Körs de under övergången tvingar de fram layout mitt
+           i animationen, vilket rycker. */
+        if (t && t.finished && t.finished.then) t.finished.then(() => this.afterViewSwap(view), () => this.afterViewSwap(view));
+        else this.afterViewSwap(view);
         return;
       }
       this.swapView(view);
+      this.afterViewSwap(view);
+    }
+    afterViewSwap(view) {
+      if (view === "avkastning") requestAnimationFrame(() => this.drawChart());
+      this.refreshClamps(); // nyligen synliga klampar kan mätas först nu
     }
     swapView(view) {
       const views = [...document.querySelectorAll(".view")];
@@ -1105,9 +1174,6 @@
           nav.scrollTo({ left: nav.scrollLeft + (a.left - n.left) - (n.width - a.width) / 2, behavior: "smooth" });
       }
       try { history.replaceState(null, "", "#" + view); } catch (e) {}
-      window.scrollTo(0, 0);
-      if (view === "avkastning") requestAnimationFrame(() => this.drawChart());
-      this.refreshClamps(); // nyligen synliga klampar kan mätas först nu
     }
     initNav() {
       document.querySelectorAll(".subnav a").forEach(a =>

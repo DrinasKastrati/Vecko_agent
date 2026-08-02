@@ -284,12 +284,11 @@
   </div>
 </div>
 
-<!-- 3:e-partsbibliotek -->
-<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<!-- Lightweight Charts: hårkors, zoom och panorering i kursmodalen. Chart.js
-     ritar fortfarande avkastningskurvan (flera serier + legend). -->
-<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<!-- 3:e-partsbibliotek laddas LAT av app.js (metoden lib()), inte här.
+     marked (35 kB), Chart.js (206 kB) och Lightweight Charts (164 kB) behövs
+     först när en rapport öppnas, Avkastning-vyn visas respektive kursmodalen
+     öppnas. Som fasta <script> hämtades 405 kB vid varje sidladdning utan att
+     startvyn använde en enda rad av dem. Lägg dem ALDRIG tillbaka här. -->
 <!-- egna moduler (ordning spelar roll: parse -> render -> app) -->
 <script src="assets/vparse.js"></script>
 <script src="assets/vrender.js"></script>
