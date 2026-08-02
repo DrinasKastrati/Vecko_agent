@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kom igång – Vecko_agent</title>
+<style>
+  /* Print-först: filen renderas till PDF med make-manual.bat, men ska också
+     gå att läsa direkt i webbläsaren. */
+  @page{size:A4;margin:18mm 16mm}
+  :root{
+    --ink:#14181E; --soft:#41474F; --muted:#6B7280; --line:#E1E4E9;
+    --green:#157F5B; --red:#B0322F; --blue:#1D5FB4; --amber:#A96A00; --purple:#5B4CC4;
+    --wash:#F7F8FA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;color:var(--ink);background:#fff;
+    font:15px/1.62 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .page{max-width:760px;margin:0 auto;padding:28px 22px 60px}
+  h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:0 0 4px}
+  h2{font-size:20px;letter-spacing:-.01em;margin:34px 0 10px;padding-bottom:7px;
+    border-bottom:2px solid var(--ink);page-break-after:avoid}
+  h3{font-size:15.5px;margin:20px 0 6px;page-break-after:avoid}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  .lead{font-size:16.5px;color:var(--soft);margin:10px 0 0}
+  .meta{color:var(--muted);font-size:12.5px;margin:14px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+  .toc{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:24px 0}
+  .toc ol{margin:0;padding-left:20px}
+  .toc li{margin:3px 0}
+  .box{border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--wash);
+    border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;page-break-inside:avoid}
+  .box--warn{border-left-color:var(--amber);background:#FDF7EC}
+  .box--stop{border-left-color:var(--red);background:#FDF2F1}
+  .box b{display:block;margin-bottom:3px}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;page-break-inside:avoid}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--wash);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  code{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--wash);
+    padding:1px 5px;border-radius:4px}
+  .tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px;white-space:nowrap}
+  .t-kop{background:rgba(21,127,91,.12);color:var(--green)}
+  .t-salj{background:rgba(176,50,47,.1);color:var(--red)}
+  .t-behall{background:rgba(29,95,180,.1);color:var(--blue)}
+  .t-avvakta{background:rgba(169,106,0,.12);color:var(--amber)}
+  .t-plan{background:rgba(91,76,196,.1);color:var(--purple)}
+  .gauge{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--wash);
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0;white-space:pre;overflow-x:auto}
+  .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .disc{color:var(--amber);font-weight:600}
+  section{page-break-inside:auto}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Kom igång</h1>
+<p class="lead">Det du behöver veta för att använda Vecko_agent. Ingen teknik, inga förkunskaper
+– räkna med tjugo minuters läsning en gång, sedan fem minuter om dagen.</p>
+<p class="meta">Vecko_agent · dashboard: <code>drinaskastrati.github.io/Vecko_agent</code><br/>
+Vill du förstå <em>hur</em> systemet resonerar och hur mycket du bör lita på det – läs
+<b>Systemguide.html</b> i stället. Den här filen handlar bara om att använda det.</p>
+
+<div class="toc">
+<ol>
+  <li>Vad det här är – och vad det inte är</li>
+  <li>Öppna sidan och lägg den på mobilen</li>
+  <li>Skärmen på trettio sekunder</li>
+  <li>Läsa ett innehavskort</li>
+  <li>De fyra beskeden</li>
+  <li>Ändra utseendet</li>
+  <li>Din dagliga rutin</li>
+  <li>När något ser konstigt ut</li>
+  <li>Ordlista</li>
+</ol>
+</div>
+
+<section>
+<h2>1. Vad det här är – och vad det inte är</h2>
+<p>Vecko_agent är ett automatiskt beslutsstöd för aktier. Varje handelsdag går programmet
+igenom kurser, nyheter och sina egna innehav och lämnar ett tydligt besked om varje aktie:
+<span class="tag t-kop">KÖP</span> <span class="tag t-salj">SÄLJ</span>
+<span class="tag t-behall">BEHÅLL</span>. Allt samlas på en webbsida – <em>dashboarden</em> –
+som du läser på dator eller mobil.</p>
+
+<div class="box box--stop">
+<b>Inga riktiga pengar rör sig</b>
+Systemet är inte kopplat till din depå och lägger inga ordrar. Det föreslår – du bestämmer och
+du utför affären själv hos din bank. Allt du ser är <span class="disc">automatiserat
+beslutsstöd, inte finansiell rådgivning.</span>
+</div>
+
+<p>Systemet sköter två helt separata portföljer, som aldrig blandas ihop:</p>
+<table>
+<tr><th>Portfölj</th><th>Innehåll</th><th>Valuta</th></tr>
+<tr><td><b>Nordisk</b></td><td>Upp till fyra nordiska aktier, ungefär en fjärdedel av kapitalet
+i varje, plus en indexdel som håller pengar utan aktivt case</td><td>SEK</td></tr>
+<tr><td><b>US</b></td><td>Amerikanska aktier enligt samma modell</td><td>USD</td></tr>
+</table>
+<p>Ordet <b>bok</b> används ibland om en portfölj – det betyder samma sak.</p>
+</section>
+
+<section>
+<h2>2. Öppna sidan och lägg den på mobilen</h2>
+<p>Gå till <code>drinaskastrati.github.io/Vecko_agent</code> i vilken webbläsare som helst.
+Ingen inloggning. Sidan hämtar färsk data varje gång du öppnar den.</p>
+
+<h3>Lägg till på hemskärmen</h3>
+<p>Öppna adressen i mobilen och välj <b>Lägg till på hemskärmen</b> (Safari: dela-ikonen;
+Chrome: menyn uppe till höger). Då startar den som en app, utan adressfält. Den fungerar även
+utan täckning – du ser då senast hämtade läge i stället för ingenting alls.</p>
+
+<h3>Statusraden längst upp</h3>
+<table>
+<tr><th>Vad du ser</th><th>Betyder</th></tr>
+<tr><td>Grön prick + <b>Live</b></td><td>Data hämtad, allt normalt</td></tr>
+<tr><td>Gul prick + <b>Hämtar…</b></td><td>Laddar just nu</td></tr>
+<tr><td>Röd prick + <b>Fel</b></td><td>Kunde inte nå datan – tryck <b>Uppdatera</b></td></tr>
+<tr><td>«data byggd för N h sedan»</td><td>Datan är äldre än sex timmar. På en handelsdag är
+det värt att titta på, på en helg är det normalt.</td></tr>
+</table>
+</section>
+
+<section>
+<h2>3. Skärmen på trettio sekunder</h2>
+<p><b>Överst</b> ligger statusraden och knapparna: kugghjulet (inställningar), sol/måne
+(ljust eller mörkt), klockan (skrivbordsnotiser) och pilen (uppdatera).</p>
+<p><b>Menyn</b> ligger till vänster på dator och som en rad längst ned på mobil. Elva vyer,
+men du behöver i praktiken tre:</p>
+<table>
+<tr><th>Vy</th><th>Använd den när du vill…</th></tr>
+<tr><td><b>Hem</b></td><td>…se allt du äger och vad som bestämdes idag. <b>Börja alltid här.</b></td></tr>
+<tr><td><b>Rapporter</b></td><td>…läsa robotens egna ord om varför</td></tr>
+<tr><td><b>Avkastning</b></td><td>…se om det går bra</td></tr>
+</table>
+<p>De övriga åtta (Total, Nordisk, US-rotation, USA &amp; Krypto, Aktieanalys, Nyheter, Kurser,
+Retro) är fördjupningar. Du missar inget viktigt genom att hoppa över dem.</p>
+<p class="meta">Tycker du att det är för mycket på skärmen finns ett avskalat läge som döljer
+all statistik och lämnar kvar innehav, beslut, rapport och nyheter. Se avsnitt 6.</p>
+</section>
+
+<section>
+<h2>4. Läsa ett innehavskort</h2>
+<p>Det här är den enda färdighet du verkligen behöver. Varje aktie visas som ett kort på
+Hem-vyn. Överst står bolaget och dagens besked. Sedan fyra tal:</p>
+<table>
+<tr><th>Fält</th><th>Betyder</th></tr>
+<tr><td><b>Entry</b></td><td>Kursen positionen köptes på</td></tr>
+<tr><td><b>Stop-loss</b></td><td>Nivån där förlusten tas. Nås den ska positionen säljas.</td></tr>
+<tr><td><b>Målkurs</b></td><td>Nivån där vinsten tas hem</td></tr>
+<tr><td><b>Vikt</b></td><td>Hur stor del av portföljen aktien utgör</td></tr>
+</table>
+
+<h3>Positionsmätaren</h3>
+<p>Under talen ligger en avlång mätare. Den visar var kursen står <em>mellan</em> stoppen och
+målet – vänsterkanten är stoppet, högerkanten är målet, det vita strecket är nu.</p>
+<div class="gauge">stopp 560          entry 585                    mål 635
+|─────────────────────█──────────────────────────|
+                      ▲
+                    nu 597,90</div>
+<p>Ju längre åt höger strecket ligger, desto närmare målet. Kryper det åt vänster närmar sig
+positionen sitt stopp. Du behöver inte räkna – du behöver bara se åt vilket håll det lutar.</p>
+
+<h3>LIVE-raden</h3>
+<p>Under mätaren står aktuell kurs och tre procenttal: hur mycket det gått sedan entry, hur
+långt till målet och hur långt till stoppet. Längst till höger står tidpunkten kursen hämtades.
+<b>Är den tidpunkten gammal är procenttalen också gamla.</b></p>
+
+<div class="box box--warn">
+<b>Överstruket bolagsnamn</b>
+Betyder att positionen är stängd. Kortet ligger kvar under dagen så att du ser vad som hände.
+</div>
+</section>
+
+<section>
+<h2>5. De fyra beskeden</h2>
+<table>
+<tr><th>Besked</th><th>Betyder</th><th>Vad du gör</th></tr>
+<tr><td><span class="tag t-kop">KÖP</span></td><td>Ny position föreslås</td>
+    <td>Köp till angiven kurs, lägg in stoppet direkt</td></tr>
+<tr><td><span class="tag t-salj">SÄLJ</span></td><td>Positionen ska stängas</td>
+    <td>Sälj. Det är den enda ordern som är brådskande.</td></tr>
+<tr><td><span class="tag t-behall">BEHÅLL</span></td><td>Ingen ändring</td>
+    <td>Ingenting. Det här är det vanligaste beskedet och det är meningen.</td></tr>
+<tr><td><span class="tag t-avvakta">AVVAKTA</span></td><td>Kursen kunde inte bekräftas</td>
+    <td>Ingenting. Systemet vägrar fatta beslut på osäkra kurser – det är ett skydd, inte ett fel.</td></tr>
+<tr><td><span class="tag t-plan">PLAN</span></td><td>Villkorad order</td>
+    <td>Köps först om kursen når en viss nivå. Ligger och väntar tills dess.</td></tr>
+</table>
+
+<h3>Signaler under dagen</h3>
+<p>En gång i timmen under börstid kontrolleras om någon kurs korsat ett stopp, ett mål eller en
+väntande köpnivå. Händer det dyker en färgad banner upp överst på sidan. Vill du ha besked även
+när sidan ligger i bakgrunden: tryck på klock-knappen och godkänn notiser. Det kräver att fliken
+är öppen.</p>
+<div class="box">
+<b>En signal är inte ett beslut</b>
+Bannern säger bara att en nivå passerats. Robotens omdöme kommer i nästa rapport. Vid ett träffat
+stopp behöver du dock sällan vänta – stoppet är hela poängen med stoppet.
+</div>
+</section>
+
+<section>
+<h2>6. Ändra utseendet</h2>
+<p>Tryck på <b>kugghjulet</b> uppe till höger. Allt du väljer sparas i den webbläsare du sitter
+vid – öppnar någon annan sidan på sin telefon får de sina egna val. Ingenting delas.</p>
+<table>
+<tr><th>Inställning</th><th>Vad den gör</th></tr>
+<tr><td><b>Tema</b></td><td>Fyra utseenden: <b>Deck</b> (standard), <b>Nordlys</b> (ljus och
+luftig), <b>Term</b> (tät handelsterminal), <b>Enkel</b> (avskalad – döljer all statistik och
+lämnar kvar det väsentliga)</td></tr>
+<tr><td><b>Ljust eller mörkt</b></td><td>Följ temat, följ din telefon/dator, eller välj själv</td></tr>
+<tr><td><b>Textstorlek</b></td><td>Liten, normal eller stor</td></tr>
+<tr><td><b>Täthet</b></td><td>Kompakt får in mer på skärmen</td></tr>
+<tr><td><b>Vy vid start</b></td><td>Vilken vy som öppnas när du laddar sidan</td></tr>
+<tr><td><b>Animationer</b></td><td>Av tar bort övergångarna mellan vyer</td></tr>
+</table>
+<p>Sol/måne-knappen bredvid kugghjulet växlar ljust och mörkt direkt, utan att gå in i
+inställningarna. Ångrar du dig finns <b>Återställ allt</b> längst ned i inställningsvyn.</p>
+<p class="meta">Tycker du dashboarden känns överväldigande: välj temat <b>Enkel</b>. Då försvinner
+nyckeltal, kurslistor och statistik, och kvar blir innehav, dagens beslut, rapport och nyheter.
+Inget tas bort – det göms bara.</p>
+</section>
+
+<section>
+<h2>7. Din dagliga rutin</h2>
+<p>Fem minuter, i den här ordningen:</p>
+<ol>
+  <li><b>Öppna Hem.</b> Titta på statusraden – står det Live?</li>
+  <li><b>Finns en färgad banner överst?</b> Då har en nivå passerats. Läs den först.</li>
+  <li><b>Läs korten uppifrån.</b> Står det bara BEHÅLL är du klar.</li>
+  <li><b>Står det KÖP eller SÄLJ</b> – gå till Rapporter och läs motiveringen innan du handlar.</li>
+  <li><b>Lägg ordern hos din bank</b> och lägg in stoppet samtidigt.</li>
+</ol>
+<p>På helger händer ingenting – börserna är stängda och robotens rapporter säger det rakt ut.
+Måndagar är annorlunda: då görs veckans genomgång och det är då nya innehav oftast dyker upp.</p>
+
+<div class="box">
+<b>Sammanfattat</b>
+Rött besked kräver handling samma dag. Grönt besked kräver att du köper. Blått besked kräver
+ingenting. Är du osäker – läs dagens rapport, den är skriven för att förklara sig.
+</div>
+</section>
+
+<section>
+<h2>8. När något ser konstigt ut</h2>
+<table>
+<tr><th>Symptom</th><th>Vad det betyder</th><th>Vad du gör</th></tr>
+<tr><td>Gul banner: «DATAKÄLLA BLOCKERAD»</td><td>Roboten kunde inte verifiera kurser och
+avstod från beslut</td><td>Ingenting. Det är skyddet som fungerar.</td></tr>
+<tr><td>Röd prick, «Fel»</td><td>Sidan nådde inte datan</td><td>Tryck Uppdatera. Kvarstår det –
+prova igen om en stund.</td></tr>
+<tr><td>Kurserna är gamla</td><td>Kurshämtningen har hakat upp sig</td><td>Vänta till nästa
+hämtning. Fortsätter det – säg till Dren.</td></tr>
+<tr><td>«Monitorn har tystnat»</td><td>Timkontrollen har inte kört på ett tag</td><td>Signaler
+kan missas tills den går igång igen.</td></tr>
+<tr><td>Ingen rapport idag</td><td>Körningen uteblev, eller så är det helg</td><td>Vardag och
+ingen rapport vid lunch – säg till Dren.</td></tr>
+<tr><td>Sidan ser trasig ut</td><td>Halvladdad version i webbläsarens minne</td><td>Ladda om
+sidan helt (Ctrl+F5, eller stäng och öppna appen).</td></tr>
+</table>
+</section>
+
+<section>
+<h2>9. Ordlista</h2>
+<table>
+<tr><td><b>Bok</b></td><td>En av de två portföljerna (nordisk eller US)</td></tr>
+<tr><td><b>Position</b></td><td>Ett innehav i en aktie</td></tr>
+<tr><td><b>Entry</b></td><td>Kursen positionen köptes på</td></tr>
+<tr><td><b>Stop-loss</b></td><td>Nivån där förlusten tas för att den inte ska växa</td></tr>
+<tr><td><b>Målkurs</b></td><td>Nivån där vinsten tas hem</td></tr>
+<tr><td><b>Vikt</b></td><td>Hur stor andel av portföljen en position utgör</td></tr>
+<tr><td><b>Katalysator</b></td><td>Den konkreta händelse som ska få kursen att röra sig –
+en rapport, en order, ett bud</td></tr>
+<tr><td><b>Indexdel (sleeve)</b></td><td>Pengar utan aktivt case placeras i en indexfond i
+stället för att ligga på konto</td></tr>
+<tr><td><b>Bubblare</b></td><td>Ett case som var nära att väljas men inte kom med</td></tr>
+<tr><td><b>Pending / PLAN</b></td><td>En order som väntar på att en viss kurs ska nås</td></tr>
+<tr><td><b>Alpha</b></td><td>Hur mycket bättre eller sämre än index det gick, under exakt
+samma period</td></tr>
+<tr><td><b>Rotation</b></td><td>Måndagens genomgång, då innehav kan bytas ut</td></tr>
+</table>
+</section>
+
+<div class="foot">
+<b>Vecko_agent – Kom igång.</b> Källa: <code>Kom-igang.html</code>, renderas till PDF med
+<code>make-manual.bat</code>.<br/>
+Vill du förstå hur besluten fattas och hur mycket de är värda – läs <b>Systemguide.html</b>.<br/>
+<span class="disc">Allt systemet producerar är automatiserat beslutsstöd, inte finansiell
+rådgivning.</span>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Systemguide – Vecko_agent</title>
+<style>
+  @page{size:A4;margin:18mm 16mm}
+  :root{
+    --ink:#14181E; --soft:#41474F; --muted:#6B7280; --line:#E1E4E9;
+    --green:#157F5B; --red:#B0322F; --blue:#1D5FB4; --amber:#A96A00; --purple:#5B4CC4;
+    --wash:#F7F8FA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;color:var(--ink);background:#fff;
+    font:15px/1.62 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .page{max-width:780px;margin:0 auto;padding:28px 22px 60px}
+  h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:0 0 4px}
+  h2{font-size:20px;letter-spacing:-.01em;margin:36px 0 10px;padding-bottom:7px;
+    border-bottom:2px solid var(--ink);page-break-after:avoid}
+  h3{font-size:15.5px;margin:22px 0 6px;page-break-after:avoid}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  .lead{font-size:16.5px;color:var(--soft);margin:10px 0 0}
+  .meta{color:var(--muted);font-size:12.5px;margin:14px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+  .toc{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:24px 0}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:26px}
+  .toc li{margin:3px 0;break-inside:avoid}
+  .box{border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--wash);
+    border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;page-break-inside:avoid}
+  .box--warn{border-left-color:var(--amber);background:#FDF7EC}
+  .box--stop{border-left-color:var(--red);background:#FDF2F1}
+  .box--ok{border-left-color:var(--green);background:#F1F8F4}
+  .box b{display:block;margin-bottom:3px}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.6px;page-break-inside:avoid}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--wash);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  code{font-family:"JetBrains Mono",Consolas,monospace;font-size:12.8px;background:var(--wash);
+    padding:1px 5px;border-radius:4px}
+  .flow{font-family:"JetBrains Mono",Consolas,monospace;font-size:12.4px;background:var(--wash);
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0;
+    white-space:pre;overflow-x:auto;line-height:1.5}
+  .num{font-variant-numeric:tabular-nums}
+  .neg{color:var(--red);font-weight:600}
+  .pos{color:var(--green);font-weight:600}
+  .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .disc{color:var(--amber);font-weight:600}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Systemguide</h1>
+<p class="lead">Hur Vecko_agent fattar sina beslut, hur de mäts, och hur mycket de faktiskt är
+värda. Skriven för dig som vill förstå maskineriet – inte bara läsa av det.</p>
+<p class="meta">Vill du bara komma igång och använda dashboarden: läs <b>Kom-igang.html</b>.
+Den här filen förutsätter att du redan vet vad entry, stopp och mål är.<br/>
+Driftfrågor – push, tester, backtest, felsökning – ligger i <code>MANUAL.md</code>.</p>
+
+<div class="toc">
+<ol>
+  <li>Systemet i helhet</li>
+  <li>Dygnet och veckan</li>
+  <li>Hur ett case väljs ut</li>
+  <li>Positionsstorlek och indexdelen</li>
+  <li>Nivåerna: stopp, mål, kostnadströskel</li>
+  <li>Katalysatortypen styr planen</li>
+  <li>Varför BEHÅLL är standardvalet</li>
+  <li>Hur resultatet mäts</li>
+  <li>Vad backtestet faktiskt visade</li>
+  <li>Hur systemet lär sig</li>
+  <li>Data, färskhet och spärrar</li>
+  <li>Kända begränsningar</li>
+</ol>
+</div>
+
+<section>
+<h2>1. Systemet i helhet</h2>
+<p>Vecko_agent består av nio delar. Fem av dem är <b>AI-körningar</b> som resonerar och skriver
+text. Fyra är <b>ren aritmetik</b> utan språkmodell – de kostar ingenting att köra och kan
+därför köras ofta.</p>
+
+<table>
+<tr><th>Del</th><th>Typ</th><th>Vad den gör</th></tr>
+<tr><td>Nordisk rotation</td><td>AI</td><td>Bevakar innehav varje handelsdag, gör full
+genomgång på måndagar</td></tr>
+<tr><td>US-rotation</td><td>AI</td><td>Samma sak för den amerikanska boken, egen valuta</td></tr>
+<tr><td>Scout USA &amp; krypto</td><td>AI</td><td>Sammanfattar marknaden och tar fram nya case.
+Genererar idéer – beslutar inte.</td></tr>
+<tr><td>Kapitalallokering</td><td>AI</td><td>Sätter veckovis hur kapitalet fördelas mellan de
+två böckerna</td></tr>
+<tr><td>Miss-retro</td><td>AI</td><td>Granskar veckans missade vinnare och destillerar
+processregler</td></tr>
+<tr><td>Kurshämtaren</td><td>aritmetik</td><td>Hämtar kurser och skriver dem med tidsstämpel</td></tr>
+<tr><td>Intradag-monitorn</td><td>aritmetik</td><td>Jämför kurser mot stopp/mål varje timme</td></tr>
+<tr><td>Nyhetsingestionen</td><td>aritmetik</td><td>Läser pressreleaseflöden varannan timme</td></tr>
+<tr><td>Rörelsedetektorn</td><td>aritmetik</td><td>Hittar veckans stora rörelser i ~110 nordiska
+bolag – underlaget till retron</td></tr>
+</table>
+
+<p>Uppdelningen är inte kosmetisk. De aritmetiska delarna kan köras varje timme utan kostnad och
+utgör systemets <em>sinnen</em>; AI-delarna körs få gånger per dag och utgör dess <em>omdöme</em>.
+Monitorn ersätter aldrig rotationens bedömning – den larmar bara att en nivå korsats.</p>
+
+<h3>Hur informationen rör sig</h3>
+<div class="flow">nyhetsflöden ──┐
+kursdata     ──┼──▶  rotation (AI)  ──▶  rapport + portfölj  ──┐
+lärdomar     ──┘            │                                  │
+                            ▼                                  ▼
+                     beslutslogg                          dashboard
+                            │                                  ▲
+                            ▼                                  │
+rörelsedetektor ──▶  miss-retro (AI) ──▶ lärdomar ─────────────┘
+                                              │
+                                              └──▶ tillbaka in i nästa rotation</div>
+<p>Kretsen är sluten: det systemet lär sig på lördagen påverkar måndagens urval. Lärdomarna
+lever i en egen fil som <em>endast</em> retron får skriva i.</p>
+</section>
+
+<section>
+<h2>2. Dygnet och veckan</h2>
+<p>Ordningen är inte godtycklig – varje körning väntar på att den föregående ska ha skrivit
+sin fil.</p>
+<table>
+<tr><th>Tid (CEST)</th><th>Vad som händer</th></tr>
+<tr><td>05:00, 06:00, sedan var 30:e min</td><td>Kurser hämtas</td></tr>
+<tr><td>från 05:17, varannan timme</td><td>Nyhetsflöden läses in</td></tr>
+<tr><td>07:47</td><td>Scout USA &amp; krypto</td></tr>
+<tr><td>08:40</td><td>Nordisk rotation – efter kurserna, före Stockholmsbörsen 09:00</td></tr>
+<tr><td>varje timme under börstid</td><td>Intradag-monitorn</td></tr>
+<tr><td>15:00</td><td>US-rotation – före USA-öppning</td></tr>
+<tr><td>måndag 15:30</td><td>Kapitalallokering – efter båda veckogenomgångarna</td></tr>
+<tr><td>lördag 06:00 UTC</td><td>Rörelsedetektorn</td></tr>
+<tr><td>lördag 10:00</td><td>Miss-retro – har då komplett facit för veckan</td></tr>
+</table>
+<p>Retron ligger på lördag och inte fredag kväll av ett konkret skäl: fredagens amerikanska
+stängningskurser skrivs 23:10 svensk tid. En fredagskörning hade utvärderat US-boken på
+ofullständiga siffror.</p>
+
+<h3>Två lägen</h3>
+<p>Rotationerna kör i <b>LÄGE A</b> på måndagar – full genomgång, alla innehav omprövas, nya
+case väljs. Övriga handelsdagar kör de <b>LÄGE B</b> – bevakning: har något stopp eller mål
+träffats, har någon tes punkterats, har en väntande order triggat.</p>
+</section>
+
+<section>
+<h2>3. Hur ett case väljs ut</h2>
+<p>På måndagar byggs en bruttolista. Minst fem kandidater <em>måste</em> komma ur nyhetsflödet
+innan roboten får skanna ur eget minne – syftet är att listan ska vara datadriven, inte
+begränsad till bolag modellen råkar minnas. Förra veckans bubblare ska också in i listan, med
+redovisat utfall.</p>
+
+<h3>Poängmodellen</h3>
+<p>Varje kandidat poängsätts 1–10 på fyra dimensioner:</p>
+<table>
+<tr><th>Dimension</th><th>Vikt</th><th>Vad som bedöms</th></tr>
+<tr><td>Katalysator</td><td class="num">35 %</td><td>Hur konkret och nära den utlösande händelsen är</td></tr>
+<tr><td>Teknisk setup</td><td class="num">30 %</td><td>Var kursen står i förhållande till stöd och trend</td></tr>
+<tr><td>Makromedvind</td><td class="num">15 %</td><td>Om omvärlden drar åt samma håll</td></tr>
+<tr><td>Risk/reward</td><td class="num">20 %</td><td>Uppsida i förhållande till stoppavstånd</td></tr>
+</table>
+
+<p>Hårda krav utöver poängen:</p>
+<ul>
+  <li>Risk/reward minst <b>2:1</b> – målet måste ligga minst dubbelt så långt bort som stoppet.</li>
+  <li>Målet måste vara <b>nåbart</b> (avsnitt 5).</li>
+  <li>Högst <b>2 av 4</b> valda case får vara ryktesdrivna.</li>
+  <li>Inte fyra bolag med samma riskprofil – fyra positioner i samma sektor är i praktiken en position.</li>
+</ul>
+
+<div class="box box--ok">
+<b>Case tvingas aldrig fram</b>
+Räcker inte fyra kandidater till godkänt fylls bara de platser som håller. Resten går till
+indexdelen. Det är en viktig egenskap: systemet har ingen kvot att uppfylla.
+</div>
+<p class="meta">Vikterna 35/30/15/20 är i dagsläget satta på omdöme, inte kalibrerade mot data.
+Beslutsloggen samlar underlag för att kunna räkna om dem – det kräver minst 15 stängda affärer,
+och där är systemet ännu inte. Se avsnitt 12.</p>
+</section>
+
+<section>
+<h2>4. Positionsstorlek och indexdelen</h2>
+<p>Modellen är <b>fyra positioner à ungefär 25 %</b>, med spann 15–35 % beroende på hur starkt
+caset är. Jämna poäng ger 25 % var; ett tydligt starkare case kan få upp till 35 %. Varje
+avvikelse från 25 % måste motiveras skriftligt.</p>
+
+<p>Tidigare kördes två positioner à 50 %. Bytet gjordes av två skäl:</p>
+<ul>
+  <li><b>Varians.</b> Med två innehav avgörs resultatet av två utfall. Fyra halverar
+  enskild-aktie-risken.</li>
+  <li><b>Mätbarhet.</b> Med n=2 går det inte att skilja skicklighet från slump. Fyra positioner
+  fyller beslutsloggen dubbelt så fort.</li>
+</ul>
+
+<h3>Varför kapitalet aldrig ligger som kassa</h3>
+<p>Pengar utan aktivt case parkeras i en indexfond – <code>XACT-OMXS30</code> i den nordiska
+boken, <code>SPY</code> i den amerikanska – i stället för på konto. Skälet kommer direkt ur
+backtestet: index slog det mekaniska skelettet, så tid utanför marknaden är en garanterad
+kostnad.</p>
+<p>Det gör också frågan skarpare. Med kassa jämförs strategin mot noll. Med en indexdel blir
+frågan den rätta: <b>tillför aktieurvalet något utöver att bara äga index?</b> Det är precis
+vad alpha-måttet mäter. Indexdelens egna affärer märks särskilt och räknas bort ur
+urvalsstatistiken – annars hade den spätt ut siffrorna.</p>
+</section>
+
+<section>
+<h2>5. Nivåerna: stopp, mål, kostnadströskel</h2>
+
+<h3>Stoppbredd 3–5 %</h3>
+<p>Bandet är inte valt på känsla. I backtestets parametergrid var <b>−3 % stopp / +6 % mål</b>
+bäst i varje körning, och resultatet blev sämre ju bredare stoppen sattes. Slutsatsen höll även
+när gridet kördes om med fyra positioner.</p>
+<div class="box box--stop">
+<b>Stoppen får aldrig breddas för att «ge caset luft»</b>
+Data säger tvärtom. Inom bandet 3–5 % ska stoppet sättas tekniskt – strax under ett stöd –
+inte som en rund siffra.
+</div>
+
+<h3>Kostnadströskeln: minst 6 % till målet</h3>
+<p>Rundturskostnaden i den nordiska boken är cirka 0,25 % per affär. Ett case får bara väljas
+om avståndet entry → mål är <b>minst 6 %</b>, alltså ungefär tjugo gånger rundturskostnaden.
+Ett case med 3 % uppsida är efter courtage och spread inte värt en position, hur fin
+katalysatorn än är. I US-boken är tröskeln 8 %, eftersom växlingspåslaget tillkommer.</p>
+
+<h3>Målet måste vara nåbart</h3>
+<p>Ett mål hämtat ur ett analytikerintervall är ett påstående, inte en mätning. Därför finns en
+hård spärr:</p>
+<div class="flow">målavstånd (%) ≤ 2 × genomsnittlig dagsrörelse × √(handelsdagar i horisonten)</div>
+<p>Ryms målet inte inom aktiens normala rörelse över den planerade horisonten ska målet sänkas,
+horisonten förlängas, eller caset strykas. Uträkningen skrivs ut i handelsplanen.</p>
+<p>Vid varje försäljning loggas dessutom <b>realiserad R/R</b> – faktiskt utfall delat med
+planerat stoppavstånd. Efter ett tjugotal affärer visar det fältet om målen systematiskt sätts
+för optimistiskt, vilket är den vanligaste tysta felkällan i den här sortens strategi.</p>
+</section>
+
+<section>
+<h2>6. Katalysatortypen styr planen</h2>
+<p>Olika katalysatorer rör sig i olika takt. En rapportreaktion driver kursen i veckor; ett
+obekräftat uppköpsrykte dör tyst inom dagar. Därför sätts horisont, mål och stopp efter
+katalysatorns <em>typ</em>, inte efter magkänsla.</p>
+<table>
+<tr><th>Typ</th><th>Horisont</th><th>Målavstånd</th><th>Stopp</th><th>Tidsstopp</th></tr>
+<tr><td>rapport, order, myndighetsbeslut, återköp</td><td>3–6 veckor</td><td>12–15 %</td>
+    <td>4–5 %</td><td>nej</td></tr>
+<tr><td>uppköpsrykte, insynshandel, indexhändelse</td><td>5–10 handelsdagar</td><td>6–9 %</td>
+    <td>3–4 %</td><td><b>ja – avvecklas efter 10 handelsdagar</b> om ryktet varken bekräftats
+    eller dementerats</td></tr>
+<tr><td>makro, vändningscase, övrigt</td><td>2–4 veckor</td><td>8–12 %</td><td>3–5 %</td>
+    <td>nej</td></tr>
+</table>
+<p>Kravet på 2:1 i risk/reward gäller i samtliga rader. Tidsstoppet på ryktescase finns för att
+obekräftade rykten inte dör med ett smäll utan genom att sluta röra sig – utan tidsstopp blir
+de liggande och binder kapital.</p>
+</section>
+
+<section>
+<h2>7. Varför BEHÅLL är standardvalet</h2>
+<p>Det här är den enskilt viktigaste regeln i systemet, och den kommer direkt ur mätdata.</p>
+<p>Veckorotation av fyra positioner ger ungefär <b>200 affärer per år</b>. Backtestet visar
+negativt nettoresultat även i sin bästa parameterkombination <em>enbart</em> av
+omsättningstakten. Fler positioner är rätt för riskspridningen men höjer kostnadsdraget – vilket
+gör hållregeln viktigare, inte mindre viktig.</p>
+<p>Därför: ett innehav vars tes är intakt och vars stopp och mål inte träffats <b>behålls</b> –
+även när det hållits längre än fem handelsdagar. En position roteras ut endast om:</p>
+<ol>
+  <li>stopp eller mål träffats,</li>
+  <li>tesen är punkterad – det som skulle hända hände inte, eller motsatsen inträffade, eller</li>
+  <li>ett nytt case har <b>minst 2 poäng högre</b> totalpoäng i urvalsmodellen.</li>
+</ol>
+<p>Varje rotation som inte beror på (1) eller (2) måste motiveras skriftligt i veckorapporten.
+Det är avsiktligt jobbigt – friktionen är själva poängen.</p>
+
+<h3>Delat entry</h3>
+<p>Vid rotationen köps halva vikten direkt och andra halvan läggs som villkorad order på en
+bättre nivå. Motivet är konkret: flera case har historiskt aldrig triggat alls, och kapitalet
+blev stående. Undantag görs vid gap över 3 % eller när en binär händelse ligger inom två dagar.</p>
+</section>
+
+<section>
+<h2>8. Hur resultatet mäts</h2>
+<p>Avkastning-vyn visar fyra lager, och skillnaden mellan dem är viktig.</p>
+
+<table>
+<tr><th>Mått</th><th>Vad det svarar på</th></tr>
+<tr><td><b>Träffsäkerhet</b></td><td>Andel affärer som gick plus. Säger lite ensamt – många
+små vinster och få stora förluster kan ge hög träffsäkerhet och negativt resultat.</td></tr>
+<tr><td><b>Profit factor</b></td><td>Summa vinster delat med summa förluster. Under 1,0 =
+förlust totalt. Detta är det ärligaste enskilda talet.</td></tr>
+<tr><td><b>Kedjad avkastning</b></td><td>Utfallen sammansatta i ordning och viktade med varje
+affärs faktiska storlek – inte ett medelvärde.</td></tr>
+<tr><td><b>Netto efter kostnad</b></td><td>Samma sak minus rundturskostnad. <b>Det är den här
+siffran som räknas.</b></td></tr>
+<tr><td><b>Alpha</b></td><td>Utfall minus indexets avkastning över exakt samma hållperiod.
+Svarar på om urvalet tillförde något utöver att äga index.</td></tr>
+<tr><td><b>Max drawdown</b></td><td>Största fall från topp till botten i den kedjade kurvan</td></tr>
+<tr><td><b>Payoff ratio</b></td><td>Genomsnittlig vinst delat med genomsnittlig förlust</td></tr>
+</table>
+
+<div class="box box--warn">
+<b>Total-vyns blandade tal är exklusive valutaeffekt</b>
+De två böckerna handlas i olika valutor. Det sammanvägda talet räknas på rena procenttal och
+tar inte hänsyn till kronans rörelse mot dollarn. Historiken kan inte räknas om i efterhand –
+växelkursen per affär loggades inte. Talet står i vyn, med den brasklappen synlig.
+</div>
+
+<h3>Beslutsloggen</h3>
+<p>Varje beslut – även AVVAKTA – skrivs som en rad i en append-only-logg med katalysatortyp,
+sektor, nivåer, horisont och utfall. Syftet är kalibrering: när loggen innehåller tillräckligt
+många stängda affärer går det att se vilka katalysatortyper som faktiskt tjänar pengar, och
+räkna om poängvikterna mot data i stället för mot omdöme.</p>
+<p>Gränsen är 15 stängda affärer totalt, och minst 8 per kategori innan en kategori får uttalas
+om. Under det är siffrorna brus. Avkastning-vyn visar hur långt det är kvar.</p>
+</section>
+
+<section>
+<h2>9. Vad backtestet faktiskt visade</h2>
+<p>Det här avsnittet är det viktigaste i hela guiden, och det säger obekväma saker.</p>
+
+<p>Det <em>mekaniska skelettet</em> – alltså ramverket utan AI-omdöme, med momentum som
+platshållare för urval – simulerades över fem år och 259 veckor på 30 nordiska storbolag, samt
+motsvarande i USA. Resultatet:</p>
+
+<table>
+<tr><th>Marknad</th><th>Brutto</th><th>Jämfört med index</th><th>Netto efter courtage</th></tr>
+<tr><td>Nordisk (bästa cell)</td><td class="num">+22,6 %</td><td>OMXS30 <span class="num">+36,3 %</span></td>
+    <td class="neg">−21,2 %</td></tr>
+<tr><td>US (bästa cell)</td><td class="num">+61,4 %</td><td>S&amp;P <span class="num">+70,9 %</span></td>
+    <td class="neg">−73 % till −86 %</td></tr>
+</table>
+
+<div class="box box--stop">
+<b>Slutsatsen, rakt ut</b>
+Ramverket bär inte sin egen vikt. Profit factor ligger under 1,0 netto i båda marknaderna.
+<b>AI-urvalet måste tillföra hela edgen</b> – det räcker inte att det är «ungefär lika bra som
+momentum», då blir resultatet negativt efter kostnader.
+</div>
+
+<p>Två saker som ändå gick att lära av gridet:</p>
+<ul>
+  <li><b>Fyra positioner slår två i varje enskild cell.</b> Profit factor upp från 0,86–0,91 till
+  0,89–0,96, kedjat utfall ungefär halverat i förlust, max drawdown ned cirka 15 procentenheter.
+  Riskspridningen gör precis det den ska.</li>
+  <li><b>Smala stopp slår breda</b> i den nordiska boken – konsekvent, i alla körningar.</li>
+</ul>
+
+<p>Att detta står i systemets egen dokumentation är avsiktligt. Ett beslutsstöd som bara
+redovisar sina träffar är inte ett beslutsstöd.</p>
+</section>
+
+<section>
+<h2>10. Hur systemet lär sig</h2>
+<p>Varje lördag körs en <em>miss-retro</em>: en granskning av vinnare som ingen del av systemet
+fångade. Den arbetar i fyra steg.</p>
+
+<ol>
+  <li><b>Hitta missarna.</b> Rörelsedetektorn har på morgonen gått igenom ~110 nordiska bolag –
+  Large och Mid Cap – och listat allt som rört sig över tröskel. En miss är ett bolag som varken
+  ägdes, låg som plan eller bubblare, eller fanns som scout-case.</li>
+  <li><b>Spåra var det föll bort.</b> Fyra klasser: utanför universum, sedd men förkastad, sedd
+  men rankad under, eller signal filtrerad bort.</li>
+  <li><b>Facit-filtret.</b> Här sållas efterklokheten bort. En miss räknas som <em>processfel</em>
+  endast om signalen fanns tillgänglig <b>före</b> rörelsen <em>och</em> går att formulera som en
+  generaliserbar regel. Annars är utfallet acceptabelt och ingen ändring görs.</li>
+  <li><b>Högst två nya lärdomar per vecka</b>, max tio aktiva samtidigt.</li>
+</ol>
+
+<div class="box">
+<b>Lärdomar får aldrig sänka skyddsnäten</b>
+En lärdom får ändra hur case väljs och rankas. Den får aldrig mjuka upp kursverifieringen,
+stoppdisciplinen eller riskreglerna. Den regeln finns för att en förlustsvit annars frestar
+systemet att skriva bort sina egna spärrar.
+</div>
+
+<p>Retron granskar också <b>försäljningarna</b>: varje stängd position utvärderas mot kursen
+cirka fem handelsdagar senare och klassas som bra exit, neutral eller «lämnade på bordet». Ett
+stop-loss som vänder upp är inte ett fel – det är priset för skyddet.</p>
+<p>Retron rör aldrig portföljer eller bevakningslistor. Den genererar inga case. Den skriver
+bara regler.</p>
+</section>
+
+<section>
+<h2>11. Data, färskhet och spärrar</h2>
+
+<h3>Kursverifiering</h3>
+<p>Robotens egen körmiljö är nätspärrad mot kurssajter. Kurser hämtas därför av en separat
+process och skrivs till fil med tidsstämpel. Varje kurs som används i ett beslut måste ha
+verifierad källa och tidsstämpel – annars skrivs «KURS EJ VERIFIERAD» och inget kursbaserat
+beslut fattas.</p>
+<div class="box box--ok">
+<b>Det här kravet får aldrig sänkas</b>
+Lösningen på få affärer är bredare kandidatlistor, aldrig lösare kurskrav. Ett AVVAKTA är ett
+korrekt utfall, inte ett fel.
+</div>
+
+<h3>Versionsstämpeln på kursfilen</h3>
+<p>Kursfilen bär ett fält som säger vilken kodversion som skrev den. Bakgrunden är konkret: ett
+fel gjorde att «gårdagens kurs» i själva verket var kursen en vecka tidigare, så en veckorörelse
+presenterades som en dagsrörelse. Felet upptäcktes, men den första verifieringen gjordes mot en
+fil skriven <em>före</em> rättelsen – och det gamla felvärdet såg rimligt ut. Numera vägrar både
+rapporterna och dashboarden räkna en dagsrörelse ur en fil som saknar stämpeln.</p>
+
+<h3>Förbyggd data</h3>
+<p>Dashboarden läser en färdigparsad datafil i stället för att hämta och tolka varje rapport i
+webbläsaren. Det tog laddningen från cirka 106 nätanrop till 23. Saknas eller är filen trasig
+faller sidan automatiskt tillbaka på den gamla vägen – långsammare, men fungerande. Är den
+förbyggda datan äldre än sex timmar skriver statusraden ut det.</p>
+
+<h3>Offline</h3>
+<p>Sidan cachar sig själv och fungerar utan täckning. Strategin är <b>nät först, cache som
+reserv</b> – aldrig tvärtom. Skälet: appen uppdateras genom att filer publiceras, utan
+versionsnummer i filnamnen. Cache-först hade serverat gammal kod mot nya rapporter och gett
+tyst felparsning.</p>
+</section>
+
+<section>
+<h2>12. Kända begränsningar</h2>
+<p>Läs det här innan du drar slutsatser av siffrorna.</p>
+
+<table>
+<tr><th>Begränsning</th><th>Innebörd</th></tr>
+<tr><td><b>Statistiken är ännu brus</b></td><td>Antalet stängda affärer är encifrigt. Alla
+nyckeltal i Avkastning-vyn – träffsäkerhet, profit factor, alpha – bygger på för få
+observationer för att betyda något. De visas för att bygga vanan att titta, inte för att
+dra slutsatser.</td></tr>
+<tr><td><b>Poängvikterna är inte kalibrerade</b></td><td>35/30/15/20 är satta på omdöme.
+Kalibrering kräver minst 15 stängda affärer i beslutsloggen.</td></tr>
+<tr><td><b>Ramverket är negativt netto</b></td><td>Se avsnitt 9. Hela edgen måste komma ur
+AI-urvalet, och det är ännu obevisat.</td></tr>
+<tr><td><b>Valutaeffekt saknas</b></td><td>Det sammanvägda talet över båda böckerna är exklusive
+kronans rörelse mot dollarn.</td></tr>
+<tr><td><b>Sökningen täcker de 30 senaste rapporterna</b></td><td>Äldre rapporter går att öppna
+via väljaren men ingår inte i fritextsökningen. Gränsen skrivs ut ovanför träfflistan.</td></tr>
+<tr><td><b>Kursdiagrammen har bara stängningskurser</b></td><td>Ingen intradagsdata sparas, så
+candlestick-diagram är inte möjliga.</td></tr>
+<tr><td><b>Ingen orderkoppling</b></td><td>Systemet vet inte vad du faktiskt handlat. Portföljen
+i dashboarden är systemets modell, inte din depå.</td></tr>
+</table>
+
+<div class="box box--warn">
+<b>Det systemet är bra på</b>
+Att aldrig glömma en nivå, aldrig hoppa över en motivering, aldrig sälja i panik och alltid
+skriva ned varför. Det är disciplin, inte spådom – och disciplin är den del av handel där en
+maskin faktiskt slår en människa.
+</div>
+</section>
+
+<div class="foot">
+<b>Vecko_agent – Systemguide.</b> Källa: <code>Systemguide.html</code>, renderas till PDF med
+<code>make-manual.bat</code>.<br/>
+Använda dashboarden: <b>Kom-igang.html</b>. Drift och felsökning: <code>MANUAL.md</code>.
+Teknisk projektkontext: <code>CLAUDE.md</code> och <code>docs/HISTORIK.md</code>.<br/>
+<span class="disc">Allt systemet producerar är automatiserat beslutsstöd, inte finansiell
+rådgivning.</span>
+</div>
+
+</div>
+</body>
+</html>

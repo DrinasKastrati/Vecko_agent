@@ -63,6 +63,12 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   blev varje samtidig ändring en konflikt som lade `<<<<<<<` MITT I JSON:en – webbappen föll då
   tyst tillbaka på ~60 hämtningar. Vid konflikt: bygg om och `git add`, aldrig handmerga.
 - `sw.js` – service worker, nät-först. Bumpa `CACHE`-namnet om formatet på det som cachas ändras.
+- **Manualerna har tre olika målgrupper – blanda inte ihop dem.** `Kom-igang.html` = använda
+  dashboarden (enkel, ingen teknik). `Systemguide.html` = hur besluten fattas, hur de mäts och
+  vad backtestet visade (djup, för den som vill förstå). `MANUAL.md` = drift åt Dren (push,
+  tester, felsökning). `Anvandarmanual.html` är den äldre kompletta manualen och överlappar nu
+  de två första. Alla `.html`-manualer renderas till PDF med `make-manual.bat` – **kör det efter
+  varje ändring**, annars ligger PDF:en kvar på gammalt innehåll utan att någon märker det.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).

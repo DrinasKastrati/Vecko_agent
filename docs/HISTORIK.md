@@ -7,6 +7,26 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (två manualer, två målgrupper): den befintliga `Anvandarmanual.html` (19 sidor,
+  14 avsnitt) var både för lång för någon som bara vill använda dashboarden och saknade allt som
+  byggdes 2026-08-02 – noll träffar på "tema", "inställningar", "ljust", "kugghjul". Delad i två:
+  **`Kom-igang.html`** (9 avsnitt, ~7 sidor): vad systemet är och inte är, öppna/installera,
+  skärmen på 30 sekunder, läsa ett innehavskort inkl. positionsmätaren, de fyra beskeden,
+  utseendeinställningarna, daglig rutin på fem minuter, felsymptomtabell, ordlista. Klarspråk,
+  ingen teknik, ingen strategi.
+  **`Systemguide.html`** (12 avsnitt, ~10 sidor): de nio delarna och hur de hänger ihop
+  (AI-körningar vs nyckellös aritmetik), schemat och varför ordningen ser ut som den gör,
+  poängmodellen 35/30/15/20 med de hårda kraven, positionsstorlek och varför kapitalet aldrig
+  ligger som kassa, stoppband/kostnadströskel/nåbart mål med härledningen ur backtestet,
+  katalysatortabellen, varför BEHÅLL är standardvalet, hur resultatet mäts (brutto vs netto vs
+  alpha), **vad backtestet faktiskt visade** (PF < 1,0 netto i båda marknaderna – AI-urvalet
+  måste tillföra hela edgen), lärloopen med facit-filtret, kursverifiering och färskhetsspärrar,
+  samt en tabell över kända begränsningar (statistiken är ännu brus, vikterna okalibrerade,
+  valutaeffekt saknas, ingen orderkoppling).
+  `make-manual.bat` skriven om till en `:render`-subrutin som renderar alla tre manualerna,
+  hoppar över filer som saknas och räknar misslyckanden i stället för att avbryta på första.
+  Verifierat: alla tre PDF:er renderade (184 / 244 / 762 kB) och båda nya kontrollerade visuellt.
+
 - ✅ 2026-08-02 (inställningsvy + konfliktskydd):
   **(1) `assets/settings.js`** (`window.VSettings`) – ny vy `installningar` bakom kugghjulet i
   toppraden. Deklarativ `SCHEMA`-tabell: tema, ljust/mörkt (följ temat / följ systemet / ljust /
