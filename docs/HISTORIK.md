@@ -1,0 +1,433 @@
+# Vecko_agent — historik (daterad ändringslogg)
+
+Utflyttad ur `CLAUDE.md` 2026-08-02 för att den filen läses in vid varje sessionsstart och
+hade vuxit till 1,5× gränsen där Claude Code varnar för stora minnesfiler. Innehållet är
+oförändrat. Läs den här filen när du behöver VARFÖR bakom ett designval, en tidigare bugg
+eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLAUDE.md`.
+
+## 5. Nuläge — vad som är gjort (allt live i repot)
+- ✅ Dashboarden byggd, modulär, **flikbaserad omdesign** klar; GitHub Pages live.
+- ✅ Tre routiner på plats: nordisk rotation (`dagligprompt.md`), scout USA/krypto
+  (`scoutprompt.md`), aktieanalys på begäran (`analysprompt.md` + issue/kö-Action).
+- ✅ Pris-hämtaren täcker nordiskt + USA/krypto, med **stooq-fallback** när Yahoo fallerar;
+  skriver `prices.json` + rullande `price_history.json`.
+- ✅ Analytics (handelsstatistik), sparklines och analys-färskhet i dashboarden.
+- ✅ Testsvit `tests/run.mjs`; `.gitattributes` normaliserar radslut (OneDrive/CRLF).
+- ✅ 2026-07-11: benchmark-overlay i Avkastning (OMXS30 `^OMX` + S&P `^GSPC` vs strategin),
+  live-P/L-remsa på innehavskorten (prices.json), kursfärskhets-badge i topbaren, kortkommandon
+  (1–7 flikar, R uppdatera), PWA-manifest (`manifest.json` + `assets/icon.svg`), `push.bat`
+  (enklicks-commit+push), stängningskurs-crons i `prices.yml` (16:45 + 21:10 UTC),
+  `price_history.json` committas nu av actionen (sparkline-fixen), ticker-regexen kräver ≥2 tecken
+  i basen (inget "B.ST"-skräp ur "BAHN B.ST"), `config/watchlist.txt` skapad, `portfolj.md` städad,
+  tickerformat-krav (bindestreck) tillagt i båda prompterna.
+- ✅ 2026-07-11 (Översikt v2): statusrad (datum/läge/beslut-chips + nedräkning till nästa
+  schemalagda körning), positionsmätare stopp→entry→nu→mål på innehavskorten, besluts-historik
+  som färgpunkter (senaste 10 dagliga rapporterna). OBS: nedräkningen speglar schemat HÅRDKODAT i
+  `vparse.js` (`nextRoutineRun`) – uppdatera funktionen om en routine schemaläggs om. Aktuell
+  uppsättning står i avsnitt 5b under "SCHEMAT". Testsviten: 50 tester, gröna.
+- ✅ 2026-07-12: allt ovan pushat till main och live på Pages. Schemalagda routinerna i drift:
+  scout skrev `rapport-260712.md` (första automatiska körningen), `daglig-260711.md` (helgnotis).
+
+- ✅ 2026-07-14: **intradag-monitor** (`monitor.yml` + `alerts.mjs`, LLM-fritt) → `state/alerts.json`
+  + signalbanner/GitHub-issue; **Aktuellt innehav** visas nu på Översikt (öppna positioner ur
+  `portfolj.md` med live-P/L); analys-loopen stänger cirkeln (köad ticker → watchlist → prices.json
+  → verifierad kurs i analysen). Analyser hittills: SYNACT.ST, OSSD.ST, NVO, SAAB.ST.
+- ✅ 2026-07-15: **interaktivitets-uppgradering av dashboarden** (ej pushad ännu – kör `push.bat`):
+  all hård texttrunkering ersatt av CSS-klamp + "Visa mer/Visa mindre" per kort/notis (hela texten
+  finns alltid i DOM; knappen visas bara när texten faktiskt svämmar över), veckans case-katalysator
+  behåller nu FULL text i `parseWeekly` (2-menings-klippet borttaget), entry-/kurs-celler visas
+  oavkortade. Nya interaktioner: klickbara ticker-pills (→ Analys-fliken, köar inget automatiskt),
+  sorterbar Historik-tabell (datum/tal-medveten), filter + sortering (A–Ö/färskhet) i Kurser,
+  hopfällbara scout-sektioner (`<details>`, minns läget i localStorage), "Full höjd"-knapp i
+  Rapporter (74vh-boxen ↔ full höjd, minns valet). Testsviten: 62 tester, gröna.
+  OBS sandlåde-fälla: OneDrive-monteringen serverade trunkerade JS-filer direkt efter redigering →
+  testerna kördes mot en verifierad kopia och de verifierade bytesen skrevs tillbaka till repot.
+- ✅ 2026-07-16: **arbetskopian flyttad** till `C:\Users\kastrdri\Git_proj\gitVecko_agent` (utanför
+  OneDrive). **Prompt-pack:** dagligprompt fick 2b PENDING-PLANER (TRIGGAD/EJ TRIGGAD-check mot
+  verifierad kurs), 2c INTRADAG-SIGNALER (läs `state/alerts.json`, agera eller motivera), 0b
+  LÄRDOMAR (läs Lärdom-fältet i 4 senaste veckorapporterna) samt watchlist-hygien (≤ 25 tickers,
+  14 dagars regel); scoutprompt fick 4b UPPFÖLJNING AV TIDIGARE CASE + watchlist_us-hygien;
+  analysprompt fick c2 DELTA MOT CACHE ("Sedan senast"). Körsäkerhet i alla tre prompterna:
+  datumverifiering före filnamn, push-fallback (lämna filer + notis till Dren i stället för att
+  fastna), `git pull`/raw-URL för färskaste prices.json; daglig BEHÅLL kräver explicit motivering
+  genom binära händelser (rapport ≤ 2 dagar bort); rapportkrav om EXAKTA mall-rubriker
+  (dashboardens parsningskontrakt). Mallarna uppdaterade med matchande
+  sektioner (`## Pending-planer` i daglig_mall, `## Uppföljning av tidigare case` i scout_case,
+  `## Sedan senast` i analys_mall). **Dashboard:** "Ändrat idag"-remsa på beslutskorten (diff mot
+  gårdagens rapport: beslut/stopp/mål + NY IDAG, `VParse.diffDailies`), klickbara Kurser-kort →
+  kurshistorik-modal (Chart.js, 60 dagar), 🔔 Notiser-knapp (skrivbordsnotiser vid nya intradag-
+  signaler, alerts.json pollas var 5:e min), tickande nedräkning i statusraden, scout-uppföljning
+  parsas + renderas som egen sektion. Testsviten: 72 tester, gröna.
+  OBS sandlåde-fälla generellt: sessions-monteringen visar GAMLA bytes en stund efter att filer
+  redigerats (gäller ÄVEN utanför OneDrive) – kör tester mot en kopia i outputs-mappen om det
+  strular direkt efter redigering.
+- ✅ 2026-07-17: **sista webbupgrade-omgången.** Fulltextsökning i Rapporter-fliken (sökfält, Enter →
+  söker i ALLA rapporttyper inkl. analyser, träfflista med markerade snippets, klick öppnar
+  rapporten; `VParse.searchDocs` + `VRender.renderSearchResults`). "Jämför två"-läge i Analys
+  (klicka två cachade analyser → sida vid sida-kolumner). Alert-historik: `alerts.mjs` fick
+  `mergeHistory` (utgångna signaler sparas i `alerts.json.history`, max 50, med `expiredAt`) och
+  dashboarden visar hopfällbar "Tidigare signaler". Testsviten: 82 tester, gröna.
+  OBS: sandlåde-cachen fastnade på stale bytes hela sessionen → verifiering gjordes i en NYSKAPAD
+  kopia (nya filer propagerar färskt) och de verifierade bytesen kopierades tillbaka till repot
+  med bash-cp (sandlåde→host fungerar). Mönster vid strul: bygg om testträdet under NYTT filnamn.
+- ✅ 2026-07-17 (automation-paket): **auto-push** (`auto_push.bat` tyst var 30:e min vardagar 07–19,
+  registreras EN gång med `setup_autopush.bat`; loggar till gitignorade `auto_push.log`) – gör
+  kedjan routine → push → Pages helt handsfree. **CI-tester** (`test.yml`: hela testsviten +
+  node --check på alla JS-moduler vid varje push). **Daglig digest** (`digest.yml` + `digest.mjs`,
+  LLM-fritt: bygger sammanfattning av dagens rapport → skapar+stänger issue → e-postnotis;
+  dubblett-skydd via titelsökning). **Watchdog** (`watchdog.yml` + `watchdog.mjs`, 10:30 UTC
+  vardagar: larmar via issue om prices.json >26 h gammal eller dagens nordiska/scout-rapport
+  saknas; dedupe mot redan öppna issues). **Avanza-länk** i kurshistorik-modalen (app.js
+  `avanzaUrl`: suffix strippas, klasstreck → mellanslag; döljs för ^index/-USD).
+  Testsviten: 91 tester, gröna. **Push-race-fix:** monitor.yml/prices.yml:s commit-steg
+  (pull --rebase || true; git push) kunde dö med exit 128 vid kollision med andra pushar
+  (mycket vanligare nu med auto-push var 30:e min) – ersatt med retry-loop ×3:
+  `pull --rebase -X theirs` (färsk action-data vinner konflikter) + `rebase --abort`-städning
+  mellan försöken, samt `fetch-depth: 0` på checkout (grund klon kan inte rebasa när main
+  hunnit flytta sig → fatal 128).
+- ✅ 2026-07-17 (US-rotation): **ny sjunde del** – en EGEN, USD-denominerad amerikansk
+  rotationsportfölj, HELT SEPARAT från nordiska rotationen och scout-idéerna. Egen prompt
+  (`prompts/us_dagligprompt.md`, kör ~15:00 CET före US-öppning, LÄGE A måndag / LÄGE B
+  bevakning), egna mallar (`templates/us_daglig_mall.md`, `us_vecko_rapport.md`), config
+  (`config/fokus_us_rotation.md`), tillstånd (`state/portfolj_us.md`, USD-bok, baslinje 0 %) och
+  rapporter (`reports/us_daily/us-daglig-yymmdd.md`, `reports/us_weekly/us-veckorapport-yymmdd.md`).
+  **Pre-/after-hours-krav:** prompten kräver att pre-market och gårdagens after-hours-rörelser
+  alltid vägs in (stop/mål brutet utanför reguljär session = brutet). **Prisinfra:**
+  `fetch-prices.mjs` fick `extractUsPortfolioTickers` + `newestUsWeekly` så US-innehavens kurser
+  garanterat hämtas; delar `prices.json`/`watchlist_us.txt`. **Monitor:** `alerts.mjs` läser nu
+  BÅDE `portfolj.md` och `portfolj_us.md` (US-tickers får intradag-signaler). **Dashboard:** ny
+  flik "US-rotation" (KPIs + innehav/beslut med live-USD-P/L + egen rapportväljare); parsers
+  återanvänds oförändrat (parseFilename fick `us_daily`/`us_weekly`, `nextRoutineRun` fick
+  us-rotation 15:00, `parsePortfolio` filtrerar nu bort dash-placeholder-rader ur pending).
+  **Schemalagd Cowork-task:** `vecko-agent-us-rotation` (mån–fre 15:00, pekar på Git_proj-kopian).
+  Testsviten: 100 tester, gröna. OBS: befintliga tasks (scout/nordisk) är `enabled:false` och
+  pekar ännu på den UTFASADE OneDrive-kopian – US-tasken pekar korrekt på Git_proj.
+- ✅ 2026-07-17 (conviction-viktning + Total-vy): **fast 50/50 ersatt av conviction-viktad sizing**
+  i BÅDA böckerna. Prompterna tillåter nu 40–60 % per aktie + kassa (1 aktie + kassa, eller 100 %
+  kassa vid svag conviction), varje avvikelse från 50/50 måste motiveras. Ny "Vikt"-kolumn i
+  `Aktuellt innehav` + `Historik` (båda portfolj-filerna) och `Planerad vikt` i pending/veckomallar
+  (positionellt parsade tabeller lämnades orörda; vikt läses via kolumnnamn så bakåtkompatibelt).
+  **Avkastningsmatematiken** (`computeTradeStats`) läser nu per-affär-vikt (`VParse.weightFrac`,
+  default 0,5) i stället för hårdkodat 0,5 → korrekt kedjad avkastning vid ojämna vikter.
+  **Ny "Total"-flik** (FÖRSTA fliken, default): blended avkastning viktad med kapitalfördelningen
+  mellan böckerna (default 50/50, `VParse.combinedReturn`), kapitalfördelnings-stapel och en
+  kombinerad tabell med alla öppna positioner (bok-badge + live-P/L ur prices.json). Rena
+  procenttal ⇒ ingen FX. `VRender.renderTotal`; "Översikt"-fliken heter nu "Nordisk". Vikt visas
+  som pill på innehavskorten (`heldCard`). Testsviten: 115 tester, gröna.
+- ✅ 2026-07-17 (dynamisk kapitalvikt mellan böckerna): **åttonde delen** – en veckovis
+  ALLOKERINGS-routine som sätter hur totalkapitalet fördelas mellan nordiska och US-boken (i
+  stället för fast 50/50 i Total-vyn). Böckerna förblir separata; detta är en övergripande vikt.
+  Ny prompt `prompts/allokering.md` (läser båda veckorapporterna + portföljerna, sätter splitten
+  inom bandet 0,2–0,8/bok, max ~15 pp rörelse/vecka, motivering krävs), nytt tillstånd
+  `state/allocation.json` ({nordic, us, rationale, updatedAt, week}, baslinje 0,5/0,5). **Dashboard:**
+  app.js läser allocation.json (defensiv clamp 0,2–0,8, annars 50/50-baslinje) och skickar splitten +
+  motivering till `VRender.renderTotal(books, split, meta)`; Total-vyn visar kapitalvikts-stapeln
+  enligt den dynamiska splitten + en rad med motiveringen/veckan. **Schemalagd Cowork-task:**
+  `vecko-agent-allokering` (måndag ~15:30 CET, efter båda veckorotationerna, pekar på Git_proj).
+  Testsviten: 119 tester, gröna. Kapital-splitten är nu det ENDA som allokerings-routinen rör –
+  aktievalen sköts fortsatt av respektive boks rotation.
+
+- ✅ 2026-07-31 (miss-retro): **nionde delen** – en veckovis LÄRANDE-loop som granskar veckans
+  stora vinnare som INGEN routine fångade (t.ex. Microsoft efter stark rapport), spårar VAR i
+  tratten de föll bort och destillerar generaliserbara processregler. Ny prompt
+  `prompts/miss_retro.md` (körs fredag kväll/helg via Drens routines): STEG 1 hitta 3–5 missar
+  (nyhetssök + `price_history.json`-veckorörelser; miss = varken ägd, pending/bubblare eller
+  scout-case; rörelser utan katalysator = brus), STEG 2 traceback med klassificering
+  A UTANFÖR UNIVERSUM / B SEDD MEN FÖRKASTAD / C SEDD MEN RANKAD UNDER / D SIGNAL FILTRERAD,
+  STEG 3 facit-filter (PROCESSFEL kräver signal tillgänglig FÖRE rörelsen + generaliserbar regel;
+  annars ACCEPTABELT UTFALL → "Ingen ändring" – skydd mot hindsight-överanpassning), STEG 4 max
+  2 nya lärdomar/vecka till nya `state/lessons.md` (max 10 aktiva, L-ID, arkiv append-only,
+  ENDAST retron får skriva i filen; lärdomar aldrig ticker-specifika, får ALDRIG sänka
+  kursverifiering/risk-regler). Rapport: `reports/retro/retro-yymmdd.md` enligt nya strikta
+  `templates/retro_mall.md`. **Loopen stängd:** dagligprompt/us_dagligprompt fick 1b LÄRDOMAR
+  (läs lessons.md i båda lägena, referera L-ID i motiveringar) + utökad 0b; scoutprompt fick 1b.
+  Retron rör ALDRIG portföljer/watchlists (genererar inga case). Dashboard-integration byggdes
+  samma dag (se webb-paketet nedan).
+
+- ✅ 2026-07-31 (webb-paket): **avkastning uppdateras vid varje SÄLJ** – LÄGE B punkt 8 i
+  dagligprompt/us_dagligprompt kräver nu att "Ackumulerad avkastning sedan start" räknas om
+  DIREKT i samma körning som ett SÄLJ (inte bara i måndagens FACIT); dashboardens KPI läser
+  redan fältet live ur portfolj-filerna. **Ny flik "Retro"** (10:e fliken): aktiva lärdomar ur
+  `state/lessons.md` som kort med L-ID-pill (`VParse.parseLessons` + `VRender.renderLessons`)
+  + rapportväljare för `reports/retro/` (parseFilename fick typ `retro`; sökningen taggar nu
+  även retro/us_daily/us_weekly). **Avkastning:** equity-kurva PER AFFÄR (`buildTradeSeries`:
+  en punkt per stängd position, kedjad med per-affär-vikt; orange streckad serie i diagrammet
+  med affärens namn+utfall i tooltip) och **månadsheatmap** (`buildMonthlyStats` +
+  `renderMonthlyHeatmap`: kedjat viktat utfall per "Stängd"-månad, grön/röd intensitet).
+  **Mobil:** scroll-skuggor på breda tabeller (background-attachment-tricket), större
+  tryckytor (an-chip/px-item/rtype/sr-hit), modal maxhöjd + lägre diagram, heatmap 2 kolumner.
+  **UI-polish:** laddningsskelett (shimmer) i tomma vyer under första hämtningen, tooltips på
+  alla handelsstatistik-kort (profit factor förklarad m.m.), färgkodad Utfall %-kolumn i
+  Historik, `.empty`-tomlägen som streckade boxar, kortkommando-hinten rättad (1–9 + Esc).
+  Testsviten: 140 tester, gröna.
+
+- ✅ 2026-07-31 (design-overhaul): **helt ny layout** – centrerade flik-designen ersatt av
+  SIDOPANEL + full skärmbredd ("Quant Deck"-tema: förfinad mörk palett, sky-accent #38BDF8,
+  grupperad meny Portfölj/Analys/Data, aktiv-indikator med glow). **Ny startvy "Hem"**
+  (default, 11:e vyn): vänsterspalt med BÅDA böckernas innehav/dagens beslut/pending (bok-
+  rubriker med ackumulerad avkastning), högerspalt ("rail") med Bevakning inför imorgon,
+  Veckans radar, Senaste nytt och Aktiva lärdomar – alla med hopp-länkar till respektive vy
+  (`data-goto-view`, delegerat klick i app.js). `renderHem()` i app.js komponerar allt av
+  BEFINTLIGA renderare (renderHoldings/renderStatusRow m.fl.) ⇒ vrender orörd, alla 140
+  enhetstester opåverkade. Mobil: sidopanelen blir scrollbar botten-bar (data-short-etiketter).
+  showView-fallback ändrad till "hem"; statusraden tickar i både Nordisk- och Hem-vyn.
+  **Nytt simuleringstest `tests/sim.mjs`** (jsdom, körs INTE i CI): bootar HELA appen med
+  mockad fetch som serverar repots riktiga filer, verifierar Live-status, alla 11 vyer,
+  navigering och fallback – 27 kontroller. Körs lokalt: `npm i jsdom && node tests/sim.mjs`
+  (package.json/package-lock/node_modules gitignoreras). Verifierat 2026-07-31 på Drens
+  dator: 140/140 enhetstester + 27/27 sim gröna.
+
+- ✅ 2026-07-31 (sälj-facit + riskmått): **lärloopen täcker nu exits.** `prompts/miss_retro.md`
+  fick STEG 3b SÄLJ-FACIT: varje position stängd under perioden utvärderas mot verifierad kurs
+  ~5 handelsdagar efter exit → BRA EXIT / NEUTRAL / LÄMNADE PÅ BORDET (trösklar ~5 % Norden /
+  ~4 % US), med samma facit-filter som missarna (rotationssälj som stiger = normalt ACCEPTABELT;
+  stop-loss som vänder upp = kostnaden för skyddet – lärdomar får ALDRIG mjuka upp stopp-
+  disciplin). Lärdomsbudgeten max 2/vecka delas mellan missar och exits. `templates/retro_mall.md`
+  fick sektionen "## Sälj-facit (exits under perioden)" (tabell + bedömning). **Riskmått i
+  Avkastning:** `VParse.computeRiskStats` (max drawdown på kedjade equity-kurvan, längsta
+  förlust-/vinstsvit, volatilitet per affär (stddev), payoff ratio) + `VRender.renderRiskStats`
+  (stat-kort med tooltips) i ny sektion under Handelsstatistik (`#riskStats`). Testsviten:
+  149 tester; sim: 28 kontroller.
+
+- ✅ 2026-07-31 (idé-pipeline): **bubblare & scout-case kopplade till besluten.**
+  (A) OBLIGATORISKT INFLÖDE i LÄGE A: dagligprompt fick 1g BUBBLAR-ÅTERBRUK (förra veckans
+  bubblare SKA in i bruttolistan, utfall redovisas som VALD/RANKAD UNDER/STRUKEN);
+  us_dagligprompt fick 1g SCOUT-INFLÖDE (US-aktie-case med tes INTAKT ur de 5 senaste
+  scout-rapporterna SKA poängsättas – scouten genererar, rotationen beslutar) + 1h
+  bubblar-återbruk. (B) VILLKORADE BUBBLAR-PLANER: båda rotationerna FÅR lägga max 2 bubblare
+  som pending-planer med explicita nivåer, märkta "BUBBLARE" – befintliga `monitor.yml` larmar
+  då intradag utan tokens; KÖP-regeln i LÄGE B fick fall (c) (triggad bubblar-plan + ledig
+  kapacitet); ej triggad på 5 handelsdagar → avförs. (C) IDÉFLÖDETS FACIT: miss_retro fick
+  STEG 3c (förra veckans bubblare + 5–10 dagar gamla scout-case utvärderas mot verifierad kurs;
+  träffbild idéer vs valda case; enskild vecka = brus, ≥ 3 veckors svit krävs för lärdom om
+  rankningen). Vecko-mallarna fick fälten "Förra veckans bubblare"/"Scout-inflöde"/"Villkorade
+  bubblar-planer" (parse-säkra fältrader); retro_mall fick "## Idéflödets facit". Inga
+  JS-ändringar – testsvit/sim opåverkade (149/28).
+
+- ✅ 2026-07-31 (datadrivet fundament – 3 delar):
+  **(1) Beslutsdatabas:** nya `state/decisions.json` (version 1, append-only, schema i filens
+  comment-fält: date/book/mode/ticker/action/price/weight/entry/stop/target/rr/catalystType-enum/
+  sector/rsi/holdDays/outcomePct/reason/lessonIds). Båda rotationsprompterna fick sektionen
+  BESLUTSDATABASEN: en rad per beslut varje körning (även AVVAKTA), aldrig ändra befintliga
+  rader, JSON-validering med `node -e` före commit. miss_retro fick STEG 3d BESLUTSSTATISTIK
+  (vid ≥ 15 SÄLJ-rader: utfall per catalystType/book → lärdomskandidater för poängmodellens
+  viktning; ≥ 8 affärer per kategori krävs, annars brus). Syfte: kalibrera 35/30/15/20-vikterna
+  mot data i stället för känsla.
+  **(2) Nyhetsingestion (dödar kategori A-missar):** ny nyckellös Action `news.yml` (varannan
+  timme vardagar) + `fetch-news.mjs` (LLM-fri): läser RSS/Atom ur nya `config/news_feeds.txt`
+  (MFN, Cision, GlobeNewswire, PR Newswire, Business Wire; format namn|url, fallerande flöden
+  hoppas över med status i JSON:en) → `state/news_feed.json` (dedupe på url, 48h-fönster, max
+  300 poster, per-feed-status för felsökning). Rena funktioner parseRss/mergeNews/parseFeedList
+  exporterade + testade. Alla tre prompterna fick "NYHETSFLÖDET FÖRST": news_feed.json är
+  PRIMÄR nyhetsradar, rubriker verifieras via länken innan beslut, websök blir komplement.
+  OBS: kontrollera `feeds`-statusen i news_feed.json efter första körningen och justera
+  URL:er i news_feeds.txt om något flöde ger fel.
+  **(3) Backtest av mekaniska skelettet:** nya `.github/scripts/backtest.mjs` + universum-filer
+  `config/backtest_universe_{nordic,us}.txt` (~30 likvida namn per marknad). Simulerar RAMVERKET
+  utan LLM-omdöme (momentum-proxy: topp 2 på lookback-avkastning varje måndag, entry på öppning,
+  stop/mål i %, max 5 dagars håll, konservativ stop-före-mål + gap-hantering) över en parameter-
+  grid (lookback 10/20 × stop/mål 3/6, 4/8, 5/10 %) och skriver `reports/backtest/backtest-
+  yymmdd-<marknad>.md` med träff %, PF, kedjat utfall, max DD och benchmark-jämförelse (^OMX/
+  ^GSPC). Körs MANUELLT på Drens dator (kräver nät): `node .github/scripts/backtest.mjs nordic`
+  resp. `us` (valfri range, t.ex. `5y`). Rena funktioner (parseCandles/momentumAt/isWeekStart/
+  simulateTrade/backtestUniverse/buyHoldPct) exporterade + testade. Testsviten: 168 tester.
+
+- ✅ 2026-07-31 (avkastningspaket – 7 åtgärder mot faktiska läckor i systemet):
+  **(1) Backtestet kört för första gången** (`reports/backtest/backtest-260731-{nordic,us}.md`,
+  5 år, 30 symboler per marknad, 259/258 veckor). Resultat: BRUTTO ligger skelettet under sitt
+  benchmark i båda marknaderna (nordic bäst +22,6 % vs ^OMX +36,3 %; us bäst +61,4 % vs
+  ^GSPC +70,9 %) och NETTO efter courtage är allt kraftigt negativt (−36 % resp. −76 %).
+  Slutsats: ramverket bär inte sin egen vikt – LLM-urvalet måste tillföra HELA edgen, och
+  omsättningstakten (~100 affärer/år) är den enskilt största kostnaden. Nordiskt grid föredrog
+  SMALASTE stoppen (−3 %/+6 %, PF 1,08), US-gridet de BREDASTE (20d/−5 %/+10 %, PF 1,13).
+  **(2) Kostnader modellerade:** ny `config/kostnader.json` (nordic 0,25 % rundtur; us 0,25 % +
+  0,5 % växlingspåslag). `VParse.costFor/netPct`, `computeTradeStats(history, costPct)` ger
+  netChainedPct/netWinRate/netProfitFactor/costDragPct, `buildTradeSeries(history, costPct)` ger
+  nettokurva med `grossPct` kvar per punkt, nytt stat-kort "Netto efter kostnad".
+  `backtest.mjs` läser samma config (`params.costPct`). Bruttotalen är orörda.
+  **(3) Valutan redovisad:** `USDSEK=X` tillagd i `config/watchlist_us.txt`, `VParse.fxRate`
+  + valutarad i Total-vyn som säger explicit att blended-talet är EXKL. valutaeffekt (historiken
+  kan inte räknas om – växelkursen per affär är inte loggad). OBS: `fetch-prices.mjs`
+  filtrerade bort valutapar – `collectUsTickers` accepterar nu `^[A-Z]{6}=X$` och `fetchStooq`
+  mappar `USDSEK=X` → `usdsek`. Utan den fixen hämtades paret aldrig (34/35 tickers, FX saknades).
+  **(4) Beslutsloggen fungerar:** `state/decisions.json` backfylld med 6 historiska rader
+  (5 KÖP/SÄLJ ur portföljhistoriken + dagens BEHÅLL Saab, alla märkta
+  `"source": "backfill-260731"`), ny `.github/scripts/validate-decisions.mjs`
+  (schema, enum, SÄLJ-fält, append-only mot föregående commit) körs i `test.yml`, och watchdogen
+  larmar om dagens rapport pushas UTAN rader i loggen. Prompterna pekar nu på validatorn i
+  stället för bara `JSON.parse`.
+  **(5) Nyhetsingestionen live:** `cision-se` (HTTP 404) och `businesswire-tech` (tomt RSS-skal)
+  var döda – ersatta med `sec-8k` (EDGAR Atom, kräver kontakt-UA → `uaFor()`), `fed-press` och
+  `globenewswire-earnings`. 6/6 flöden gröna, 137 poster. Ett flöde som svarar 200 men 0 poster
+  flaggas nu som "0 poster – kontrollera URL" i stället för att tystna. Watchdogen larmar om
+  `news_feed.json` är > 6 h gammal.
+  **(6) Prompt-kalibrering (båda rotationerna):** ny sektion "NIVÅER & OMSÄTTNING" med
+  backtestade stoppband (nordic 3–5 %, us 4–6 %), **kostnadströskel** (entry→mål minst 6 %
+  nordiskt / 8 % i US-boken) och **BEHÅLL som standardval** – 5-dagarsregeln säljer inte längre
+  automatiskt, rotation kräver stop/mål, punkterad tes eller ≥ 2 poäng bättre nytt case.
+  **(7) Delat entry (4a i båda prompterna):** halva vikten köps direkt vid rotationen, andra
+  halvan som villkorad limit i Pending. Motverkar att kapitalet blir stående (Saab v30, Moreld,
+  XOM triggade aldrig). Undantag vid gap > 3 % eller binär händelse inom 2 dagar.
+  Dessutom: 1g0 NYHETSDRIVEN KANDIDATGENERERING (minst 5 kandidater ur `news_feed.json` innan
+  scanning ur minnet) i båda rotationsprompterna, och LÄGE A punkt 0 (FACIT) omskriven i båda så
+  den inte längre motsäger BEHÅLL-standarden.
+  Testsviten: **214 tester**; sim: **31 kontroller**; `validate-decisions.mjs` OK (6 rader);
+  watchdogen "Allt friskt". Allt verifierat på Drens dator 2026-07-31.
+  ~~**OBS – inte pushat:**~~ **PUSHAT** – verifierat 2026-08-02: arbetskopian är i synk med
+  `origin/main` (varken ahead eller behind). Notisen om att paketet låg lokalt är inaktuell.
+
+- ✅ 2026-07-31 (strategipaket – 5 ändringar av hur kapitalet allokeras och mäts):
+  **(1) INDEXSLEEVE ersätter kassa.** Oallokerat kapital parkeras i `XACT-OMXS30.ST` (nordiskt)
+  respektive `SPY` (US) i stället för på konto, redovisat som en egen rad i "Aktuellt innehav"
+  utan stop/mål. Skälet: backtestet visade att index slog skelettet, så tid utanför marknaden är
+  en garanterad kostnad. Frågan strategin svarar på blir därmed den rätta – tillför urvalet något
+  UTÖVER index? Sleevens transaktioner loggas med `catalystType: "index"` och ska filtreras bort
+  ur urvalsstatistiken. Kassa (0 %) tillåts bara om sleeven inte kan handlas.
+  **(2) 4 positioner à 25 % ersätter 2 à 50 %** (conviction-band 15–35 %, max 35 % per aktie,
+  max 2 av 4 ryktesdrivna). Halverar enskild-aktie-variansen och fördubblar takten som
+  beslutsloggen fylls i – med n=2 gick det inte att skilja skicklighet från slump. Färre än 4
+  godkända case fyller bara de platser som håller; resten går till sleeven.
+  **(3) ALPHA MOT INDEX (ren kod).** `VParse.benchReturnPct/computeAlpha/computeAlphaStats`
+  räknar benchmarkets avkastning över varje affärs EXAKTA hållperiod ur `price_history.json`
+  (carry-forward över helger; period utanför historiken ⇒ `null`, aldrig 0). Historik-tabellen
+  fick kolumnerna "OMXS30" och "Alpha", och Avkastning-vyn en ny sektion `#alphaStats`
+  (snitt-alpha, andel affärer som slog index, summa alpha). Första mätningen: Alleima
+  **+6,89 % alpha** (+6,39 % mot OMX −0,50 % under 14–17 juli).
+  **(4) KATALYSATORTYPEN STYR PLANEN.** Ny tabell i båda prompterna: `earnings`/`order`/
+  `regulatory`/`buyback` ⇒ 3–6 veckors horisont, mål 12–15 % (US 14–18 %); `ma_rumor`/`insider`/
+  `index` ⇒ 5–10 dagar, snävare mål och **tidsstopp efter 10 handelsdagar** om tesen inte
+  bekräftats; `macro`/`turnaround`/`other` ⇒ 2–4 veckor. Nytt fält `horizonDays` i beslutsloggen.
+  **(5) MÅLET MÅSTE VARA NÅBART + realiserad R/R loggas.** Målavståndet får vara högst
+  2 × genomsnittlig dagsrörelse × √(handelsdagar i horisonten) – ett analytikerintervall är ett
+  påstående, inte en mätning. Vid SÄLJ loggas `realizedRr` (utfall / planerat stoppavstånd).
+  Validatorn kontrollerar de nya fälten och att `alphaPct = outcomePct − benchPct`.
+  **Infrastruktur som krävdes:** `fetch-prices.mjs` fångade inte ETF-tickers – `TICKER_RE`:s
+  efterled vidgat 3→6 tecken och watchlist-filtret 10→14 tecken, annars hade `XACT-OMXS30.ST`
+  aldrig hämtats. Verifierat: 37/38 tickers, sleeve-kurserna på plats (XACT 486,10 SEK, SPY 747,03).
+  Testsviten: **234 tester**; sim: **33 kontroller**. Allt grönt 2026-07-31.
+
+- ✅ 2026-08-02 (genomgång + åtgärdspaket): en revision av hela systemet mot koden hittade tre
+  VERIFIERADE buggar (två av dem hade miss-retron redan pekat ut som åtgärdspunkter till Dren)
+  plus tre strukturella luckor. Allt åtgärdat:
+  **(1) `previousClose` var fel för SAMTLIGA tickers.** `fetch-prices.mjs` läste
+  `meta.chartPreviousClose`, som är stängningen före HELA det begärda fönstret – och fönstret är
+  `range=5d`. En veckorörelse presenterades alltså som en dagsrörelse (MSFT "+21,7 %" i stället
+  för +3,0 %; scouten flaggade och gick runt felet i fyra rapporter). Live-kontroll 2026-08-02
+  visade dessutom att `meta.previousClose` **inte finns alls** i chart-API:ts svar, så fältet
+  måste härledas ur serien. Ny exporterad `prevCloseFrom(res)`: sista stängningen DATERAD FÖRE
+  `regularMarketTime` (inte "näst sista giltiga" – när dagens bar är okonsoliderad, close = null,
+  hade det gett en tvåsessionersrörelse; sett på ELUX-B.ST 2026-07-31). Påverkar även
+  dashboardens `fxRate` (USDSEK-dygnsrörelse).
+  **(2) `alerts.json` saknade hjärtslag.** `alerts.mjs` returnerade tidigt när signalmängden var
+  oförändrad, så `generatedAt` betydde "senast signalerna ändrades" – filen var 2 dygn gammal
+  trots sex gröna körningar, och en död monitor gick inte att skilja från en tyst frisk. Ny
+  `heartbeatDue(prev, nowISO, maxAgeH = 3)` + fälten `checkedAt` och `watched` skrivs nu även vid
+  oförändrat läge, men högst var 3:e timme (annars en commit i timmen av ren tidsstämpel).
+  `generatedAt` behåller sin gamla betydelse. `watchdog.mjs` fick nyckeln `alerts` (larmar när
+  `checkedAt` > 6 h på en vardag ELLER saknas helt = actionen kör gammal kod). Dashboarden fick
+  `VParse.monitorStatus` + en statusrad i `renderAlerts(alerts, mon)` som syns ÄVEN utan signaler
+  (grön "Monitorn kontrollerad HH:MM UTC" / gul "Monitorn har tystnat"; tyst på helger).
+  **(3) Nyhetsflöden byts inte längre på ett enda fel.** `prnewswire` svarade HTTP 404 en gång
+  (2026-07-31T22:17Z) efter att ha levererat 20 poster två timmar tidigare, och svarar 200 vid
+  manuell kontroll – transient, inte dött. Ny `fetchFeedText(url, opts)` med ETT omförsök;
+  statusen i `news_feed.json` skriver ut "(efter omförsök)" så ett flöde som verkligen dör ändå
+  syns. Ingen URL byttes.
+  **(4) Breddad missdetektion (dödar kategori A-hålet).** `price_history.json` täcker bara de ~10
+  bevakade nordiska tickerna, så retron kunde per konstruktion inte hitta en vinnare systemet
+  inte redan tittat på – Electrolux +22 %, Scandi Standard +9,6 % och fem rapportreaktioner
+  16–17 juli passerade osedda. Nytt nyckellöst `movers.mjs` + `movers.yml` (lördag 06:00 UTC,
+  före retron) hämtar dagsstängningar för `config/universe_nordic_movers.txt` (~110 namn, Large
+  OCH Mid Cap) och skriver `state/movers.json` med rörelser över tröskel (default vecka ±8 %,
+  dag ±6 %). `miss_retro.md` STEG 1 börjar nu i den filen; `price_history.json` är degraderad
+  till komplement med uttrycklig motivering. **Första körningen 2026-08-02 (107/110 hämtade)
+  hittade 17 rörelser** och fångade exakt de kända missarna – plus SF.ST +63 %, CTM.ST +32 %,
+  HEXA-B +20 % och STAR-B +18 % som ingen sett.
+  **(5) Beslutsloggen är nu synlig i dashboarden.** `decisions.json` hade 6 rader, ALLA märkta
+  `backfill-260731` – noll live-loggning på två veckor, och det upptäcktes bara för att retron
+  letade efter statistik som inte fanns. Nya `VParse.parseDecisions/decisionStats` (aggregerar
+  SÄLJ per `catalystType`, exkluderar `index`-sleeven, flaggar kategorier < 8 affärer som "brus",
+  räknar backfyllda rader och hur många av de 15 som fattas) + `VRender.renderDecisionStats` i
+  ny sektion `#decisionStats` under Handelsstatistik.
+  **(6) Sleeve-migrering tvingad.** Båda rotationsprompterna fick punkt 4c: står "Kassa" på > 0 %
+  vid rotationens start ska det flyttas till sleeven i DENNA körning (nordiska boken låg på 50 %
+  kassa, US-boken på 100 % sedan 2026-07-30 – exakt det sleeven finns för att undvika). Loggas
+  med `catalystType: "index"`. Dessutom: HCA/NOC/WFC/MS tillagda i `watchlist_us.txt` (L-2 –
+  fyra av fem US-bubblare var omätbara).
+  **(7) Slutanvändarmanual.** `Anvandarmanual.html` → `Anvandarmanual.pdf` (19 sidor, svenska,
+  14 avsnitt: begrepp, positionsmätaren, besluten, alla vyer, nyckeltalen, analysbeställning,
+  lärloopen, daglig rutin, felsökning, ordlista) med två inbäddade skärmbilder i `docs/manual/`
+  och `make-manual.bat` för omrendering. Ren bruksanvisning – noll git/tester/filstruktur; den
+  tekniska driftmanualen ligger kvar i `MANUAL.md`.
+  **(8) Backtestet matchade inte strategin.** Gridet simulerade fortfarande `topN: 2` /
+  `weight: 0.5` trots att böckerna gick till 4 à 25 % den 2026-07-31 – och det är UR DET GRIDET
+  prompternas hårda stoppband och kostnadströsklar är hämtade. `backtest.mjs` tar nu antal
+  positioner som fjärde argument (default 4, vikt = 1/topN), skriver det i rubriken och i
+  filnamnet (`backtest-yymmdd-<marknad>-top<N>.md`). Båda marknaderna omkörda 5 år:
+  **nordic top4 slår top2 i varje enskild cell** (PF 0,86–0,91 → 0,89–0,96, kedjat −50,5 % →
+  −21,2 % i bästa cellen, max DD −58 % → −40 %) – spridningen gör det den ska, och −3 %/+6 %
+  är fortfarande bästa bandet, så inga nivåregler behövde ändras. **US top4: PF 0,65–0,79**,
+  kedjat −73 % till −86 %, med bredaste kombinationen fortsatt bäst; växlingspåslaget (0,75 %
+  rundtur × ~200 affärer/år) äter hela bruttoedgen. Båda prompternas underlagssektion pekar nu
+  på rätt fil med rätt siffror, och US-prompten säger uttryckligen att slutsatsen är HÖGRE
+  selektivitet, inte jakt på igen-utfall. Bonusfix: filnamnet byggdes av lokalt datum medan
+  rubriken skrev UTC, så en körning efter lokal midnatt gav "260802" med "Datum: 2026-08-01".
+  **(9) Fyra mindre luckor:** US-boken mättes bara med ackumulerad avkastning – US-vyn har nu
+  handelsstatistik, riskmått, alpha mot ^GSPC och historiktabell (samma rena funktioner, US-kostnad
+  inkl. växlingspåslag). `price_history.json` höjt 60 → 250 punkter/ticker (alpha-mätningen föll
+  tyst ur för affärer äldre än 60 dagar, medan katalysator-horisonten är upp till 6 veckor).
+  Watchdogen larmar på `movers.json` äldre än 9 dygn (en död lördagsaction tystade annars
+  retrons breddsökning). `SAAB.ST` borttagen ur `config/watchlist.txt` – tickern existerar inte
+  på Yahoo (bolaget är `SAAB-B.ST`) och stod för hela "1 av 38 misslyckade" i prices.json.
+  **(10) `prices.json` säger nu vilken kodversion som skrev den.** Natten till 2026-08-02 skrev
+  den nordiska routinen i `daglig-260801.md` att "`prevCloseFrom`-fixen ser ut att ge korrekta
+  värden" – och räknade det på en `prices.json` genererad 22:14 föregående kväll, alltså FÖRE
+  fixen pushades. Det gamla felvärdet (601,00 mot korrekta 599,60 för SAAB-B.ST) såg rimligt ut
+  för en nordisk ticker, så felet passerade som en verifiering. Grundorsaken var att filen inte
+  kunde tala om vilken kod som skapat den. Nytt fält `schemaVersion: "2026-08-02-prevclose"` +
+  utökad `note`; alla tre kursläsande prompter kräver nu fältet innan en dagsrörelse räknas ur
+  filen, med uttryckligt förbud mot att kalla rättelsen verifierad utan det. Bumpa strängen när
+  ett fälts BETYDELSE ändras – inte vid vanliga ändringar.
+  **Om beslutsloggen:** de två körningarna 1–2 aug loggade noll rader, men det är KORREKT –
+  börserna var stängda och rapporterna säger uttryckligen varför. Loggningskravet har existerat
+  i exakt en handelsdag (2026-07-31, backfylld), så **måndag 2026-08-03 är första riktiga testet.**
+  **(11) Kurser-vyn visar nu VAD varje ticker är.** Vyn renderade 38 identiska kort, så ett
+  innehav såg likadant ut som ett index, ett valutapar eller en ticker som bara låg kvar i
+  watchlisten – frågan "vilka aktier bevakar den egentligen?" gick inte att besvara ur
+  gränssnittet. Ny `VParse.tickerRoles()` klassificerar varje ticker i prioritetsordning
+  innehav > plan > bubblare > sleeve > index > valuta > bevakad, med källorna portföljfilerna,
+  veckorapporternas bubblarlistor (fritext ⇒ `tickersInText`, som bara tar nordiska börssuffix
+  och parentes-tickers för att inte tolka "VD"/"USA" som symboler) och båda watchlist-filerna
+  (app.js hämtar dem nu). Korten fick färgad rollpill + dagsrörelse, vyn fick filterchips med
+  antal per roll och sortering på roll (default) / A–Ö / färskhet / dagsrörelse.
+  **Dagsrörelsen visas ENDAST om `prices.json` har `schemaVersion`** – annars renderas "–" plus
+  en varningsremsa, eftersom previousClose i äldre filer pekar ~en vecka bakåt. Samma spärr som
+  prompterna fick, fast i UI:t.
+  Testsviten: **308 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
+
+- ✅ 2026-08-02 (temalager – 4 teman × ljust/mörkt, en enda markup): dashboarden hade under dagen
+  vuxit till FYRA index-filer (`index.html` + `index_2/3/4.html`) med var sin komplett kopia av
+  DOM:en. Det betydde att varje ny vy måste läggas till fyra gånger och att ljust/mörkt läge hade
+  krävt åtta handskrivna paletter. Ersatt av arv:
+  **(1) `assets/themes/base.css`** – ALL struktur (~250 selektorer), uttryckt i CSS-variabler.
+  Hårdkoda aldrig en färg/radie/typsnittsfamilj där; lägg en token, annars kan inte temana styra
+  den. Basen HÄRLEDER dessutom mjuka/linje-/wash-varianter med `color-mix`, och knepet för
+  varningstext är att blanda mot `--text-main` (ljus i mörkt läge, mörk i ljust) – samma regel ger
+  läsbar text i båda lägena. Ett tema sätter därför **19 tokens per läge**, inte ~50.
+  **(2) Fyra temafiler** (`deck`, `nordlys`, `terminal`, `enkel`) med ljus + mörk palett och sina
+  strukturella avvikelser: deck lyfter menyn till en fast sidopanel ≥861px, terminal lägger
+  rutnät/rasterstruktur och numrerade menyposter, enkel DÖLJER de fem statistiktunga menylänkarna.
+  **(3) `assets/theme.js`** (`window.VTheme`) – registret, val via `?theme=`/`?mode=` eller
+  localStorage (läget sparas PER tema), växlaren i topbaren, och ETT Chart.js-plugin som läser
+  diagramfärger ur CSS-variabler (app.js hårdkodar mörka rutnätsfärger – de skrivs om i
+  `beforeInit` i stället för att app.js ändras). `boot()` körs synkront i `<head>` → ingen
+  vit blinkning vid laddning. Kortkommandona 1–9 remappas i capture-fasen när ett tema döljer
+  menyposter, annars hade "5" i Enkel hoppat till en dold vy.
+  **(4) `index_2/3/4.html`** är nu 18-raders stubbar som vidarebefordrar till
+  `index.html?theme=…` så gamla bokmärken lever vidare.
+  **(5) `tests/theme.mjs`** – DEL A (tokentäckning + klamrar + att registret matchar filerna) körs
+  i CI utan beroenden och larmar om ett nytt tema glömmer en variabel, vilket varken run.mjs eller
+  sim.mjs kan upptäcka; DEL B kör motorn i jsdom och hoppas över när jsdom saknas. `test.yml` fick
+  steget + `node --check assets/theme.js`.
+  Verifierat 2026-08-02: **308 enhetstester · 48 temakontroller · 88 sim-kontroller**, allt grönt.
+  OBS: `tests/sim.mjs` läser `index.html` hårdkodat – den testar alltså markupen, inte temana.
+

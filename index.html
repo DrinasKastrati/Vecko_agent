@@ -6,596 +6,49 @@
 <title>Aktie bot</title>
 <meta name="theme-color" content="#070B15" />
 <link rel="manifest" href="manifest.json" />
+<!--
+  EN webbapp, FYRA teman × två lägen (ljust/mörkt).
+
+  Markupen (DOM-kontraktet som assets/app.js skriver in i) finns BARA här.
+  Utseendet ligger i assets/themes/: base.css har all struktur uttryckt i
+  CSS-variabler, temafilerna sätter bara variabler + sina avvikelser.
+  assets/theme.js väljer tema/läge och pekar om <link id="themeCss">.
+
+  Lägg till ett tema: en rad i THEMES i theme.js + en fil i assets/themes/.
+  Lägg till en vy: en <section class="view"> här + en <a data-view> i menyn.
+  Ändra ALDRIG ett id utan att ändra app.js – den slår upp dem utan null-koll.
+
+  index_2/3/4.html finns kvar som vidarebefordrande stubbar (gamla bokmärken).
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" />
+<!-- ett anrop täcker samtliga teman: Inter, JetBrains Mono, Source Serif 4, IBM Plex Mono -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;600;700&display=swap" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070B15'/%3E%3Crect x='8' y='11' width='4' height='13' rx='1' fill='%2310B981'/%3E%3Crect x='9' y='6' width='2' height='6' fill='%2310B981'/%3E%3Crect x='9' y='23' width='2' height='4' fill='%2310B981'/%3E%3Crect x='20' y='8' width='4' height='11' rx='1' fill='%23EF4444'/%3E%3Crect x='21' y='5' width='2' height='4' fill='%23EF4444'/%3E%3Crect x='21' y='18' width='2' height='7' fill='%23EF4444'/%3E%3C/svg%3E" />
-<style>
-  :root{
-    /* ===== Tema 2: Quant Deck (mörkt, förfinat – sidopanel-layout) ===== */
-    --bg-main:#070B15; --bg-surface:#101828; --text-main:#E6EBF4; --text-muted:#8FA0B8;
-    --accent-primary:#38BDF8; --trade-up:#10B981; --trade-down:#EF4444; --border-color:#22304A;
 
-    --font-main:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --font-mono:'JetBrains Mono',ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-
-    /* Interna alias – hela stilarket pekar på dessa. */
-    --bg:var(--bg-main); --bg2:#0A101E;
-    --panel:var(--bg-surface); --panel2:#0C1322; --panel3:#1A2438;
-    --border:var(--border-color); --border2:#31425F;
-    --text:var(--text-main); --muted:var(--text-muted); --faint:#5D7089;
-    --green:var(--trade-up); --green2:#059669; --red:var(--trade-down);
-    --amber:#F59E0B; --blue:var(--accent-primary); --purple:#A78BFA;
-    --shadow:0 10px 34px rgba(0,0,0,.4);
-    --mono:var(--font-mono);
-    --sans:var(--font-main);
-    --sidew:236px;
-  }
-  *{box-sizing:border-box}
-  [hidden]{display:none!important}
-  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
-  body{margin:0;color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-    background:
-      radial-gradient(900px 480px at 85% -8%, rgba(56,189,248,.09), transparent 60%),
-      radial-gradient(760px 500px at -10% 30%, rgba(167,139,250,.06), transparent 55%),
-      var(--bg) fixed}
-  a{color:var(--blue);text-decoration:none}
-  a:hover{text-decoration:underline}
-  ::-webkit-scrollbar{width:11px;height:11px}
-  ::-webkit-scrollbar-thumb{background:#273350;border-radius:8px;border:2px solid var(--bg)}
-  ::-webkit-scrollbar-track{background:transparent}
-  input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent-primary);outline-offset:1px}
-
-  /* ================= Skal: sidopanel + huvudyta ================= */
-  .shell{display:grid;grid-template-columns:var(--sidew) minmax(0,1fr);min-height:100vh}
-
-  .subnav{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:2px;
-    padding:18px 12px 14px;background:rgba(7,10,18,.88);backdrop-filter:blur(12px);
-    border-right:1px solid var(--border);overflow-y:auto}
-  .side-brand{display:flex;align-items:center;gap:11px;padding:2px 8px 16px;min-width:0}
-  .side-brand .logo{width:32px;height:32px;flex:0 0 auto;filter:drop-shadow(0 0 10px rgba(56,189,248,.25))}
-  .side-brand h1{font-size:14.5px;margin:0;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;font-weight:800}
-  .side-brand .sub{color:var(--faint);font-size:10.5px;letter-spacing:.06em;margin-top:1px}
-  .nav-group{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);
-    padding:14px 10px 5px;font-weight:700}
-  .subnav a{position:relative;display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13.3px;
-    padding:8px 12px;border-radius:9px;white-space:nowrap;letter-spacing:.01em;cursor:pointer;transition:.14s}
-  .subnav a:hover{color:var(--text);background:var(--panel);text-decoration:none}
-  .subnav a.active{color:var(--text);background:linear-gradient(90deg,rgba(56,189,248,.14),rgba(56,189,248,.03));
-    box-shadow:inset 0 0 0 1px rgba(56,189,248,.22)}
-  .subnav a.active::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:3px;
-    background:var(--accent-primary);box-shadow:0 0 8px rgba(56,189,248,.6)}
-  .side-foot{margin-top:auto;padding:14px 10px 2px;border-top:1px solid var(--border);color:var(--faint);font-size:10.5px;line-height:1.5}
-  .side-foot .disc{color:var(--amber)}
-
-  .main{min-width:0;display:flex;flex-direction:column}
-
-  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;
-    padding:11px 24px;background:rgba(7,10,18,.82);backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--border)}
-  .spacer{flex:1}
-  .status{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);white-space:nowrap}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 0 rgba(16,185,129,.5)}
-  .dot--live{background:var(--green);animation:pulse 2s infinite}
-  .dot--load{background:var(--amber);animation:pulse 1s infinite}
-  .dot--err{background:var(--red)}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.45)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
-  #updated{color:var(--faint);font-size:11.5px}
-  .btn{cursor:pointer;border:1px solid var(--border2);background:var(--panel3);color:var(--text);
-    border-radius:9px;padding:7px 12px;font-size:12.5px;font-family:var(--sans);display:inline-flex;align-items:center;gap:7px;transition:.15s}
-  .btn:hover{background:#223050;border-color:#3E5680}
-  .btn svg{width:14px;height:14px}
-  .btn.on{background:#223050;border-color:#3E5680;color:var(--accent-primary)}
-
-  .wrap{width:100%;max-width:none;margin:0;padding:20px 26px 60px}
-  section{scroll-margin-top:70px;margin-top:22px}
-  section.view{background:rgba(16,24,40,.5);border:1px solid var(--border-color);border-radius:18px;padding:18px 20px 24px}
-  .view{display:none;animation:fade .18s ease}
-  .view.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
-  .sec-head h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0;
-    padding-left:12px;border-left:3px solid var(--accent-primary)}
-  .sec-head .hint{color:var(--faint);font-size:12px}
-  .kpi-value.num,.stat-v,.px-pr,.hold-grid .v,.tbl td,.report td{font-variant-numeric:tabular-nums}
-
-  /* ================= Hem: handlingsyta + höger informationsspalt ========= */
-  .hem-grid{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(300px,1fr);gap:18px;align-items:start}
-  .rail{display:grid;gap:14px}
-  .rail-card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:13px 16px 15px}
-  .rail-t{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-primary);
-    font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:8px}
-  .rail-t .n{margin-left:auto;color:var(--faint);font-family:var(--mono);font-size:10px;letter-spacing:0;text-transform:none}
-  .rail-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-  .rail-list li{font-size:12.6px;color:#C4CEDF;padding-left:14px;position:relative}
-  .rail-list li::before{content:"▸";position:absolute;left:0;color:var(--accent-primary);font-size:10px;top:2px}
-  .rail-news li{padding-left:0}
-  .rail-news li::before{content:none}
-  .rail-news .d{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:6px}
-  .rail-news .s{font-weight:600;color:var(--text)}
-  .rail-more{display:inline-block;margin-top:9px;font-size:11.5px;color:var(--blue);cursor:pointer;background:none;border:none;padding:0;font-family:var(--sans)}
-  .rail-more:hover{text-decoration:underline}
-  .book-block{margin-bottom:8px}
-  .book-h{display:flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-    font-weight:700;color:var(--text);margin:18px 0 2px}
-  .book-h:first-child{margin-top:0}
-  .book-h .bk{width:9px;height:9px;border-radius:3px}
-  .bk--n{background:var(--green)} .bk--u{background:var(--blue)}
-  .book-h .acc{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:0}
-
-  .banner{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:12px;
-    background:var(--panel2);border:1px solid var(--border);font-size:12.7px;color:var(--muted);margin-bottom:6px}
-  .banner--warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.32);color:#FCD34D}
-  .banner--err{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.4);color:#FCA5A5}
-  .banner-ico{font-size:15px;line-height:1.3;flex:0 0 auto}
-
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
-  .kpi{background:linear-gradient(165deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--border);
-    border-radius:14px;padding:15px 16px 14px;position:relative;overflow:hidden}
-  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent-primary),transparent 70%)}
-  .kpi-label{font-size:11.5px;letter-spacing:.01em;color:var(--muted)}
-  .kpi-value{font-size:26px;margin-top:7px;font-weight:700;letter-spacing:-.01em}
-  .kpi-value.num{font-family:var(--mono);font-weight:600}
-  .kpi-value.pos{color:var(--green)} .kpi-value.neg{color:var(--red)} .kpi-value.flat{color:var(--text)}
-  .kpi-value .upd{font-size:16px;font-family:var(--mono);color:var(--text)}
-  .kpi-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
-
-  .market{margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:12px;
-    padding:12px 15px;font-size:13.3px;color:#C4CEDF;display:flex;gap:11px;align-items:flex-start}
-  .market-tag{flex:0 0 auto;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);
-    border:1px solid rgba(16,185,129,.35);border-radius:6px;padding:3px 8px;margin-top:1px}
-
-  .sub{font-size:13px;letter-spacing:.02em;color:var(--text);margin:22px 0 11px;font-weight:700;display:flex;align-items:center;gap:9px}
-  .sub-date{font-family:var(--mono);font-size:11.5px;color:var(--faint);font-weight:400}
-  .hold-grid-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:13px}
-  .hold{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px;transition:border-color .15s}
-  .hold:hover{border-color:var(--border2)}
-  .hold--struck{opacity:.62}
-  .hold--struck .hold-name{text-decoration:line-through;text-decoration-color:var(--faint)}
-  .hold-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .hold-badges{display:flex;gap:6px;align-items:center}
-  .wt-pill{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent-primary);
-    background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35);border-radius:6px;padding:2px 7px}
-  .hold-name{font-size:16px;font-weight:700}
-  .hold-tickers{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 12px}
-  .pill{font-family:var(--mono);font-size:11px;color:#AFBDD4;background:var(--panel3);
-    border:1px solid var(--border2);border-radius:6px;padding:2px 7px}
-  .hold-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px}
-  .hold-grid .k{display:block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
-  .hold-grid .v{display:block;font-family:var(--mono);font-size:13px;color:var(--text);margin-top:2px;word-break:break-word;white-space:normal}
-  .hold-note{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font-size:12.3px;color:var(--muted)}
-
-  .status-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;background:var(--panel2);
-    border:1px solid var(--border);border-radius:12px;padding:9px 13px;margin-bottom:14px;font-size:12.3px;color:var(--muted)}
-  .st-date{font-family:var(--mono);color:var(--text);font-size:12px}
-  .st-mode{color:var(--muted)}
-  .st-chip{font-size:10.5px;font-weight:700;letter-spacing:.05em;border-radius:6px;padding:2px 8px}
-  .st-chip--kop{background:rgba(16,185,129,.15);color:var(--green)}
-  .st-chip--salj{background:rgba(239,68,68,.15);color:var(--red)}
-  .st-chip--behall{background:rgba(56,189,248,.14);color:var(--blue)}
-  .st-chip--avvakta{background:rgba(245,158,11,.14);color:var(--amber)}
-  .st-chip--none{background:rgba(148,163,184,.13);color:var(--muted)}
-  .st-next{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
-
-  .gauge{margin-top:12px}
-  .gauge-track{position:relative;height:8px;border-radius:4px;background:var(--panel3);margin:0 2px}
-  .gauge-fill{position:absolute;left:0;top:0;bottom:0;background:rgba(16,185,129,.35);border-radius:4px 0 0 4px}
-  .gauge-fill.neg{background:rgba(245,158,11,.3)}
-  .gauge-tick{position:absolute;top:-3px;width:2px;height:14px;background:var(--faint)}
-  .tick-stop{left:0;background:var(--red)}
-  .tick-target{right:0;background:var(--green)}
-  .tick-now{background:var(--text)}
-  .gauge-lbls{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--faint);margin:5px 2px 0}
-  .gauge-lbls .neg{color:var(--red)} .gauge-lbls .pos{color:var(--green)}
-
-  .dhist{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:11px;padding-top:10px;border-top:1px solid var(--border)}
-  .dhist-l{font-size:10px;color:var(--faint);margin-right:3px}
-  .ddot{width:9px;height:9px;border-radius:50%;background:var(--panel3);box-shadow:inset 0 0 0 1px var(--border2)}
-  .ddot--kop{background:var(--green);box-shadow:none}
-  .ddot--salj{background:var(--red);box-shadow:none}
-  .ddot--behall{background:var(--blue);box-shadow:none}
-  .ddot--avvakta{background:var(--amber);box-shadow:none}
-
-  .hold-live{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin-top:11px;padding:8px 10px;
-    background:var(--panel3);border:1px solid var(--border2);border-radius:9px;font-family:var(--mono);font-size:11.8px}
-  .hold-live .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--green);font-family:var(--sans);font-weight:700}
-  .hold-live .lv-px{color:var(--text);font-size:13px}
-  .hold-live .lv{color:var(--muted)}
-  .hold-live .lv.pos{color:var(--green)} .hold-live .lv.neg{color:var(--red)}
-  .hold-live .lv-tm{color:var(--faint);font-size:10px;margin-left:auto}
-
-  .badge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 9px;border-radius:7px;white-space:nowrap}
-  .badge--kop{background:rgba(16,185,129,.15);color:var(--green);box-shadow:inset 0 0 0 1px rgba(16,185,129,.4)}
-  .badge--salj{background:rgba(239,68,68,.15);color:var(--red);box-shadow:inset 0 0 0 1px rgba(239,68,68,.4)}
-  .badge--behall{background:rgba(56,189,248,.14);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(56,189,248,.4)}
-  .badge--avvakta{background:rgba(245,158,11,.14);color:var(--amber);box-shadow:inset 0 0 0 1px rgba(245,158,11,.4)}
-  .badge--plan{background:rgba(167,139,250,.15);color:var(--purple);box-shadow:inset 0 0 0 1px rgba(167,139,250,.4)}
-  .badge--none{background:rgba(148,163,184,.13);color:var(--muted);box-shadow:inset 0 0 0 1px rgba(148,163,184,.3)}
-  .badge--rumor{background:rgba(245,158,11,.14);color:var(--amber);box-shadow:inset 0 0 0 1px rgba(245,158,11,.4);font-size:10px}
-
-  .feed-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .feed-col{background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:6px 15px 12px}
-  .feed{list-style:none;margin:0;padding:0}
-  .feed-item{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
-  .feed-item:last-child{border-bottom:none}
-  .chip{flex:0 0 auto;font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:6px;height:fit-content;
-    background:var(--panel3);border:1px solid var(--border2);color:var(--muted)}
-  .chip--day{color:var(--green);border-color:rgba(16,185,129,.3)}
-  .feed-body{font-size:12.8px;color:#C4CEDF}
-  .feed-subj{display:block;font-weight:600;color:var(--text);font-size:12.8px;margin-bottom:2px}
-  .cat-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
-  .cat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
-  .cat-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600;margin-bottom:7px}
-  .cat-text{font-size:12.5px;color:var(--muted)}
-
-  .report-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
-  .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:3px}
-  .rtype{cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--sans);
-    font-size:12.5px;padding:6px 14px;border-radius:7px;transition:.15s}
-  .rtype.on{background:var(--panel3);color:var(--text);box-shadow:inset 0 0 0 1px var(--border2)}
-  select{background:var(--panel3);color:var(--text);border:1px solid var(--border2);
-    border-radius:8px;padding:8px 11px;font-family:var(--mono);font-size:12.5px}
-  select#reportSelect{min-width:210px}
-  .toggle{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:12.5px;cursor:pointer}
-  .toggle input{accent-color:var(--green)}
-  .report{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:8px 26px 26px;
-    max-height:74vh;overflow:auto;max-width:1150px}
-  .report--full{max-height:none}
-  .report h1{font-size:21px;margin:22px 0 6px;letter-spacing:-.01em}
-  .report h2{font-size:16px;margin:24px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);color:#D9E2F0}
-  .report h3{font-size:13.5px;margin:16px 0 6px;color:var(--green);letter-spacing:.02em}
-  .report p{margin:8px 0;color:#C4CEDF;font-size:13.6px}
-  .report strong{color:#fff}
-  .report em{color:var(--muted)}
-  .report ul,.report ol{padding-left:20px;color:#C4CEDF;font-size:13.6px}
-  .report li{margin:4px 0}
-  .report blockquote{margin:12px 0;padding:10px 15px;background:rgba(245,158,11,.07);
-    border-left:3px solid var(--amber);border-radius:0 8px 8px 0;color:#FCD34D;font-size:12.8px}
-  .report hr{border:none;border-top:1px solid var(--border);margin:20px 0}
-  .report code{font-family:var(--mono);font-size:12px;background:var(--panel3);padding:1px 5px;border-radius:4px}
-  .report table{border-collapse:collapse;width:100%;margin:12px 0;font-size:12.5px;display:block;overflow-x:auto}
-  .report th,.report td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
-  .report th{background:var(--panel3);color:#D9E2F0;font-weight:600;white-space:nowrap}
-  .report td{color:#BFCADB}
-  .report del{color:var(--faint)}
-  pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:11.8px;color:#AFBDD4;margin:0}
-
-  .card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
-  #chartWrap{position:relative;height:300px;margin-top:4px}
-  #chartNote{color:var(--faint);font-size:12px;margin-top:9px}
-  /* Scroll-skuggor: visar att tabellen fortsätter utanför kanten. */
-  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;border-radius:12px;
-    background:
-      linear-gradient(90deg,var(--bg-main) 30%,transparent) left/44px 100%,
-      linear-gradient(270deg,var(--bg-main) 30%,transparent) right/44px 100%,
-      radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.55),transparent) left/16px 100%,
-      radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.55),transparent) right/16px 100%;
-    background-repeat:no-repeat;
-    background-attachment:local,local,scroll,scroll}
-  .tbl{border-collapse:collapse;width:100%;font-size:12.5px}
-  .tbl th,.tbl td{border:1px solid var(--border);padding:8px 11px;text-align:left}
-  .tbl th{background:var(--panel3);color:#D9E2F0}
-  .tbl td .pos{color:var(--green);font-weight:600} .tbl td .neg{color:var(--red);font-weight:600}
-  .bubbl{list-style:none;padding:0;margin:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
-  .bubbl li{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 13px;
-    font-size:12.7px;color:#C4CEDF;position:relative;padding-left:30px}
-  .bubbl li::before{content:"◆";position:absolute;left:12px;color:var(--purple);font-size:10px;top:12px}
-  .empty{color:var(--faint);font-size:13px;padding:14px 16px;font-style:italic;
-    background:var(--panel2);border:1px dashed var(--border2);border-radius:11px}
-
-  .px-card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-top:14px}
-  .px-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:11px}
-  .px-head .t{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
-  .px-age{font-family:var(--mono);font-size:11.5px}
-  .px-sum{color:var(--faint);font-size:11.5px;font-family:var(--mono)}
-  .px-fresh{color:var(--green)} .px-stale{color:var(--amber)} .px-err{color:var(--red)}
-  .px-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:8px}
-  .px-item{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;transition:.15s}
-  .px-item:hover{border-color:var(--border2);background:var(--panel3)}
-  .px-tk{display:flex;justify-content:space-between;gap:6px;font-family:var(--mono);font-size:11.5px;color:#AFBDD4}
-  .px-pr{font-family:var(--mono);font-size:14px;color:var(--text);margin-top:4px}
-  .px-tm{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:2px}
-  .px-tools{display:flex;gap:8px;align-items:center;margin-left:auto}
-  /* roll: vad ÄR den här tickern för portföljen? */
-  .px-role{display:inline-block;margin-top:6px;font-size:9.5px;letter-spacing:.06em;
-    text-transform:uppercase;padding:1.5px 6px;border-radius:6px;
-    background:var(--panel3);color:var(--faint);border:1px solid var(--border)}
-  .px-role--innehav{background:rgba(16,185,129,.14);color:var(--green);border-color:transparent}
-  .px-role--plan{background:rgba(56,189,248,.14);color:var(--accent-primary);border-color:transparent}
-  .px-role--bubblare{background:rgba(167,139,250,.14);color:var(--purple);border-color:transparent}
-  .px-role--sleeve{background:rgba(245,158,11,.13);color:var(--amber);border-color:transparent}
-  .px-chg{font-size:11.5px;margin-left:7px;font-variant-numeric:tabular-nums}
-  .px-chg--na{color:var(--faint)}
-  .px-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
-  .px-chip{background:var(--panel);border:1px solid var(--border);color:var(--muted);
-    font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;transition:.15s}
-  .px-chip:hover{border-color:var(--border2);color:var(--text)}
-  .px-chip.on{background:#223050;border-color:#3E5680;color:var(--accent-primary)}
-  .px-warn{font-size:11.5px;color:var(--amber);background:rgba(245,158,11,.08);
-    border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:7px 11px;margin:0 0 10px}
-  .px-search{background:var(--panel3);border:1px solid var(--border2);color:var(--text);border-radius:7px;
-    padding:5px 9px;font-family:var(--mono);font-size:11.5px;width:150px}
-  .px-search:focus{outline:none;border-color:#3E5680}
-  .px-sort{background:var(--panel3);border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:5px 7px;font-size:11.5px}
-
-  .sblock{margin-top:16px}
-  .sblock-body p{margin:6px 0;color:#C4CEDF;font-size:13px}
-  .slist{margin:6px 0;padding-left:18px;color:#C4CEDF;font-size:13px}
-  .slist li{margin:4px 0}
-  .scase-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:13px;margin-top:6px}
-  .scase{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:15px}
-  .scase-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .scase-name{font-size:16px;font-weight:700}
-  .scase-cat{margin:10px 0;font-size:12.5px;color:#C4CEDF}
-  .scase-cat .k,.scase-setup .k{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-right:6px}
-  .scase-bb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-  .bb{border-radius:9px;padding:9px 11px;font-size:12.3px;color:#C4CEDF;border:1px solid var(--border)}
-  .bb .k{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;font-weight:700}
-  .bb--bull{background:rgba(16,185,129,.07)} .bb--bull .k{color:var(--green)}
-  .bb--bear{background:rgba(239,68,68,.07)} .bb--bear .k{color:var(--red)}
-  .scase-setup{font-size:12.3px;color:var(--muted);padding-top:9px;border-top:1px solid var(--border)}
-  details.sblock summary{list-style:none;cursor:pointer}
-  details.sblock summary::-webkit-details-marker{display:none}
-  details.sblock summary::before{content:"▸";color:var(--accent-primary);margin-right:8px;font-size:11px;display:inline-block;transition:.15s}
-  details.sblock[open] summary::before{content:"▾"}
-  details.sblock summary:hover{color:#fff}
-  .sub--sum{margin-bottom:0}
-
-  .an-bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-  #analysInput{flex:1;min-width:200px;background:var(--panel3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px}
-  #analysInput:focus{outline:none;border-color:#3E5680}
-  .an-status{font-size:12.5px;color:var(--muted);margin-bottom:10px}
-  .an-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
-  .an-tk{font-family:var(--mono);font-size:18px;font-weight:600}
-  .an-date{font-family:var(--mono);font-size:12px;color:var(--faint)}
-  .an-verdict{font-size:12.5px;color:var(--amber);border:1px solid rgba(245,158,11,.35);border-radius:7px;padding:3px 10px}
-  .an-price{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px}
-  .an-actions{display:flex;gap:8px;margin:8px 0 12px}
-  .an-queue{font-size:12px;color:var(--muted);margin-bottom:12px}
-  .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
-  .an-chip{cursor:pointer;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--text);font-family:inherit;display:flex;flex-direction:column;gap:2px}
-  .an-chip:hover{border-color:var(--border2);background:var(--panel3)}
-  .an-chip-tk{font-family:var(--mono);font-size:13px;font-weight:600}
-  .an-chip-dt{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
-  .an-stale{border-color:rgba(245,158,11,.4)}
-  .an-stale .an-chip-dt{color:var(--amber)}
-  .an-chip.sel{border-color:var(--accent-primary);box-shadow:0 0 0 1px var(--accent-primary)}
-  .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-  .cmp-col .report{max-height:62vh}
-
-  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
-  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:12px 13px}
-  .stat-l{font-size:11px;color:var(--faint);margin-bottom:6px}
-  .stat-v{font-size:19px;font-family:var(--mono);font-weight:600}
-  .stat-v.pos{color:var(--green)} .stat-v.neg{color:var(--red)}
-  .stat-s{font-size:11px;color:var(--muted);margin-top:4px}
-  .stat-note{font-size:11.5px;color:var(--faint);margin-bottom:16px}
-  .spark{display:block;width:100%;height:24px;margin-top:6px}
-
-  .al-wrap{margin:0 0 12px;border:1px solid var(--border2);border-radius:12px;overflow:hidden}
-  .al-wrap--calm{border-color:var(--border)}
-  .al-head{background:var(--panel3);color:var(--amber);font-size:12px;font-weight:600;padding:8px 13px;letter-spacing:.03em}
-  .al-item{padding:9px 13px;font-size:12.7px;color:#C4CEDF;border-top:1px solid var(--border)}
-  .al-tag{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-right:7px}
-  .al-salj .al-tag{background:rgba(239,68,68,.15);color:var(--red)}
-  .al-kop .al-tag{background:rgba(16,185,129,.15);color:var(--green)}
-  .al-exp{opacity:.62}
-  .al-hist summary{padding:9px 13px;font-size:12px;color:var(--muted);cursor:pointer;list-style:none;border-top:1px solid var(--border)}
-  .al-hist summary::-webkit-details-marker{display:none}
-  .al-hist summary::before{content:"▸ ";color:var(--faint)}
-  .al-hist[open] summary::before{content:"▾ "}
-  /* monitorns hjärtslag – syns även när det inte finns några signaler */
-  .al-mon{display:flex;align-items:center;gap:7px;padding:8px 13px;font-size:11.8px;
-    color:var(--muted);border-top:1px solid var(--border)}
-  .al-mon .al-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
-  .al-mon--stale{color:var(--amber)}
-  .al-mon--stale .al-dot{background:var(--amber)}
-  .al-mon--unknown{color:var(--faint)}
-  .al-mon--unknown .al-dot{background:var(--faint)}
-
-  /* beslutsloggen (Avkastning) */
-  .dl-bar{height:6px;border-radius:4px;background:var(--panel3);overflow:hidden;margin:0 0 16px}
-  .dl-bar span{display:block;height:100%;background:var(--accent-primary);border-radius:4px}
-  .dl-thin{opacity:.68}
-  .dl-flag{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;
-    border-radius:5px;background:rgba(245,158,11,.14);color:var(--amber)}
-
-  /* klampad text + "Visa mer" */
-  .cw{min-width:0}
-  .clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--cl,3);overflow:hidden;white-space:normal;word-break:break-word}
-  .cw.open .clamp{display:block;-webkit-line-clamp:unset;overflow:visible}
-  .clamp-more{display:none;margin-top:5px;background:none;border:none;padding:0;color:var(--blue);
-    font-size:11.5px;cursor:pointer;font-family:var(--sans);letter-spacing:.02em}
-  .cw.has-more .clamp-more{display:inline-block}
-  .clamp-more:hover{text-decoration:underline}
-  .banner .cw{flex:1;min-width:0}
-
-  button.pill--lnk{cursor:pointer;transition:.15s;font-family:var(--mono)}
-  button.pill--lnk:hover{border-color:#3E5680;background:#223050;color:var(--text);text-decoration:underline}
-
-  .tbl--sort th{cursor:pointer;user-select:none;white-space:nowrap}
-  .tbl--sort th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
-  .tbl--sort th.asc::after{content:"↑";opacity:1;color:var(--green)}
-  .tbl--sort th.desc::after{content:"↓";opacity:1;color:var(--green)}
-
-  .hold-diff{display:flex;flex-wrap:wrap;gap:5px 12px;align-items:center;margin:10px 0 2px;padding:7px 10px;
-    background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:9px;font-size:11.7px;color:#FCD34D}
-  .hold-diff .chg-l{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);font-weight:700}
-  .hold-diff .chg b{color:#fff}
-  .chg--new{background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:6px;font-weight:700;font-size:10.5px;letter-spacing:.05em}
-
-  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
-    background:rgba(4,7,14,.78);backdrop-filter:blur(4px);padding:20px}
-  .modal.open{display:flex}
-  .modal-box{background:var(--panel);border:1px solid var(--border2);border-radius:16px;box-shadow:var(--shadow);
-    width:min(760px,94vw);padding:16px 18px}
-  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-  .modal-chart{position:relative;height:300px}
-
-  .sr-list{display:grid;gap:8px;padding:14px 0 4px}
-  .sr-hit{text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:11px 13px;
-    color:var(--text);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:5px;transition:.15s}
-  .sr-hit:hover{border-color:var(--border2);background:var(--panel3)}
-  .sr-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.7px}
-  .sr-count{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
-  .sr-snip{font-size:12.3px;color:var(--muted)}
-  .sr-snip mark{background:rgba(245,158,11,.25);color:#FCD34D;border-radius:3px;padding:0 2px}
-
-  /* Total-vyn */
-  .alloc-bar{display:flex;gap:3px;border-radius:10px;overflow:hidden;margin:2px 0 10px;height:36px;font-family:var(--mono)}
-  .alloc-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;
-    white-space:nowrap;min-width:0;overflow:hidden;letter-spacing:.02em}
-  .alloc-seg--0{background:linear-gradient(180deg,rgba(16,185,129,.6),rgba(16,185,129,.4))}
-  .alloc-seg--1{background:linear-gradient(180deg,rgba(56,189,248,.55),rgba(56,189,248,.35))}
-  .book-badge{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:6px;white-space:nowrap}
-  .book-badge--0{background:rgba(16,185,129,.15);color:var(--green);box-shadow:inset 0 0 0 1px rgba(16,185,129,.35)}
-  .book-badge--1{background:rgba(56,189,248,.13);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(56,189,248,.35)}
-  .total-tbl td .pos{color:var(--green);font-weight:600} .total-tbl td .neg{color:var(--red);font-weight:600}
-  .total-tbl td{font-variant-numeric:tabular-nums}
-  .alloc-meta{font-size:12.3px;color:var(--muted);margin:-4px 0 8px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
-  .alloc-meta-k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-primary);font-weight:700;margin-right:2px}
-  .alloc-meta-t{color:var(--faint);font-family:var(--mono);font-size:10.5px;margin-left:auto}
-  .fx-meta{font-size:12.3px;color:var(--muted);margin:6px 0 8px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
-  .fx-meta-k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-primary);font-weight:700;margin-right:2px}
-  .fx-meta-t{color:var(--faint);font-family:var(--mono);font-size:10.5px;margin-left:auto}
-
-  /* lärdomskort (Retro-fliken) */
-  .lesson-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
-  .lesson{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
-  .lesson-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}
-  .lesson-id{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--purple);
-    background:rgba(167,139,250,.13);border:1px solid rgba(167,139,250,.35);border-radius:6px;padding:2px 8px}
-  .lesson-scope{font-size:10px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
-  .lesson-rule{font-size:12.8px;color:#C4CEDF}
-  .lesson-meta{margin-top:9px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
-
-  /* månadsheatmap */
-  .hm-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;margin-bottom:14px}
-  .hm-cell{border-radius:10px;padding:9px 11px;border:1px solid var(--border)}
-  .hm-m{display:block;font-size:10.5px;color:rgba(255,255,255,.85);letter-spacing:.03em}
-  .hm-v{display:block;font-family:var(--mono);font-size:14px;font-weight:700;color:#fff;margin-top:3px}
-  .hm-t{display:block;font-size:9.5px;color:rgba(255,255,255,.65);margin-top:2px}
-
-  /* laddningsskelett */
-  .skel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px;margin-top:8px}
-  .skel{height:88px;border-radius:14px;border:1px solid var(--border);
-    background:linear-gradient(100deg,var(--panel2) 40%,var(--panel3) 50%,var(--panel2) 60%);
-    background-size:200% 100%;animation:shimmer 1.2s linear infinite}
-  @keyframes shimmer{to{background-position:-200% 0}}
-
-  .footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--faint);font-size:12px;
-    display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
-  .disclaimer{color:var(--amber);font-size:12px}
-
-  /* ================= Bred skärm: fler kolumner ================= */
-  @media(min-width:1500px){
-    .hold-grid-wrap{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
-    .feed-cols{grid-template-columns:1fr 1fr 1fr}
-  }
-
-  /* ================= Mellanläge: smalare sidopanel ================= */
-  @media(max-width:1100px){
-    :root{--sidew:190px}
-    .hem-grid{grid-template-columns:1fr}
-  }
-
-  /* ================= Mobil: sidopanel -> botten-bar ================= */
-  @media(max-width:860px){
-    .shell{display:block}
-    .subnav{
-      position:fixed;top:auto;bottom:0;left:0;right:0;z-index:60;height:auto;
-      flex-direction:row;gap:2px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));
-      border-top:1px solid var(--border);border-right:none;
-      background:rgba(5,8,15,.96);backdrop-filter:blur(14px);
-      overflow-x:auto;overflow-y:hidden;box-shadow:0 -6px 20px rgba(0,0,0,.3)}
-    .side-brand,.nav-group,.side-foot{display:none}
-    .subnav a{flex:1 0 auto;min-width:54px;text-align:center;justify-content:center;padding:8px 4px;border-radius:9px;
-      font-size:0;line-height:1.2}
-    .subnav a::after{content:attr(data-short);font-size:9.5px;letter-spacing:0}
-    .subnav a.active{background:var(--panel3);color:var(--accent-primary);box-shadow:inset 0 0 0 1px var(--border2)}
-    .subnav a.active::before{content:none}
-    .subnav a.active::after{color:var(--accent-primary)}
-
-    .topbar{flex-wrap:wrap;padding:10px 14px;gap:8px 10px}
-    #updated,#pxBadge,.kbd-hint{display:none}
-    .btn-lbl{display:none}
-    .btn{padding:9px 12px;min-height:42px}
-    .status{margin-left:auto}
-    .wrap{padding:14px 12px calc(84px + env(safe-area-inset-bottom))}
-    section.view{padding:13px 11px 18px}
-    .report{padding:6px 15px 18px}
-    .px-tools{margin-left:0;width:100%}
-    .px-search{flex:1;width:auto}
-    .kpi-value{font-size:23px}
-    .feed-cols{grid-template-columns:1fr}
-    .hold-grid-wrap,.scase-wrap,.cat-wrap,.bubbl{grid-template-columns:1fr}
-    .tbl td,.tbl th{padding:7px 9px;font-size:12px}
-    .total-tbl td,.total-tbl th{white-space:nowrap}
-    .alloc-seg{font-size:9.5px;padding:0 3px}
-    .alloc-meta-t{margin-left:0}
-    input,select,#analysInput,.px-search,#reportSelect{font-size:16px}
-    .clamp-more{padding:4px 0;font-size:12.5px}
-    .modal{padding:14px 14px calc(74px + env(safe-area-inset-bottom))}
-    .modal-box{width:100%;max-height:calc(100vh - 100px);overflow:auto}
-    .modal-chart{height:230px}
-    .an-chip{padding:12px 13px;min-height:48px}
-    .px-item{padding:11px 12px}
-    .rtype{padding:9px 14px}
-    .sr-hit{padding:13px 14px}
-    .hm-wrap{grid-template-columns:repeat(2,1fr)}
-    .lesson-wrap{grid-template-columns:1fr}
-    #chartWrap{height:220px}
-    .footer{flex-direction:column;align-items:flex-start;gap:6px}
-  }
-  @media(max-width:400px){
-    .kpi-value{font-size:21px}
-    .sec-head .hint{display:none}
-    .subnav a{min-width:48px}
-    .subnav a::after{font-size:8.5px}
-  }
-</style>
+<link rel="stylesheet" href="assets/themes/base.css" />
+<link rel="stylesheet" id="themeCss" href="assets/themes/deck.css" />
+<!-- måste ligga i <head> EFTER themeCss: boot() sätter rätt tema före första målningen -->
+<script src="assets/theme.js"></script>
 </head>
 <body>
 <div class="shell">
 
-  <nav class="subnav" role="tablist" aria-label="Huvudmeny">
-    <div class="side-brand">
-      <svg class="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#101828"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
-      <div>
-        <h1>Aktie bot</h1>
-        <div class="sub">automatiserat beslutsstöd</div>
-      </div>
-    </div>
-
-    <div class="nav-group">Portfölj</div>
-    <a href="#hem" class="active" data-view="hem" data-short="Hem">Hem</a>
-    <a href="#total" data-view="total" data-short="Total">Total</a>
-    <a href="#oversikt" data-view="oversikt" data-short="Nordisk">Nordisk rotation</a>
-    <a href="#us" data-view="us" data-short="US-rot">US-rotation</a>
-
-    <div class="nav-group">Analys</div>
-    <a href="#scout" data-view="scout" data-short="USA">USA &amp; Krypto</a>
-    <a href="#analys" data-view="analys" data-short="Analys">Aktieanalys</a>
-    <a href="#rapporter" data-view="rapporter" data-short="Rapport">Rapporter</a>
-    <a href="#nyheter" data-view="nyheter" data-short="Nyheter">Nyheter &amp; radar</a>
-
-    <div class="nav-group">Data</div>
-    <a href="#kurser" data-view="kurser" data-short="Kurser">Kurser</a>
-    <a href="#avkastning" data-view="avkastning" data-short="Avkast.">Avkastning</a>
-    <a href="#retro" data-view="retro" data-short="Retro">Retro &amp; lärdomar</a>
-
-    <div class="side-foot">
-      <span class="disc">Automatiserat beslutsstöd,<br/>inte finansiell rådgivning.</span>
-    </div>
-  </nav>
-
-  <div class="main">
+  <div class="headwrap">
     <header class="topbar">
+      <div class="side-brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" fill-opacity=".08"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
+        <div>
+          <h1>Aktie bot</h1>
+          <div class="sub">automatiserat beslutsstöd</div>
+        </div>
+      </div>
       <div class="status"><span id="liveDot" class="dot"></span><span id="statusTxt">Startar…</span></div>
       <span id="pxBadge" class="px-age"></span>
       <span id="updated"></span>
       <div class="spacer"></div>
+      <!-- tema- och lägesväljare renderas hit av assets/theme.js -->
+      <div id="themeCtl"></div>
       <button id="notifBtn" class="btn" title="Skrivbordsnotiser när intradag-monitorn flaggar nya KÖP/SÄLJ-signaler (kräver att fliken är öppen)">🔔 Notiser</button>
       <button id="refreshBtn" class="btn" title="Hämta senaste rapporterna">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
@@ -603,12 +56,55 @@
       </button>
     </header>
 
+    <nav class="subnav" role="tablist" aria-label="Huvudmeny">
+      <!-- andra varumärkesplatsen: syns bara när temat lägger menyn som sidopanel -->
+      <div class="brand-nav">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" fill-opacity=".08"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
+        <div>
+          <h1>Aktie bot</h1>
+          <div class="sub">automatiserat beslutsstöd</div>
+        </div>
+      </div>
+
+      <span class="nav-group">Portfölj</span>
+      <a href="#hem" class="active" data-view="hem" data-short="Hem">Hem</a>
+      <a href="#total" data-view="total" data-short="Total">Total</a>
+      <a href="#oversikt" data-view="oversikt" data-short="Nordisk">Nordisk rotation</a>
+      <a href="#us" data-view="us" data-short="US-rot">US-rotation</a>
+
+      <span class="nav-group">Analys</span>
+      <a href="#scout" data-view="scout" data-short="USA">USA &amp; Krypto</a>
+      <a href="#analys" data-view="analys" data-short="Analys">Aktieanalys</a>
+      <a href="#rapporter" data-view="rapporter" data-short="Rapport">Rapporter</a>
+      <a href="#nyheter" data-view="nyheter" data-short="Nyheter">Nyheter &amp; radar</a>
+
+      <span class="nav-group">Data</span>
+      <a href="#kurser" data-view="kurser" data-short="Kurser">Kurser</a>
+      <a href="#avkastning" data-view="avkastning" data-short="Avkast.">Avkastning</a>
+      <a href="#retro" data-view="retro" data-short="Retro">Retro &amp; lärdomar</a>
+
+      <div class="side-foot">
+        <span class="disc">Automatiserat beslutsstöd,<br/>inte finansiell rådgivning.</span>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main">
     <div class="wrap">
       <div id="banner"></div>
       <div id="alerts"></div>
 
       <section class="view active" id="view-hem" data-view="hem">
         <div class="sec-head"><h2>Hem</h2><span class="hint">innehav, dagens beslut &amp; vad som händer härnäst</span></div>
+        <p class="lead">Vad roboten äger just nu och vad den bestämde i dag. Varje kort visar en aktie:
+          dagens beslut, hur den ligger till mot stopp och mål, och varför.</p>
+        <div class="legend">
+          <span class="lg"><span class="sw sw--kop"></span><b>KÖP</b> ny position</span>
+          <span class="lg"><span class="sw sw--salj"></span><b>SÄLJ</b> stänger positionen</span>
+          <span class="lg"><span class="sw sw--behall"></span><b>BEHÅLL</b> ingen ändring</span>
+          <span class="lg"><span class="sw sw--avvakta"></span><b>AVVAKTA</b> kurs kunde inte bekräftas</span>
+          <span class="lg"><span class="sw sw--plan"></span><b>PLAN</b> köps först om nivån nås</span>
+        </div>
         <div id="hemStatus"></div>
         <div class="hem-grid">
           <div id="hemMain"></div>
@@ -618,6 +114,8 @@
 
       <section class="view" id="view-total" data-view="total">
         <div class="sec-head"><h2>Total</h2><span class="hint">båda böckerna · blended avkastning &amp; allokering</span></div>
+        <p class="lead">Alla öppna positioner i båda portföljerna på ett ställe, med hur mycket av
+          kapitalet som ligger i var och en.</p>
         <div id="totalBody"></div>
       </section>
 
@@ -650,6 +148,8 @@
 
       <section class="view" id="view-analys" data-view="analys">
         <div class="sec-head"><h2>Aktieanalys</h2><span class="hint">på begäran · cachas i git</span></div>
+        <p class="lead">Skriv en ticker och tryck Analysera. Finns analysen redan visas den direkt,
+          annars öppnas en färdig beställning på GitHub som du skickar med ett klick.</p>
         <div class="an-bar">
           <input id="analysInput" type="text" placeholder="Ticker, t.ex. NVDA, BTC-USD, VOLV-B.ST" autocomplete="off" spellcheck="false" />
           <button id="analysBtn" class="btn">Analysera</button>
@@ -663,6 +163,8 @@
 
       <section class="view" id="view-rapporter" data-view="rapporter">
         <div class="sec-head"><h2>Rapporter</h2><span class="hint">daglig bevakning &amp; veckorapport</span></div>
+        <p class="lead">Robotens egen text för dagen. Välj datum i listan – måndagens rapport är den
+          stora genomgången, övriga dagar är kortare bevakning.</p>
         <div class="report-ctrl">
           <div class="seg">
             <button class="rtype on" data-type="daily">Daglig</button>
@@ -683,6 +185,8 @@
 
       <section class="view" id="view-nyheter" data-view="nyheter">
         <div class="sec-head"><h2>Nyheter &amp; radar</h2><span class="hint">katalysatorer &amp; kommande händelser</span></div>
+        <p class="lead">Bolagsnyheter och kommande händelser som roboten bevakar – rapportdatum,
+          utdelningar och annat som kan flytta kursen.</p>
         <div id="feed"></div>
       </section>
 

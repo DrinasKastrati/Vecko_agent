@@ -24,6 +24,8 @@ jobs:
           node-version: "20"
       - name: Kör testsviten (rena funktioner, ingen nätåtkomst)
         run: node tests/run.mjs
+      - name: Kontrollera temalagret (tokentäckning; jsdom-delen hoppas över i CI)
+        run: node tests/theme.mjs
       - name: Validera beslutsdatabasen (schema + append-only mot föregående commit)
         run: |
           git show HEAD~1:state/decisions.json > /tmp/decisions-base.json 2>/dev/null || true
@@ -37,6 +39,7 @@ jobs:
           node --check assets/vparse.js
           node --check assets/vrender.js
           node --check assets/app.js
+          node --check assets/theme.js
           node --check .github/scripts/fetch-prices.mjs
           node --check .github/scripts/alerts.mjs
           node --check .github/scripts/digest.mjs

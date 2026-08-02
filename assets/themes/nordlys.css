@@ -1,0 +1,125 @@
+/* ============================================================================
+   nordlys.css — redaktionell/institutionell. Serif-rubriker, luftig
+   centrerad spalt, hårfina tabellinjer. Ljust läge är pappersvitt; mörkt läge
+   är en varm "kvällsutgåva" av samma tidning.
+   ========================================================================== */
+
+:root{
+  --sans:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --display:'Source Serif 4',Georgia,"Times New Roman",serif;
+  --prose:var(--display);
+
+  --r:5px; --r2:9px; --maxw:1300px;
+  --wrap-pad:26px 30px 70px;
+  --view-pad:0;
+  --head-maxw:none;
+  --topbar-pad:12px 30px;
+  --nav-pad:0 30px;
+  --nav-item-pad:13px 12px;
+  --nav-weight:500;
+  --logo-size:30px;
+  --brand-size:20px; --brand-spacing:-.01em; --brand-transform:none;
+
+  /* rubriker i serif, stora och med linjal under */
+  --sec-size:29px; --sec-spacing:-.02em; --sec-transform:none;
+  --sec-color:var(--text-main); --sec-rule-w:0; --sec-rule-pad:0;
+  --sec-rule:2px solid var(--text-main);
+  --sec-pad:0 0 14px 0;
+  --hint-style:italic;
+  --sub-size:20px; --sub-spacing:-.01em; --sub-transform:none;
+  --sub-date-font:var(--sans);
+  --name-size:19px;
+  --kpi-size:31px;
+  --book-size:19px; --book-spacing:-.01em; --book-transform:none;
+  --rail-t-size:10px; --rail-t-spacing:.16em; --rail-t-pad:8px;
+  --rail-t-rule:1px solid var(--border-color);
+  --bullet:"—";
+  --bk-radius:2px;
+  --label-size:9.5px; --label-spacing:.13em; --label-weight:600;
+  --fs-prose:15px;
+  --report-maxw:840px;
+  --report-pad:10px 40px 34px;
+  --rh1:31px; --rh1-spacing:-.025em;
+  --rh2:21px; --rh2-spacing:-.015em;
+  --rh3:11.5px; --rh3-spacing:.13em; --rh3-transform:uppercase; --rh3-color:var(--accent-primary);
+  --th-size:10.5px; --th-spacing:.09em; --th-transform:uppercase; --th-fg:var(--text-muted);
+  --banner-rule:3px; --market-rule:3px; --bubbl-rule:3px; --lesson-rule:3px;
+  --bubbl-pad:14px; --bubbl-mark:none;
+  --kpi-rule-h:auto; --kpi-rule-w:3px; --kpi-rule-bottom:0; --kpi-rule-op:.85;
+  --hold-lift:translateY(-1px);
+  --alloc-h:38px;
+  --empty-style:italic;
+}
+
+/* ---------------------------- LJUST (original) --------------------------- */
+:root[data-mode="light"]{
+  --bg-main:#F6F3EE; --bg-surface:#FFFFFF; --panel2:#FCFAF7; --panel3:#F1ECE3;
+  --text-main:#14181E; --text-muted:#5F6672; --faint:#8A9099;
+  --border-color:#E4DED2; --border2:#D3CABA;
+  --accent-primary:#0E6E5E; --trade-up:#157F5B; --trade-down:#B0322F;
+  --amber:#A96A00; --purple:#5B4CC4;
+  --page-bg:
+    radial-gradient(1100px 520px at 82% -12%, rgba(14,110,94,.055), transparent 62%),
+    radial-gradient(760px 460px at -6% 8%, rgba(180,110,20,.045), transparent 58%),
+    #F6F3EE;
+  --head-bg:rgba(246,243,238,.92);
+  --nav-mobile-bg:rgba(251,249,245,.97);
+  --scroll-thumb:#D7CEC1;
+  --scroll-shadow:rgba(20,24,30,.14);
+  --modal-bg:rgba(30,26,20,.42);
+  --on-accent:#FFFFFF;
+  --strong:#050809;
+  --shadow-sm:0 1px 2px rgba(20,24,30,.05);
+  --shadow:0 1px 2px rgba(20,24,30,.05), 0 12px 30px rgba(20,24,30,.09);
+  --shadow-hover:var(--shadow);
+  --btn-bg:#FFFFFF; --btn-bg-hover:#FFFFFF; --btn-border-hover:#B9AE9B;
+  --seg-on-bg:#FFFFFF; --seg-on-shadow:0 1px 2px rgba(20,24,30,.05);
+  --input-bg:#FFFFFF;
+  --alloc-0:linear-gradient(180deg,#1B9068,#147854);
+  --alloc-1:linear-gradient(180deg,#12806E,#0C6152);
+  --alloc-fg:#fff;
+  --code-fg:#4A2E6B;
+}
+
+/* ------------------- MÖRKT: samma tidning, kvällsutgåva ----------------- */
+:root[data-mode="dark"]{
+  --bg-main:#14120E; --bg-surface:#1C1A15; --panel2:#191710; --panel3:#262319;
+  --text-main:#EDE7DC; --text-muted:#A39C8D; --faint:#7C7566;
+  --border-color:#2E2A20; --border2:#443E30;
+  --accent-primary:#4FC2A8; --trade-up:#3FBE84; --trade-down:#E8736D;
+  --amber:#D9A441; --purple:#A78BFA;
+  --page-bg:
+    radial-gradient(1100px 520px at 82% -12%, rgba(79,194,168,.07), transparent 62%),
+    radial-gradient(760px 460px at -6% 8%, rgba(217,164,65,.05), transparent 58%),
+    #14120E;
+  --head-bg:rgba(20,18,14,.9);
+  --nav-mobile-bg:rgba(16,15,11,.97);
+  --scroll-thumb:#3A3529;
+  --scroll-shadow:rgba(0,0,0,.6);
+  --modal-bg:rgba(10,9,6,.76);
+  --on-accent:#10120F;
+  --strong:#FFFCF6;
+  --shadow-sm:none;
+  --shadow:0 12px 34px rgba(0,0,0,.55);
+  --shadow-hover:0 14px 30px rgba(0,0,0,.45);
+  --btn-bg:#262319; --btn-bg-hover:#332F22; --btn-border-hover:#4FC2A8;
+  --seg-on-bg:#332F22; --seg-on-shadow:none;
+  --input-bg:#1C1A15;
+  --alloc-0:linear-gradient(180deg,#3FBE84,#2C8E63);
+  --alloc-1:linear-gradient(180deg,#4FC2A8,#2F8C79);
+  --alloc-fg:#0F110D;
+  --code-fg:#C3A6F0;
+}
+
+/* aktiv flik markeras med linje under, inte fylld platta */
+.subnav a.active{font-weight:600;color:var(--accent-primary);
+  border-bottom-color:var(--accent-primary);background:transparent}
+/* tabellerna får redaktionell sättning: ingen yttre ram, bara radlinjer */
+.tbl{background:var(--bg-surface)}
+.tbl th,.tbl td{border:none;border-bottom:1px solid var(--border-color)}
+.tbl th{background:transparent;border-bottom:1.5px solid var(--text-main)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover{background:var(--panel2)}
+/* höger informationsspalt följer med vid rullning */
+@media(min-width:1101px){ .rail{position:sticky;top:126px} }

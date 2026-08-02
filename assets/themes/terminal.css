@@ -1,0 +1,163 @@
+/* ============================================================================
+   terminal.css — "Terminal 80". Tät handelsterminal: monospace, raka kanter,
+   rutnät, versala spärrade etiketter. Mörkt läge är bärnsten på svart, ljust
+   läge är samma terminal utskriven på papper.
+   ========================================================================== */
+
+:root{
+  --sans:'IBM Plex Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --mono:var(--sans);
+  --display:var(--sans);
+  --prose:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+  --r:2px; --r2:2px;
+  --fs-base:13.5px; --lh:1.5;
+  --fs-prose:13.2px; --fs-card:12px;
+  --wrap-pad:12px 14px 44px;
+  --view-pad:0 0 14px;
+  --view-bg:var(--bg-surface);
+  --view-border:1px solid var(--border-color);
+  --topbar-pad:0 14px;
+  --nav-pad:0 8px;
+  --nav-item-pad:9px 11px;
+  --nav-size:11.5px;
+  --nav-gap:0;
+  --logo-size:18px;
+  --brand-size:12px; --brand-spacing:.26em; --brand-color:var(--accent-primary);
+  --dot-radius:0;
+
+  /* fönsterlist som vyrubrik */
+  --sec-size:11px; --sec-spacing:.24em; --sec-color:var(--accent-primary);
+  --sec-pad:7px 12px; --sec-bg:var(--panel3); --sec-rule:1px solid var(--border-color);
+  --sec-align:center; --sec-rule-w:3px; --sec-rule-pad:10px;
+  --sub-size:10.5px; --sub-spacing:.22em; --sub-transform:uppercase;
+  --sub-color:var(--accent-primary); --sub-pad:6px; --sub-rule:1px solid var(--border-color);
+  --name-size:14px; --name-spacing:.06em; --name-transform:uppercase;
+  --kpi-size:25px; --kpi-label-spacing:.2em; --kpi-label-weight:700;
+  --book-size:10.5px; --book-spacing:.2em; --book-pad:5px; --book-rule:1px solid var(--border-color);
+  --rail-t-size:9.5px; --rail-t-spacing:.2em;
+  --bullet:">";
+  --bk-radius:0;
+  --label-size:9px; --label-spacing:.16em;
+  --badge-size:9.5px; --badge-spacing:.14em; --badge-transform:uppercase;
+  --btn-size:11px; --btn-spacing:.08em; --btn-transform:uppercase; --btn-weight:500;
+  --btn-pad:5px 10px;
+  --gauge-h:6px;
+  --rh1:16px; --rh1-spacing:.14em; --rh1-transform:uppercase; --rh1-color:var(--accent-primary);
+  --rh2:12px; --rh2-spacing:.18em; --rh2-transform:uppercase;
+  --rh3:10.5px; --rh3-spacing:.18em; --rh3-transform:uppercase;
+  --th-size:9.5px; --th-spacing:.14em; --th-transform:uppercase; --th-fg:var(--accent-primary);
+  --tbl-pad:6px 9px;
+  --report-pad:4px 20px 22px; --report-maxw:1050px;
+  --banner-rule:3px; --market-rule:3px; --bubbl-rule:3px; --lesson-rule:3px;
+  --bubbl-pad:12px; --bubbl-mark:none;
+  --al-spacing:.2em; --al-transform:uppercase;
+  --stat-l-spacing:.16em; --stat-l-transform:uppercase; --stat-l-weight:700;
+  --fold-closed:"+"; --fold-open:"−";
+  --alloc-h:32px;
+  --empty-style:normal;
+  --kpi-rule-op:0;      /* KPI-rutorna avgränsas av rutnätet, inte av en linje */
+}
+
+/* ---------------------------- MÖRKT (original) --------------------------- */
+:root[data-mode="dark"]{
+  --bg-main:#08090A; --bg-surface:#0E1012; --panel2:#0B0D0F; --panel3:#181B1F;
+  --text-main:#E3E6E3; --text-muted:#8A9199; --faint:#5D646C;
+  --border-color:#23272C; --border2:#33383F;
+  --accent-primary:#FFA028; --trade-up:#26D07C; --trade-down:#FF5252;
+  --amber:#FFA028; --purple:#B98CFF;
+  --grid:#15181B;
+  --page-bg:#08090A;
+  --head-bg:#0B0C0E;
+  --nav-mobile-bg:rgba(8,9,10,.97);
+  --scroll-thumb:#2C3138;
+  --scroll-shadow:rgba(0,0,0,.6);
+  --modal-bg:rgba(0,0,0,.82);
+  --on-accent:#111111;
+  --strong:#FFFFFF;
+  --shadow:0 0 0 1px #33383F, 0 18px 44px rgba(0,0,0,.75);
+  --shadow-sm:none;
+  --btn-bg:#141719; --btn-bg-hover:#1E2226;
+  --input-bg:#0B0D0F;
+  --seg-on-bg:var(--accent-primary); --seg-on-fg:#111111;
+  --tbl-hover:rgba(255,160,40,.05);
+  --tbl-zebra:rgba(255,255,255,.014);
+  --scan:rgba(255,255,255,.014);
+  --vignette:rgba(0,0,0,.45);
+  --alloc-fg:#111;
+  --chart-grid:rgba(255,160,40,.09);
+}
+
+/* ------------------- LJUST: terminalen utskriven på papper --------------- */
+:root[data-mode="light"]{
+  --bg-main:#F2F1EC; --bg-surface:#FBFAF6; --panel2:#F6F5F0; --panel3:#E8E6DD;
+  --text-main:#1A1A17; --text-muted:#5C5B53; --faint:#8A887E;
+  --border-color:#D9D6CB; --border2:#BCB8A9;
+  --accent-primary:#A85B06; --trade-up:#197A4D; --trade-down:#C0392B;
+  --amber:#A85B06; --purple:#6B4FBF;
+  --grid:#E3E1D7;
+  --page-bg:#F2F1EC;
+  --head-bg:#EDEBE4;
+  --nav-mobile-bg:rgba(242,241,236,.97);
+  --scroll-thumb:#C9C5B7;
+  --scroll-shadow:rgba(26,26,23,.16);
+  --modal-bg:rgba(26,26,23,.5);
+  --on-accent:#FFFFFF;
+  --strong:#000000;
+  --shadow:0 0 0 1px #BCB8A9, 0 18px 40px rgba(26,26,23,.14);
+  --shadow-sm:none;
+  --btn-bg:#FBFAF6; --btn-bg-hover:#EFEDE5;
+  --input-bg:#FFFFFF;
+  --seg-on-bg:var(--accent-primary); --seg-on-fg:#FFFFFF;
+  --tbl-hover:rgba(168,91,6,.06);
+  --tbl-zebra:rgba(26,26,23,.02);
+  --scan:rgba(26,26,23,.012);
+  --vignette:rgba(26,26,23,.07);
+  --alloc-fg:#fff;
+  --chart-grid:rgba(168,91,6,.14);
+}
+
+/* svag rasterstruktur + vinjett – terminalkänsla utan att störa läsbarheten */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(180deg,var(--scan) 0 1px,transparent 1px 3px)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(120% 90% at 50% 0%,transparent 55%,var(--vignette) 100%)}
+.shell{position:relative;z-index:2}
+
+/* kommandoraden är en fast rad på 38px, menyn en funktionsrad under */
+.topbar{height:38px}
+.subnav{align-items:stretch;counter-reset:navk}
+.subnav a{border-radius:0;letter-spacing:.09em;text-transform:uppercase}
+/* numrerade menyposter – siffran motsvarar kortkommandot (1–9) */
+.subnav a::before{counter-increment:navk;content:counter(navk);font-size:9px;color:var(--faint);
+  border:1px solid var(--border2);padding:0 3px;line-height:1.35}
+.subnav a:nth-of-type(n+10)::before{opacity:.35}
+.subnav a:hover{background:var(--panel3)}
+.subnav a.active{background:var(--accent-soft);border-bottom-color:var(--accent-primary);color:var(--accent-primary)}
+.subnav a.active::before{color:var(--accent-primary);border-color:var(--accent-primary)}
+.nav-group{display:flex;align-items:center}
+/* vyns innehåll indraget från fönsterlisten */
+.view > *:not(.sec-head){margin-left:12px;margin-right:12px}
+/* rutnätsfogade rutor: 1px mellanrum i rutnätsfärg i stället för egna ramar */
+.kpi-grid,.stat-grid,.px-grid,.hm-wrap{gap:1px;background:var(--border-color);
+  border:1px solid var(--border-color);border-radius:var(--r)}
+.kpi,.stat,.px-item,.hm-cell{border:none;border-radius:0}
+.kpi{background:var(--panel2)}
+.px-item:hover{box-shadow:inset 0 0 0 1px var(--accent-primary)}
+.tbl th,.tbl td{border-color:var(--grid)}
+.tbl th{border-color:var(--border-color)}
+.tbl tbody tr:nth-child(even){background:var(--tbl-zebra)}
+.rail-card{padding:0 0 10px}
+.rail-t{padding:6px 11px;background:var(--panel3);border-bottom:1px solid var(--border-color);margin-bottom:9px}
+.rail-list{padding:0 11px}
+.rail-more{margin:9px 11px 0;letter-spacing:.1em;text-transform:uppercase}
+.seg{padding:0;background:var(--input-bg)}
+.rtype{border-right:1px solid var(--border2);border-radius:0}
+.rtype:last-child{border-right:none}
+.footer{margin:32px 12px 0;letter-spacing:.06em}
+.disclaimer{text-transform:uppercase}
+@media(max-width:860px){
+  .view > *:not(.sec-head){margin-left:9px;margin-right:9px}
+  .footer{margin:24px 9px 0}
+  .subnav a::before{display:none}
+}
