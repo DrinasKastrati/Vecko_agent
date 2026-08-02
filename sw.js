@@ -23,6 +23,7 @@ const SHELL = [
   "./index.html",
   "./manifest.json",
   "./assets/theme.js",
+  "./assets/settings.js",
   "./assets/vparse.js",
   "./assets/vrender.js",
   "./assets/app.js",

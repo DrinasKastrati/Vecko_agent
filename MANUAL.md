@@ -75,8 +75,17 @@ verifiera kurser – det är ett skyddsbeteende, inte ett fel.
 ## 4. Saker du gör själv
 
 **Publicera efter en Cowork-session:** dubbelklicka `push.bat` i repomappen. Den committar och
-pushar allt (även sådant Cowork redan committat). Auto-push kör dessutom var 30:e minut på
-vardagar 07–19.
+pushar allt (även sådant Cowork redan committat). **Det är enda vägen ut till GitHub** – auto-pushen
+togs bort 2026-08-02.
+
+Skriptet hanterar sedan 2026-08-02 den enda konflikt som uppstår i praktiken: `dashboard.yml` skriver
+`state/dashboard.json` och `state/search-index.json` var 30:e minut, så pushar du nära en sådan
+körning fastnar `git pull --rebase`. Båda filerna är GENERERADE, så rätt åtgärd är alltid att bygga
+om dem – det gör `push.bat` själv och fortsätter sedan rebasen. Du ser raden
+`Konflikt i de genererade JSON-filerna - bygger om dem...` när det händer.
+
+Krockar någon **annan** fil avbryter skriptet rebasen och skriver ut filnamnet. Då är inget pushat
+och inget förlorat – lös den för hand eller be Claude titta på den. Skriptet gissar aldrig.
 
 **Beställa en aktieanalys:** skriv tickern i dashboardens Analys-vy → skicka in GitHub-ärendet
 som öppnas (ett klick) → säg "analysera kön" i Cowork. Analysen dyker upp i dashboarden och

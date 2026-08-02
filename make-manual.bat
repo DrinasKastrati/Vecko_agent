@@ -11,6 +11,11 @@ REM    Systemguide.html    -> forsta hur besluten fattas (djup)
 REM
 REM  Skarmbilderna i docs\manual\ bakas in automatiskt (relativa lankar).
 REM
+REM  BADA manualerna hamtar sitt gemensamma utseende ur assets\manual.css
+REM  (relativ lank, fungerar aven over file:// som Chrome anvander har).
+REM  Andrar du den filen: kor det har skriptet, annars ligger BADA PDF:erna
+REM  kvar pa gammalt utseende.
+REM
 REM  Vill du ta nya skarmbilder av dashboarden:
 REM    chrome --headless --screenshot="docs\manual\hem.png" ^
 REM           --window-size=1400,1150 --virtual-time-budget=15000 ^

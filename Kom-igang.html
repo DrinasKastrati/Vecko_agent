@@ -4,41 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Kom igång – Vecko_agent</title>
+<link rel="stylesheet" href="assets/manual.css" />
 <style>
-  /* Print-först: filen renderas till PDF med make-manual.bat, men ska också
-     gå att läsa direkt i webbläsaren. */
-  @page{size:A4;margin:18mm 16mm}
-  :root{
-    --ink:#14181E; --soft:#41474F; --muted:#6B7280; --line:#E1E4E9;
-    --green:#157F5B; --red:#B0322F; --blue:#1D5FB4; --amber:#A96A00; --purple:#5B4CC4;
-    --wash:#F7F8FA;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;padding:0;color:var(--ink);background:#fff;
-    font:15px/1.62 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  .page{max-width:760px;margin:0 auto;padding:28px 22px 60px}
-  h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:0 0 4px}
-  h2{font-size:20px;letter-spacing:-.01em;margin:34px 0 10px;padding-bottom:7px;
-    border-bottom:2px solid var(--ink);page-break-after:avoid}
-  h3{font-size:15.5px;margin:20px 0 6px;page-break-after:avoid}
-  p{margin:10px 0}
-  ul,ol{margin:10px 0;padding-left:22px}
-  li{margin:5px 0}
-  .lead{font-size:16.5px;color:var(--soft);margin:10px 0 0}
-  .meta{color:var(--muted);font-size:12.5px;margin:14px 0 0;padding-top:10px;border-top:1px solid var(--line)}
-  .toc{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:24px 0}
-  .toc ol{margin:0;padding-left:20px}
-  .toc li{margin:3px 0}
-  .box{border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--wash);
-    border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;page-break-inside:avoid}
-  .box--warn{border-left-color:var(--amber);background:#FDF7EC}
-  .box--stop{border-left-color:var(--red);background:#FDF2F1}
-  .box b{display:block;margin-bottom:3px}
-  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;page-break-inside:avoid}
-  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
-  th{background:var(--wash);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-  code{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--wash);
-    padding:1px 5px;border-radius:4px}
+  /* Endast det som är unikt för Kom igång – allt gemensamt ligger i
+     assets/manual.css. Basvärdena där ÄR den här filens, så inga
+     överskrivningar behövs. */
   .tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px;white-space:nowrap}
   .t-kop{background:rgba(21,127,91,.12);color:var(--green)}
   .t-salj{background:rgba(176,50,47,.1);color:var(--red)}
@@ -47,9 +17,6 @@
   .t-plan{background:rgba(91,76,196,.1);color:var(--purple)}
   .gauge{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--wash);
     border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0;white-space:pre;overflow-x:auto}
-  .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
-  .disc{color:var(--amber);font-weight:600}
-  section{page-break-inside:auto}
 </style>
 </head>
 <body>

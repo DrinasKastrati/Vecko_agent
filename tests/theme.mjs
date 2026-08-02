@@ -15,7 +15,7 @@
    Kör:  node tests/theme.mjs
          SIM_DEPS=<mapp med node_modules som har jsdom> node tests/theme.mjs
    ============================================================ */
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 import { createRequire } from "node:module";
@@ -171,9 +171,42 @@ if (!JSDOM) {
     !!doc.getElementById("settingsBtn") && !doc.querySelector('.subnav a[data-view="installningar"]'));
 }
 
-// stubbarna som håller de gamla adresserna vid liv
-for (const [f, t] of [["index_2.html", "nordlys"], ["index_3.html", "terminal"], ["index_4.html", "enkel"]]) {
-  ok(`${f}: vidarebefordrar till temat ${t}`, readFileSync(join(root, f), "utf8").includes(`index.html?theme=${t}`));
+/* Ett tema får ALDRIG bli en egen HTML-fil igen. Före 2026-08-02 fanns en
+   komplett kopia av webbappen per tema (index_2/3/4.html), sedan 18-raders
+   stubbar, och därefter ingenting: markupen ligger i index.html och temat väljs
+   med `?theme=`. Testet nedan larmar om någon återinför mönstret. */
+for (const f of ["index_2.html", "index_3.html", "index_4.html"]) {
+  ok(`${f}: återinförd som egen fil`, !existsSync(join(root, f)));
+}
+for (const t of ["deck", "nordlys", "terminal", "enkel"]) {
+  ok(`temat ${t} går att välja via ?theme=`, /\?theme=|theme=/.test(readFileSync(join(root, "assets", "theme.js"), "utf8")) &&
+    readFileSync(join(root, "assets", "theme.js"), "utf8").includes(`id: "${t}"`));
+}
+
+/* Manualernas gemensamma stil ligger i assets/manual.css (utbruten 2026-08-02).
+   Testet larmar om någon återinför en full kopia av stilmallen i en manual –
+   det var så de två blocken glidit isär från början. */
+ok("assets/manual.css finns", existsSync(join(root, "assets", "manual.css")));
+const manualCss = existsSync(join(root, "assets", "manual.css"))
+  ? readFileSync(join(root, "assets", "manual.css"), "utf8") : "";
+for (const tok of ["--ink", "--wash", ".page", ".box", ".toc", ".foot"])
+  ok(`manual.css definierar ${tok}`, manualCss.includes(tok));
+for (const f of ["Kom-igang.html", "Systemguide.html"]) {
+  const html = readFileSync(join(root, f), "utf8");
+  ok(`${f}: länkar till assets/manual.css`, html.includes('href="assets/manual.css"'));
+  // egna <style>-blocket ska vara ÖVERSKRIVNINGAR, inte en ny kopia av basen
+  const inline = (html.match(/<style>[\s\S]*?<\/style>/) || [""])[0];
+  ok(`${f}: inline-stilen duplicerar inte färgpaletten`, !inline.includes("--ink:"));
+  ok(`${f}: inline-stilen duplicerar inte body-regeln`, !/\bbody\{/.test(inline));
+}
+
+/* sw.js måste precacha varje egen modul index.html laddar – annars fungerar
+   inte appen offline. `assets/settings.js` saknades här fram till 2026-08-02. */
+const swSrc = readFileSync(join(root, "sw.js"), "utf8");
+const indexSrc = readFileSync(join(root, "index.html"), "utf8");
+for (const m of indexSrc.match(/src="(assets\/[^"]+\.js)"/g) || []) {
+  const p = m.slice(5, -1);
+  ok(`sw.js precachar ${p}`, swSrc.includes(`"./${p}"`));
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

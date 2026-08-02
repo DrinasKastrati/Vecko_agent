@@ -69,7 +69,9 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   raderades 2026-08-02 just för att de överlappade de tre ovan – innehåll som saknas ska in i rätt
   av de tre, inte i en ny fil. De två `.html`-manualerna renderas till PDF med `make-manual.bat`
   – **kör det efter varje ändring**, annars ligger PDF:en kvar på gammalt innehåll utan att någon
-  märker det.
+  märker det. Deras GEMENSAMMA utseende ligger i `assets/manual.css` (utbruten 2026-08-02) –
+  ändra där, inte i respektive fils `<style>`-block. Blocken innehåller bara det som är unikt
+  för filen plus Systemguidens nio medvetna överskrivningar.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
@@ -77,7 +79,9 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
 ## 3. Webb-dashboarden (teknik)
 - Ren HTML/CSS/JS, inga byggsteg i webbappen. Laddar `marked@12`, `chart.js@4` och
   `lightweight-charts@4` från jsdelivr (CDN), samt de egna modulerna i ordning:
-  `theme.js` (i `<head>`) → `vparse.js` → `vrender.js` → `app.js`.
+  `theme.js` och `settings.js` (i `<head>`) → `vparse.js` → `vrender.js` → `app.js`.
+  **Varje sådan modul måste också stå i `SHELL` i `sw.js`**, annars fungerar den inte offline –
+  `settings.js` saknades där fram till 2026-08-02. `tests/theme.mjs` kontrollerar det numera.
 - **Datakällan är FÖRBYGGD (sedan 2026-08-02).** `state/dashboard.json` innehåller allt
   markdown-härlett färdigparsat och skrivs av `dashboard.yml` (nyckellös, LLM-fri) med samma
   `assets/vparse.js` som webbappen. Laddningen gick från ~106 nätanrop till ~23, varav 0
@@ -303,9 +307,16 @@ ta bort skyddet.
 - **Kör aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt** samtidigt som GitHub-actionen skriver samma
   filer: nästa `pull --rebase` (t.ex. via `push.bat`) fastnar då i konflikt och lämnar
   konfliktmarkörer i JSON:en, vilket tömmer Kurser-vyn i dashboarden. Gäller även efter att
-  auto-pushen stängdes av 2026-08-02 – det är rebasen som är problemet, inte vem som startar den.
+  auto-pushen togs bort 2026-08-02 – det är rebasen som är problemet, inte vem som startar den.
   `state/dashboard.json` och `search-index.json` är skyddade via `.gitattributes` (`-merge`);
   övriga JSON-filer är det inte. Kontrollera `git status` innan du felsöker appen.
+- **`push.bat` löser konflikter i `state/dashboard.json` + `search-index.json` SJÄLV** (sedan
+  2026-08-02) genom att köra `build-dashboard.mjs` och fortsätta rebasen. Krockar någon ANNAN fil
+  kör den `git rebase --abort` och lämnar över – den gissar aldrig. Två fällor att känna till:
+  (a) råkar en konflikt i en av de två filerna sammanfalla med en konflikt i en tredje fil avbryts
+  ALLTIHOP, vilket är avsiktligt; (b) före 2026-08-02 stannade skriptet tyst mitt i rebasen med
+  detached HEAD och skrev ändå `pause` – ser du en gammal körning som "såg klar ut" men inget kom
+  fram till GitHub, är det den buggen. Kontrollera `git status -sb`.
 
 ---
 

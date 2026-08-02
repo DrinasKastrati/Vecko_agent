@@ -7,6 +7,48 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (HTML-städning – tre stubbar bort, manualernas CSS bruten ut, en sw.js-bugg):
+  **`index_2/3/4.html` raderade.** De var 18-raders stubbar som vidarebefordrade till
+  `index.html?theme=X` och fanns för gamla bokmärken. De kunde INTE slås ihop till en fil –
+  GitHub Pages är statisk hosting, en URL kräver en fil, och det finns ingen rewrite-regel att
+  ta till. Valet stod alltså mellan att radera eller behålla. De skapades samma dag (commit
+  `d291eef`) när temana slogs ihop, så eventuella bokmärken var timmar gamla och bara Drens egna.
+  **`assets/manual.css` utbruten.** `Kom-igang.html` och `Systemguide.html` hade var sitt inline
+  `<style>`-block där **28 av ~45 rader var identiska**, och de rader som skilde sig hade glidit
+  isär av misstag: `max-width` 760 mot 780, h2-marginal 34 mot 36, tabellfont 14 mot 13,6.
+  Basvärdena i den nya filen är Kom-igångs, och Systemguiden skriver över nio rader i sitt eget
+  block. **Utseendet är oförändrat** – poängen var att göra skillnaderna explicita i stället för
+  att låta dem gömma sig i två kopior av hela stilmallen.
+  **Verifierat med ett kontrollexperiment.** Att bara jämföra PDF-storlek före och efter säger
+  ingenting om man inte vet hur ett MISSLYCKANDE ser ut. Därför renderades en kopia med medvetet
+  trasig `href`: ostylad blev **210 358 byte**, mot 187 862 för den riktiga och 188 218 före
+  ändringen. Skillnaden mot baseline är 0,19 %, mot 12 % för den ostylade – alltså laddas och
+  tillämpas den externa stilmallen även över `file://`, vilket är vad `make-manual.bat` använder.
+  **Bugg funnen på vägen:** `assets/settings.js` laddas av `index.html` men saknades i `SHELL` i
+  `sw.js`, så inställningsmodulen aldrig precachades och vyn "Inställningar" var trasig offline.
+  Tillagd. `CACHE`-namnet behövde INTE bumpas: en ändrad `sw.js` utlöser `install`, som lägger
+  till hela `SHELL` i samma cache – bumpning krävs bara när FORMATET på det cachade ändras.
+
+- ✅ 2026-08-02 (`push.bat` klarar rebase-konflikten i de genererade filerna):
+  **Fyndet.** Samma konflikt slog till TVÅ gånger på en dag. `dashboard.yml` skriver
+  `state/dashboard.json` och `state/search-index.json` var 30:e minut; pushar man nära en sådan
+  körning fastnar `git pull --rebase` i konflikt. Gamla `push.bat` hade ingen hantering alls: den
+  lämnade repot i pågående rebase med **detached HEAD**, körde ändå sitt avslutande `pause`, och
+  ingenting nådde GitHub. Det såg ut som en lyckad körning.
+  **Åtgärd.** Skriptet fick en `:resolve_rebase`-subrutin som loopar (max 10 varv) så länge en
+  rebase pågår: den listar konfliktfilerna med `git diff --name-only --diff-filter=U` och kör
+  `build-dashboard.mjs` + `git add` + `rebase --continue` ENDAST om varenda konfliktfil är en av de
+  två genererade. Är någon annan fil med i konflikten körs `git rebase --abort` och skriptet
+  lämnar över till människa. Den gissar aldrig, och löser aldrig delvis.
+  **Verifierat i tre isolerade testrepon** (inte på main), med subrutinen extraherad ur den
+  riktiga filen med `sed` så testet inte kunde driva ifrån originalet:
+  A) konflikt bara i de två genererade filerna → ombyggd, rebase klar, exit 0;
+  B1) konflikt i en vanlig fil → abort, exit 1, arbetsträdet orört;
+  B2) BLANDAD konflikt (vanlig fil + `dashboard.json`) → abort, exit 1, och `dashboard.json` låg
+  kvar med sitt LOKALA innehåll, dvs. ingen partiell auto-lösning.
+  **Följdändringar.** `MANUAL.md` avsnitt 4 (beskrev dessutom fortfarande auto-pushen som aktiv,
+  vilket den inte varit sedan samma dag) och CLAUDE.md avsnitt 7.
+
 - ✅ 2026-08-02 (filstädning – sju filer raderade efter beslut av Dren):
   Repot hade samlat på sig parallella filer som beskrev samma sak, vilket är en tyst risk: när två
   dokument säger olika saker om samma regel vinner det som råkar läsas först.
@@ -28,8 +70,8 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
   **Behållet medvetet:** de tre gamla backtest-rapporterna (`backtest-260731-*`,
   `backtest-260802-nordic.md`) från 2-positionsgridet. De har noll referenser, men de är
   bevisunderlaget för de beslut som fattades då – och hela poängen med det här repot är att
-  besluten går att granska i efterhand. `index_2/3/4.html` behölls också: de är
-  redirect-stubbar som håller gamla temabokmärken vid liv.
+  besluten går att granska i efterhand. (`index_2/3/4.html` behölls i den här omgången men
+  raderades i nästa – se posten ovan om HTML-städningen.)
   **Följdändringar:** `make-manual.bat` renderar nu två manualer i stället för tre, CLAUDE.md
   avsnitt 2/4/5b/7/8, `MANUAL.md` (filkartan fick rader för `docs/` och repo-roten) och
   `prompts/START.md`. Regeln "radera aldrig mallarna" preciserades till att gälla de mallar en

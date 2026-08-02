@@ -1,8 +1,9 @@
 /* ============================================================================
    theme.js — window.VTheme: temamotorn.
 
-   Ersätter de tidigare index_2/3/4.html-kopiorna. Markupen finns nu i EN fil
-   (index.html) och utseendet byts genom att peka om <link id="themeCss">.
+   Ersatte de tidigare index_2/3/4.html-kopiorna (raderade 2026-08-02). Markupen
+   finns nu i EN fil (index.html) och utseendet byts genom att peka om
+   <link id="themeCss"> – ett tema är aldrig en egen HTML-fil.
 
    Ansvar:
      - registret över teman (id, etikett, css-fil, om temat är mörkt som standard)
