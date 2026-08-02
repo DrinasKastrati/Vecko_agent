@@ -50,7 +50,57 @@
     }
 
     // ---- main load ----
+    // Två vägar: FÖRBYGGD (state/dashboard.json, en hämtning) och LIVE (filträd
+    // via GitHub-API:t + ~56 råhämtningar). Den förbyggda är normalvägen; live
+    // finns kvar som fallback när dashboard.json saknas, är av fel version eller
+    // inte går att hämta – t.ex. direkt efter att en routine pushat men innan
+    // dashboard-actionen hunnit köra.
     async load(force) {
+      this.setStatus("loading");
+      try {
+        if (await this.loadPrebuilt(force)) { this.renderAll(); this.setStatus("ok"); return; }
+      } catch (e) {
+        console.warn("[dashboard] förbyggd data otillgänglig – faller tillbaka på live-hämtning:", e && e.message);
+      }
+      return this.loadLive(force);
+    }
+
+    // Förbyggd data: allt markdown-härlett kommer färdigparsat ur dashboard.json.
+    // Volatil JSON (kurser, signaler, kön, allokering, kostnader, beslut) hämtas
+    // fortfarande live – de skrivs var 30:e minut av andra actions och skulle
+    // annars tvinga fram en ombyggnad lika ofta.
+    async loadPrebuilt(force) {
+      const d = await this.fetchJSON(this.raw("state/dashboard.json"));
+      if (!d || d.version !== 1 || !Array.isArray(d.metas) || !d.metas.length) return false;
+
+      const j = p => this.fetchJSON(this.raw(p)).catch(() => null);
+      const [prices, queue, priceHistory, alerts, alloc, costs, decisions] = await Promise.all([
+        j("state/prices.json"), j("state/analysis_queue.json"), j("state/price_history.json"),
+        j("state/alerts.json"), j("state/allocation.json"), j("config/kostnader.json"),
+        j("state/decisions.json")
+      ]);
+
+      const S = this.state;
+      S.metas = d.metas;
+      S.portfolio = d.portfolio || { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
+      S.portfolioUs = d.portfolioUs || null;
+      S.dailies = d.dailies || [];
+      S.weeklies = d.weeklies || [];
+      S.scouts = d.scouts || [];
+      S.usDailies = d.usDailies || [];
+      S.usWeeklies = d.usWeeklies || [];
+      S.lessons = d.lessons || null;
+      S.watchlist = d.watchlist || null;
+      S.watchlistUs = d.watchlistUs || null;
+      S.prices = prices; S.queue = queue; S.priceHistory = priceHistory; S.alerts = alerts;
+      S.allocation = alloc; S.costs = costs || this.P.DEFAULT_COSTS; S.decisions = decisions;
+      S.feed = this.P.buildFeed(S.dailies, S.weeklies);
+      this._alertsPath = "state/alerts.json";
+      this._prebuiltAt = d.generatedAt || null;
+      return true;
+    }
+
+    async loadLive(force) {
       this.setStatus("loading");
       try {
         const paths = await this.discoverTree(force);
@@ -318,7 +368,9 @@
     // ---- kurshistorik-modal (klick på kort i Kurser) ----
     openPxChart(tk) {
       const modal = this.el("pxModal");
-      if (!modal || !root.Chart) return;
+      // Endera diagrambiblioteket räcker – Lightweight Charts är förstahandsval,
+      // Chart.js reserv. Kräv inte Chart.js när LWC finns.
+      if (!modal || !(root.LightweightCharts || root.Chart)) return;
       this.el("pxModalTitle").textContent = tk;
       modal.classList.add("open");
       const av = this.el("pxModalAvanza");
@@ -326,6 +378,8 @@
       const note = this.el("pxModalNote");
       const ser = this.state.priceHistory && this.state.priceHistory.series && this.state.priceHistory.series[tk];
       if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
+      const host = this.el("pxModalChart"); if (host) host.innerHTML = "";  // annars staplas diagram
+      const lg0 = this.el("pxLegend"); if (lg0) { lg0.hidden = true; lg0.innerHTML = ""; }
       if (!ser || ser.length < 2) {
         note.textContent = "Ingen kurshistorik ännu för " + tk + " – fylls på av pris-actionen (rullande 60 dagar).";
         return;
@@ -333,28 +387,75 @@
       const q = this.state.prices && this.state.prices.quotes && this.state.prices.quotes[tk];
       note.textContent = ser.length + " dagar · stängningskurser ur price_history.json" + (q && q.currency ? " · " + q.currency : "");
       const up = ser[ser.length - 1][1] >= ser[0][1];
+      if (root.LightweightCharts) this.drawPxLightweight(tk, ser, up);
+      else this.drawPxFallback(tk, ser, up);
+    }
+
+    // Lightweight Charts: hårkors som följer muspekaren, zoom med hjulet och
+    // panorering med drag. Färgerna läses ur temats CSS-variabler så diagrammet
+    // följer ljust/mörkt läge utan egen konfiguration.
+    drawPxLightweight(tk, ser, up) {
+      const host = this.el("pxModalChart");
+      const legend = this.el("pxLegend");
+      const css = getComputedStyle(document.documentElement);
+      const v = (n, fb) => (css.getPropertyValue(n) || "").trim() || fb;
+      const col = up ? v("--trade-up", "#10B981") : v("--trade-down", "#EF4444");
+      const LC = root.LightweightCharts;
+
+      const chart = LC.createChart(host, {
+        autoSize: true,
+        layout: { background: { type: "solid", color: "transparent" }, textColor: v("--chart-tick", "#94A3B8"), fontSize: 11 },
+        grid: { vertLines: { color: v("--chart-grid", "rgba(255,255,255,.06)") }, horzLines: { color: v("--chart-grid", "rgba(255,255,255,.06)") } },
+        rightPriceScale: { borderColor: v("--chart-border", "#31425F") },
+        timeScale: { borderColor: v("--chart-border", "#31425F"), fixLeftEdge: true, fixRightEdge: true },
+        crosshair: { mode: LC.CrosshairMode ? LC.CrosshairMode.Normal : 0 },
+        localization: { locale: "sv-SE" },
+        handleScale: { axisPressedMouseMove: false }
+      });
+      const series = chart.addAreaSeries({
+        lineColor: col, lineWidth: 2, topColor: col + "44", bottomColor: col + "05",
+        priceLineVisible: false, lastValueVisible: true
+      });
+      series.setData(ser.map(p => ({ time: p[0], value: p[1] })));
+      chart.timeScale().fitContent();
+
+      // Hårkorset matar en egen liten legend – LWC har ingen inbyggd tooltip.
+      const last = ser[ser.length - 1];
+      const fmt = (d, val) => `<b>${this.R.esc(tk)}</b><span class="px-lg-d">${this.R.esc(d)}</span>` +
+        `<span class="px-lg-v">${Number(val).toLocaleString("sv-SE", { maximumFractionDigits: 2 })}</span>`;
+      if (legend) { legend.hidden = false; legend.innerHTML = fmt(last[0], last[1]); }
+      chart.subscribeCrosshairMove(param => {
+        if (!legend) return;
+        const p = param.seriesData && param.seriesData.get(series);
+        if (!p || !param.time) { legend.innerHTML = fmt(last[0], last[1]); return; }
+        legend.innerHTML = fmt(param.time, p.value);
+      });
+
+      this._pxChart = { destroy: () => chart.remove(), _lwc: true };
+    }
+
+    // Reserv när CDN:et inte når fram (offline): samma data i Chart.js.
+    drawPxFallback(tk, ser, up) {
+      if (!root.Chart) return;
+      const host = this.el("pxModalChart");
+      host.innerHTML = '<canvas></canvas>';
+      const ctx = host.firstChild.getContext("2d");
       const col = up ? "#10B981" : "#EF4444";
-      const ctx = this.el("pxModalChart").getContext("2d");
       const grd = ctx.createLinearGradient(0, 0, 0, 280);
       grd.addColorStop(0, up ? "rgba(16,185,129,0.22)" : "rgba(239,68,68,0.2)");
       grd.addColorStop(1, "rgba(0,0,0,0)");
       this._pxChart = new Chart(ctx, {
         type: "line",
         data: { labels: ser.map(p => p[0]), datasets: [{ label: tk, data: ser.map(p => p[1]), borderColor: col, backgroundColor: grd, fill: true, tension: 0.2, pointRadius: 2, borderWidth: 2 }] },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", maxTicksLimit: 8 } },
-            y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" } }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     }
     closePxChart() {
       const modal = this.el("pxModal");
       if (modal) modal.classList.remove("open");
       if (this._pxChart) { this._pxChart.destroy(); this._pxChart = null; }
+      const host = this.el("pxModalChart"); if (host) host.innerHTML = "";
+      const lg = this.el("pxLegend"); if (lg) { lg.hidden = true; lg.innerHTML = ""; }
     }
 
     // Avanza-söklänk för aktier (ej index/krypto): suffix bort, klasstreck -> mellanslag.
@@ -405,8 +506,23 @@
       q = (q || "").trim();
       if (q.length < 2) { body.innerHTML = '<div class="empty">Skriv minst 2 tecken och tryck Enter.</div>'; return; }
       body.innerHTML = '<div class="empty">Söker i ' + this.state.metas.length + ' rapporter…</div>';
-      const docs = await Promise.all(this.state.metas.map(async m => ({ meta: m, text: await this.getMd(m.path).catch(() => "") })));
+      const docs = await this.searchDocs();
       body.innerHTML = this.R.renderSearchResults(this.P.searchDocs(docs, q), q);
+    }
+    // Dokumenten att söka i. Förbyggt index = EN hämtning (cachas för sessionen);
+    // utan index faller vi tillbaka på en hämtning per rapport, som tidigare.
+    async searchDocs() {
+      if (this._searchDocs) return this._searchDocs;
+      try {
+        const idx = await this.fetchJSON(this.raw("state/search-index.json"));
+        if (idx && idx.version === 1 && Array.isArray(idx.docs) && idx.docs.length) {
+          this._searchDocs = idx.docs;
+          return this._searchDocs;
+        }
+      } catch (e) {
+        console.warn("[dashboard] sökindex otillgängligt – hämtar rapporterna en och en:", e && e.message);
+      }
+      return Promise.all(this.state.metas.map(async m => ({ meta: m, text: await this.getMd(m.path).catch(() => "") })));
     }
     // Öppna en rapport från ett sökresultat (analyser hoppar till Analys-fliken).
     openReportByName(name, type) {
@@ -777,7 +893,19 @@
     setStatus(kind, err) {
       const dot = this.el("liveDot"), txt = this.el("statusTxt");
       if (kind === "loading") { dot.className = "dot dot--load"; txt.textContent = "Hämtar…"; this.showSkeletons(); }
-      else if (kind === "ok") { dot.className = "dot dot--live"; txt.textContent = "Live"; this.el("updated").textContent = "Uppdaterad " + this.nowStr(); }
+      else if (kind === "ok") {
+        dot.className = "dot dot--live"; txt.textContent = "Live";
+        // "Uppdaterad" är hämtningstiden. På den förbyggda vägen är det INTE
+        // samma sak som datans ålder: mellan att en routine pushat och att
+        // dashboard-actionen kört visar filen gårdagens läge. Är bygget mer än
+        // 6 h gammalt sägs det rakt ut, annars blir inaktuell data osynlig.
+        let s = "Uppdaterad " + this.nowStr();
+        if (this._prebuiltAt) {
+          const ageH = (Date.now() - Date.parse(this._prebuiltAt)) / 3600000;
+          if (ageH > 6) s += " · data byggd för " + Math.round(ageH) + " h sedan";
+        }
+        this.el("updated").textContent = s;
+      }
       else if (kind === "error") {
         dot.className = "dot dot--err"; txt.textContent = "Fel";
         this.el("banner").innerHTML = '<div class="banner banner--err"><span class="banner-ico">⚠</span><span class="banner-text">Kunde inte hämta data från GitHub (' + this.R.esc(String(err && err.message || err)) + '). Kontrollera att repot är publikt och prova Uppdatera.</span></div>';
@@ -787,6 +915,17 @@
 
     // ---- wiring ----
     showView(view) {
+      // View Transitions API (inbyggt i webbläsaren, inget bibliotek): mjuk
+      // övergång mellan vyer. Saknas stödet – eller vill användaren ha mindre
+      // rörelse – byts vyn direkt som förut.
+      const reduce = root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(() => this.swapView(view));
+        return;
+      }
+      this.swapView(view);
+    }
+    swapView(view) {
       const views = [...document.querySelectorAll(".view")];
       if (!views.some(v => v.dataset.view === view)) view = views.some(v => v.dataset.view === "hem") ? "hem" : "oversikt";
       views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
@@ -893,8 +1032,17 @@
         else if (e.key === "r" || e.key === "R") { this.state.md.clear(); this.load(true); }
       });
     }
+    // Service worker: gör appen användbar offline. Nät-först, cache som reserv –
+    // se sw.js för varför det INTE är tvärtom. Registreras bara över https
+    // (GitHub Pages) eller localhost; file:// stöder inte service workers.
+    registerSW() {
+      if (!("serviceWorker" in navigator)) return;
+      if (location.protocol !== "https:" && location.hostname !== "localhost") return;
+      navigator.serviceWorker.register("sw.js").catch(e =>
+        console.warn("[dashboard] service worker kunde inte registreras:", e && e.message));
+    }
     boot() {
-      this.initNav(); this.initEvents(); this.load(false);
+      this.initNav(); this.initEvents(); this.registerSW(); this.load(false);
       // Tickande nedräkning till nästa körning (statusraden på Översikt).
       setInterval(() => {
         if (!this.state.dailies.length) return;

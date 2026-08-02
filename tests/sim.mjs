@@ -400,6 +400,59 @@ try {
   ok("robusthet: tomma indata kraschar inte renderarna", true);
 } catch (e) { ok("robusthet: tomma indata kraschar inte renderarna (" + e.message + ")", false); }
 
+// ---- Kursdiagrammet: båda vägarna ----
+// Lightweight Charts och Chart.js laddas från CDN och finns aldrig i jsdom, så
+// koden testas mot minimala stubbar. Poängen är inte att verifiera ritningen
+// utan att BÅDA vägarna går att köra utan att kasta – modalen är annars ett
+// dött klick, och felet syns bara i webbläsarkonsolen hos användaren.
+const tkWithHistory = Object.keys((dash.state.priceHistory || {}).series || {})
+  .find(t => ((dash.state.priceHistory.series[t]) || []).length >= 2);
+if (!tkWithHistory) {
+  ok("kursdiagram: hoppas över – ingen ticker har 2+ punkter i price_history", true);
+} else {
+  // 1) Lightweight Charts-vägen
+  let crosshairHooked = false, dataPoints = 0;
+  window.LightweightCharts = {
+    CrosshairMode: { Normal: 1 },
+    createChart: () => ({
+      addAreaSeries: () => ({ setData: d => { dataPoints = d.length; } }),
+      timeScale: () => ({ fitContent() {} }),
+      subscribeCrosshairMove: () => { crosshairHooked = true; },
+      remove() {}
+    })
+  };
+  try {
+    dash.openPxChart(tkWithHistory);
+    ok("kursdiagram: Lightweight Charts-vägen kör utan fel", true);
+    ok("kursdiagram: serien matades in", dataPoints >= 2);
+    ok("kursdiagram: hårkorset kopplat till legenden", crosshairHooked);
+    ok("kursdiagram: legenden visas", !window.document.getElementById("pxLegend").hidden);
+    dash.closePxChart();
+    ok("kursdiagram: stängning tömmer behållaren",
+      window.document.getElementById("pxModalChart").innerHTML === "" &&
+      window.document.getElementById("pxLegend").hidden);
+  } catch (e) { ok("kursdiagram: Lightweight Charts-vägen kör utan fel (" + e.message + ")", false); }
+
+  // 2) Reservvägen när CDN:et inte når fram
+  delete window.LightweightCharts;
+  let chartMade = false;
+  window.Chart = function () { chartMade = true; return { destroy() {} }; };
+  window.HTMLCanvasElement.prototype.getContext = () => ({
+    createLinearGradient: () => ({ addColorStop() {} })
+  });
+  try {
+    dash.openPxChart(tkWithHistory);
+    ok("kursdiagram: reservvägen (Chart.js) kör utan fel", true);
+    ok("kursdiagram: reserven ritade ett diagram", chartMade);
+    dash.closePxChart();
+  } catch (e) { ok("kursdiagram: reservvägen (Chart.js) kör utan fel (" + e.message + ")", false); }
+
+  // 3) Inget bibliotek alls: ska tiga, inte krascha
+  delete window.Chart;
+  try { dash.openPxChart(tkWithHistory); ok("kursdiagram: utan bibliotek kraschar inget", true); }
+  catch (e) { ok("kursdiagram: utan bibliotek kraschar inget (" + e.message + ")", false); }
+}
+
 console.log(`\nSIM: ${pass} passed, ${fail} failed`);
 window.close();
 process.exit(fail ? 1 : 0);

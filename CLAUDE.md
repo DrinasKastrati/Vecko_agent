@@ -57,13 +57,31 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 - `state/portfolj.md` / `portfolj_us.md` – historiken är append-only. Radera aldrig filerna.
 - `config/universe_nordic_movers.txt` – används BARA av `movers.mjs` (missdetektion), inte av pris-hämtaren.
 - `assets/themes/base.css` – all struktur; hårdkoda aldrig färg/radie/typsnitt där, lägg en token.
+- `state/dashboard.json` / `search-index.json` – GENERERADE av `dashboard.yml`. Redigera aldrig
+  för hand; kör `node .github/scripts/build-dashboard.mjs` i stället.
+- `sw.js` – service worker, nät-först. Bumpa `CACHE`-namnet om formatet på det som cachas ändras.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
 
 ## 3. Webb-dashboarden (teknik)
-- Ren HTML/CSS/JS, inga byggsteg. Laddar `marked@12` och `chart.js@4` från jsdelivr (CDN), samt
-  de egna modulerna i ordning: `theme.js` (i `<head>`) → `vparse.js` → `vrender.js` → `app.js`.
+- Ren HTML/CSS/JS, inga byggsteg i webbappen. Laddar `marked@12`, `chart.js@4` och
+  `lightweight-charts@4` från jsdelivr (CDN), samt de egna modulerna i ordning:
+  `theme.js` (i `<head>`) → `vparse.js` → `vrender.js` → `app.js`.
+- **Datakällan är FÖRBYGGD (sedan 2026-08-02).** `state/dashboard.json` innehåller allt
+  markdown-härlett färdigparsat och skrivs av `dashboard.yml` (nyckellös, LLM-fri) med samma
+  `assets/vparse.js` som webbappen. Laddningen gick från ~106 nätanrop till ~23, varav 0
+  masshämtad markdown. Volatil JSON (prices/alerts/allocation/decisions/kostnader/kön) bakas
+  medvetet INTE in – den skrivs var 30:e minut och skulle tvinga fram ombyggnad lika ofta.
+  **Fallback finns kvar:** saknas eller fallerar `dashboard.json` går appen tillbaka till att
+  läsa filträdet via GitHub-API:t och hämta varje rapport – t.ex. i fönstret mellan att en
+  routine pushat och att actionen kört. `tests/data.mjs` bevisar att BÅDA vägarna fungerar.
+  Fulltextsökningen läser `state/search-index.json` (en hämtning, lat laddad) i stället för 57.
+  **Taken i `build-dashboard.mjs` är satta efter vad appen FAKTISKT läser** (bara `scouts[0]`
+  renderas) – höj dem där om en vy börjar läsa längre bak i en lista.
+- **Offline:** `sw.js` (service worker) cachar appskalet. Strategin är nät-först med cachen som
+  reserv, aldrig tvärtom: appen uppdateras genom filpush utan versionsstämplade filnamn, så
+  cache-först skulle servera gammal `vparse.js` mot nya rapporter och ge tyst felparsning.
 - **Teman (sedan 2026-08-02):** markupen finns BARA i `index.html`. Utseendet ligger i
   `assets/themes/`: `base.css` har all struktur uttryckt i CSS-variabler, temafilerna sätter bara
   variabler + sina avvikelser. `assets/theme.js` (`window.VTheme`) väljer tema och ljust/mörkt

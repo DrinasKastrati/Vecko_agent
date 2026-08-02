@@ -6,6 +6,37 @@ oförändrat. Läs den här filen när du behöver VARFÖR bakom ett designval, 
 eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLAUDE.md`.
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
+
+- ✅ 2026-08-02 (prestanda + interaktivitet – 4 delar):
+  **(1) Förbyggd data.** Webbappen gjorde ~106 nätanrop vid varje laddning (filträd via
+  GitHub-API:t + upp till 56 råhämtningar av markdown + JSON) och parsade allt i webbläsaren;
+  sökningen hämtade SAMTLIGA 57 rapporter. Kostnaden växte linjärt med 4–5 nya rapportfiler per
+  dag. Ny nyckellös, LLM-fri `dashboard.yml` + `.github/scripts/build-dashboard.mjs` kör i
+  repo-utcheckningen (ingen nätåtkomst), laddar **samma `assets/vparse.js`** som webbappen –
+  ingen ny parsningslogik, samma 308 tester – och skriver `state/dashboard.json` (98 kB, 29 kB
+  gzip) + `state/search-index.json` (lat laddad, ersätter 57 hämtningar med 1).
+  **Mätt: 106 → 23 anrop, 84 → 6 markdown-hämtningar.** De 6 som är kvar är avsiktliga:
+  rapportväljarna visar en vald rapport direkt, och rapporttexten ligger inte i dashboard.json.
+  Live-vägen finns kvar som fallback och används automatiskt när filen saknas eller är av fel
+  version. Taken per rapporttyp är satta efter vad appen FAKTISKT läser (bara `scouts[0]`
+  renderas – de övriga elva stod för 132 av 144 kB i första versionen).
+  **(2) Lightweight Charts** (TradingView, 45 kB) i kursmodalen: hårkors som följer muspekaren
+  med egen legend, zoom med hjulet, panorering med drag. Chart.js ritar fortfarande
+  avkastningskurvan (flera serier + legend). Färgerna läses ur temats CSS-variabler, så
+  diagrammet följer ljust/mörkt läge. Chart.js är reserv om CDN:et inte når fram; utan något
+  bibliotek tiger modalen i stället för att krascha. OBS: `price_history.json` innehåller bara
+  `[datum, stängning]` – **candlesticks är inte möjliga** förrän OHLC hämtas.
+  **(3) View Transitions API** (inbyggt i webbläsaren, inget bibliotek) för mjuka vybyten.
+  Toppraden/menyn hålls utanför övergången via eget `view-transition-name`, annars blinkar hela
+  ramen vid varje flikbyte. Respekterar `prefers-reduced-motion`.
+  **(4) `sw.js`** – service worker, appen fungerar offline. **Nät-först, cache som reserv** och
+  aldrig tvärtom: appen uppdateras genom filpush utan versionsstämplade filnamn, så cache-först
+  skulle servera gammal `vparse.js` mot nya rapporter = tyst felparsning. GitHub-API:t cachas
+  aldrig (ett gammalt filträd får appen att leta rapporter som inte finns).
+  Nya tester: `tests/data.mjs` (28 kontroller – bevisar att den förbyggda vägen FAKTISKT tas,
+  inte bara att appen renderar; mäter anropen per väg) och 8 nya kontroller i `tests/sim.mjs`
+  för diagrammets tre vägar. `test.yml` kör båda + bygger dashboard-datan.
+  Verifierat 2026-08-02: **308 enhetstester · 96 sim · 28 data · 48 tema**, allt grönt.
 - ✅ Dashboarden byggd, modulär, **flikbaserad omdesign** klar; GitHub Pages live.
 - ✅ Tre routiner på plats: nordisk rotation (`dagligprompt.md`), scout USA/krypto
   (`scoutprompt.md`), aktieanalys på begäran (`analysprompt.md` + issue/kö-Action).

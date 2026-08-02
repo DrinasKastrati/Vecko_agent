@@ -1,0 +1,57 @@
+name: Förbygg dashboard-data (dashboard.json)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Bara markdown-källorna – volatil JSON (prices/alerts/…) bakas medvetet
+      # INTE in, så en kurshämtning var 30:e minut triggar ingen ombyggnad.
+      - "reports/**"
+      - "state/portfolj.md"
+      - "state/portfolj_us.md"
+      - "state/lessons.md"
+      - "config/watchlist.txt"
+      - "config/watchlist_us.txt"
+      - "assets/vparse.js"          # parsningen ändrad => bygg om
+      - ".github/scripts/build-dashboard.mjs"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dashboard
+  cancel-in-progress: true   # bara den senaste byggnaden är intressant
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full historik – krävs för rebase mot samtidiga pushar
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Bygg dashboard.json + search-index.json
+        run: node .github/scripts/build-dashboard.mjs
+      - name: Committa om ändrad
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/dashboard.json state/search-index.json
+          if git diff --cached --quiet; then
+            echo "Inga andringar - hoppar over commit."
+          else
+            git commit -m "Dashboard-data: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            for i in 1 2 3; do
+              if git pull --rebase --autostash -X theirs origin main && git push origin main; then
+                exit 0
+              fi
+              git rebase --abort 2>/dev/null || true
+              echo "Push-försök $i misslyckades – försöker igen..."
+              sleep $((5 * i))
+            done
+            echo "Kunde inte pusha efter 3 försök."
+            exit 1
+          fi

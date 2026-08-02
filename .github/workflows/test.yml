@@ -26,6 +26,10 @@ jobs:
         run: node tests/run.mjs
       - name: Kontrollera temalagret (tokentäckning; jsdom-delen hoppas över i CI)
         run: node tests/theme.mjs
+      - name: Kontrollera datalagret (hoppas över utan jsdom)
+        run: node tests/data.mjs
+      - name: Bygg dashboard-data och verifiera att den blir läsbar
+        run: node .github/scripts/build-dashboard.mjs
       - name: Validera beslutsdatabasen (schema + append-only mot föregående commit)
         run: |
           git show HEAD~1:state/decisions.json > /tmp/decisions-base.json 2>/dev/null || true
@@ -40,6 +44,8 @@ jobs:
           node --check assets/vrender.js
           node --check assets/app.js
           node --check assets/theme.js
+          node --check sw.js
+          node --check .github/scripts/build-dashboard.mjs
           node --check .github/scripts/fetch-prices.mjs
           node --check .github/scripts/alerts.mjs
           node --check .github/scripts/digest.mjs

@@ -249,7 +249,9 @@
       <a id="pxModalAvanza" class="btn" target="_blank" rel="noopener" title="Sök tickern på Avanza" hidden>Avanza ↗</a>
       <button id="pxModalClose" class="btn">Stäng</button>
     </div>
-    <div class="modal-chart"><canvas id="pxModalChart"></canvas></div>
+    <!-- Lightweight Charts ritar i en <div>, inte en <canvas>. Saknas biblioteket
+         skapar app.js en canvas här och faller tillbaka på Chart.js. -->
+    <div class="modal-chart"><div id="pxModalChart"></div><div id="pxLegend" class="px-legend" hidden></div></div>
     <div id="pxModalNote" class="stat-note" style="margin:8px 0 0"></div>
   </div>
 </div>
@@ -257,6 +259,9 @@
 <!-- 3:e-partsbibliotek -->
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- Lightweight Charts: hårkors, zoom och panorering i kursmodalen. Chart.js
+     ritar fortfarande avkastningskurvan (flera serier + legend). -->
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <!-- egna moduler (ordning spelar roll: parse -> render -> app) -->
 <script src="assets/vparse.js"></script>
 <script src="assets/vrender.js"></script>
