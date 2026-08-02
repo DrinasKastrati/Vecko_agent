@@ -791,5 +791,62 @@ ok("backtestUniverse syntetiskt universum", (() => {
 })());
 ok("buyHoldPct", Math.abs(BT.buyHoldPct([{ c: 100 }, { c: 110 }]) - 10) < 1e-9 && BT.buyHoldPct([]) === null);
 
+// ---- rapportens högerspalt: innehållsförteckning + sammanfattning ----
+// Fältraden följer daglig_mall.md – parseDaily läser "Läge" som **fält**,
+// inte som rubrik, så en syntetisk rapport måste ha samma form som mallen.
+const RMD = [
+  "# Daglig bevakning 2026-08-01",
+  "**Datum:** 2026-08-01 | **Läge:** Daglig bevakning",
+  "**Marknadsläget i korthet:** Lugn handel, index oförändrat.",
+  "",
+  "## Läge",
+  "Text.",
+  "## Marknadsläge & Kontext",
+  "Mer text.",
+  "### 1. Katalysatorn",
+  "Detaljer.",
+  "```",
+  "## detta är en kodrad, inte en rubrik",
+  "```",
+  "## Läge",
+  "Dubblett med samma rubriktext."
+].join("\n");
+
+const OUT = VP.reportOutline(RMD);
+ok("reportOutline hittar h2 och h3", OUT.length === 4);
+ok("reportOutline hoppar över rubriker i kodblock",
+  !OUT.some(h => h.text.includes("kodrad")));
+ok("reportOutline behåller nivån", OUT[2].level === 3 && OUT[0].level === 2);
+ok("reportOutline ger unika id vid dubblettrubriker",
+  new Set(OUT.map(h => h.id)).size === OUT.length && OUT[3].id !== OUT[0].id);
+ok("reportOutline tål tom indata", VP.reportOutline("").length === 0 && VP.reportOutline(null).length === 0);
+ok("slugify klarar svenska tecken", VP.slugify("Marknadsläge & Kontext") === "marknadsläge-kontext");
+ok("slugify faller tillbaka på ett id", VP.slugify("###") === "avsnitt" && VP.slugify("") === "avsnitt");
+ok("slugify matchar det outline ger", VP.slugify("1. Katalysatorn") === OUT[2].id);
+
+const DIGD = VP.reportDigest(RMD, { type: "daily" });
+ok("reportDigest daglig ger fältrader", DIGD.facts.length >= 1 && DIGD.type === "daily");
+ok("reportDigest okänd typ kraschar inte",
+  (() => { const z = VP.reportDigest(RMD, { type: "retro" }); return z.facts.length === 0 && z.items.length === 0; })());
+ok("reportDigest tål trasig markdown",
+  (() => { try { const z = VP.reportDigest(null, null); return Array.isArray(z.items); } catch (e) { return false; } })());
+
+const RAIL = VR.renderReportRail({
+  outline: OUT,
+  digest: { facts: [{ k: "Läge", v: "Bevakning" }], items: [{ name: "Saab", decision: "BEHÅLL", ticker: "SAAB-B.ST" }], watch: ["Rapport onsdag"] },
+  tickers: ["SAAB-B.ST"],
+  prev: { name: "daglig-260731.md", label: "31 jul" },
+  next: null
+});
+ok("renderReportRail innehållsförteckning är klickbar", RAIL.includes('data-toc="' + OUT[0].id + '"'));
+ok("renderReportRail visar beslutsbadge", RAIL.includes("badge--behall"));
+ok("renderReportRail visar bevakning", RAIL.includes("Rapport onsdag"));
+ok("renderReportRail grannavigering", RAIL.includes('data-report="daglig-260731.md"'));
+ok("renderReportRail utan beslut visar tickern",
+  VR.renderReportRail({ digest: { facts: [], items: [{ name: "Novo", decision: "", ticker: "NVO" }], watch: [] } }).includes(">NVO<"));
+ok("renderReportRail tomt läge ger tom sträng", VR.renderReportRail({}) === "" && VR.renderReportRail() === "");
+ok("renderReportRail döljer innehållsförteckning vid en enda rubrik",
+  !VR.renderReportRail({ outline: [{ level: 2, text: "En", id: "en" }], digest: {} }).includes("data-toc"));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

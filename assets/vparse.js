@@ -30,6 +30,84 @@
       .trim();
   }
 
+  /* ---- rapportens innehållsförteckning -------------------------------------
+     Rapporterna är långa och rullas i en box; utan innehållsförteckning är enda
+     sättet att hitta ett avsnitt att skrolla. Rubrikerna plockas ur MARKDOWN:en
+     (inte ur den renderade HTML:en) så samma funktion kan testas utan DOM.
+     `slugify` måste ge samma id här som app.js sätter på rubrikelementen –
+     ändras den ena måste den andra följa med. */
+  function slugify(s){
+    return stripMd(s).toLowerCase()
+      .replace(/[^\wåäöéèüæø\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 60) || "avsnitt";
+  }
+
+  function reportOutline(md){
+    const out = [];
+    const seen = Object.create(null);
+    const lines = String(md || "").split(/\r?\n/);
+    let fence = false;
+    for (const line of lines){
+      if (/^\s*(```|~~~)/.test(line)) { fence = !fence; continue; }   // hoppa kodblock
+      if (fence) continue;
+      const m = /^(#{2,3})\s+(.+?)\s*#*\s*$/.exec(line);
+      if (!m) continue;
+      const text = stripMd(m[2]);
+      if (!text) continue;
+      let id = slugify(text);
+      if (seen[id] != null) { seen[id]++; id = id + "-" + seen[id]; } else seen[id] = 0;
+      out.push({ level: m[1].length, text, id });
+    }
+    return out;
+  }
+
+  /* Kort faktasammanfattning av EN rapport, byggd ur markdown:en med samma
+     parsers som vyerna använder. Ingen språkmodell inblandad – bara de fält
+     rapportmallarna redan garanterar. */
+  /* Fälten skiljer sig per rapporttyp – dagliga har beslut per innehav, vecko-
+     och scoutrapporter har case utan beslut. Därför en gren per typ i stället
+     för ett gemensamt antagande som tyst ger tomma kort. */
+  function reportDigest(md, meta){
+    const type = (meta && meta.type) || "";
+    const facts = [];
+    const push = (k, v) => { const t = stripMd(v); if (t) facts.push({ k, v: t }); };
+    let items = [], watch = [];
+    try {
+      if (type === "daily" || type === "us_daily"){
+        const d = parseDaily(md, meta || {});
+        push("Läge", d.mode);
+        push("Marknad", d.market);
+        push("Portfölj", d.portfStatus);
+        items = (d.holdings || []).map(h =>
+          ({ name: h.name || h.ticker || "", decision: h.decision || "", ticker: h.ticker || "" }));
+        watch = (d.watch || []).map(stripMd);
+      } else if (type === "weekly" || type === "us_weekly"){
+        const w = parseWeekly(md, meta || {});
+        push("Vecka", w.week);
+        push("Marknadsklimat", w.climate);
+        items = (w.cases || []).map(c =>
+          ({ name: c.name || c.ticker || "", decision: "", ticker: c.ticker || "" }));
+        if ((w.bubblare || []).length) push("Bubblare", w.bubblare.length + " st");
+        watch = (w.radar || []).map(r => stripMd((r.day ? r.day + ": " : "") + (r.text || "")));
+      } else if (type === "scout"){
+        const s = parseScout(md, meta || {});
+        push("Marknadsklimat", s.climate);
+        items = (s.cases || []).map(c =>
+          ({ name: c.name || c.ticker || "", decision: "", ticker: c.ticker || "" }));
+        watch = (s.events || []).map(stripMd);
+      }
+    } catch (e) { /* en avvikande rapport ska inte släcka hela vyn */ }
+    return {
+      type,
+      facts,
+      items: items.filter(x => x.name),
+      watch: (watch || []).filter(Boolean).slice(0, 5)
+    };
+  }
+
   // Parse all markdown tables in a chunk of text -> [{header:[], rows:[[]]}]
   function parseTables(md){
     const lines = md.split("\n");
@@ -953,7 +1031,8 @@
     costFor, netPct, fxRate, DEFAULT_COSTS, monitorStatus,
     tickerRoles, roleFor, parseWatchlist, tickersInText, dayChangePct, ROLE_ORDER, ROLE_LABEL,
     benchReturnPct, computeAlpha, computeAlphaStats, alphaKey,
-    parseDecisions, decisionStats
+    parseDecisions, decisionStats,
+    slugify, reportOutline, reportDigest
   };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VParse = API;

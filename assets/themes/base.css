@@ -470,9 +470,48 @@ select#reportSelect{min-width:210px}
 .toggle{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:12.5px;cursor:pointer}
 .toggle input{accent-color:var(--accent-primary)}
 
+/* Rapport + högerspalt. Rapporttexten behåller sin breddgräns (radlängd är en
+   läsbarhetsfråga, inte en yta att fylla); spalten tar resten av bredden i
+   stället för att lämna den tom. Under 1180 px faller den under rapporten. */
+.rep-grid{display:grid;grid-template-columns:minmax(0,var(--report-maxw)) minmax(230px,300px);
+  gap:18px;align-items:start}
+.rep-rail{display:grid;gap:12px;position:sticky;top:var(--rail-top,84px)}
+.rep-rail:empty{display:none}
+.rep-facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.4px}
+.rep-facts dt{color:var(--faint);font-size:var(--label-size);letter-spacing:var(--label-spacing);
+  text-transform:var(--label-transform);font-weight:var(--label-weight);padding-top:2px}
+.rep-facts dd{margin:0;color:var(--text-soft);min-width:0}
+.rep-decs{display:grid;gap:6px;margin-top:10px}
+.rep-dec{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.6px}
+.rep-dec b{color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rep-toc{list-style:none;margin:0;padding:0;display:grid;gap:1px;max-height:46vh;overflow:auto}
+.rep-toc li.lvl3{padding-left:12px}
+.rep-toc-a{display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;color:var(--muted);padding:6px 8px;border-radius:var(--r);
+  border-left:2px solid transparent;line-height:1.35;transition:.12s}
+.rep-toc-a:hover{color:var(--text);background:var(--panel3)}
+.rep-toc-a.on{color:var(--accent-primary);border-left-color:var(--accent-primary);
+  background:var(--accent-soft);font-weight:600}
+.rep-tks{display:flex;flex-wrap:wrap;gap:5px}
+.rep-nav{display:grid;gap:6px}
+.rep-nav-b{cursor:pointer;background:var(--panel);border:1px solid var(--border);color:var(--muted);
+  border-radius:var(--r);padding:8px 10px;font-family:var(--sans);font-size:12.3px;text-align:left;transition:.12s}
+.rep-nav-b:hover{border-color:var(--accent-primary);color:var(--text)}
+@media(max-width:1180px){
+  /* minmax(0,1fr), inte 1fr: ett fr-spår har min-content som undre gräns, och
+     temat "enkel" låter rapporten flöda utan egen rullningsbox – då trycker en
+     bred tabell isär spåret och hela sidan svämmar ut i sidled (mätt: +368 px
+     på 390 px skärm). Nollan tillåter spåret att krympa. */
+  .rep-grid{grid-template-columns:minmax(0,1fr)}
+  .rep-rail{position:static;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .rep-toc{max-height:none}
+}
+
 .report{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r2);
   padding:var(--report-pad,8px 26px 26px);max-height:var(--report-h,74vh);
-  overflow:var(--report-overflow,auto);max-width:var(--report-maxw);box-shadow:var(--shadow-sm)}
+  overflow:var(--report-overflow,auto);max-width:var(--report-maxw);box-shadow:var(--shadow-sm);
+  scroll-behavior:smooth;min-width:0}
+.report h2[id],.report h3[id]{scroll-margin-top:8px}
 .report--full{max-height:none}
 .report h1{font-family:var(--display);font-size:var(--rh1,21px);margin:22px 0 6px;
   letter-spacing:var(--rh1-spacing,-.01em);text-transform:var(--rh1-transform,none);color:var(--rh1-color,var(--text))}

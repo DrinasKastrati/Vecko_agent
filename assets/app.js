@@ -522,6 +522,7 @@
           '. Äldre rapporter öppnas via väljaren ovan.</div>'
         : "";
       body.innerHTML = note + this.R.renderSearchResults(this.P.searchDocs(docs, q), q);
+      this.clearReportRail();   // träfflistan har ingen innehållsförteckning
     }
     // Dokumenten att söka i. Förbyggt index = EN hämtning (cachas för sessionen);
     // utan index faller vi tillbaka på en hämtning per rapport, som tidigare.
@@ -748,7 +749,75 @@
         const md = await this.getMd(meta.path);
         this.el("reportBody").dataset.raw = md;
         this.el("reportBody").innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md);
-      } catch (e) { this.el("reportBody").innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
+        this.buildReportRail(md, meta);
+      } catch (e) {
+        this.el("reportBody").innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>';
+        this.clearReportRail();
+      }
+    }
+
+    // ---- högerspalten i Rapporter ----
+    clearReportRail() { const r = this.el("reportRail"); if (r) r.innerHTML = ""; }
+
+    buildReportRail(md, meta) {
+      const rail = this.el("reportRail"); if (!rail) return;
+      // Rådataläget visar ren markdown – då finns inga rubriker att länka till.
+      if (this.el("rawToggle") && this.el("rawToggle").checked) { rail.innerHTML = ""; return; }
+
+      const outline = this.P.reportOutline(md);
+      // Ge rubrikerna i den renderade texten samma id som innehållsförteckningen
+      // pekar på. Ordningen är densamma eftersom båda kommer ur samma markdown.
+      const heads = [...this.el("reportBody").querySelectorAll("h2, h3")];
+      outline.forEach((h, i) => { if (heads[i]) heads[i].id = "rep-" + h.id; });
+
+      // grannar av samma rapporttyp (listan är sorterad nyast först)
+      const same = this.state.metas.filter(m => m.type === meta.type);
+      const i = same.findIndex(m => m.name === meta.name);
+      const nb = m => m ? { name: m.name, label: m.label || m.dateISO || m.name } : null;
+
+      rail.innerHTML = this.R.renderReportRail({
+        outline,
+        digest: this.P.reportDigest(md, meta),
+        tickers: this.P.tickersInText(md),
+        prev: nb(i > 0 ? same[i - 1] : null),          // nyare
+        next: nb(i >= 0 ? same[i + 1] : null)          // äldre
+      });
+      this.refreshClamps();
+      this.wireReportToc();
+    }
+
+    // Klick i innehållsförteckningen rullar till avsnittet, och avsnittet
+    // markeras medan man rullar. Rapporten har en EGEN rullningsbox (74 vh)
+    // utom i "full höjd"-läget – då rullar sidan i stället, så båda måste
+    // hanteras.
+    wireReportToc() {
+      const rail = this.el("reportRail"), body = this.el("reportBody");
+      if (!rail || !body) return;
+      const links = [...rail.querySelectorAll("[data-toc]")];
+      if (!links.length) return;
+      const scroller = body.scrollHeight > body.clientHeight + 4 ? body : null;
+
+      rail.querySelectorAll("[data-toc]").forEach(a => a.addEventListener("click", () => {
+        const t = document.getElementById("rep-" + a.dataset.toc);
+        if (!t) return;
+        if (scroller) scroller.scrollTo({ top: t.offsetTop - body.offsetTop - 8, behavior: "smooth" });
+        else t.scrollIntoView({ behavior: "smooth", block: "start" });
+      }));
+
+      const mark = () => {
+        const top = scroller ? scroller.getBoundingClientRect().top + 12 : 90;
+        let cur = links[0];
+        for (const a of links) {
+          const t = document.getElementById("rep-" + a.dataset.toc);
+          if (t && t.getBoundingClientRect().top <= top) cur = a; else break;
+        }
+        links.forEach(a => a.classList.toggle("on", a === cur));
+      };
+      if (this._tocOff) this._tocOff();
+      const target = scroller || root;
+      target.addEventListener("scroll", mark, { passive: true });
+      this._tocOff = () => target.removeEventListener("scroll", mark);
+      mark();
     }
     mdToHtml(md) {
       let html;
@@ -983,7 +1052,14 @@
       if (usSel) usSel.addEventListener("change", e => this.showUsReport(e.target.value));
       const reSel = this.el("retroSelect");
       if (reSel) reSel.addEventListener("change", e => this.showRetroReport(e.target.value));
-      this.el("rawToggle").addEventListener("change", () => { const b = this.el("reportBody"); const md = b.dataset.raw || ""; if (!md) return; b.innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md); });
+      this.el("rawToggle").addEventListener("change", () => {
+        const b = this.el("reportBody"); const md = b.dataset.raw || ""; if (!md) return;
+        const raw = this.el("rawToggle").checked;
+        b.innerHTML = raw ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md);
+        // Rådataläget har inga rubriker att länka till – bygg om spalten.
+        const meta = this.state.metas.find(m => m.name === (this.el("reportSelect") || {}).value);
+        if (raw || !meta) this.clearReportRail(); else this.buildReportRail(md, meta);
+      });
       document.querySelectorAll(".rtype").forEach(btn => btn.addEventListener("click", () => {
         document.querySelectorAll(".rtype").forEach(b => b.classList.remove("on"));
         btn.classList.add("on"); this.state.reportType = btn.dataset.type; this.setupReportPicker();
@@ -1022,6 +1098,15 @@
         if (th) { this.sortTable(th); return; }
         const sr = e.target.closest("[data-open-report]");
         if (sr) { this.openReportByName(sr.dataset.openReport, sr.dataset.rtype); return; }
+        // föregående/nästa rapport ur högerspalten
+        const rn = e.target.closest("[data-report]");
+        if (rn) {
+          const sel = this.el("reportSelect");
+          if (sel) { sel.value = rn.dataset.report; }
+          this.showReport(rn.dataset.report);
+          const rb = this.el("reportBody"); if (rb) rb.scrollTop = 0;
+          return;
+        }
         const chip = e.target.closest(".px-chip");
         if (chip) { this.setPriceRole(chip.dataset.role || "alla"); return; }
         const px = e.target.closest(".px-item");

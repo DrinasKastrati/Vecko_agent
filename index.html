@@ -188,7 +188,13 @@
             GitHub
           </a>
         </div>
-        <div id="reportBody" class="report"></div>
+        <!-- Rapporttexten är kapad i bredd med flit (radlängd). Högerspalten
+             fyller ytan med innehållsförteckning, dagens beslut och nämnda
+             tickers – allt härlett mekaniskt ur rapporten. -->
+        <div class="rep-grid">
+          <div id="reportBody" class="report"></div>
+          <aside id="reportRail" class="rep-rail" aria-label="Om rapporten"></aside>
+        </div>
       </section>
 
       <section class="view" id="view-nyheter" data-view="nyheter">

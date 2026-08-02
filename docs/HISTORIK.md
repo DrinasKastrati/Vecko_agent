@@ -7,6 +7,26 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (högerspalt i Rapporter): rapporttexten är kapad i bredd med flit (radlängd är
+  en läsbarhetsfråga), vilket lämnade halva skärmen tom på en bred skärm. Ytan fylls nu med en
+  spalt som innehåller **innehållsförteckning** (klickbar, markerar aktivt avsnitt vid rullning),
+  **"I korthet"** (läge/marknad/portfölj för dagliga, vecka/klimat/antal bubblare för vecko,
+  klimat för scout), **innehav eller case** med beslutsbadge respektive ticker, **bevakning**,
+  **nämnda tickers** som klickbara pillar, och **grannavigering** till föregående/nästa rapport
+  av samma typ. Allt härleds MEKANISKT ur rapportens markdown – ingen språkmodell, inga nya
+  datakällor.
+  Nya rena funktioner: `VParse.slugify`, `reportOutline` (hoppar över rubriker i kodblock, ger
+  unika id vid dubbletter) och `reportDigest` (en gren per rapporttyp – fälten skiljer sig, och
+  ett gemensamt antagande gav tysta tomma kort), plus `VRender.renderReportRail`. App.js sätter
+  samma id på de renderade rubrikerna som innehållsförteckningen pekar på, och hanterar att
+  rapporten har en EGEN rullningsbox utom i "full höjd"-läget – båda fallen behövs för att
+  markeringen ska följa med. Spalten töms i rådataläget och vid sökträffar, där den saknar mening.
+  **Bugg som mätningen fångade:** media queryn använde `1fr`, och ett fr-spår har min-content som
+  undre gräns. Temat "enkel" låter rapporten flöda utan egen rullningsbox, så en bred tabell
+  tryckte isär spåret – **+368 px horisontell översvämning på 390 px skärm**. Fixat med
+  `minmax(0,1fr)` + `min-width:0` på `.report`. Verifierat i headless Chrome: 4 teman × 2 bredder,
+  alla utan anmärkning. Testsviten: **326 enhetstester** (+18 för de nya funktionerna).
+
 - ✅ 2026-08-02 (två manualer, två målgrupper): den befintliga `Anvandarmanual.html` (19 sidor,
   14 avsnitt) var både för lång för någon som bara vill använda dashboarden och saknade allt som
   byggdes 2026-08-02 – noll träffar på "tema", "inställningar", "ljust", "kugghjul". Delad i två:

@@ -659,6 +659,67 @@
     const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
     return t.replace(re, m => `<mark>${m}</mark>`);
   }
+  /* ---- högerspalten i Rapporter -------------------------------------------
+     Rapporttexten är kapad i bredd med flit (radlängd), vilket lämnade halva
+     skärmen tom på en bred skärm. Spalten fyller den med sådant som går att
+     härleda MEKANISKT ur rapporten – innehållsförteckning, dagens beslut,
+     bevakning, nämnda tickers – aldrig något genererat.
+     `o` = { outline, digest, tickers, prev, next } från app.js. */
+  function renderReportRail(o){
+    o = o || {};
+    const parts = [];
+    const card = (title, body, n) =>
+      `<div class="rail-card"><div class="rail-t">${esc(title)}` +
+      (n != null ? `<span class="n">${n}</span>` : "") + `</div>${body}</div>`;
+
+    const d = o.digest || {};
+    // I korthet: fältrader + innehav/case. Dagliga rapporter har ett beslut per
+    // rad; vecko- och scoutrapporter har case utan beslut – då visas tickern.
+    if ((d.facts && d.facts.length) || (d.items && d.items.length)){
+      let body = "";
+      if (d.facts && d.facts.length)
+        body += `<dl class="rep-facts">` + d.facts.map(f =>
+          `<dt>${esc(f.k)}</dt><dd><span class="cw"><span class="clamp" style="--cl:3">${esc(f.v)}</span>` +
+          `<button type="button" class="clamp-more">Visa mer</button></span></dd>`).join("") + `</dl>`;
+      if (d.items && d.items.length)
+        body += `<div class="rep-decs">` + d.items.slice(0, 8).map(x =>
+          `<span class="rep-dec"><b>${esc(x.name)}</b>` +
+          (x.decision ? `<span class="badge badge--${decClass(x.decision)}">${esc(x.decision)}</span>`
+                      : x.ticker ? `<span class="pill">${esc(x.ticker)}</span>` : "") +
+          `</span>`).join("") + `</div>`;
+      parts.push(card("I korthet", body));
+    }
+
+    // Innehållsförteckning – klickbar, markerar aktivt avsnitt vid rullning
+    const ol = o.outline || [];
+    if (ol.length > 1)
+      parts.push(card("Innehåll",
+        `<ul class="rep-toc">` + ol.map(h =>
+          `<li class="lvl${h.level}"><button type="button" class="rep-toc-a" data-toc="${esc(h.id)}">${esc(h.text)}</button></li>`
+        ).join("") + `</ul>`, ol.length));
+
+    // Bevakning (dagliga/vecko)
+    if (d.watch && d.watch.length)
+      parts.push(card("Bevakning", `<ul class="rail-list">` +
+        d.watch.map(w => `<li>${esc(w)}</li>`).join("") + `</ul>`, d.watch.length));
+
+    // Tickers som nämns – klick öppnar Analys-vyn
+    const tk = o.tickers || [];
+    if (tk.length)
+      parts.push(card("Nämnda tickers", `<div class="rep-tks">` +
+        tk.slice(0, 24).map(t => tickerPill(t)).join(" ") + `</div>`, tk.length));
+
+    // Grannavigering
+    if (o.prev || o.next)
+      parts.push(card("Fler rapporter",
+        `<div class="rep-nav">` +
+        (o.prev ? `<button type="button" class="rep-nav-b" data-report="${esc(o.prev.name)}">← ${esc(o.prev.label)}</button>` : "") +
+        (o.next ? `<button type="button" class="rep-nav-b" data-report="${esc(o.next.name)}">${esc(o.next.label)} →</button>` : "") +
+        `</div>`));
+
+    return parts.join("");
+  }
+
   function renderSearchResults(results, query){
     if (!results || !results.length)
       return `<div class="empty">Inga träffar på "${esc(query)}" i rapporterna.</div>`;
@@ -764,7 +825,7 @@
   const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
-    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderTotal,
+    renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
