@@ -1,1 +1,20 @@
 * text=auto eol=lf
+
+# ---------------------------------------------------------------------------
+# Genererade datafiler (skrivs av .github/scripts/build-dashboard.mjs – både av
+# dashboard.yml på GitHub och vid lokala körningar).
+#
+# `-merge` stänger av den TEXTUELLA sammanslagningen. Utan den skriver git in
+# konfliktmarkörer (<<<<<<<) mitt i JSON:en när båda sidor ändrat filen – och
+# eftersom hela filen är EN rad blir varje samtidig ändring en konflikt.
+# Resultatet är en JSON som inte går att parsa: webbappen faller då tillbaka på
+# att hämta ~60 filer en och en, helt tyst. Det inträffade 2026-08-02.
+#
+# Med `-merge` lämnar git filen orörd och flaggar konflikten i stället. Rätt
+# åtgärd är alltid densamma: kör `node .github/scripts/build-dashboard.mjs` och
+# `git add` – filerna är rena funktioner av rapporterna, aldrig något att
+# handmerga.
+#
+# `-diff` håller dessutom diffarna läsbara: en 98 kB enradig JSON säger inget.
+state/dashboard.json     -merge -diff
+state/search-index.json  -merge -diff

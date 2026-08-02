@@ -76,8 +76,11 @@ if (!JSDOM) {
   const boot = async (url) => {
     const dom = new JSDOM(html, { url, runScripts: "outside-only", pretendToBeVisual: true });
     dom.window.eval(engine);
-    // theme.js väntar på DOMContentLoaded innan växlaren renderas (rätt i
-    // webbläsaren); i jsdom har den händelsen inte hunnit fyra än.
+    // settings.js laddas i <head> direkt efter theme.js och delegerar tema/läge
+    // dit – ordningen måste vara densamma här.
+    dom.window.eval(readFileSync(join(root, "assets/settings.js"), "utf8"));
+    // Båda väntar på DOMContentLoaded innan de renderar (rätt i webbläsaren);
+    // i jsdom har den händelsen inte hunnit fyra än.
     await new Promise(r => setTimeout(r, 0));
     return dom.window;
   };
@@ -113,6 +116,59 @@ if (!JSDOM) {
   const w2 = await boot("https://x.test/index.html?theme=nordlys&mode=dark");
   ok("URL: ?theme= vinner över sparat val", w2.document.documentElement.getAttribute("data-theme") === "nordlys");
   ok("URL: ?mode= styr läget", w2.document.documentElement.getAttribute("data-mode") === "dark");
+
+  // ================= Inställningar (assets/settings.js) =================
+  const S = w.VSettings;
+  ok("inställningar: VSettings exponerad", !!S && Array.isArray(S.schema));
+  ok("inställningar: standardvärden gäller utan sparat val",
+    S.get("textsize") === "md" && S.get("density") === "normal" && S.get("motion") === "on");
+  ok("inställningar: attributen sitter på <html>",
+    doc.documentElement.getAttribute("data-textsize") === "md" &&
+    doc.documentElement.getAttribute("data-density") === "normal");
+  ok("inställningar: vyn renderad ur schemat",
+    doc.querySelectorAll("#settingsBody [data-set]").length >= 10);
+
+  S.set("density", "compact");
+  ok("inställningar: val skrivs till <html>", doc.documentElement.getAttribute("data-density") === "compact");
+  ok("inställningar: val sparas i localStorage",
+    JSON.parse(w.localStorage.getItem("vr_settings") || "{}").density === "compact");
+  ok("inställningar: knappen markeras",
+    !!doc.querySelector('#settingsBody [data-set="density"][data-val="compact"].on'));
+
+  S.set("density", "hittepå");
+  ok("inställningar: ogiltigt värde ignoreras", S.get("density") === "compact");
+
+  S.set("textsize", "lg");
+  S.set("motion", "off");
+  ok("inställningar: flera val samtidigt",
+    doc.documentElement.getAttribute("data-textsize") === "lg" &&
+    doc.documentElement.getAttribute("data-motion") === "off");
+
+  // tema via inställningarna ska gå genom VTheme (en enda ägare av temat)
+  S.set("theme", "nordlys");
+  ok("inställningar: tema delegeras till VTheme",
+    doc.documentElement.getAttribute("data-theme") === "nordlys" && S.get("theme") === "nordlys");
+
+  // startvyn erbjuder bara vyer som finns i menyn
+  const startOpts = S.options(S.schema.find(x => x.id === "startview")).map(o => o[0]);
+  ok("inställningar: startvyns alternativ kommer ur menyn",
+    startOpts.length === doc.querySelectorAll(".subnav a").length && startOpts.includes("hem"));
+
+  // klick i vyn ska fungera som direktanrop (delegerad lyssnare)
+  doc.querySelector('#settingsBody [data-set="textsize"][data-val="sm"]')
+    .dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+  ok("inställningar: klick i vyn ändrar värdet", doc.documentElement.getAttribute("data-textsize") === "sm");
+
+  S.reset();
+  ok("inställningar: återställning tömmer lagringen", !w.localStorage.getItem("vr_settings"));
+  ok("inställningar: återställning ger standardvärden igen",
+    doc.documentElement.getAttribute("data-textsize") === "md" &&
+    doc.documentElement.getAttribute("data-density") === "normal");
+
+  // inställningsvyn finns som vy men medvetet UTAN menylänk (kugghjul i toppraden)
+  ok("inställningar: vyn finns", !!doc.querySelector('.view[data-view="installningar"]'));
+  ok("inställningar: nås via kugghjulet, inte menyn",
+    !!doc.getElementById("settingsBtn") && !doc.querySelector('.subnav a[data-view="installningar"]'));
 }
 
 // stubbarna som håller de gamla adresserna vid liv

@@ -58,7 +58,13 @@
     async load(force) {
       this.setStatus("loading");
       try {
-        if (await this.loadPrebuilt(force)) { this.renderAll(); this.setStatus("ok"); return; }
+        if (await this.loadPrebuilt(force)) {
+          this.renderAll(); this.setStatus("ok");
+          // Inställningsvyn visar vilken datakälla som användes – den är känd
+          // först nu, så rutan måste ritas om.
+          if (root.VSettings) root.VSettings.render();
+          return;
+        }
       } catch (e) {
         console.warn("[dashboard] förbyggd data otillgänglig – faller tillbaka på live-hämtning:", e && e.message);
       }
@@ -927,7 +933,8 @@
       // View Transitions API (inbyggt i webbläsaren, inget bibliotek): mjuk
       // övergång mellan vyer. Saknas stödet – eller vill användaren ha mindre
       // rörelse – byts vyn direkt som förut.
-      const reduce = root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reduce = (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        || document.documentElement.getAttribute("data-motion") === "off";   // valet i Inställningar
       if (document.startViewTransition && !reduce) {
         document.startViewTransition(() => this.swapView(view));
         return;
@@ -961,7 +968,10 @@
       document.querySelectorAll(".subnav a").forEach(a =>
         a.addEventListener("click", e => { e.preventDefault(); this.showView(a.dataset.view); }));
       const h = (location.hash || "").slice(1);
-      if (h && document.querySelector('.view[data-view="' + h + '"]')) this.showView(h);
+      if (h && document.querySelector('.view[data-view="' + h + '"]')) { this.showView(h); return; }
+      // Ingen hash: öppna den vy användaren valt i Inställningar (standard "hem").
+      const start = root.VSettings && root.VSettings.get("startview");
+      if (start && start !== "hem" && document.querySelector('.view[data-view="' + start + '"]')) this.showView(start);
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
@@ -984,6 +994,9 @@
         const full = this.el("reportBody").classList.toggle("report--full");
         fb.classList.toggle("on", full);
         this.cacheSet("vr_reportfull", full);
+        // Samma val finns i Inställningar – håll dem i synk, annars visar
+        // inställningsvyn ett annat läge än knappen precis satte.
+        if (root.VSettings) root.VSettings.set("reportfull", full ? "on" : "off");
       });
       // Fulltextsökning i Rapporter (Enter söker i alla rapporttyper).
       const rs = this.el("repSearch");

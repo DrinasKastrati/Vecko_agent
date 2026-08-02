@@ -7,6 +7,33 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (inställningsvy + konfliktskydd):
+  **(1) `assets/settings.js`** (`window.VSettings`) – ny vy `installningar` bakom kugghjulet i
+  toppraden. Deklarativ `SCHEMA`-tabell: tema, ljust/mörkt (följ temat / följ systemet / ljust /
+  mörkt), textstorlek, täthet, startvy, animationer, rapporthöjd, plus en Data-ruta som visar om
+  datan kom förbyggd eller live och som kan hämta om / återställa allt. Vyn renderas ur tabellen,
+  så en ny inställning är en post + oftast en rad CSS. Valen blir data-attribut på `<html>` och
+  fångas av `base.css` som token-överskrivningar – inget tema behöver känna till dem.
+  **Lagring i `localStorage` per enhet och webbläsare**, aldrig i repot. Textstorleken använder
+  `zoom` på `.wrap`; alternativet (göra om ~250 px-värden till rem) var en refaktor med långt
+  större risk än nyttan. Filen laddas i `<head>` och sätter attributen synkront, annars blinkar
+  standardvärdena till före första målningen.
+  **Bugg som testet fångade:** inställningarnas `applyMode()` körde vid varje laddning och skrev
+  över `?mode=` i URL:en – delbara länkar till ett bestämt läge slutade fungera. Precedensen är
+  nu URL > sparat val > temats standardläge.
+  **(2) Mobilputs:** temaknapparna flyttade till Inställningar (nås via kugghjulet) och
+  varumärkestexten dold – **toppraden 172 → 55 px**, allt på en rad. `.set-opts` fick
+  `flex:1 1 auto;min-width:0` sedan startvyns elva alternativ svämmat ut åt höger.
+  Verifierat med headless Chrome i en ram på exakt 390 CSS-px: **alla 48 kombinationer**
+  (4 teman × 12 vyer) utan anmärkning.
+  **(3) `.gitattributes`: `state/dashboard.json` och `search-index.json` märkta `-merge -diff`.**
+  Både `dashboard.yml` och lokala körningar skriver filerna, och eftersom hela JSON:en är EN rad
+  blev varje samtidig ändring en konflikt – git skrev in `<<<<<<<` mitt i datan, filen slutade gå
+  att parsa och webbappen föll TYST tillbaka på ~60 hämtningar. Det inträffade skarpt samma dag
+  (auto-committen rebasade mitt i ett lokalt bygge och fastnade). Med `-merge` lämnas filen orörd
+  och konflikten flaggas; rätt åtgärd är alltid att bygga om och `git add`.
+  Testsviterna: 308 enhet · 96 sim · 30 data · 64 tema+inställningar.
+
 - ✅ 2026-08-02 (mobilvyn – mätt, inte gissad): sökindexet takat till de 30 senaste
   rapporterna (496 → 292 kB) eftersom filen byggs om varje gång en rapport pushas; taket
   redovisas ovanför träfflistan så luckan aldrig är osynlig. Lightweight Charts verifierat mot

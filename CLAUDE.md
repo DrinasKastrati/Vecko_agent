@@ -58,7 +58,10 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 - `config/universe_nordic_movers.txt` – används BARA av `movers.mjs` (missdetektion), inte av pris-hämtaren.
 - `assets/themes/base.css` – all struktur; hårdkoda aldrig färg/radie/typsnitt där, lägg en token.
 - `state/dashboard.json` / `search-index.json` – GENERERADE av `dashboard.yml`. Redigera aldrig
-  för hand; kör `node .github/scripts/build-dashboard.mjs` i stället.
+  för hand; kör `node .github/scripts/build-dashboard.mjs` i stället. De är märkta `-merge` i
+  `.gitattributes`: både actionen och lokala körningar skriver dem, och eftersom filen är EN rad
+  blev varje samtidig ändring en konflikt som lade `<<<<<<<` MITT I JSON:en – webbappen föll då
+  tyst tillbaka på ~60 hämtningar. Vid konflikt: bygg om och `git add`, aldrig handmerga.
 - `sw.js` – service worker, nät-först. Bumpa `CACHE`-namnet om formatet på det som cachas ändras.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
 
@@ -79,6 +82,15 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   Fulltextsökningen läser `state/search-index.json` (en hämtning, lat laddad) i stället för 57.
   **Taken i `build-dashboard.mjs` är satta efter vad appen FAKTISKT läser** (bara `scouts[0]`
   renderas) – höj dem där om en vy börjar läsa längre bak i en lista.
+- **Inställningar (sedan 2026-08-02):** `assets/settings.js` (`window.VSettings`) – vyn
+  `installningar`, nås via kugghjulet i toppraden (medvetet INTE i menyn, elva flikar räcker).
+  En deklarativ `SCHEMA`-tabell beskriver varje inställning; vyn RENDERAS ur tabellen, så en ny
+  inställning = en post i SCHEMA + oftast en rad CSS. Valen skrivs som data-attribut på `<html>`
+  och plockas upp av `base.css` som rena token-överskrivningar → fungerar i alla teman utan att
+  något tema känner till dem. **Lagring: `localStorage` (nyckel `vr_settings`), alltså PER ENHET
+  OCH WEBBLÄSARE** – inget sparas i repot, inget delas mellan personer. Tema och ljust/mörkt ÄGS
+  av `VTheme`; VSettings delegerar dit så det bara finns en sanning. Precedens för läget:
+  `?mode=` i URL:en > sparat val > temats standardläge.
 - **Offline:** `sw.js` (service worker) cachar appskalet. Strategin är nät-först med cachen som
   reserv, aldrig tvärtom: appen uppdateras genom filpush utan versionsstämplade filnamn, så
   cache-först skulle servera gammal `vparse.js` mot nya rapporter och ge tyst felparsning.
@@ -194,8 +206,8 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   (enklast via `push.bat` i repo-roten).
 - ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia var `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
 - ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\vecko_agent` (gemener i
-  mappnamnet på disk). Node v24 på plats. Auto-push-tasken ÄR registrerad här (se punkt 2 nedan) –
-  den tidigare noteringen om att `setup_autopush.bat` återstod stämmer inte. Schemaläggningen
+  mappnamnet på disk). Node v24 på plats. Auto-push-tasken är registrerad men AVSTÄNGD sedan
+  2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
 - **KVAR efter genomgången (2026-08-02) – i prioritetsordning:**
   1. **Kör `push.bat`.** Hela 08-02-paketet ligger lokalt. Extra viktigt att det sker FÖRE
@@ -214,13 +226,18 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      sedan skriptet så PDF:en följer med.
   5. **Beslut kvar till Dren:** `Anvandarguide.html` (den korta tidigare guiden i roten) är nu
      överlappad av `Anvandarmanual.pdf`. Filen är otrackad och raderas INTE utan besked.
-  2. ~~Kör `setup_autopush.bat`~~ – **auto-push ÄR aktiv på den här datorn** (verifierat
-     2026-07-31: den committade mitt på ett pågående arbete som "Uppdatering via Cowork …" och
-     startade en `pull --rebase` som konfliktade i `state/prices.json`, `price_history.json` och
-     `news_feed.json`. Konflikterna löstes med den färskare lokala versionen). **Fälla:** kör
-     aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt samtidigt som actionen skriver samma filer
-     – auto-pushen fastnar då i en rebase och lämnar konfliktmarkörer i JSON:en, vilket i sin tur
-     får dashboarden att visa tom Kurser-vy. Kontrollera `git status` innan du felsöker appen.
+  2. **AUTO-PUSH ÄR AVSTÄNGD sedan 2026-08-02.** Den schemalagda uppgiften `VeckoAgent AutoPush`
+     (`auto_push.bat`, var 30:e min) är `Disabled` – den poppade upp ett konsolfönster var
+     halvtimme. **Pusha manuellt med `push.bat` efter varje session.** Slå på igen med
+     `Enable-ScheduledTask -TaskName "VeckoAgent AutoPush"`.
+     Notera för framtida felsökning: commitar som heter *"Uppdatering via Cowork …"* kommer från
+     **`push.bat`** (manuell), inte från auto-pushen, som skriver *"Auto-push …"* och loggar till
+     `auto_push.log`. Blanda inte ihop dem – auto-pushen avbryter dessutom på helger och utanför
+     07–19, så den kan se ut att ha kört utan att ha gjort något.
+     **Fälla som kvarstår oavsett:** kör aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt
+     samtidigt som actionen skriver samma filer – en `pull --rebase` fastnar då i konflikt.
+     `state/dashboard.json` och `search-index.json` är skyddade via `.gitattributes` (`-merge`),
+     de övriga JSON-filerna är det inte. Kontrollera `git status` innan du felsöker appen.
   3. Kontrollera `feeds`-fältet i `state/news_feed.json`: ett flöde som är verkligt dött visar
      nu "HTTP xxx – båda försöken" (ett enstaka fel görs om automatiskt sedan 2026-08-02).
   4. Kör om backtestet när universum eller nivåer ändras:
@@ -267,8 +284,11 @@ ta bort skyddet.
   pekar `previousClose` i äldre filer ~en vecka bakåt, och en veckorörelse läses som en dagsrörelse.
 - **Bumpa `schemaVersion` bara när ett fälts BETYDELSE ändras** – inte vid vanliga ändringar.
 - **Kör aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt** samtidigt som GitHub-actionen skriver samma
-  filer: auto-pushen fastnar i en rebase och lämnar konfliktmarkörer i JSON:en, vilket tömmer
-  Kurser-vyn i dashboarden. Kontrollera `git status` innan du felsöker appen.
+  filer: nästa `pull --rebase` (t.ex. via `push.bat`) fastnar då i konflikt och lämnar
+  konfliktmarkörer i JSON:en, vilket tömmer Kurser-vyn i dashboarden. Gäller även efter att
+  auto-pushen stängdes av 2026-08-02 – det är rebasen som är problemet, inte vem som startar den.
+  `state/dashboard.json` och `search-index.json` är skyddade via `.gitattributes` (`-merge`);
+  övriga JSON-filer är det inte. Kontrollera `git status` innan du felsöker appen.
 
 ---
 

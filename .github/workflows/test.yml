@@ -44,6 +44,7 @@ jobs:
           node --check assets/vrender.js
           node --check assets/app.js
           node --check assets/theme.js
+          node --check assets/settings.js
           node --check sw.js
           node --check .github/scripts/build-dashboard.mjs
           node --check .github/scripts/fetch-prices.mjs

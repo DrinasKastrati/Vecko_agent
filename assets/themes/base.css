@@ -134,6 +134,63 @@ a:hover{text-decoration:underline}
 ::-webkit-scrollbar-track{background:transparent}
 input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:var(--focus);outline-offset:2px}
 
+/* ================= Användarinställningar (assets/settings.js) =================
+   VSettings skriver data-attribut på <html>; allt nedan är rena token-
+   överskrivningar, så inställningarna fungerar i samtliga teman utan att något
+   tema behöver känna till dem. */
+
+/* Textstorlek: zoom på innehållsytan skalar allt proportionerligt utan att röra
+   toppraden eller menyn. Alternativet – att göra om ~250 px-värden till rem –
+   vore en refaktor med långt större risk än nyttan. */
+:root[data-textsize="sm"] .wrap{zoom:.92}
+:root[data-textsize="lg"] .wrap{zoom:1.12}
+
+/* Täthet: base.css uttrycker redan luften i tokens, så kompakt läge är bara
+   nya värden på dem. */
+:root[data-density="compact"]{
+  --gap:9px;
+  --card-pad:11px 12px;
+  --view-pad:13px 15px 17px;
+  --hold-pad:12px;
+  --wrap-pad:14px 18px 48px;
+  --rail-pad:10px 13px 12px;
+  --tbl-pad:6px 9px;
+}
+:root[data-density="compact"] section{margin-top:14px}
+:root[data-density="compact"] .sub{margin:16px 0 9px}
+:root[data-density="compact"] .hold-tickers{margin:7px 0 9px}
+
+/* Animationer av: gäller även vyövergångarna, som annars ligger i CSS. */
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after{animation-duration:.001s!important;transition-duration:.001s!important}
+:root[data-motion="off"] ::view-transition-old(page),
+:root[data-motion="off"] ::view-transition-new(page){animation:none!important}
+
+/* ---- inställningsvyn ---- */
+.set-group{margin:0 0 22px}
+.set-g-title{font-family:var(--display);font-size:var(--sub-size,13px);letter-spacing:var(--sub-spacing,.02em);
+  text-transform:var(--sub-transform,none);color:var(--sub-color,var(--text));font-weight:800;
+  margin:0 0 10px;padding-bottom:var(--sub-pad,0);border-bottom:var(--sub-rule,none)}
+.set-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-start;justify-content:space-between;
+  padding:13px 0;border-bottom:1px solid var(--border)}
+.set-row:last-child{border-bottom:none}
+.set-lbl{min-width:0;flex:1 1 260px}
+.set-lbl b{display:block;font-size:14px;color:var(--text);font-weight:700}
+.set-help{display:block;font-size:12.3px;color:var(--muted);margin-top:3px;max-width:62ch}
+.set-help code{font-family:var(--mono);font-size:11.5px;background:var(--panel3);padding:1px 5px;border-radius:4px}
+/* flex:1 1 auto + min-width:0 – annars kan raden inte krympa och en inställning
+   med många alternativ (startvyn har elva) svämmar ut åt höger i stället för
+   att radbryta. */
+.set-opts{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 auto;min-width:0;justify-content:flex-end}
+.set-opt{cursor:pointer;border:1px solid var(--border2);background:var(--btn-bg);color:var(--muted);
+  border-radius:var(--r);padding:8px 13px;font-family:var(--sans);font-size:13px;font-weight:600;
+  transition:.14s;min-height:40px;letter-spacing:var(--btn-spacing,0);text-transform:var(--btn-transform,none)}
+.set-opt:hover{border-color:var(--accent-primary);color:var(--text)}
+.set-opt.on{background:var(--accent-primary);border-color:var(--accent-primary);color:var(--on-accent)}
+.set-danger{color:var(--red);border-color:var(--red-line)}
+.set-danger:hover{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+
 /* ================= Skal: topprad + meny + innehåll ================= */
 .shell{display:block;min-height:100vh}
 /* Toppraden och menyn ligger i EN sticky behållare – annars måste menyns
@@ -739,18 +796,23 @@ button.pill--lnk:hover{border-color:var(--accent-primary);color:var(--accent-pri
   #updated,#pxBadge,.kbd-hint{display:none}
   .btn-lbl{display:none}
   .btn{padding:9px 11px;min-height:40px}
-  .side-brand .sub{display:none}
-  .side-brand h1{font-size:13.5px}
-  .side-brand .logo{width:26px;height:26px}
+  /* Ikonen räcker som identitet på mobil. Med titeltexten kvar radbryts
+     toppraden för en enda knapp och kostar 45 px skärmhöjd (101 → 56). */
+  .side-brand .sub,.side-brand h1{display:none}
+  .side-brand .logo{width:28px;height:28px}
   /* .spacer skulle knuffa allt efter sig till en egen rad – toppraden blev 172px
      hög (fyra rader). Utan den ryms rad 1 på en enda rad. */
   .spacer{display:none}
   .status{margin-left:auto}
-  /* temaväxlaren får en egen, tunn rad i stället för att spränga rad 1 */
-  .theme-ctl{order:9;width:100%;gap:6px}
-  .theme-switch{flex:1}
-  .theme-switch button{flex:1;padding:10px 4px;min-height:40px;font-size:11px}
-  .mode-btn{width:46px;height:40px;flex:none}
+  /* Temaknapparna bor i Inställningar på mobil – de tog en hel extra rad (172 →
+     103 px topprad) och nås nu via kugghjulet. Lägesknappen får stanna: att
+     snabbt växla ljust/mörkt är något man gör mitt i användningen. */
+  .theme-switch{display:none}
+  .theme-ctl{gap:6px}
+  .mode-btn{width:44px;height:40px;flex:none}
+  .set-row{padding:14px 0}
+  .set-opts{width:100%}
+  .set-opt{flex:1 1 auto;min-height:44px}
 
   .subnav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:70;height:auto;max-width:none;
     padding:5px 4px calc(5px + env(safe-area-inset-bottom));gap:2px;
