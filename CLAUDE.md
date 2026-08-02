@@ -93,6 +93,14 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   Fulltextsökningen läser `state/search-index.json` (en hämtning, lat laddad) i stället för 57.
   **Taken i `build-dashboard.mjs` är satta efter vad appen FAKTISKT läser** (bara `scouts[0]`
   renderas) – höj dem där om en vy börjar läsa längre bak i en lista.
+- **Hem har TVÅ detaljnivåer (sedan 2026-08-02).** `data-hemmode` på `<html>`: `enkel`
+  (STANDARD) renderar `VRender.renderSimple()` – klarspråk, svarar på "behöver du göra något i
+  dag?", ingen högerspalt. `detaljerad` är den gamla vyn med innehavskort och rail. Modellen
+  byggs i `app.js:simpleModel()`; renderfunktionen är REN och testas utan DOM. Växeln sitter i
+  Hem-vyns rubrikrad och skriver via `VSettings`, och app.js lyssnar på attributet med en
+  MutationObserver i stället för att koppla ihop modulerna. **Uppgiftslogiken är hela poängen:
+  systemet lägger inga ordrar, så bara KÖP/SÄLJ räknas som "något att göra" – BEHÅLL gör det
+  aldrig.** Lägger du till en vy-variant: ändra aldrig `renderSimple` till att läsa DOM.
 - **Inställningar (sedan 2026-08-02):** `assets/settings.js` (`window.VSettings`) – vyn
   `installningar`, nås via kugghjulet i toppraden (medvetet INTE i menyn, elva flikar räcker).
   En deklarativ `SCHEMA`-tabell beskriver varje inställning; vyn RENDERAS ur tabellen, så en ny

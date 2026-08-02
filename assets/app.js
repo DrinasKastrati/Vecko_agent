@@ -193,6 +193,20 @@
     }
     buildLiveMap() { return this.liveMapFor(this.state.portfolio, this.state.dailies[0]); }
 
+    /* Enkel eller detaljerad Hem-vy. VSettings äger valet (localStorage, per
+       enhet) och speglar det till <html data-hemmode>. Läs alltid attributet –
+       då fungerar växlingen även om settings.js inte hunnit initiera. */
+    hemMode() {
+      const v = document.documentElement.getAttribute("data-hemmode");
+      return v === "detaljerad" ? "detaljerad" : "enkel";
+    }
+    // Markerar rätt knapp i växeln (aria-pressed styr både utseende och skärmläsare).
+    syncHemToggle() {
+      const cur = this.hemMode();
+      document.querySelectorAll("[data-hemmode-set]").forEach(b =>
+        b.setAttribute("aria-pressed", String(b.dataset.hemmodeSet === cur)));
+    }
+
     renderPxBadge() {
       const el = this.el("pxBadge"); if (!el) return;
       const p = this.state.prices;
@@ -659,12 +673,74 @@
     }
 
     // ---- Hem: handlingsytan (innehav + dagens beslut + vad som händer) ----
+    /* Modellen bakom enkla vyn. Samma state som den detaljerade vyn läser –
+       skillnaden är att allt plockas ned till namn, beslut och en mening.
+       Byggs här (DOM/state) så att VRender.renderSimple förblir ren. */
+    simpleModel() {
+      const S = this.state, P = this.P;
+      const SLEEVE = /XACT|SPY|indexsleeve|indexdel/i;
+      /* VAD som ägs kommer ur portfolj.md (sanningen om öppna positioner).
+         VAD SOM BESLUTADES kommer ur dagens rapport. De två är inte samma sak:
+         en LÄGE B-rapport kan sakna beslutsrader helt utan att innehavet ändrats,
+         och en tidig version av den här vyn påstod då "äger inget" trots att
+         portföljen hade en position. */
+      const bookOf = (label, portfolio, daily) => {
+        const live = this.liveMapFor(portfolio, daily);
+        return {
+          label,
+          accum: portfolio && portfolio.accum != null ? portfolio.accum : null,
+          holdings: ((portfolio && portfolio.holdings) || []).map(row => {
+            const name = this.P.stripMd(row["Aktie"] || "");
+            const ticker = this.P.stripMd(row["Yahoo-ticker"] || "");
+            const lv = live[(ticker || "").toUpperCase()];
+            return {
+              name, ticker,
+              since: lv && lv.pnlPct != null ? this.R.plainPct(lv.pnlPct) : "",
+              isSleeve: SLEEVE.test(ticker) || SLEEVE.test(name)
+            };
+          })
+        };
+      };
+      const books = [bookOf("Nordiska aktier", S.portfolio, S.dailies[0])];
+      if (S.portfolioUs) books.push(bookOf("Amerikanska aktier", S.portfolioUs, S.usDailies[0]));
+
+      // Dagens beslut, oavsett om aktien ligger i portföljen än.
+      const actions = [];
+      [[S.dailies[0], "n"], [S.usDailies[0], "u"]].forEach(([d]) => {
+        ((d && d.holdings) || []).forEach(h => {
+          if (!h.decision) return;
+          actions.push({ decision: h.decision, ticker: h.ticker, name: h.name,
+            why: this.P.stripMd(h.motivation || "") });
+        });
+      });
+
+      const nAcc = S.portfolio && S.portfolio.accum, uAcc = S.portfolioUs && S.portfolioUs.accum;
+      const accs = [nAcc, uAcc].filter(v => v != null);
+      const nx = P.nextRoutineRun(new Date());
+      return {
+        totalAccum: accs.length ? accs.reduce((a, b) => a + b, 0) / accs.length : null,
+        books, actions,
+        blocked: !!(S.dailies[0] && S.dailies[0].blocked),
+        dateLabel: (S.dailies[0] && S.dailies[0].dateISO) || "",
+        next: nx ? `${nx.label} ${nx.when}` : ""
+      };
+    }
+
     renderHem() {
       const S = this.state, R = this.R, P = this.P;
       const main = this.el("hemMain"), rail = this.el("hemRail");
       if (!main || !rail) return;
       const st = this.el("hemStatus");
       if (st) st.innerHTML = R.renderStatusRow(S.dailies[0] || null, P.nextRoutineRun(new Date()));
+
+      /* Enkel vy: samma data, klarspråk, ingen högerspalt. Läget ligger som
+         data-attribut på <html> (skrivet av VSettings) så CSS kan dölja det
+         som bara hör till den detaljerade vyn. */
+      if (this.hemMode() === "enkel") {
+        main.innerHTML = R.renderSimple(this.simpleModel());
+        rail.innerHTML = "";
+        return;
+      }
 
       // Vänsterspalten: båda böckernas innehav, beslut och pending-planer.
       const nAcc = S.portfolio && S.portfolio.accum;
@@ -1044,6 +1120,29 @@
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
+
+      /* Växeln i Hem-vyn. Den skriver via VSettings så valet hamnar på samma
+         ställe som allt annat användaren ställt in – ingen egen lagring. */
+      document.querySelectorAll("[data-hemmode-set]").forEach(b =>
+        b.addEventListener("click", () => {
+          const v = b.dataset.hemmodeSet;
+          if (root.VSettings) root.VSettings.set("hemmode", v);
+          else document.documentElement.setAttribute("data-hemmode", v);
+        }));
+      /* Läget kan också ändras inne i Inställningar. Observera attributet i
+         stället för att koppla ihop modulerna – app.js behöver aldrig veta HUR
+         det ändrades, bara ATT det gjorde det. */
+      if (root.MutationObserver) {
+        let last = this.hemMode();
+        new MutationObserver(() => {
+          const now = this.hemMode();
+          if (now === last) return;
+          last = now;
+          this.syncHemToggle();
+          this.renderHem();
+        }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-hemmode"] });
+      }
+      this.syncHemToggle();
       const ab = this.el("analysBtn"), ai = this.el("analysInput");
       if (ab) ab.addEventListener("click", () => this.analyse(ai ? ai.value : ""));
       if (ai) ai.addEventListener("keydown", e => { if (e.key === "Enter") this.analyse(ai.value); });

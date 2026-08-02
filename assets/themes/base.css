@@ -290,6 +290,59 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 .lead,.legend{display:none}
 .kpi-value.num,.stat-v,.px-pr,.hold-grid .v,.tbl td,.tbl th,.report td{font-variant-numeric:tabular-nums}
 
+/* ================= Hem: enkel vy =================
+   Hem har två detaljnivåer. Valet ligger som data-hemmode på <html> (skrivet av
+   assets/settings.js) så att både CSS och app.js kan läsa det utan att känna
+   varandra. Reglerna nedan är rena token-användningar – inga hårdkodade färger,
+   så vyn följer alla fyra teman i både ljust och mörkt läge.
+
+   I enkelt läge döljs teckenförklaringen och den detaljerade ingressen: de
+   förklarar en kortlayout som inte visas då. Högerspalten renderas tom, så
+   rutnätet fälls ihop till en spalt.                                        */
+.hemtoggle{display:flex;gap:4px;margin-left:auto}
+.hemtoggle .btn[aria-pressed="true"]{background:var(--btn-on-bg,var(--accent-soft));
+  color:var(--btn-fg-hover,var(--text));border-color:var(--accent-line,var(--border))}
+[data-hemmode="enkel"] #view-hem .legend,
+[data-hemmode="enkel"] #view-hem .lead--full{display:none}
+[data-hemmode="enkel"] #view-hem .hem-grid{grid-template-columns:minmax(0,1fr)}
+
+.sv{display:grid;gap:14px;max-width:70ch}
+.sv-card,.sv-verdict{background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:16px 18px;box-shadow:var(--shadow-sm)}
+.sv-card h3{margin:0 0 8px;font-family:var(--display);font-size:14px;font-weight:800;color:var(--text)}
+.sv-card p,.sv-verdict p{margin:6px 0 0;color:var(--text-soft);font-size:13.5px;line-height:1.6}
+.sv-date{font-weight:400;color:var(--faint);font-size:11.5px;margin-left:6px}
+
+/* Uppgiftsrutan: grön när inget behöver göras, bärnsten när något ska handlas. */
+.sv-verdict{border-left:4px solid var(--green)}
+.sv-verdict--act{border-left-color:var(--amber);background:var(--amber-soft,var(--panel2))}
+.sv-verdict--ok{background:var(--green-soft,var(--panel2))}
+.sv-q{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.sv-a{font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);margin-top:2px}
+.sv-todo{margin:10px 0 0;padding-left:20px;display:grid;gap:6px}
+.sv-todo li{font-size:14px;color:var(--text);line-height:1.55}
+.sv-note{font-size:12.5px}
+
+.sv-big{font-family:var(--display);font-size:34px;font-weight:800;line-height:1.1;
+  font-variant-numeric:tabular-nums;color:var(--text)}
+.sv-big.pos{color:var(--green)} .sv-big.neg{color:var(--red)}
+.sv-books{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:5px;font-size:13px;color:var(--text-soft)}
+.sv-books .pos{color:var(--green)} .sv-books .neg{color:var(--red)}
+
+.sv-own,.sv-log{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.sv-own li,.sv-log li{font-size:14px;color:var(--text);line-height:1.5;
+  padding-left:15px;position:relative}
+.sv-own li::before,.sv-log li::before{content:var(--bullet,"▸");position:absolute;left:0;
+  color:var(--accent-primary);font-size:10px;top:4px}
+.sv-since{color:var(--text-soft);font-size:12.5px}
+.sv-tag{display:block;color:var(--faint);font-size:12px;margin-top:2px}
+.sv-empty{color:var(--text-soft);font-size:13.5px;margin:0}
+.sv-warn{color:var(--amber);font-size:13px;margin:0 0 8px}
+.sv-next{color:var(--text-soft);font-size:13px}
+.sv-words{font-size:13px;color:var(--text-soft)}
+.sv-words summary{cursor:pointer;color:var(--blue);font-weight:600}
+.sv-words ul{margin:8px 0 0;padding-left:20px;display:grid;gap:5px;line-height:1.55}
+
 /* ================= Hem ================= */
 .hem-grid{display:grid;grid-template-columns:minmax(0,var(--hem-ratio,2.15fr)) minmax(300px,1fr);
   gap:var(--hem-gap,18px);align-items:start}

@@ -7,6 +7,42 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (enkel vy – Hem svarar på frågan i stället för att visa allt):
+  **Problemet.** Hem-vyn visade allt systemet vet: två böcker, ett kort per aktie med kurs,
+  stopp, mål, positionsmätare och motivering, plus en högerspalt med bevakning, radar, nyheter
+  och lärdomar. Korrekt, men den krävde att man kunde läsa den. Den vanligaste frågan – *behöver
+  jag göra något i dag?* – gick inte att besvara utan att tolka fem kort.
+  **Lösningen.** `data-hemmode` på `<html>` med två lägen. `enkel` (STANDARD) renderar
+  `VRender.renderSimple()`: uppgiftsrutan först, sedan avkastning, innehav i klarspråk, dagens
+  händelser som meningar och en utfällbar ordlista. `detaljerad` är den gamla vyn, oförändrad.
+  **Uppgiftslogiken är hela poängen.** Systemet är beslutsSTÖD och lägger inga ordrar – Dren
+  utför affären. Därför räknas **bara KÖP och SÄLJ** som "något att göra i dag"; BEHÅLL gör det
+  aldrig, oavsett hur många innehav som ompröv­ades. Rutan blir grön ("Nej") eller bärnstensfärgad
+  ("Ja – N affärer att lägga") och listar i så fall exakt vilka.
+  **INGEN TOLFTE FLIK.** CLAUDE.md slår fast att elva flikar räcker (det är därför Inställningar
+  ligger bakom kugghjulet). Enkla vyn är därför ett LÄGE på Hem, inte en egen vy – växeln sitter
+  i Hem-vyns rubrikrad och samma val finns under kugghjulet.
+  **Arkitektur.** `renderSimple` är REN: den tar en modell och returnerar HTML, utan att röra
+  DOM eller state. Modellen byggs i `app.js:simpleModel()`. Läget skrivs av `VSettings` (samma
+  localStorage som allt annat användaren ställt in) och app.js reagerar med en MutationObserver
+  på attributet – modulerna behöver aldrig känna varandra. All CSS uttrycks i befintliga tokens,
+  så vyn följer alla fyra teman i både ljust och mörkt läge utan att något tema känner till den.
+  **Två fel som bara syntes mot RIKTIG data.** Den första modellen läste innehaven ur dagens
+  rapport i stället för ur `portfolj.md`. En LÄGE B-rapport kan sakna beslutsrader helt, och vyn
+  påstod då **"Roboten äger inget just nu"** trots att portföljen hade Saab öppen – rakt motsatt
+  sanningen. Rättat: VAD som ägs kommer ur portföljen, VAD som beslutades ur rapporten. Dessutom
+  skrevs procenten som "+2.04 %" med punkt; enkla vyn har nu ett eget `plainPct` med decimalkomma
+  och en decimal. `signPct` är oförändrad – de vyerna står bredvid tabeller där punkt är normen.
+  Båda fångades genom att rendera vyn mot `state/dashboard.json` och läsa texten, inte genom
+  tester – därför finns de nu som påståenden i `tests/sim.mjs`.
+  **Tester.** 17 nya i `tests/run.mjs` (363) som låser skillnaden mellan "uppgift" och
+  "händelse", escaping av rapporttext, tomt anrop och att `null`-avkastning inte blir `NaN`.
+  `tests/theme.mjs` (89) kontrollerar att attributet finns i schemat, i base.css och i markupen.
+  `tests/sim.mjs` (109) bootar hela appen mot riktig data och testar BÅDA lägena genom att klicka
+  på växeln – den fångade direkt att de gamla Hem-testerna antog detaljerat läge.
+  **Följdändringar.** `Kom-igang.html` fick ett nytt avsnitt 4 (och omnumrering av 5–10), den
+  dagliga rutinen beskrivs nu i två varianter, och inställningstabellen fick en rad.
+
 - ✅ 2026-08-02 (HTML-städning – tre stubbar bort, manualernas CSS bruten ut, en sw.js-bugg):
   **`index_2/3/4.html` raderade.** De var 18-raders stubbar som vidarebefordrade till
   `index.html?theme=X` och fanns för gamla bokmärken. De kunde INTE slås ihop till en fil –

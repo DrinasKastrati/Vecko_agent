@@ -101,8 +101,15 @@
       <div id="alerts"></div>
 
       <section class="view active" id="view-hem" data-view="hem">
-        <div class="sec-head"><h2>Hem</h2><span class="hint">innehav, dagens beslut &amp; vad som händer härnäst</span></div>
-        <p class="lead">Vad roboten äger just nu och vad den bestämde i dag. Varje kort visar en aktie:
+        <div class="sec-head"><h2>Hem</h2><span class="hint">innehav, dagens beslut &amp; vad som händer härnäst</span>
+          <div class="hemtoggle" role="group" aria-label="Detaljnivå på Hem">
+            <button type="button" class="btn" data-hemmode-set="enkel" aria-pressed="true"
+              title="Klarspråk: behöver du göra något, hur går det, vad hände i dag">Enkel</button>
+            <button type="button" class="btn" data-hemmode-set="detaljerad" aria-pressed="false"
+              title="Alla kort med kurser, stopp, mål och positionsmätare">Detaljerad</button>
+          </div>
+        </div>
+        <p class="lead lead--full">Vad roboten äger just nu och vad den bestämde i dag. Varje kort visar en aktie:
           dagens beslut, hur den ligger till mot stopp och mål, och varför.</p>
         <div class="legend">
           <span class="lg"><span class="sw sw--kop"></span><b>KÖP</b> ny position</span>

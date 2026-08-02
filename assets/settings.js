@@ -41,6 +41,10 @@
       help: "Kompakt minskar marginaler och luft – mer på skärmen, tätare intryck.",
       options: [["normal", "Normal"], ["compact", "Kompakt"]] },
 
+    { id: "hemmode", group: "Start", label: "Hem-vyns detaljnivå", def: "enkel", attr: "data-hemmode",
+      help: "Enkel svarar i klarspråk på om du behöver göra något i dag. Detaljerad visar alla kort med kurser, stopp, mål och positionsmätare. Går också att växla direkt i Hem-vyn.",
+      options: [["enkel", "Enkel"], ["detaljerad", "Detaljerad"]] },
+
     { id: "startview", group: "Start", label: "Vy vid start", def: "hem", special: "startview",
       help: "Vilken vy som öppnas när du laddar sidan utan att ha klickat dig någonstans.",
       options: [] /* fylls ur menyn */ },

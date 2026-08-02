@@ -186,6 +186,18 @@ for (const t of ["deck", "nordlys", "terminal", "enkel"]) {
 /* Manualernas gemensamma stil ligger i assets/manual.css (utbruten 2026-08-02).
    Testet larmar om någon återinför en full kopia av stilmallen i en manual –
    det var så de två blocken glidit isär från början. */
+/* Hem-vyns detaljnivå styrs av data-hemmode. Attributet måste finnas i
+   settings-schemat (annars går läget inte att spara) OCH i base.css (annars
+   fälls högerspalten aldrig ihop i enkelt läge). */
+{
+  const set = readFileSync(join(root, "assets", "settings.js"), "utf8");
+  const base = readFileSync(join(root, "assets", "themes", "base.css"), "utf8");
+  const idx = readFileSync(join(root, "index.html"), "utf8");
+  ok("hemmode: finns i settings-schemat", /id:\s*"hemmode"/.test(set) && set.includes('attr: "data-hemmode"'));
+  ok("hemmode: base.css reagerar på attributet", base.includes('[data-hemmode="enkel"]'));
+  ok("hemmode: växeln finns i index.html", (idx.match(/data-hemmode-set=/g) || []).length === 2);
+}
+
 ok("assets/manual.css finns", existsSync(join(root, "assets", "manual.css")));
 const manualCss = existsSync(join(root, "assets", "manual.css"))
   ? readFileSync(join(root, "assets", "manual.css"), "utf8") : "";

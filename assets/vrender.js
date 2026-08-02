@@ -822,7 +822,112 @@
     return `<div class="al-wrap"><div class="al-head">⚠ Aktiva intradag-signaler (${active.length})</div>${items}${monHtml}${histHtml}</div>`;
   }
 
-  const API = { esc, signPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge,
+  /* ---- ENKEL VY -----------------------------------------------------------
+     Hem-vyn i klarspråk. Samma data som den detaljerade vyn, men den svarar på
+     tre frågor i tur och ordning i stället för att visa allt på en gång:
+
+       1. Behöver JAG göra något?   (systemet handlar inte själv – Dren lägger
+                                     ordern, så KÖP/SÄLJ i dag = en uppgift)
+       2. Hur går det?
+       3. Vad hände i dag, och vad händer härnäst?
+
+     Inga tabeller, inga förkortningar, ingen jargong. Ord som "P/L", "sleeve"
+     och "entry" är medvetet utskrivna i löptext. Ren funktion: tar en färdig
+     modell (byggd i app.js) och returnerar HTML – därför testbar utan DOM. */
+  var SIMPLE_VERB = { "KÖP": "köpte", "SÄLJ": "sålde", "BEHÅLL": "behöll",
+                      "AVVAKTA": "avvaktade", "PLAN": "planerade" };
+
+  /* Enkla vyn skriver tal som en svensk läser dem: decimalKOMMA, en decimal.
+     Resten av appen använder signPct (punkt, två decimaler) och ändras INTE –
+     de vyerna står bredvid tabeller och grafer där punktnotationen är normen. */
+  function plainPct(n){
+    if (n == null || isNaN(n)) return "–";
+    return (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(Number(n)).toFixed(1).replace(".", ",") + " %";
+  }
+
+  function renderSimple(m){
+    m = m || {};
+    const books = m.books || [];
+    const todo = (m.actions || []).filter(a => a.decision === "KÖP" || a.decision === "SÄLJ");
+    const held = [];
+    books.forEach(b => (b.holdings || []).forEach(h => held.push(Object.assign({ book: b.label }, h))));
+
+    /* 1. Uppgiften. Roboten är beslutsSTÖD – den lägger inga ordrar. Står det
+          KÖP eller SÄLJ i dagens rapport är det något Dren faktiskt ska göra. */
+    let verdict;
+    if (todo.length){
+      verdict = `<div class="sv-verdict sv-verdict--act">
+        <div class="sv-q">Behöver du göra något i dag?</div>
+        <div class="sv-a">Ja – ${todo.length} ${todo.length === 1 ? "affär" : "affärer"} att lägga.</div>
+        <ul class="sv-todo">${todo.map(a =>
+          `<li><b>${esc(a.decision === "KÖP" ? "Köp" : "Sälj")} ${esc(a.name || a.ticker)}</b>${
+            a.why ? ` – ${esc(truncate(a.why, 150))}` : ""}</li>`).join("")}</ul>
+        <p class="sv-note">Roboten lägger inga ordrar själv. Den föreslår, du bestämmer.</p>
+      </div>`;
+    } else {
+      verdict = `<div class="sv-verdict sv-verdict--ok">
+        <div class="sv-q">Behöver du göra något i dag?</div>
+        <div class="sv-a">Nej.</div>
+        <p class="sv-note">${held.length
+          ? "Roboten behåller allt den äger. Att inte handla är ett aktivt beslut, inte en utebliven insats."
+          : "Roboten äger inget just nu och har inte hittat något värt att köpa."}</p>
+      </div>`;
+    }
+
+    /* 2. Hur går det. Ett tal, en mening. */
+    const acc = m.totalAccum;
+    const accCls = acc == null ? "" : acc > 0 ? "pos" : acc < 0 ? "neg" : "";
+    const perBook = books.filter(b => b.accum != null).map(b =>
+      `<li>${esc(b.label)}: <b class="${b.accum > 0 ? "pos" : b.accum < 0 ? "neg" : ""}">${plainPct(b.accum)}</b></li>`).join("");
+    const howsit = `<div class="sv-card">
+      <h3>Hur går det?</h3>
+      <div class="sv-big ${accCls}">${acc == null ? "–" : plainPct(acc)}</div>
+      <p>${acc == null
+        ? "Ingen avkastning uträknad ännu – det behövs minst en avslutad affär."
+        : "Så mycket har robotens affärer gett totalt sedan starten, efter courtage."}</p>
+      ${perBook ? `<ul class="sv-books">${perBook}</ul>` : ""}
+    </div>`;
+
+    /* 3. Vad roboten äger, i klarspråk. */
+    const ownList = held.length
+      ? `<ul class="sv-own">${held.map(h => {
+          const sinceTxt = h.since ? ` <span class="sv-since">${esc(h.since)} sedan köpet</span>` : "";
+          const sleeve = h.isSleeve
+            ? ` <span class="sv-tag">indexfond – här parkeras pengar som inte ligger i enskilda aktier</span>` : "";
+          return `<li><b>${esc(h.name || h.ticker)}</b>${sinceTxt}${sleeve}</li>`;
+        }).join("")}</ul>`
+      : `<p class="sv-empty">Inget innehav just nu. Pengarna står i indexfonden.</p>`;
+    const owns = `<div class="sv-card"><h3>Vad roboten äger</h3>${ownList}</div>`;
+
+    /* 4. Dagens händelser som meningar. */
+    const acts = (m.actions || []);
+    const happened = acts.length
+      ? `<ul class="sv-log">${acts.map(a =>
+          `<li>Roboten <b>${esc(SIMPLE_VERB[a.decision] || String(a.decision || "").toLowerCase())}</b> ${esc(a.name || a.ticker)}${
+            a.decision === "AVVAKTA" ? " eftersom kursen inte gick att bekräfta" : ""}.</li>`).join("")}</ul>`
+      : `<p class="sv-empty">Inga beslut fattade i dag.</p>`;
+    const today = `<div class="sv-card">
+      <h3>Vad hände i dag${m.dateLabel ? ` <span class="sv-date">${esc(m.dateLabel)}</span>` : ""}</h3>
+      ${m.blocked ? `<p class="sv-warn">Roboten kunde inte bekräfta alla kurser och avstod därför från kursbaserade beslut. Det är avsiktligt – hellre inget beslut än ett på osäkra siffror.</p>` : ""}
+      ${happened}
+    </div>`;
+
+    const next = m.next
+      ? `<div class="sv-next">Roboten tittar till portföljen igen <b>${esc(m.next)}</b>.</div>` : "";
+
+    const words = `<details class="sv-words"><summary>Vad betyder orden?</summary>
+      <ul>
+        <li><b>Köp / Sälj / Behåll</b> – vad roboten tycker att du ska göra med en aktie i dag.</li>
+        <li><b>Avvakta</b> – kursen kunde inte bekräftas mot en pålitlig källa, så roboten avstår hellre än gissar.</li>
+        <li><b>Stopp</b> – kursen där en förlorande position säljs, bestämd i förväg.</li>
+        <li><b>Mål</b> – kursen där vinsten tas hem.</li>
+        <li><b>Indexfond</b> – pengar utan eget case parkeras i en fond som följer börsen, i stället för att ligga still.</li>
+      </ul></details>`;
+
+    return `<div class="sv">${verdict}${howsit}${owns}${today}${next}${words}</div>`;
+  }
+
+  const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,

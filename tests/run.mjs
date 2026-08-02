@@ -64,6 +64,57 @@ ok("clamp renders full text", VR.clamp("abc def ghi", 2).includes("abc def ghi")
 ok("clamp empty", VR.clamp("", 3) === "" && VR.clamp(null, 3) === "");
 ok("clamp has toggle", VR.clamp("text", 3).includes("clamp-more"));
 ok("tickerPill", VR.tickerPill("NVDA").includes('data-goto-ticker="NVDA"'));
+
+/* ---- enkel vy (renderSimple) ---------------------------------------------
+   Vyns hela poäng är att svara på OM användaren måste göra något. Systemet
+   lägger inga ordrar, så KÖP/SÄLJ i dagens rapport är en uppgift för Dren –
+   testerna nedan låser just den skillnaden. */
+const svHold = { name: "Volvo B", ticker: "VOLV-B.ST", decision: "BEHÅLL", since: "+3,2 %" };
+ok("renderSimple: inget att göra", (() => {
+  const h = VR.renderSimple({ books: [{ label: "Nordiska aktier", accum: 2.5, holdings: [svHold] }], actions: [] });
+  return h.includes("Behöver du göra något") && h.includes(">Nej.<") &&
+         h.includes("sv-verdict--ok") && !h.includes("sv-verdict--act");
+})());
+ok("renderSimple: köp blir en uppgift", (() => {
+  const h = VR.renderSimple({
+    books: [{ label: "Nordiska aktier", accum: 0, holdings: [svHold] }],
+    actions: [{ decision: "KÖP", ticker: "ERIC-B.ST", name: "Ericsson B", why: "Orderrekyl efter rapport" }] });
+  return h.includes("sv-verdict--act") && h.includes("1 affär att lägga") &&
+         h.includes("Köp Ericsson B") && h.includes("Orderrekyl");
+})());
+ok("renderSimple: flera affärer böjs rätt", VR.renderSimple({ actions: [
+  { decision: "KÖP", name: "A" }, { decision: "SÄLJ", name: "B" }] }).includes("2 affärer att lägga"));
+ok("renderSimple: BEHÅLL skapar ingen uppgift men syns i loggen", (() => {
+  const h = VR.renderSimple({ actions: [{ decision: "BEHÅLL", name: "Volvo B" }] });
+  return h.includes(">Nej.<") && h.includes("behöll</b> Volvo B");
+})());
+ok("renderSimple: avvakta förklaras i klartext", VR.renderSimple({
+  actions: [{ decision: "AVVAKTA", name: "SKF B" }] }).includes("kursen inte gick att bekräfta"));
+ok("renderSimple: indexdelen förklaras", VR.renderSimple({ books: [{ label: "N", holdings: [
+  { name: "XACT OMXS30", ticker: "XACT-OMXS30.ST", isSleeve: true }] }] }).includes("indexfond"));
+ok("renderSimple: tomt innehav", VR.renderSimple({ books: [{ label: "N", holdings: [] }] }).includes("äger inget"));
+ok("renderSimple: blockerad datakälla varnar", VR.renderSimple({ blocked: true }).includes("kunde inte bekräfta alla kurser"));
+ok("renderSimple: avkastning saknas ger inte NaN", (() => {
+  const h = VR.renderSimple({ totalAccum: null });
+  return !/NaN/.test(h) && h.includes("minst en avslutad affär");
+})());
+ok("renderSimple: negativ avkastning märks", VR.renderSimple({ totalAccum: -4.2 }).includes('sv-big neg'));
+ok("plainPct: svenskt decimaltecken", VR.plainPct(2.04) === "+2,0 %" && VR.plainPct(-4.25) === "−4,3 %"
+  && VR.plainPct(0) === "0,0 %" && VR.plainPct(null) === "–" && VR.plainPct(NaN) === "–");
+ok("renderSimple: procent skrivs med komma, inte punkt", (() => {
+  const h = VR.renderSimple({ totalAccum: 2.04, books: [{ label: "Nordiska aktier", accum: 3.19, holdings: [] }] });
+  return h.includes("+2,0 %") && h.includes("+3,2 %") && !/\d\.\d+ %/.test(h);
+})());
+ok("signPct rörs inte av enkla vyn", VR.signPct(2.04) === "+2.04 %");
+ok("renderSimple: escapar rapporttext", (() => {
+  const h = VR.renderSimple({ actions: [{ decision: "KÖP", name: "<img src=x onerror=alert(1)>", why: "<b>x</b>" }] });
+  return !h.includes("<img") && !h.includes("<b>x</b>") && h.includes("&lt;img");
+})());
+ok("renderSimple: tål tomt anrop", (() => {
+  const h = VR.renderSimple();
+  return h.includes("sv-verdict") && !/undefined|NaN/.test(h);
+})());
+ok("renderSimple: ordlistan finns", VR.renderSimple({}).includes("Vad betyder orden?"));
 ok("tickerPill empty", VR.tickerPill("") === "");
 ok("renderHistory sortable", VR.renderHistory(p).includes("tbl--sort"));
 ok("renderPrices toolbar", VR.renderPrices({ generatedAt: new Date().toISOString(), quotes: { AAPL: { symbol: "AAPL", price: 200, marketTime: new Date().toISOString() } } }, null).includes("pxSearch"));

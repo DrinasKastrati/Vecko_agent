@@ -83,13 +83,44 @@ await new Promise(r => setTimeout(r, 600));
 ok("appen når Live-status", doc.getElementById("statusTxt").textContent === "Live");
 ok("fetch mockad och använd", fetchCount > 5);
 
-// Hem (ny startvy)
+// Hem (startvy). Två detaljnivåer – båda måste rendera mot RIKTIG data, inte
+// bara mot de syntetiska modellerna i tests/run.mjs.
 ok("hem är default-aktiv vy", doc.querySelector('.view[data-view="hem"]').classList.contains("active"));
-ok("hem: nordiska boken renderad", txt("hemMain").includes("Nordisk bok"));
-ok("hem: innehavskort med ticker", txt("hemMain").includes("SAAB-B.ST"));
 ok("hem: statusrad med nästa körning", txt("hemStatus").includes("status-row"));
-ok("hem: högerspalt med paneler", (txt("hemRail").match(/rail-card/g) || []).length >= 2);
-ok("hem: aktiva lärdomar-panelen (L-1)", txt("hemRail").includes("L-1"));
+
+// --- enkelt läge (standard) ---
+ok("hem/enkel är standardläget", doc.documentElement.getAttribute("data-hemmode") !== "detaljerad");
+ok("hem/enkel: uppgiftsrutan renderad", txt("hemMain").includes("Behöver du göra något"));
+ok("hem/enkel: svarar ja eller nej", /sv-verdict--(ok|act)/.test(txt("hemMain")));
+ok("hem/enkel: högerspalten tom", txt("hemRail").trim() === "");
+ok("hem/enkel: ingen rå jargong i uppgiftsrutan", !/P\/L|R\/R|sleeve/i.test(txt("hemMain")));
+/* Innehaven MÅSTE komma ur portfolj.md, inte ur dagsrapportens beslutslista.
+   En LÄGE B-rapport kan sakna beslutsrader helt – första versionen av vyn
+   påstod då "äger inget" trots att portföljen hade en öppen position. */
+ok("hem/enkel: äger-listan kommer ur portföljen", txt("hemMain").includes("Saab"));
+ok("hem/enkel: påstår inte tomt bo när portföljen har innehav",
+  !txt("hemMain").includes("Roboten äger inget just nu"));
+ok("hem/enkel: procent skrivs med svenskt komma", !/\d\.\d+ %/.test(txt("hemMain")));
+ok("hem/enkel: växeln finns med båda lägena",
+  doc.querySelectorAll("[data-hemmode-set]").length === 2);
+ok("hem/enkel: aktiv knapp markerad för skärmläsare",
+  doc.querySelector('[data-hemmode-set="enkel"]').getAttribute("aria-pressed") === "true");
+
+// --- detaljerat läge: växla via knappen, precis som en användare gör ---
+doc.querySelector('[data-hemmode-set="detaljerad"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+await new Promise(r => setTimeout(r, 50));
+ok("hem/detaljerad: attributet växlade", doc.documentElement.getAttribute("data-hemmode") === "detaljerad");
+ok("hem/detaljerad: nordiska boken renderad", txt("hemMain").includes("Nordisk bok"));
+ok("hem/detaljerad: innehavskort med ticker", txt("hemMain").includes("SAAB-B.ST"));
+ok("hem/detaljerad: högerspalt med paneler", (txt("hemRail").match(/rail-card/g) || []).length >= 2);
+ok("hem/detaljerad: aktiva lärdomar-panelen (L-1)", txt("hemRail").includes("L-1"));
+ok("hem/detaljerad: knappmarkeringen följde med",
+  doc.querySelector('[data-hemmode-set="detaljerad"]').getAttribute("aria-pressed") === "true");
+
+// tillbaka till standard så resten av simuleringen ser normalläget
+doc.querySelector('[data-hemmode-set="enkel"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+await new Promise(r => setTimeout(r, 50));
+ok("hem: växlar tillbaka till enkelt", txt("hemMain").includes("Behöver du göra något"));
 
 // Nordisk + Total + US
 ok("nordisk: KPI:er", txt("kpis").includes("Ackumulerad avkastning"));
@@ -308,7 +339,11 @@ if (resel && resel.options.length) {
 } else ok("retro: rapportväljaren laddar retron", false);
 
 // ---- Hem: hopp-länkar och ticker-pills ----
+// Högerspaltens "Visa allt"-knappar hör till DETALJERADE läget – enkla vyn har
+// medvetet ingen högerspalt. Växla dit innan de testas.
 dash.showView("hem");
+doc.querySelector('[data-hemmode-set="detaljerad"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+await new Promise(r => setTimeout(r, 50));
 const goto = doc.querySelector("#hemRail [data-goto-view]") || doc.querySelector("[data-goto-view]");
 if (goto) {
   const target = goto.dataset.gotoView;
