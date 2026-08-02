@@ -107,7 +107,14 @@ ok("förbyggd: Hem-vyn renderad med innehåll", dHem.length > 500);
 // sökindexet: EN hämtning, inte en per rapport
 const before = A.req.raw.length;
 const docs = await A.dash.searchDocs();
-ok("sök: indexet gav alla dokument", Array.isArray(docs) && docs.length === S.metas.length);
+/* Indexet är medvetet TAKAT till de senaste rapporterna (SEARCH_LIMIT i
+   build-dashboard.mjs) – annars växer en halvmegabytesfil in i git-historiken
+   varje dag. Testet kräver därför inte full täckning, men däremot att taket
+   redovisas: en tyst lucka i sökningen är värre än en synlig gräns. */
+ok("sök: indexet gav dokument", Array.isArray(docs) && docs.length > 0);
+ok(`sök: taket redovisas (${docs.length} av ${S.metas.length})`,
+  !!A.dash._searchMeta && A.dash._searchMeta.covered === docs.length && A.dash._searchMeta.total >= docs.length);
+ok("sök: täckningen är högst antalet rapporter", docs.length <= S.metas.length);
 ok(`sök: kostade 1 hämtning (blev ${A.req.raw.length - before})`, A.req.raw.length - before === 1);
 ok("sök: träffar hittas i indexet", A.dash.P.searchDocs(docs, "portfölj").length > 0);
 const cached = A.req.raw.length;

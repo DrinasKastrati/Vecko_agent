@@ -124,8 +124,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(120% 90% at 50% 0%,transparent 55%,var(--vignette) 100%)}
 .shell{position:relative;z-index:2}
 
-/* kommandoraden är en fast rad på 38px, menyn en funktionsrad under */
-.topbar{height:38px}
+/* Kommandoraden är en fast rad på 38px – men BARA på stor skärm. På mobil
+   radbryts toppraden till två rader och en låst höjd klipper den andra. */
+@media(min-width:861px){ .topbar{height:38px} }
 .subnav{align-items:stretch;counter-reset:navk}
 .subnav a{border-radius:0;letter-spacing:.09em;text-transform:uppercase}
 /* numrerade menyposter – siffran motsvarar kortkommandot (1–9) */

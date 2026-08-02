@@ -153,8 +153,10 @@
 .an-verdict{border:none;background:var(--amber-soft);font-weight:700}
 .lesson-id,.chip{border:none}
 
-/* mobil: menyn blir en app-liknande botten-bar med 5 stora ytor */
-@media(max-width:820px){
+/* Mobil: menyn blir en app-liknande botten-bar med 5 stora ytor.
+   Brytpunkten MÅSTE vara samma 860px som base.css använder – med 820 föll
+   spannet 821–860 mellan stolarna. */
+@media(max-width:860px){
   .subnav a{flex:1 1 0;min-width:0;flex-direction:column;gap:0;min-height:50px}
   .subnav a::after{font-size:12px}
 }

@@ -7,6 +7,29 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (mobilvyn – mätt, inte gissad): sökindexet takat till de 30 senaste
+  rapporterna (496 → 292 kB) eftersom filen byggs om varje gång en rapport pushas; taket
+  redovisas ovanför träfflistan så luckan aldrig är osynlig. Lightweight Charts verifierat mot
+  det RIKTIGA v4.2.0-bygget från CDN (14 kontroller: varje anropat API finns, riktig
+  price_history-data matas in). **Mobilvyn granskad med headless Chrome i en ram på exakt
+  390 CSS-px** – en diagnostiksida svepte 4 teman × 11 vyer och mätte det en skärmbild inte
+  visar. Tre verkliga fel hittades och åtgärdades:
+  **(1) Botten-baren hamnade på `top=115` i stället för längst ned.** `backdrop-filter` på
+  `.headwrap` gör elementet till *containing block* för `position:fixed`-barn – baren
+  positionerades relativt toppraden, inte viewporten. Infört i temarefaktorn samma dag när
+  toppraden och menyn lades i en gemensam behållare. Fix: `.headwrap{display:contents}` på
+  mobil, sticky och bakgrund flyttade till `.topbar`.
+  **(2) Toppraden var 172 px hög** (fyra rader) – `.spacer{flex:1}` knuffade allt efter sig till
+  egna rader. Fix: spacern döljs på mobil, varumärkesunderrubriken bort, temaväxlaren får en
+  egen tunn rad. 172 → 103 px.
+  **(3) Tryckytor på 19–32 px** (pillar, chips, "Visa mer", kryssrutor, sorteringsväljare) mot
+  riktlinjens ~44. Alla lyfta över 40.
+  Dessutom: terminal-temats `.topbar{height:38px}` var ovillkorlig och klippte mobilens andra
+  rad – nu scopad till ≥861 px; enkel-temats mobilbrytpunkt flyttad 820 → 860 så spannet
+  821–860 inte föll mellan stolarna; aktiv flik rullas in i den scrollbara baren (elva flikar
+  ryms inte på en telefonskärm). **Slutresultat: alla 44 kombinationer utan anmärkning.**
+  Testsviterna: 308 enhet · 96 sim · 30 data · 48 tema.
+
 - ✅ 2026-08-02 (prestanda + interaktivitet – 4 delar):
   **(1) Förbyggd data.** Webbappen gjorde ~106 nätanrop vid varje laddning (filträd via
   GitHub-API:t + upp till 56 råhämtningar av markdown + JSON) och parsade allt i webbläsaren;

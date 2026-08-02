@@ -507,7 +507,15 @@
       if (q.length < 2) { body.innerHTML = '<div class="empty">Skriv minst 2 tecken och tryck Enter.</div>'; return; }
       body.innerHTML = '<div class="empty">Söker i ' + this.state.metas.length + ' rapporter…</div>';
       const docs = await this.searchDocs();
-      body.innerHTML = this.R.renderSearchResults(this.P.searchDocs(docs, q), q);
+      // Indexet täcker de N senaste rapporterna, inte alla. Säg det – en tyst
+      // lucka i sökningen är värre än en synlig gräns.
+      const m = this._searchMeta;
+      const note = (m && m.covered < m.total)
+        ? '<div class="sr-scope">Sökningen täcker de <b>' + m.covered + '</b> senaste rapporterna av ' +
+          m.total + (m.oldest ? ' (tillbaka till ' + this.R.esc(m.oldest) + ')' : '') +
+          '. Äldre rapporter öppnas via väljaren ovan.</div>'
+        : "";
+      body.innerHTML = note + this.R.renderSearchResults(this.P.searchDocs(docs, q), q);
     }
     // Dokumenten att söka i. Förbyggt index = EN hämtning (cachas för sessionen);
     // utan index faller vi tillbaka på en hämtning per rapport, som tidigare.
@@ -517,6 +525,7 @@
         const idx = await this.fetchJSON(this.raw("state/search-index.json"));
         if (idx && idx.version === 1 && Array.isArray(idx.docs) && idx.docs.length) {
           this._searchDocs = idx.docs;
+          this._searchMeta = { covered: idx.covered || idx.docs.length, total: idx.total || idx.docs.length, oldest: idx.oldest || null };
           return this._searchDocs;
         }
       } catch (e) {
@@ -929,7 +938,20 @@
       const views = [...document.querySelectorAll(".view")];
       if (!views.some(v => v.dataset.view === view)) view = views.some(v => v.dataset.view === "hem") ? "hem" : "oversikt";
       views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
-      document.querySelectorAll(".subnav a").forEach(l => l.classList.toggle("active", l.dataset.view === view));
+      let activeLink = null;
+      document.querySelectorAll(".subnav a").forEach(l => {
+        const on = l.dataset.view === view;
+        l.classList.toggle("active", on);
+        if (on) activeLink = l;
+      });
+      // Mobilens botten-bar rymmer inte elva flikar – rulla in den aktiva, annars
+      // kan man byta vy med tangentbord/hash och inte se var man hamnade.
+      const nav = document.querySelector(".subnav");
+      if (activeLink && nav && nav.scrollWidth > nav.clientWidth + 4) {
+        const a = activeLink.getBoundingClientRect(), n = nav.getBoundingClientRect();
+        if (a.left < n.left + 8 || a.right > n.right - 8)
+          nav.scrollTo({ left: nav.scrollLeft + (a.left - n.left) - (n.width - a.width) / 2, behavior: "smooth" });
+      }
       try { history.replaceState(null, "", "#" + view); } catch (e) {}
       window.scrollTo(0, 0);
       if (view === "avkastning") requestAnimationFrame(() => this.drawChart());

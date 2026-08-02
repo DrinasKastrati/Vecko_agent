@@ -112,11 +112,22 @@ const dashboard = {
   watchlistUs: wlUsPath ? read(wlUsPath) : null
 };
 
-// ---- sökindex: rå markdown per rapport, laddas lat ------------------------
+/* ---- sökindex: rå markdown per rapport, laddas lat -------------------------
+   Bara de SEARCH_LIMIT senaste rapporterna. Indexet innehåller full markdown och
+   byggs om varje gång en rapport pushas (~1 gång/dag) – utan tak växer en fil på
+   en halv megabyte in i git-historiken varje dag. Äldre rapporter går fortfarande
+   att öppna via rapportväljaren, de ingår bara inte i fritextsökningen; webbappen
+   skriver ut täckningen ovanför träfflistan så gränsen aldrig är osynlig. */
+const SEARCH_LIMIT = 30;
+const searchMetas = metas.slice(0, SEARCH_LIMIT);
 const searchIndex = {
   version: 1,
   generatedAt: dashboard.generatedAt,
-  docs: metas.map(m => ({ meta: m, text: read(m.path) || "" })).filter(d => d.text)
+  limit: SEARCH_LIMIT,
+  covered: searchMetas.length,
+  total: metas.length,
+  oldest: searchMetas.length ? searchMetas[searchMetas.length - 1].dateISO : null,
+  docs: searchMetas.map(m => ({ meta: m, text: read(m.path) || "" })).filter(d => d.text)
 };
 
 const out1 = join(ROOT, "state", "dashboard.json");
@@ -133,7 +144,8 @@ const kb = f => Math.round(statSync(f).size / 1024);
 console.log(`dashboard.json    ${String(kb(out1)).padStart(4)} kB  ` +
   `${metas.length} rapporter · ${dashboard.dailies.length} dagliga · ${dashboard.weeklies.length} vecko · ` +
   `${dashboard.scouts.length} scout · ${dashboard.usDailies.length}+${dashboard.usWeeklies.length} US`);
-console.log(`search-index.json ${String(kb(out2)).padStart(4)} kB  ${searchIndex.docs.length} dokument`);
+console.log(`search-index.json ${String(kb(out2)).padStart(4)} kB  ${searchIndex.docs.length} av ${metas.length} dokument` +
+  (searchIndex.oldest ? ` (tillbaka till ${searchIndex.oldest})` : ""));
 console.log(`portfölj: ${dashboard.portfolio ? dashboard.portfolio.holdings.length + " innehav" : "SAKNAS"} · ` +
   `US: ${dashboard.portfolioUs ? dashboard.portfolioUs.holdings.length + " innehav" : "saknas"} · ` +
   `lärdomar: ${dashboard.lessons ? (dashboard.lessons.active || []).length : 0}`);
