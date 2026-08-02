@@ -7,6 +7,81 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (LÖST: View Transitions var orsaken till trögheten – hittad med bisect):
+  **Bakgrund.** Dren rapporterade att flikbyten kändes tröga och att "hela sidan laddas om, även
+  menyn". Två felsökningsomgångar med CDP-mätningar hittade INGET, eftersom jag jämförde
+  18:27-versionen mot nuvarande – och felet fanns redan i BÅDA. Mätningarna var korrekta men
+  jämförelsen var mot fel referens.
+  **Metoden som löste det.** Samtliga 28 commits från 2026-08-02 exporterades med `git archive`
+  till fristående mappar under `C:\Users\drini\code\vecko-bisect\`, märkta `-WEBB` när de rörde
+  webbappen. Dren halverade sig fram på tolv WEBB-mappar och landade på: **`d291eef` (15:15)
+  felfri, `e6bd08e` (15:49) laggig.**
+  **Orsaken.** `e6bd08e` införde View Transitions API på vybytet. Problemet var inte den delen
+  som var namngiven, utan den som INTE var det: webbläsarens **standard-crossfade av
+  `root`-lagret** täcker allt som saknar eget `view-transition-name` – alltså ramen runt
+  innehållet – och den var aldrig avstängd. Ovanpå det låg `::view-transition-old/new(page)` på
+  `.wrap` (160 + 200 ms) och den sedan tidigare befintliga `.view{animation:fade .18s}`. **Tre
+  animationer spelade samtidigt vid varje flikbyte**, och `startViewTransition` tar dessutom en
+  ögonblicksbild av hela vyporten vid varje klick. Det förklarar båda symptomen: trögheten och
+  känslan av att hela sidan – menyn inkluderad – ritades om.
+  **Åtgärd.** View Transitions borttaget helt, både anropet i `app.js` och CSS-blocket i
+  `base.css`. Kvar är `.view{animation:fade .18s}`, exakt som i `d291eef` som fungerade felfritt.
+  `tests/theme.mjs` (121) larmar nu om `startViewTransition`, `view-transition-name` eller
+  `::view-transition` återinförs – testet strippar kommentarer först, så förklaringen till varför
+  det togs bort får stå kvar i koden.
+  **Lärdom för nästa gång:** när ett fel inte går att mäta fram, bisecta. Att exportera commits
+  till mappar och låta den som SER felet halvera sig fram tog tjugo minuter, efter att två
+  omgångar av mätningar hade letat på fel ställe. Mapparna ligger kvar tills felet är verifierat
+  borta.
+
+- ✅ 2026-08-03 (index.html dubbelkodad av mitt eget verifieringssteg):
+  **Symptomet Dren såg:** "ä" visades som `¤` i menyn och rubrikerna, och innehållet ritades före
+  "overlayn" vid flikbyte. **Orsak:** i steget där jag verifierade att det nya typsnittstestet
+  faktiskt fångade den trasiga URL-formen körde jag `Get-Content index.html -Raw` **utan
+  `-Encoding`**. Windows PowerShell 5.1 läser då UTF-8 som ANSI, och `Set-Content -Encoding UTF8`
+  skrev tillbaka resultatet dubbelkodat: varje "ä" blev `C3 83 C2 A4`, plus en BOM först i filen.
+  81 tecken förstördes. Felet syns inte i en vanlig diff – bara på bytenivå.
+  **Åtgärd:** `git checkout -- index.html` och sedan om typsnittsfixen med Edit-verktyget.
+  Genomsökning av samtliga spårade filer visade att BARA `index.html` var drabbad, och att de
+  sju bisect-mapparna var rena (de kommer ur `git archive`).
+  **Regel:** ändra aldrig en UTF-8-fil via PowerShell 5.1. `tests/theme.mjs` kontrollerar nu BOM
+  och dubbelkodning i alla tio filer webbappen läser (119 tester).
+
+- ✅ 2026-08-03 (typsnitten hade aldrig laddats – och en självförvållad regression):
+  **Frågan.** Dren rapporterade kvarstående seghet och flimmer vid flikbyte och misstänkte att
+  det började när `index_2/3/4.html` raderades.
+  **Metod.** Mätning i RIKTIG Chrome via CDP (headless med fjärrfelsökning), inte i jsdom –
+  flikbyten handlar om layout och paint, som jsdom inte har. Två servrar startades lokalt: en med
+  hela trädet från `fda6da3` (18:27, "när det funkade") och en med nuvarande. Samma mätning på
+  båda: tid till Live, alla svarskoder, layoutskift (CLS) per flikbyte och långa uppgifter.
+  **Ingen regression fanns.** CLS 0,0711 (18:00) mot 0,0757 (nu), noll långa uppgifter i båda,
+  flikbyten 40–200 ms i båda, tid till Live ~315 ms i båda. **Raderingen av `index_2/3/4.html`
+  kunde uteslutas helt:** inga 404:or i nätverksloggen, och ingen kod refererar dem.
+  **Men mätningen avslöjade något annat:** `webbtypsnitt laddade: 0`. En direkt hämtning av
+  Google Fonts-URL:en gav **400 Bad Request med en text/html-felsida**. Orsak: `Source Serif 4`
+  har TVÅ axlar (`opsz,wght`), och då måste varje värdepar ange båda. Raden innehöll kortformen
+  `8..60,400;600;700` i stället för `8..60,400;8..60,600;8..60,700`, vilket fällde HELA anropet –
+  även de tre andra familjerna. Sidan hade alltså renderats i systemtypsnitt sedan `d291eef`
+  (2026-08-02 15:15), och `ERR_BLOCKED_BY_ORB` i konsolen var webbläsaren som vägrade använda en
+  HTML-felsida som CSS. Rättad syntax ger 200 och 97 `@font-face`.
+  **Och en regression jag själv orsakat kvällen innan:** i prestandarundan flyttades
+  `refreshClamps()` till `t.finished` för att slippa layout mitt i toningen. Effekten blev
+  motsatt – knappen "Visa mer" dök upp EFTER att toningen var klar, så innehållet hoppade en halv
+  sekund efter flikbytet. Mätningen flyttades tillbaka in i övergången; bara `drawChart()` (som
+  bara rör Avkastning) ligger kvar efteråt. `scrollTo` ligger fortfarande FÖRE övergången.
+  **`display=optional` i stället för `swap`.** Med `swap` steg CLS till 0,105 när typsnitten
+  äntligen laddades – texten byttes ut mitt i sidan. `optional` byter aldrig i efterhand: första
+  besöket får systemtypsnitt, därefter ligger typsnitten i cachen och används direkt. CLS tillbaka
+  på 0,071, alltså samma som före.
+  **Efter fixarna:** "inga 4xx/5xx eller misslyckade requests" på både första och andra laddningen,
+  och 8 webbtypsnitt laddade. Tre nya tester i `tests/theme.mjs` (99) räknar axlar per värdepar i
+  typsnitts-URL:en och kräver `display=optional|block` – verifierat att de FAKTISKT fångar den
+  gamla trasiga formen genom att tillfälligt återinföra den.
+  **Kvarstår som misstanke för Drens upplevelse:** `sw.js` ändrades två gånger under dygnet, och
+  varje ändring tvingar fram en ny installation av service workern hos användaren. Första
+  felsökningssteget vid liknande rapporter är därför att avregistrera service workern
+  (DevTools → Application → Service Workers → Unregister) och ladda om.
+
 - ✅ 2026-08-03 (prestanda: seg inladdning och flimmer vid flikbyte):
   **Rapporten.** Dren rapporterade att sajten var seg att ladda och flimrade vid flikbyte, och
   frågade om någon ändring orsakat det.

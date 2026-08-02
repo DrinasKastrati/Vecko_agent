@@ -57,14 +57,24 @@ self.addEventListener("fetch", e => {
   // hämta rapporter som inte finns, eller missa dem som gör det.
   if (url.hostname === "api.github.com") return;
 
+  /* TYPSNITTS-CSS:EN RÖRS INTE AV SERVICE WORKERN.
+     `<link rel="stylesheet">` mot fonts.googleapis.com skickas som **no-cors**.
+     Svaret blir därmed OPAKT, och ett opakt svar går inte att använda som CSS –
+     webbläsaren blockerar det (ERR_BLOCKED_BY_ORB), och en cachad kopia serveras
+     sedan som 400. Följden var att INGA webbtypsnitt laddades så fort service
+     workern kontrollerade sidan: texten föll tillbaka på systemtypsnitt, med
+     andra teckenmått och synligt omflöde. Mätt med CDP 2026-08-03:
+     "webbtypsnitt laddade: 0" på varje kontrollerad laddning.
+     Låt webbläsaren hämta den själv – den har redan sin egen HTTP-cache. */
+  if (url.hostname === "fonts.googleapis.com") return;
+
   /* CACHEN FÖRST för OFÖRÄNDERLIGA tredjepartsfiler.
      Nät-först är rätt för VÅRA filer: de pushas utan versionsstämpel i namnet,
      så cache-först skulle servera gammal kod mot ny data. Det argumentet gäller
-     INTE här – jsdelivr-URL:erna är versionspinnade (chart.js@4.4.3) och Googles
-     typsnittsfiler har innehållshash i sökvägen. Samma URL ger alltid samma
-     byte. Att ändå gå ut på nätet varje gång kostade en rundtur per fil och
-     gjorde att typsnitten kunde byta mitt i renderingen (synligt flimmer). */
-  const IMMUTABLE = ["cdn.jsdelivr.net", "fonts.gstatic.com", "fonts.googleapis.com"];
+     INTE här – jsdelivr-URL:erna är versionspinnade (chart.js@4.4.3) och
+     typsnittsfilerna på fonts.gstatic.com har innehållshash i sökvägen. Samma
+     URL ger alltid samma byte, och de hämtas med CORS så svaren är inte opaka. */
+  const IMMUTABLE = ["cdn.jsdelivr.net", "fonts.gstatic.com"];
   if (IMMUTABLE.indexOf(url.hostname) !== -1) {
     e.respondWith(
       caches.match(req).then(hit => hit || fetch(req).then(res => {

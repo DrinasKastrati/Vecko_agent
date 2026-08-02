@@ -160,12 +160,10 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 :root[data-density="compact"] .sub{margin:16px 0 9px}
 :root[data-density="compact"] .hold-tickers{margin:7px 0 9px}
 
-/* Animationer av: gäller även vyövergångarna, som annars ligger i CSS. */
+/* Animationer av: träffar allt, inklusive .view-toningen vid flikbyte. */
 :root[data-motion="off"] *,
 :root[data-motion="off"] *::before,
 :root[data-motion="off"] *::after{animation-duration:.001s!important;transition-duration:.001s!important}
-:root[data-motion="off"] ::view-transition-old(page),
-:root[data-motion="off"] ::view-transition-new(page){animation:none!important}
 
 /* ---- inställningsvyn ---- */
 .set-group{margin:0 0 22px}
@@ -263,20 +261,16 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 .view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-/* ---- vyövergångar (View Transitions API) ----
-   app.js kör vybytet inuti document.startViewTransition(). Webbläsaren tar en
-   ögonblicksbild före och efter och tonar mellan dem. Toppraden och menyn hålls
-   utanför övergången via egna view-transition-name, annars skulle hela ramen
-   blinka vid varje flikbyte. */
-@media (prefers-reduced-motion: no-preference){
-  ::view-transition-old(page){animation:vt-out .16s ease both}
-  ::view-transition-new(page){animation:vt-in .2s ease both}
-  @keyframes vt-out{to{opacity:0;transform:translateY(-6px)}}
-  @keyframes vt-in{from{opacity:0;transform:translateY(8px)}}
-  .wrap{view-transition-name:page}
-  .headwrap{view-transition-name:chrome}
-  ::view-transition-old(chrome),::view-transition-new(chrome){animation:none;mix-blend-mode:normal}
-}
+/* ---- vyövergångar: BORTTAGNA 2026-08-03, ÅTERINFÖR DEM INTE ----
+   Här låg ett View Transitions-lager (`view-transition-name` på .wrap och
+   .headwrap plus ::view-transition-old/new-animationer). Det gjorde flikbyten
+   tröga och fick hela sidan att se ut att laddas om vid varje klick, eftersom
+   webbläsarens STANDARD-crossfade av `root`-lagret aldrig var avstängd – den
+   täcker allt som inte har ett eget namn, alltså ramen runt innehållet.
+   Ovanpå det låg .view-fade:n nedan, så tre animationer spelade samtidigt.
+   Bisect av dagens 28 commits pekade ut `e6bd08e` (2026-08-02 15:49) som
+   införde det; commiten före var felfri. Vybytet är nu direkt igen, med bara
+   den diskreta .view-toningen ovan. */
 
 .sec-head{display:flex;align-items:var(--sec-align,baseline);gap:12px;flex-wrap:wrap;
   margin:0 0 14px;padding:var(--sec-pad,0);background:var(--sec-bg,transparent);

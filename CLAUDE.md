@@ -117,6 +117,34 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   aldrig tillbaka i `index.html`** – `tests/theme.mjs` larmar. `lib()` har en tidsgräns på 8 s och
   resolvar `false` i stället för att hänga: varje anropsställe har en reserv (rå markdown,
   "diagram kunde inte laddas"), och en död CDN får aldrig låsa en vy på "Hämtar…".
+- **VIEW TRANSITIONS API FÅR ALDRIG ÅTERINFÖRAS (2026-08-03).** Det låg i koden 2026-08-02 15:49
+  (`e6bd08e`) till 2026-08-03 och gjorde flikbyten tröga: webbläsarens **standard-crossfade av
+  `root`-lagret** täcker allt utan eget `view-transition-name` – alltså ramen och menyn – och var
+  aldrig avstängd. Tillsammans med `::view-transition-*(page)` och `.view{animation:fade}` spelade
+  tre animationer samtidigt, plus en ögonblicksbild av hela vyporten per klick. Vybytet ska vara
+  DIREKT, med bara `.view`-toningen. `tests/theme.mjs` larmar om det kommer tillbaka.
+- **Går ett fel inte att MÄTA fram: bisecta.** Exportera commits till fristående mappar med
+  `git archive <hash> | tar -x -C <mapp>`, märk dem som rört webbappen, och låt den som ser felet
+  halvera sig fram. Två omgångar CDP-mätningar hittade ingenting eftersom referensen var fel –
+  felet fanns i båda versionerna som jämfördes. Bisecten tog tjugo minuter.
+- **RÖR ALDRIG EN UTF-8-FIL MED POWERSHELL 5.1 (fälla, 2026-08-03).** `Get-Content -Raw` läser
+  UTF-8 som ANSI om `-Encoding` utelämnas. Skrivs innehållet sedan tillbaka med
+  `Set-Content -Encoding UTF8` blir varje "ä" bytesekvensen `C3 83 C2 A4` ("Ã¤") och filen får en
+  BOM. Det hände `index.html`: 81 tecken förstördes, rubriker och meny visade `¤`. Felet syns
+  INTE i en vanlig diff – bara på bytenivå. **Använd Edit/Write-verktygen för filändringar**, eller
+  `git checkout -- <fil>` för att återställa. `tests/theme.mjs` kontrollerar numera BOM och
+  dubbelkodning i alla filer webbappen läser.
+- **Typsnitts-URL:en är känslig (fälla, kostade en felsökningsrunda 2026-08-03).** `Source Serif 4`
+  har två axlar (`opsz,wght`); varje värdepar MÅSTE ange båda. Kortformen `8..60,400;600;700` fick
+  Google att svara **400 med en text/html-felsida på hela anropet** – noll webbtypsnitt för
+  SAMTLIGA fyra familjer, plus `ERR_BLOCKED_BY_ORB` (webbläsaren vägrar använda HTML som CSS).
+  `display=optional` är medvetet valt före `swap`: typsnitten byter aldrig mitt i en sida.
+  `tests/theme.mjs` räknar axlar per par. **Ändra aldrig raden utan att kontrollera att den ger 200.**
+- **Felsök alltid webbprestanda i en RIKTIG webbläsare, inte i jsdom.** Flikbyten handlar om
+  layout och paint. Metoden som fungerade: starta Chrome headless med `--remote-debugging-port`,
+  koppla på med CDP (Node har inbyggd `WebSocket`), servera två lokala kopior – en av den gamla
+  commiten och en av nuvarande – och mät CLS, långa uppgifter och svarskoder på båda. Utan
+  A/B-jämförelsen går det inte att skilja "alltid varit så" från "ny regression".
 - **Offline:** `sw.js` (service worker) cachar appskalet. Strategin är nät-först med cachen som
   reserv, aldrig tvärtom: appen uppdateras genom filpush utan versionsstämplade filnamn, så
   cache-först skulle servera gammal `vparse.js` mot nya rapporter och ge tyst felparsning.

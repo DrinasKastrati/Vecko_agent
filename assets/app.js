@@ -1132,28 +1132,29 @@
       // View Transitions API (inbyggt i webbläsaren, inget bibliotek): mjuk
       // övergång mellan vyer. Saknas stödet – eller vill användaren ha mindre
       // rörelse – byts vyn direkt som förut.
-      const reduce = (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches)
-        || document.documentElement.getAttribute("data-motion") === "off";   // valet i Inställningar
-      /* Rulla till toppen FÖRE övergången. Låg scrollningen kvar inuti
-         startViewTransition togs den gamla ögonblicksbilden vid nuvarande
-         scrollposition och den nya vid toppen – skillnaden syntes som ett
-         hopp/flimmer mitt i toningen. */
+      /* VIEW TRANSITIONS API ÄR BORTTAGET (2026-08-03) – ÅTERINFÖR DET INTE.
+         Det lades till i `e6bd08e` (2026-08-02 15:49) och orsakade exakt det
+         Dren rapporterade: flikbyten kändes tröga och "hela sidan laddades om,
+         även menyn". Bisect av dagens 28 commits pekade ut just den commiten:
+         `d291eef` dessförinnan var felfri.
+
+         Orsaken var att TRE animationer staplades på varje flikbyte:
+           1. `::view-transition-old/new(page)` på .wrap (160 + 200 ms)
+           2. webbläsarens STANDARD-crossfade av `root`-lagret – den täcker allt
+              som inte har ett eget view-transition-name, alltså ramen runt om,
+              och den var aldrig avstängd. Det var den som fick hela sidan att
+              se ut att laddas om.
+           3. den befintliga `.view{animation:fade .18s}` ovanpå.
+         Dessutom tar startViewTransition en ögonblicksbild av HELA vyporten vid
+         varje klick, vilket är det som kostade tid.
+
+         Kvar är `.view{animation:fade .18s}` i base.css – samma diskreta toning
+         som fanns före e6bd08e och som fungerade felfritt. `data-motion="off"`
+         stänger av även den. */
       try { root.scrollTo(0, 0); } catch (e) {}
-      if (document.startViewTransition && !reduce) {
-        const t = document.startViewTransition(() => this.swapView(view));
-        /* Mätningarna (klamp-höjder) och diagramritningen görs EFTER att
-           toningen är klar. Körs de under övergången tvingar de fram layout mitt
-           i animationen, vilket rycker. */
-        if (t && t.finished && t.finished.then) t.finished.then(() => this.afterViewSwap(view), () => this.afterViewSwap(view));
-        else this.afterViewSwap(view);
-        return;
-      }
       this.swapView(view);
-      this.afterViewSwap(view);
-    }
-    afterViewSwap(view) {
+      this.refreshClamps();
       if (view === "avkastning") requestAnimationFrame(() => this.drawChart());
-      this.refreshClamps(); // nyligen synliga klampar kan mätas först nu
     }
     swapView(view) {
       const views = [...document.querySelectorAll(".view")];

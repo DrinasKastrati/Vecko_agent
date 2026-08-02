@@ -211,7 +211,57 @@ for (const t of ["deck", "nordlys", "terminal", "enkel"]) {
     ok(`${lib} hämtas via lib() i app.js`, app.includes(lib));
   ok("lib() har tidsgräns så löftet alltid settlar", /setTimeout\(\(\) => finish\(false\), \d+\)/.test(app));
   ok("sw.js cachar oföränderlig tredjepart först", sw.includes("cdn.jsdelivr.net") && sw.includes("fonts.gstatic.com"));
-  ok("scrollTo sker utanför vytransitionen", /scrollTo\(0, 0\)[\s\S]{0,200}startViewTransition/.test(app));
+  /* View Transitions API får INTE återinföras. Det låg i koden 2026-08-02 15:49
+     (`e6bd08e`) till 2026-08-03 och gjorde flikbyten tröga: webbläsarens
+     standard-crossfade av root-lagret var aldrig avstängd, så hela ramen –
+     inklusive menyn – tonades vid varje klick. Bisect av dagens 28 commits
+     pekade ut just den commiten. Kommentarer som FÖRKLARAR borttagningen är
+     tillåtna; testet letar efter faktiska anrop och CSS-regler. */
+  const kod = app.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  const css = readFileSync(join(root, "assets", "themes", "base.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  ok("app.js anropar inte startViewTransition", !kod.includes("startViewTransition"));
+  ok("base.css sätter inga view-transition-name", !/view-transition-name\s*:/.test(css));
+  ok("base.css har inga ::view-transition-regler", !/::view-transition/.test(css));
+}
+
+/* Google Fonts-anropet: en familj med TVÅ axlar (opsz,wght) kräver att VARJE
+   värdepar anger båda. Kortformen "8..60,400;600;700" fick Google att svara 400
+   med en text/html-felsida på HELA anropet – alltså noll webbtypsnitt och en
+   ERR_BLOCKED_BY_ORB i konsolen. Testet räknar komponenterna per par, så samma
+   fel inte kan smyga tillbaka. (Nätverkskontroll görs inte här; sviten är
+   avsiktligt offline.) */
+{
+  const idx = readFileSync(join(root, "index.html"), "utf8");
+  const m = idx.match(/fonts\.googleapis\.com\/css2\?([^"]+)/);
+  ok("index.html har ett Google Fonts-anrop", !!m);
+  if (m) {
+    let trasig = null;
+    for (const fam of m[1].split("&").filter(s => s.startsWith("family="))) {
+      const spec = fam.slice(7);
+      const [namn, värden] = spec.split(":");
+      if (!värden) continue;
+      const axlar = värden.split("@")[0].split(",").length;   // t.ex. "opsz,wght" = 2
+      const par = (värden.split("@")[1] || "").split(";");
+      for (const p of par) if (p.split(",").length !== axlar) trasig = namn + " -> " + p;
+    }
+    ok("varje vikt anger alla axlar i typsnitts-URL:en", trasig === null,
+      trasig ? "trasigt par: " + trasig : "");
+    ok("typsnitten byter inte mitt i sidan", /display=(optional|block)/.test(m[1]));
+  }
+}
+
+/* TECKENKODNING. index.html blev dubbelkodad 2026-08-03 av ett PowerShell-steg
+   som läste filen med `Get-Content -Raw` (utan -Encoding, dvs. som ANSI) och
+   skrev tillbaka den med `-Encoding UTF8`. Resultat: varje "ä" blev bytesekvensen
+   C3 83 C2 A4 ("Ã¤") och filen fick en BOM. Rubriker och meny såg trasiga ut.
+   Testet gäller ALLA textfiler appen läser – felet är osynligt i en diff om man
+   inte tittar på bytes. */
+for (const f of ["index.html", "assets/app.js", "assets/vparse.js", "assets/vrender.js",
+                 "assets/theme.js", "assets/settings.js", "assets/themes/base.css",
+                 "assets/manual.css", "sw.js", "manifest.json"]) {
+  const buf = readFileSync(join(root, f));
+  ok(`${f}: ingen BOM`, !(buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF));
+  ok(`${f}: inte dubbelkodad UTF-8`, !buf.includes(Buffer.from([0xC3, 0x83, 0xC2])));
 }
 
 ok("assets/manual.css finns", existsSync(join(root, "assets", "manual.css")));
