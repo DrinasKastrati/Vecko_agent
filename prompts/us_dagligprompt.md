@@ -39,24 +39,28 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
   filtreras bort ur urvalsstatistiken.
 - **Kassa (0 %) endast** om sleeven inte kan handlas; motivera då i rapporten.
 
-## NIVÅER & OMSÄTTNING (kalibrerat mot backtest, omkört 2026-08-02 med 4 positioner)
+## NIVÅER & OMSÄTTNING (kalibrerat mot backtest, motorn ombyggd 2026-08-02)
 Underlag: `reports/backtest/backtest-260802-us-top4.md` – mekaniska skelettet (momentum-proxy,
-**topp 4 à 25 %**, 5 dagars håll) över 5 år och 258 veckor på 30 stora US-bolag, netto efter
-courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`) simulerade
-2 positioner à 50 % och matchade inte hur boken faktiskt handlas sedan 2026-07-31.
+**topp 4 à 25 %**) över 5 år på 30 stora US-bolag, netto efter courtage OCH växlingspåslag.
+Backtestmotorn byggdes om 2026-08-02 sedan sex mätfel hittats (sleeven räknades som noll, bara
+korta lookback-fönster testades, ingen out-of-sample-kontroll, survivorship oredovisad, inget
+regimfilter, hålltiden aldrig varierad). **Talen nedan kommer ur den ombyggda motorn.**
+**SURVIVORSHIP:** universumet är dagens 30 mest likvida US-bolag – dagens vinnare är med just för
+att de vann. Läs alla tal som ett tak, inte som en prognos.
 0. **HÅLLREGELN ÄR AVGÖRANDE I US-BOKEN – STÖRRE EFFEKT ÄN NÅGON ANNAN REGEL (mätt 2026-08-02).**
-   Gridet kördes tidigare BARA med en femdagarsklocka och gav då PF 0,65–0,79 och kedjat utfall
-   −72 % till −85 % – hopplöst. Med hållregeln (platsen behålls tills stop/mål eller 30
+   Gridet kördes tidigare BARA med en femdagarsklocka och gav då PF 0,65–0,90 och utfall
+   −44 % till −80 % – hopplöst. Med hållregeln (platsen behålls tills stop/mål eller 30
    handelsdagar; rotationen fyller bara TOMMA platser) blir samma skelett:
-   | Cell | PF veckovis → BEHÅLL | Kedjat % veckovis → BEHÅLL | Affärer/år |
+   | Cell | PF veckovis → BEHÅLL | Equity % veckovis → BEHÅLL | Affärer/år |
    |---|---|---|---|
-   | 10d −5 %/+10 % | 0,75 → **1,17** | −78,0 → **+50,1** | 204 → 71 |
-   | 20d −5 %/+10 % | 0,79 → **1,12** | −71,8 → **+35,6** | 206 → 77 |
-   | 20d −4 %/+8 %  | 0,73 → **0,93** | −79,5 → **−28,9** | 206 → 103 |
-   Skillnaden är alltså inte marginell – den avgör om boken går att driva alls. Orsaken är
-   växlingspåslaget: 0,75 % rundtur är tre gånger den nordiska kostnaden, så varje undviken
-   affär är värd tre gånger så mycket här.
-   **MEN:** +50 % på fem år ligger fortfarande UNDER ^GSPC köp-och-behåll (+70,7 %). Skelettet
+   | 10d −5 %/+10 %  | 0,75 → **1,17** | −75,5 → **+55,7** | 205 → 71 |
+   | 120d −5 %/+10 % | 0,90 → **1,15** | −44,1 → **+53,2** | 208 → 91 |
+   | 20d −5 %/+10 %  | 0,79 → **1,12** | −67,9 → **+42,1** | 207 → 78 |
+   | 20d −4 %/+8 %   | 0,73 → **0,93** | −76,3 → **−14,2** | 207 → 104 |
+   Hållregeln förbättrar utfallet i **samtliga tolv celler**. Orsaken är växlingspåslaget:
+   0,75 % rundtur är tre gånger den nordiska kostnaden, så varje undviken affär är värd tre
+   gånger så mycket här.
+   **MEN:** +55,7 % på fem år ligger fortfarande UNDER ^GSPC köp-och-behåll (+70,7 %). Skelettet
    slutar blöda men slår inte index. Sleeven (SPY) är alltså fortsatt rätt standardplacering,
    och **LLM-urvalet måste tillföra skillnaden**. Konsekvensen är INTE att sänka kraven för att
    jaga utfallet, utan att vara **mer selektiv i US-boken än i den nordiska** – färre, större och
@@ -65,18 +69,47 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    fylla LEDIGA platser. En position som varken träffat stop/mål eller fått sin tes punkterad
    ska inte re-poängsättas varje måndag. Att alla fyra platser är upptagna är ett giltigt skäl
    att inte handla alls den veckan.
-1. **STOPPBREDD (OMKALIBRERAD 2026-08-02):** US-gridet presterar klart BÄST med den bredaste
-   kombinationen, **−5 % stop / +10 % mål** – och med hållregeln är det den enda kombination som
-   ger PF över 1,0 (1,12–1,17 mot 0,80–0,93 för smalare stopp). Rangordningen är entydig och
-   motsatt den nordiska bokens. Använd bandet **stop 5–6 % under entry**, satt tekniskt inom
-   bandet, med mål ≥ 2× stoppavståndet. En 3 %-stop stoppas ut på brus i US-aktier – det syns
-   direkt i gridet: −3 %/+6 % ger PF 0,80 mot 1,17 för −5 %/+10 %.
+0c. **SLEEVEN ÄR VÄRD MER ÄN DEN SÅG UT ATT VARA.** Den gamla mätningen räknade tom tid som noll.
+   Med sleeven korrekt modellerad går samma skelett från +30,8 % till **+42,1 %** – elva
+   procentenheter av "avkastningen" låg hela tiden i det oallokerade kapitalet. Det är ett skäl
+   ATT använda sleeven, inte ett skäl att hålla fler positioner: att parkera i SPY när inget case
+   håller måttet är en aktiv och lönsam handling.
+0d. **HÅLL HORISONTEN PÅ 30 HANDELSDAGAR.** Svepet ger +3,4 % vid 20 dagar, **+42,1 % vid 30**,
+   +27,9 % vid 60 och +22,8 % vid 90. Både kortare och längre är sämre – motsatt nordiska boken,
+   där längre horisont vinner. Följ katalysatortabellen i punkt 5 och förläng inte rutinmässigt.
+0e. **SURVIVORSHIP:** universumet är dagens 30 mest likvida US-bolag – se noten överst. Talen är
+   ett tak, inte en prognos.
+1. **STOPPBREDD (OMKALIBRERAD 2026-08-02, BEKRÄFTAD OUT-OF-SAMPLE):** US-gridet presterar klart
+   BÄST med den bredaste kombinationen, **−5 % stop / +10 % mål**. Med hållregeln är det den enda
+   kombination som ger PF över 1,0 (1,05–1,17 mot 0,79–0,95 för smalare stopp), och den vinner vid
+   **varje** lookback – 10, 20, 60 och 120 dagar. Viktigast: nivån håller när femårsperioden delas
+   på mitten och halvorna jämförs – **samma nivå vinner i 5 av 8 kombinationer**, och −5/+10 är
+   bäst över hela perioden i samtliga 8. Det är inte urvalsbrus, till skillnad från nordiska boken
+   (där motsvarande siffra är 1 av 8 och nivåbandet därför INTE får behandlas som kalibrerat).
+   Använd bandet **stop 5–6 % under entry**, satt tekniskt inom bandet, med mål ≥ 2×
+   stoppavståndet. En 3 %-stop stoppas ut på brus i US-aktier: −3 %/+6 % ger PF 0,79–0,86.
+1b. **LÅNG MOMENTUM-HORISONT SLÅR KORT (nytt 2026-08-02).** Gamla gridet mätte bara 10–20 dagars
+   momentum. Med 120 dagar ger skelettet +53,2 %, och med 60 dagars fönster där de senaste 20
+   dagarna hoppas över **+110,3 % (PF 1,26, max DD −25,9 %)** – det bästa utfallet i hela
+   rapporten och klart över index. Notera dock att 10 dagars fönster också ger +55,7 % i US-boken:
+   rangordningen mellan fönstren är svagare här än i den nordiska.
+   **Konsekvens för caseurvalet:** väg in aktiens rörelse över de senaste **3–6 månaderna** som ett
+   plus, och behandla en brant uppgång de senaste veckorna UTAN längre trend bakom sig som en
+   varning. Katalysatorkravet står kvar oförändrat – detta är ett filter, inte en ersättning.
 2. **KOSTNADSTRÖSKEL (ny, hård regel):** us-boken betalar BÅDE courtage och växlingspåslag –
    ~0,75 % rundtur enligt `config/kostnader.json`, tre gånger den nordiska bokens. Ett case får
    bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.
    Skriv ut avståndet i handelsplanen.
+2b. **MARKNADSREGIMEN ÄR DET STARKASTE ENSKILDA FILTRET (nytt 2026-08-02).** Att bara öppna NYA
+   positioner när ^GSPC ligger över sitt 200-dagars glidande medel lyfter skelettet från +42,1 %
+   till **+70,2 %** (PF 1,17) och drar ned max drawdown från −29,3 % till **−23,6 %**. MA100 ger
+   +46,0 %. MA200 är alltså det som gäller i US-boken – motsatt nordiska boken, där MA100 är bäst.
+   **Regel:** kontrollera i LÄGE A om S&P 500 handlas över sitt 200-dagars glidande medel. Gör den
+   inte det: höj ribban för NYA positioner ett steg (kräv ≥ 2 poäng mer än vanligt) och låt hellre
+   platsen stå i SPY-sleeven. Gäller ENBART nyöppning – befintliga innehav sköts av sina stop/mål,
+   och regeln får ALDRIG användas som skäl att strunta i ett stop.
 3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** med växlingspåslaget inräknat blir samma
-   backtest kraftigt negativt (−72,9 % kedjat i bästa cellen, 4 positioner) enbart av
+   backtest kraftigt negativt (−44 % i bästa veckovis-cellen, 4 positioner) enbart av
    omsättningstakten – ~200 affärer per år × 0,75 % rundtur är ~150 % i ren kostnad.
    Därför gäller: **BEHÅLL är standardvalet** för ett innehav vars tes är intakt och vars
    stop/mål inte träffats – även efter 5 handelsdagar. Rotera ut ENDAST om (a) stop eller mål
@@ -92,8 +125,9 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 10–12 % | 5–6 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats |
    | `macro`, `turnaround`, `other` | 2–4 veckor | 10–14 % | 5–6 % | inget |
    Stoppkolumnen är omkalibrerad 2026-08-02 till 5–6 % rakt igenom: gridet visar att −5 %/+10 %
-   är den ENDA kombinationen som ger PF över 1,0 med hållregeln, och att 3–4 % stoppas ut på brus
-   (PF 0,80). Målavståndet i rad 2 höjdes så R/R-kravet 2:1 håller mot det bredare stoppet.
+   är den ENDA kombinationen som ger PF över 1,0 med hållregeln, att den vinner vid varje
+   lookback, och att den håller out-of-sample (5 av 8, se punkt 1). 3–4 % stoppas ut på brus
+   (PF 0,79–0,86). Målavståndet i rad 2 höjdes så R/R-kravet 2:1 håller mot det bredare stoppet.
    Målavstånden är högre än i nordiska boken eftersom rundturskostnaden är tre gånger så hög.
    Skriv ut `catalystType` och horisont i handelsplanen; logga `horizonDays` i beslutsloggen.
 6. **MÅLET MÅSTE VARA NÅBART (ny hård regel):** målavståndet i procent får vara högst **2× aktiens

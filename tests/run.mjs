@@ -782,14 +782,173 @@ ok("momentumAt", (() => {
   const c = [100, 102, 104, 106, 108, 110].map((v, i) => ({ d: "2026-01-0" + (i + 1), c: v }));
   return Math.abs(BT.momentumAt(c, 5, 5) - 0.08) < 1e-9 && BT.momentumAt(c, 2, 5) === null;
 })());
-ok("backtestUniverse syntetiskt universum", (() => {
+ok("buyHoldPct",Math.abs(BT.buyHoldPct([{ c: 100 }, { c: 110 }]) - 10) < 1e-9 && BT.buyHoldPct([]) === null);
+
+/* ---- backtest: ombyggnaden 2026-08-02 -------------------------------------
+   Sex mätfel åtgärdades (sleeve, lookback-svep, out-of-sample, survivorship,
+   regimfilter, hålltid). Testerna nedan låser de nya rena funktionerna och de
+   två invarianter som hela equity-kurvan vilar på:
+     * produkten av en affärs dagsavkastningar = exitPrice/entryPrice
+     * sleeven får BARA avkastning på dagar då platsen står tom            */
+ok("momentumAt skip hoppar över de senaste dagarna", (() => {
+  // stigande serie: skip>0 ska flytta fönstret bakåt och ge ETT annat värde
+  const c = [100, 102, 104, 106, 108, 110, 112].map((v, i) => ({ d: "2026-01-0" + (i + 1), c: v }));
+  const noSkip = BT.momentumAt(c, 6, 3, 0);       // bas c[3]=106, nu c[5]=110
+  const skipped = BT.momentumAt(c, 6, 3, 2);      // bas c[1]=102, nu c[3]=106
+  return Math.abs(noSkip - (110 / 106 - 1)) < 1e-12 &&
+         Math.abs(skipped - (106 / 102 - 1)) < 1e-12 &&
+         BT.momentumAt(c, 2, 3, 2) === null;      // för lite historik = null, inte krasch
+})());
+ok("momentumAt skip=0 är oförändrat gammalt beteende", (() => {
+  const c = [100, 102, 104, 106, 108, 110].map((v, i) => ({ d: "2026-01-0" + (i + 1), c: v }));
+  return Math.abs(BT.momentumAt(c, 5, 5) - 0.08) < 1e-9 && BT.momentumAt(c, 5, 5) === BT.momentumAt(c, 5, 5, 0);
+})());
+ok("smaSeries", (() => {
+  const s = BT.smaSeries([1, 2, 3, 4, 5], 3);
+  return s[0] === null && s[1] === null && s[2] === 2 && s[3] === 3 && s[4] === 4 &&
+         BT.smaSeries([1, 2], 0).every(v => v === null);
+})());
+ok("alignIndex tar senaste candle <= datum", (() => {
+  const bench = [{ d: "2026-01-05" }, { d: "2026-01-07" }, { d: "2026-01-08" }];
+  const a = BT.alignIndex(bench, ["2026-01-02", "2026-01-05", "2026-01-06", "2026-01-08", "2026-01-09"]);
+  return a.join(",") === "-1,0,0,2,2" && BT.alignIndex([], ["2026-01-05"])[0] === -1;
+})());
+ok("tradeDailyReturns teleskoperar till affärens totalavkastning", (() => {
+  const c = [
+    { d: "2026-01-05", o: 100, h: 104, l: 99, c: 103 },
+    { d: "2026-01-06", o: 103, h: 111, l: 102, c: 110 },
+    { d: "2026-01-07", o: 110, h: 112, l: 109, c: 111 }
+  ];
+  const tr = BT.simulateTrade(c, 0, 0.05, 0.10, 5);
+  const legs = BT.tradeDailyReturns(c, tr);
+  const prod = legs.reduce((a, l) => a * (1 + l.ret), 1);
+  return legs.length === tr.days && Math.abs(prod - tr.exitPrice / tr.entryPrice) < 1e-12 &&
+         Math.abs((prod - 1) * 100 - tr.retPct) < 1e-9;
+})());
+ok("simulateTrade exponerar entry/exit för equity-kurvan", (() => {
+  const c = [{ d: "2026-01-05", o: 100, h: 101, l: 94, c: 95 }];
+  const tr = BT.simulateTrade(c, 0, 0.05, 0.10, 5);
+  return tr.entryIdx === 0 && tr.exitIdx === 0 && tr.entryPrice === 100 && Math.abs(tr.exitPrice - 95) < 1e-9;
+})());
+ok("sliceCandles skär på datum, inklusive gränserna", (() => {
+  const s = { X: ["2026-01-05", "2026-01-06", "2026-01-07"].map(d => ({ d, c: 1 })) };
+  return BT.sliceCandles(s, "2026-01-06", null).X.length === 2 &&
+         BT.sliceCandles(s, null, "2026-01-06").X.length === 2 &&
+         BT.sliceCandles(null, null, null).X === undefined;
+})());
+ok("median", BT.median([3, 1, 2]) === 2 && BT.median([4, 1, 3, 2]) === 2.5 && BT.median([]) === null);
+ok("sleeveNeutralPct", (() => {
+  // hela tiden ledig ⇒ hela benchmarkavkastningen; ingen ledig tid ⇒ noll
+  return Math.abs(BT.sleeveNeutralPct(36.33, 1) - 36.33) < 1e-9 &&
+         Math.abs(BT.sleeveNeutralPct(36.33, 0)) < 1e-12 &&
+         Math.abs(BT.sleeveNeutralPct(100, 0.5) - (Math.SQRT2 - 1) * 100) < 1e-9 &&
+         BT.sleeveNeutralPct(null, 0.5) === null &&
+         BT.sleeveNeutralPct(-100, 0.5) === null;   // total förlust: odefinierat, inte NaN
+})());
+ok("buyHoldBetween", (() => {
+  const c = [{ d: "2026-01-05", c: 100 }, { d: "2026-01-06", c: 110 }, { d: "2026-01-07", c: 121 }];
+  return Math.abs(BT.buyHoldBetween(c, "2026-01-06", null) - 10) < 1e-9 &&
+         Math.abs(BT.buyHoldBetween(c, null, null) - 21) < 1e-9;
+})());
+
+// Syntetiskt universum som återanvänds av sleeve-/regim-/exponeringstesterna.
+const synth = (() => {
   const dts = []; let dt = new Date("2026-01-05T12:00:00Z");
-  while (dts.length < 40){ const dow = dt.getUTCDay(); if (dow >= 1 && dow <= 5) dts.push(dt.toISOString().slice(0, 10)); dt = new Date(+dt + 86400e3); }
-  const up = dts.map((dd, i) => ({ d: dd, o: 100 + i, h: 101.2 + i, l: 99 + i, c: 100.5 + i }));
-  const bt = BT.backtestUniverse({ X: up }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2 });
+  while (dts.length < 60){ const dow = dt.getUTCDay(); if (dow >= 1 && dow <= 5) dts.push(dt.toISOString().slice(0, 10)); dt = new Date(+dt + 86400e3); }
+  return dts;
+})();
+const synthUp = synth.map((d, i) => ({ d, o: 100 + i, h: 101.2 + i, l: 99 + i, c: 100.5 + i }));
+const synthBenchUp = synth.map((d, i) => ({ d, o: 50 + i * 0.5, h: 51 + i * 0.5, l: 49 + i * 0.5, c: 50 + i * 0.5 }));
+
+ok("backtestUniverse syntetiskt universum", (() => {
+  const bt = BT.backtestUniverse({ X: synthUp.slice(0, 40) }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2 });
   return bt && bt.weeks >= 4 && bt.trades >= 4 && bt.winRate === 1 && bt.chainedPct > 0 && bt.maxDrawdownPct === 0;
 })());
-ok("buyHoldPct", Math.abs(BT.buyHoldPct([{ c: 100 }, { c: 110 }]) - 10) < 1e-9 && BT.buyHoldPct([]) === null);
+ok("sleeven ger tomma platser avkastning – och bara dem", (() => {
+  // topN 2, ett enda bolag ⇒ minst en plats står alltid tom. Med en STIGANDE
+  // bench måste equity bli högre med sleeve på än av; utan bench ska den vara
+  // identisk med sleeve av (ingen tyst gratisavkastning).
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 };
+  const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: false, benchCandles: synthBenchUp }));
+  const on  = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: true,  benchCandles: synthBenchUp }));
+  const noBench = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: true, benchCandles: null }));
+  return on.equityPct > off.equityPct &&
+         Math.abs(noBench.equityPct - off.equityPct) < 1e-9 &&
+         Math.abs(on.chainedPct - off.chainedPct) < 1e-9;   // gamla måttet får INTE påverkas
+})());
+ok("sleeve-diagnostiken skiljer felkoppling från timing", (() => {
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5, benchCandles: synthBenchUp };
+  const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: false }));
+  const on  = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: true }));
+  const utan = BT.backtestUniverse({ X: synthUp }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 });
+  return off.sleeveContribPct === 0 &&              // avstängd sleeve bidrar inget
+         on.sleeveContribPct > 0 &&
+         off.idleBenchPct != null && on.idleDays > 0 &&  // mäts även när sleeven är AV
+         Math.abs(off.idleBenchPct - on.idleBenchPct) < 1e-9 &&
+         utan.idleBenchPct === null;                // utan bench finns inget att mäta
+})());
+ok("sleeven rör inte affärsstatistiken", (() => {
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5, benchCandles: synthBenchUp };
+  const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: false }));
+  const on  = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { sleeve: true }));
+  return off.trades === on.trades && off.winRate === on.winRate && off.profitFactor === on.profitFactor;
+})());
+ok("exposurePct mäter andel av tiden i aktier", (() => {
+  const bt = BT.backtestUniverse({ X: synthUp }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 });
+  // ett bolag, två platser ⇒ som mest 50 % investerat
+  return bt.exposurePct > 0 && bt.exposurePct <= 50 + 1e-9;
+})());
+ok("regimfilter stoppar nya positioner när bench ligger under sitt MA", (() => {
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 };
+  const down = synth.map((d, i) => ({ d, o: 100 - i * 0.5, h: 101 - i * 0.5, l: 99 - i * 0.5, c: 100 - i * 0.5 }));
+  const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { benchCandles: down, regimeMa: 0 }));
+  const on  = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { benchCandles: down, regimeMa: 10 }));
+  const up  = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { benchCandles: synthBenchUp, regimeMa: 10 }));
+  // fallande bench ⇒ färre affärer; stigande bench ⇒ filtret ska inte bita
+  return on.trades < off.trades && up.trades === off.trades;
+})());
+ok("regimfilter blockerar inte när MA saknar underlag", (() => {
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 };
+  const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { regimeMa: 0 }));
+  const huge = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { benchCandles: synthBenchUp, regimeMa: 5000 }));
+  return huge.trades === off.trades;
+})());
+ok("maxHoldDays styr hålltiden i BEHÅLL-läget", (() => {
+  // orimligt vida nivåer ⇒ varken stop eller mål kan träffas, enda exiten är
+  // horisonten. Serien måste stiga: rankAt kräver POSITIVT momentum, så en helt
+  // flat serie ger noll kandidater och testet skulle mäta ingenting.
+  const p = { lookback: 5, stopPct: 0.99, targetPct: 0.99, mode: "hold", topN: 1, weight: 1 };
+  const kort = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { maxHoldDays: 5 }));
+  const lang = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { maxHoldDays: 25 }));
+  return kort.avgHoldDays < lang.avgHoldDays && kort.trades > lang.trades;
+})());
+ok("kostnaden dras både från affärsnettot och från equity", (() => {
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5, benchCandles: synthBenchUp, sleeve: true };
+  const gratis = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { costPct: 0 }));
+  const dyrt   = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { costPct: 1 }));
+  return dyrt.equityPct < gratis.equityPct && dyrt.chainedPct < gratis.chainedPct &&
+         Math.abs(dyrt.costDragPctPerYear - dyrt.tradesPerYear * 1 * 0.5) < 1e-9;
+})());
+ok("equity = kedjan av affärernas dagsben när boken är fullinvesterad", (() => {
+  /* En enda plats, vikt 1, orimligt vida nivåer ⇒ inga stop/mål-träffar. Då
+     MÅSTE equity vara exakt produkten av affärernas utfall – annars tappas
+     eller dubbelräknas dagar. Fångar bland annat att equity-loopen börjar på
+     axis[0]: startar den på 1 försvinner entry-dagens avkastning för den
+     första affären tyst. */
+  const p = { lookback: 5, stopPct: 0.99, targetPct: 0.99, maxHoldDays: 3, mode: "hold", topN: 1, weight: 1, costPct: 0 };
+  const bt = BT.backtestUniverse({ X: synthUp }, p);
+  const chain = 1 + bt.chainedPct / 100;          // vikt 1 ⇒ ren produkt av affärerna
+  return Math.abs((1 + bt.equityPct / 100) - chain) < 1e-9;
+})());
+ok("years/tradesPerYear räknas ur kalenderspannet", (() => {
+  const bt = BT.backtestUniverse({ X: synthUp }, { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 });
+  const span = (Date.parse(bt.to) - Date.parse(bt.from)) / 86400e3 / 365.25;
+  return Math.abs(bt.years - span) < 1e-9 && bt.from < bt.to;
+})());
+ok("backtestUniverse tål tomt/för kort underlag", (() => {
+  return BT.backtestUniverse({}, { lookback: 20 }) === null &&
+         BT.backtestUniverse({ X: synthUp.slice(0, 3) }, { lookback: 20 }) === null;
+})());
 
 // ---- rapportens högerspalt: innehållsförteckning + sammanfattning ----
 // Fältraden följer daglig_mall.md – parseDaily läser "Läge" som **fält**,

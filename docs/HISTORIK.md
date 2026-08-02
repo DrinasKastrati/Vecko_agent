@@ -7,6 +7,92 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (filstädning – sju filer raderade efter beslut av Dren):
+  Repot hade samlat på sig parallella filer som beskrev samma sak, vilket är en tyst risk: när två
+  dokument säger olika saker om samma regel vinner det som råkar läsas först.
+  **Raderat:**
+  `Anvandarguide.html`, `Anvandarmanual.html` och `Anvandarmanual.pdf` – båda överlappade
+  `Kom-igang.html` (använda dashboarden) och `Systemguide.html` (förstå besluten). CLAUDE.md
+  definierar tre målgrupper; det fanns fem filer för dem. Webbappen länkade inte till någon av de
+  raderade, så inget bröts.
+  `prompts/veckoprompt.md` – stubben efter den separata måndagsprompten. Filen sa själv
+  "kan raderas helt: `git rm prompts/veckoprompt.md`". REGELN står kvar på fyra ställen
+  (CLAUDE.md, MANUAL.md, START.md, den här filen), omformulerad från "schemalägg inte filen" till
+  **"lägg aldrig till en separat måndagsprompt"** – regeln behövde inte en fil för att gälla.
+  `templates/case_rapport.md` – tidig scoutmall, ersatt av `templates/scout_case.md`, noll
+  referenser i hela repot.
+  `auto_push.bat` + `setup_autopush.bat` – auto-pushen stängdes av 2026-08-02 (poppade upp ett
+  konsolfönster var 30:e minut). Skripten är borta OCH Windows-uppgiften `VeckoAgent AutoPush`
+  avregistrerades samma dag, så det finns inget halvdött kvar som pekar på en raderad fil.
+  `push.bat` är enda vägen ut till GitHub.
+  **Behållet medvetet:** de tre gamla backtest-rapporterna (`backtest-260731-*`,
+  `backtest-260802-nordic.md`) från 2-positionsgridet. De har noll referenser, men de är
+  bevisunderlaget för de beslut som fattades då – och hela poängen med det här repot är att
+  besluten går att granska i efterhand. `index_2/3/4.html` behölls också: de är
+  redirect-stubbar som håller gamla temabokmärken vid liv.
+  **Följdändringar:** `make-manual.bat` renderar nu två manualer i stället för tre, CLAUDE.md
+  avsnitt 2/4/5b/7/8, `MANUAL.md` (filkartan fick rader för `docs/` och repo-roten) och
+  `prompts/START.md`. Regeln "radera aldrig mallarna" preciserades till att gälla de mallar en
+  prompt faktiskt läser, med `grep -r templates/ prompts/` som kontroll.
+
+- ✅ 2026-08-02 (backtestmotorn ombyggd – sex mätfel, och två slutsatser som föll):
+  **Fyndet.** En genomgång av `backtest.mjs` hittade sex fel som alla drog åt samma håll: gridet
+  mätte något annat än det böckerna gör.
+  1. **Indexsleeven modellerades inte.** Kedjningen multiplicerade ihop STÄNGDA affärer i
+     exit-ordning och hade därför ingen tidsaxel alls – en tom plats bidrog med noll, fast den
+     live ligger i `XACT-OMXS30.ST` respektive SPY. Max drawdown mättes på samma affärskedja,
+     alltså inte på något som liknade en portföljkurva.
+  2. **Lookback-fönstret testades bara på 10 och 20 dagar.** Två till fyra veckor är kortsiktig
+     REVERSAL-horisont; att köpa topp N på det fönstret ligger nära att köpa det mest överköpta.
+  3. **Ingen out-of-sample-kontroll.** Nivåbanden i prompterna kom ur den bästa av 24 celler,
+     valda på hela perioden.
+  4. **Survivorship bias oredovisad.** Universumfilerna är dagens mest likvida namn.
+  5. **Inget regimfilter.**
+  6. **`maxHoldDays` hårdkodad till 30** i gridet.
+  **Åtgärd – motorn.** `backtestUniverse` räknar nu en **daglig equity-kurva** på en gemensam
+  datumaxel (unionen av alla börsers handelsdagar, eftersom .ST/.OL/.CO/.HE har olika helgdagar).
+  Varje plats håller antingen en aktie – med aktiens dagsavkastning, teleskoperande till exakt
+  `exitPrice/entryPrice` – eller sleeven. Kostnaden dras på exitdagen. Upptagen plats gäller HELA
+  innehavsperioden, även dagar då just den börsen var stängd, annars hade sleeven felaktigt fått
+  de dagarna. `momentumAt` fick en `skip`-parameter (momentum-litteraturens hoppfönster),
+  `simulateTrade` exponerar entry/exit för kurvan, och `chainedPct` finns kvar oförändrat så
+  äldre rapporter går att jämföra med. Rapporten fick fem svep i stället för ett kors: huvudgrid
+  (läge × 4 lookbacks × 3 nivåer), skip, sleeve av/på, hålltid, regimfilter, plus out-of-sample.
+  **Fälla som kostade en runda:** den första sleeve-diagnostiken redovisade benchmarks utveckling
+  under lediga dagar OVIKTAT, vilket fick rapporten att dra motsatt slutsats. Rätt facit är
+  `sleeveNeutralPct` – benchmarks totalavkastning upphöjt till andelen ledig tid. Ligger utfallet
+  långt under det är den lediga tiden koncentrerad till svaga perioder.
+  **Resultat 1 – lookbacken var hela skillnaden.** Nordiska boken: med 120 dagars fönster och
+  hållregeln ger skelettet **+43,7 % mot ^OMX +36,3 %** (PF 1,13, DD −17,8 %); med 10–20 dagar
+  −18,9 till −34,1 %. Slutsatsen "ramverket bär sig inte självt" var alltså en egenskap hos ett
+  fönster som aldrig testades. US: +53,2 % vid 120 dagar och +55,7 % vid 10 dagar mot ^GSPC
+  +70,7 % – fortfarande under index, men 60 dagars fönster med 20 dagars skip ger +110,3 %
+  (PF 1,26, DD −25,9 %). I US-boken är det stoppbredden, inte fönstret, som styr.
+  **Resultat 2 – nordiska stoppbandet var brus.** Out-of-sample-testet delar femårsperioden på
+  mitten: samma stop/mål-nivå vinner i båda halvorna i **1 av 8** kombinationer i nordiska boken,
+  men **5 av 8** i US-boken. Omkalibreringen till −4 %/+8 % samma dag (posten nedan) byggde alltså
+  på urvalsbrus. Nordiska bandet skrevs om till en RISKREGEL (3–5 %, tekniskt satt, R/R 2:1 och
+  kostnadströskeln binder), US-bandet 5–6 % står kvar som kalibrerat.
+  **Resultat 3 – regimfiltret är det starkaste enskilda filtret efter hållregeln.** Att bara
+  öppna NYA positioner när benchmark ligger över sitt glidande medel: nordiska boken −18,9 % →
+  **+28,9 % (MA100)**, DD −41,4 % → −29,1 %. US: +42,1 % → **+70,2 % (MA200)**, DD −29,3 % →
+  −23,6 %. Infört som punkt 2b i båda prompterna – gäller ENBART nyöppning och får aldrig
+  användas som skäl att strunta i ett stop.
+  **Resultat 4 – sleevens verkliga värde.** US-boken: +30,8 % → +42,1 % enbart av att oallokerat
+  kapital faktiskt ligger i index. Nordiska boken: +0,78 % mot ett neutralt facit på +5,52 % –
+  den lediga tiden inföll när ^OMX var svagt, vilket är väntat eftersom platser blir tomma när
+  positioner stoppas ut.
+  **Resultat 5 – hålltiden skiljer sig mellan böckerna.** Nordisk: 60 dagar (−10,0 %) slår 30
+  (−18,9 %) och 20 (−24,2 %). US: 30 dagar (+42,1 %) slår både 20 (+3,4 %) och 60 (+27,9 %).
+  **Följdändringar.** `prompts/dagligprompt.md` och `prompts/us_dagligprompt.md` (punkterna 0–5),
+  `Systemguide.html` avsnitt 4, 5, 6, 7 och 9 (avsnitt 9 helt omskrivet – de gamla siffrorna var
+  hämtade ur affärskedjan), samt 21 nya tester i `tests/run.mjs` (347 totalt) som låser
+  teleskoperingen, sleevens av/på-invariant, regimfiltret, hålltiden och kostnadsavdraget.
+  **Sista buggen i ombyggnaden:** equity-loopen startade på `k=1`, vilket tyst tappade
+  entry-dagens avkastning för de affärer som öppnades på strategins allra första dag. Fångas nu
+  av invarianttestet "equity = kedjan av affärernas dagsben när boken är fullinvesterad": med en
+  plats, vikt 1 och orimligt vida nivåer MÅSTE equity vara exakt lika med affärskedjan.
+
 - ✅ 2026-08-02 (strategiomkalibrering – hållregeln mätt, stoppbanden var artefakter):
   **Fyndet.** Backtestets exit-orsaker visade att **46 % av alla affärer i bästa nordiska cellen
   stängdes av femdagarsklockan** – varken mål eller stop, alltså full rundturskostnad för noll

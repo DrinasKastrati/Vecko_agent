@@ -4,10 +4,10 @@ REM  Renderar manualerna till PDF. Kor den har efter varje andring
 REM  i en .html-manual, annars ligger PDF:en kvar pa gammalt
 REM  innehall utan att nagon markar det.
 REM
-REM  Tre manualer, tre malgrupper:
+REM  Tva HTML-manualer, tva malgrupper (den tredje, MANUAL.md, ar ren
+REM  markdown for drift och renderas inte):
 REM    Kom-igang.html      -> anvanda dashboarden (enkel)
 REM    Systemguide.html    -> forsta hur besluten fattas (djup)
-REM    Anvandarmanual.html -> den aldre kompletta manualen
 REM
 REM  Skarmbilderna i docs\manual\ bakas in automatiskt (relativa lankar).
 REM
@@ -29,7 +29,6 @@ if not exist "%CHROME%" (
 set "FEL=0"
 call :render Kom-igang
 call :render Systemguide
-call :render Anvandarmanual
 
 if "%FEL%"=="0" (
   echo.

@@ -95,7 +95,13 @@ cachas där.
 Sista siffran är antalet samtidiga positioner (vikten följer med: 4 ⇒ 25 % per position).
 Utelämnas den används 4, dvs. samma uppsättning som böckerna faktiskt handlas med.
 
-Resultatet hamnar i `reports/backtest/` och syns under Rapporter.
+Resultatet hamnar i `reports/backtest/` och syns under Rapporter. Rapporten har fem avsnitt:
+huvudgrid (läge × lookback × nivåer), lookback-/skip-svep, indexsleevens effekt, hålltid och
+regimfilter, samt out-of-sample. **Läs alltid out-of-sample-avsnittet innan en nivå ändras i en
+prompt** – det säger om "bästa cellen" håller i båda halvorna av perioden eller bara är brus.
+Talet "Equity %" är den dagliga portföljkurvan (tomma platser ligger i indexsleeven) och är det
+som ska jämföras med benchmark; "Kedjat %" är det gamla måttet och finns kvar för jämförelse
+med rapporter före 2026-08-02.
 
 ---
 
@@ -140,7 +146,8 @@ samma filer och auto-pushen kan fastna i en konflikt.
    den ackumulerade avkastningen. Historik-sektionerna är append-only.
 3. **Mallarna i `templates/` ändras aldrig av routinerna** – dashboarden läser rapporterna
    maskinellt och exakta rubriker är kontraktet.
-4. **`prompts/veckoprompt.md` schemaläggs aldrig** (utgången – skapade dubbletter).
+4. **Ingen separat måndagsprompt** – `dagligprompt.md` gör LÄGE A på måndagar. Den gamla
+   `veckoprompt.md` skapade dubblettrapporter och är raderad; lägg aldrig till en ny.
 5. **Stop-loss flyttas aldrig nedåt**, och lärdomar får aldrig mjuka upp stoppdisciplinen.
 6. **`index.html` ligger alltid i repo-roten** (krav från GitHub Pages).
 
@@ -158,6 +165,8 @@ samma filer och auto-pushen kan fastna i en konflikt.
 | `assets/` + `index.html` | Dashboarden |
 | `tests/` | Testsvit + simuleringstest |
 | `.github/` | Automatiken (Actions + skript) |
+| `docs/` | `HISTORIK.md` (daterad ändringslogg) + skärmbilder till manualerna |
+| repo-roten | `Kom-igang.html` (använda), `Systemguide.html` (förstå), `MANUAL.md` (drift) samt `push.bat` och `make-manual.bat` |
 
 ---
 

@@ -196,8 +196,17 @@ avvikelse från 25 % måste motiveras skriftligt.</p>
 <h3>Varför kapitalet aldrig ligger som kassa</h3>
 <p>Pengar utan aktivt case parkeras i en indexfond – <code>XACT-OMXS30</code> i den nordiska
 boken, <code>SPY</code> i den amerikanska – i stället för på konto. Skälet kommer direkt ur
-backtestet: index slog det mekaniska skelettet, så tid utanför marknaden är en garanterad
-kostnad.</p>
+backtestet: index slår det mekaniska skelettet i de flesta parameterval, så tid utanför
+marknaden är en garanterad kostnad.</p>
+<p>Sedan backtestmotorn byggdes om i augusti 2026 går den kostnaden att mäta i stället för att
+antas. Tidigare räknades tom tid som noll avkastning – ett mätfel som systematiskt underskattade
+böckerna. I den amerikanska boken visade sig indexdelen vara värd <b>elva procentenheter</b> över
+fem år: samma strategi gick från +30,8 % till +42,1 % enbart av att det oallokerade kapitalet
+faktiskt låg i index.</p>
+<p>I den nordiska boken var effekten nästan noll, och skälet är lärorikt: platser blir tomma när
+positioner stoppas ut, och det sker i nedgångar. Indexdelen ligger alltså i index just när index
+är svagt. Det gör inte indexdelen fel – alternativet, kassa, hade gett noll – men det är ett
+konkret exempel på varför ett mätsätt måste följa tiden, inte bara affärerna.</p>
 <p>Det gör också frågan skarpare. Med kassa jämförs strategin mot noll. Med en indexdel blir
 frågan den rätta: <b>tillför aktieurvalet något utöver att bara äga index?</b> Det är precis
 vad alpha-måttet mäter. Indexdelens egna affärer märks särskilt och räknas bort ur
@@ -207,14 +216,25 @@ urvalsstatistiken – annars hade den spätt ut siffrorna.</p>
 <section>
 <h2>5. Nivåerna: stopp, mål, kostnadströskel</h2>
 
-<h3>Stoppbredd 3–5 %</h3>
-<p>Bandet är inte valt på känsla. I backtestets parametergrid var <b>−3 % stopp / +6 % mål</b>
-bäst i varje körning, och resultatet blev sämre ju bredare stoppen sattes. Slutsatsen höll även
-när gridet kördes om med fyra positioner.</p>
+<h3>Stoppbredd: ett band, inte en kalibrering</h3>
+<p>Här stod tidigare att <b>−3 % stopp / +6 % mål</b> var bäst i varje körning. Det påståendet
+höll inte för granskning, och historien är värd att berätta eftersom den visar hur lätt en
+optimerad parameter förkläs till en naturlag.</p>
+<p>Först flyttades bandet till 4–5 % när backtestet kördes om med den nya hållregeln – den nya
+bästa cellen sa så. Sedan ställdes den avgörande frågan: <em>vinner samma nivå om man delar
+femårsperioden på mitten och tittar på halvorna var för sig?</em></p>
+<table>
+<tr><th>Bok</th><th>Samma nivå bäst i båda halvorna</th><th>Slutsats</th></tr>
+<tr><td>Nordisk</td><td class="num">1 av 8</td><td>Nivån är brus – bandet är en riskregel</td></tr>
+<tr><td>US</td><td class="num">5 av 8</td><td>−5 %/+10 % håller; bandet 5–6 % är verkligt</td></tr>
+</table>
+<p>I den nordiska boken beror alltså «bästa stoppnivån» på vilken period som mäts, inte på
+marknaden. Bandet <b>3–5 %</b> står kvar, men som riskram – inte som ett optimum. Det som
+faktiskt binder är kravet på 2:1 i risk/reward och kostnadströskeln nedan.</p>
 <div class="box box--stop">
 <b>Stoppen får aldrig breddas för att «ge caset luft»</b>
-Data säger tvärtom. Inom bandet 3–5 % ska stoppet sättas tekniskt – strax under ett stöd –
-inte som en rund siffra.
+Att bandet inte är optimerat betyder inte att det är fritt. Inom bandet ska stoppet sättas
+tekniskt – strax under ett stöd – inte som en rund siffra, och aldrig flyttas nedåt efter entry.
 </div>
 
 <h3>Kostnadströskeln: minst 6 % till målet</h3>
@@ -242,13 +262,16 @@ katalysatorns <em>typ</em>, inte efter magkänsla.</p>
 <table>
 <tr><th>Typ</th><th>Horisont</th><th>Målavstånd</th><th>Stopp</th><th>Tidsstopp</th></tr>
 <tr><td>rapport, order, myndighetsbeslut, återköp</td><td>3–6 veckor</td><td>12–15 %</td>
-    <td>4–5 %</td><td>nej</td></tr>
-<tr><td>uppköpsrykte, insynshandel, indexhändelse</td><td>5–10 handelsdagar</td><td>6–9 %</td>
-    <td>3–4 %</td><td><b>ja – avvecklas efter 10 handelsdagar</b> om ryktet varken bekräftats
+    <td>3–5 %</td><td>nej</td></tr>
+<tr><td>uppköpsrykte, insynshandel, indexhändelse</td><td>5–10 handelsdagar</td><td>8–10 %</td>
+    <td>3–5 %</td><td><b>ja – avvecklas efter 10 handelsdagar</b> om ryktet varken bekräftats
     eller dementerats</td></tr>
 <tr><td>makro, vändningscase, övrigt</td><td>2–4 veckor</td><td>8–12 %</td><td>3–5 %</td>
     <td>nej</td></tr>
 </table>
+<p>Tabellen gäller den nordiska boken. Den amerikanska kör genomgående <b>5–6 %</b> stopp och
+motsvarande högre målavstånd, dels för att US-aktier stoppas ut på brus vid 3 %, dels för att
+rundturskostnaden är tre gånger så hög.</p>
 <p>Kravet på 2:1 i risk/reward gäller i samtliga rader. Tidsstoppet på ryktescase finns för att
 obekräftade rykten inte dör med ett smäll utan genom att sluta röra sig – utan tidsstopp blir
 de liggande och binder kapital.</p>
@@ -257,9 +280,12 @@ de liggande och binder kapital.</p>
 <section>
 <h2>7. Varför BEHÅLL är standardvalet</h2>
 <p>Det här är den enskilt viktigaste regeln i systemet, och den kommer direkt ur mätdata.</p>
-<p>Veckorotation av fyra positioner ger ungefär <b>200 affärer per år</b>. Backtestet visar
-negativt nettoresultat även i sin bästa parameterkombination <em>enbart</em> av
-omsättningstakten. Fler positioner är rätt för riskspridningen men höjer kostnadsdraget – vilket
+<p>Veckorotation av fyra positioner ger ungefär <b>200 affärer per år</b>. Med den takten är
+nettoresultatet negativt i så gott som varje parameterkombination <em>enbart</em> av
+omsättningen. Hållregeln – platsen behålls tills stopp eller mål träffas, rotationen fyller
+bara tomma platser – sänker takten till 66–117 affärer per år och förbättrar utfallet i
+<b>samtliga tolv</b> parameterceller i båda böckerna. Fler positioner är rätt för
+riskspridningen men höjer kostnadsdraget – vilket
 gör hållregeln viktigare, inte mindre viktig.</p>
 <p>Därför: ett innehav vars tes är intakt och vars stopp och mål inte träffats <b>behålls</b> –
 även när det hållits längre än fem handelsdagar. En position roteras ut endast om:</p>
@@ -318,34 +344,72 @@ om. Under det är siffrorna brus. Avkastning-vyn visar hur långt det är kvar.<
 <p>Det här avsnittet är det viktigaste i hela guiden, och det säger obekväma saker.</p>
 
 <p>Det <em>mekaniska skelettet</em> – alltså ramverket utan AI-omdöme, med momentum som
-platshållare för urval – simulerades över fem år och 259 veckor på 30 nordiska storbolag, samt
-motsvarande i USA. Resultatet:</p>
+platshållare för urval – simuleras över fem år på 30 nordiska storbolag samt 30 amerikanska.</p>
 
+<h3>Först: mätningen var fel</h3>
+<p>I augusti 2026 granskades backtestmotorn och sex mätfel hittades. De redovisas här eftersom
+flera av slutsatserna i den här guiden vilade på dem:</p>
+<ol>
+  <li><b>Indexdelen räknades som noll.</b> Resultatet kedjades affär för affär, utan tidsaxel, så
+  kapital som stod oallokerat bidrog med ingenting – trots att det live ligger i index.</li>
+  <li><b>Bara korta momentumfönster testades</b> – 10 och 20 dagar, vilket är kortsiktig
+  <em>reversal</em>-horisont snarare än momentum.</li>
+  <li><b>Ingen out-of-sample-kontroll.</b> «Bästa cellen» plockades ur 24 celler på hela perioden,
+  vilket inte går att skilja från slumpen.</li>
+  <li><b>Survivorship redovisades inte.</b> Universumet är dagens mest likvida bolag – dagens
+  vinnare är med just för att de vann.</li>
+  <li><b>Inget regimfilter</b> testades.</li>
+  <li><b>Hålltiden varierades aldrig</b> – 30 dagar var hårdkodat.</li>
+</ol>
+<p>Motorn räknar nu en daglig kurva där varje plats antingen håller en aktie eller indexdelen,
+vilket också ger en ärlig drawdown. Talen nedan kommer ur den ombyggda motorn.</p>
+
+<h3>Vad som gäller efter ombyggnaden</h3>
 <table>
-<tr><th>Marknad</th><th>Brutto</th><th>Jämfört med index</th><th>Netto efter courtage</th></tr>
-<tr><td>Nordisk (bästa cell)</td><td class="num">+22,6 %</td><td>OMXS30 <span class="num">+36,3 %</span></td>
-    <td class="neg">−21,2 %</td></tr>
-<tr><td>US (bästa cell)</td><td class="num">+61,4 %</td><td>S&amp;P <span class="num">+70,9 %</span></td>
-    <td class="neg">−73 % till −86 %</td></tr>
+<tr><th>Marknad</th><th>Bästa cell</th><th>Index (köp och behåll)</th><th>Max drawdown</th></tr>
+<tr><td>Nordisk</td><td class="num">+43,7 %</td><td>OMXS30 <span class="num">+36,3 %</span></td>
+    <td class="num">−17,8 %</td></tr>
+<tr><td>US</td><td class="num">+55,7 %</td><td>S&amp;P 500 <span class="num">+70,7 %</span></td>
+    <td class="num">−33,6 %</td></tr>
 </table>
+<p>Den nordiska bästa cellen använder <b>120 dagars momentumfönster</b> och hållregeln; med de
+gamla 10–20-dagarsfönstren ger samma nivåer −18,9 till −34,1 %. Skillnaden mellan «ramverket
+bär sig inte» och «ramverket slår index» låg alltså i en parameter som aldrig testades. I den
+amerikanska boken är fönstret mindre avgörande – där är det stoppbredden som styr.</p>
 
 <div class="box box--stop">
 <b>Slutsatsen, rakt ut</b>
-Ramverket bär inte sin egen vikt. Profit factor ligger under 1,0 netto i båda marknaderna.
-<b>AI-urvalet måste tillföra hela edgen</b> – det räcker inte att det är «ungefär lika bra som
-momentum», då blir resultatet negativt efter kostnader.
+Den nordiska boken slår sitt index i sin bästa parameterkombination – men bara med lång
+momentumhorisont, och siffran är ett tak eftersom universumet består av överlevare. Den
+amerikanska ligger kvar under sitt index. <b>AI-urvalet måste fortfarande tillföra edgen</b>;
+skillnaden är att ramverket inte längre motarbetar det.
 </div>
 
-<p>Två saker som ändå gick att lära av gridet:</p>
+<h3>Det som faktiskt visade sig hålla</h3>
 <ul>
-  <li><b>Fyra positioner slår två i varje enskild cell.</b> Profit factor upp från 0,86–0,91 till
-  0,89–0,96, kedjat utfall ungefär halverat i förlust, max drawdown ned cirka 15 procentenheter.
-  Riskspridningen gör precis det den ska.</li>
-  <li><b>Smala stopp slår breda</b> i den nordiska boken – konsekvent, i alla körningar.</li>
+  <li><b>Hållregeln.</b> Störst effekt av allt. Förbättrar utfallet i <b>samtliga tolv</b>
+  parameterceller i båda böckerna; i US-boken vänder den profit factor från 0,75 till 1,17 i
+  bästa cellen.</li>
+  <li><b>Fyra positioner slår två</b> i varje enskild cell – profit factor upp, förlusten ungefär
+  halverad, max drawdown ned cirka 15 procentenheter.</li>
+  <li><b>Marknadsregimen.</b> Att bara öppna nya positioner när index ligger över sitt glidande
+  medelvärde lyfter den nordiska boken från −18,9 % till +28,9 % och den amerikanska från
+  +42,1 % till +70,2 %, med lägre drawdown i båda. Detta är det enskilt starkaste filtret efter
+  hållregeln.</li>
+  <li><b>Långt momentumfönster slår kort</b> i den nordiska boken. I USA är bilden mer blandad,
+  men det bästa enskilda utfallet i hela rapporten är ett 60-dagars fönster med de senaste 20
+  dagarna bortskippade: <b>+110,3 %</b>.</li>
 </ul>
 
+<h3>Och det som INTE höll</h3>
+<p>Påståendet att «smala stopp slår breda i den nordiska boken» överlevde inte
+out-of-sample-testet – samma nivå vinner i båda halvorna i bara 1 fall av 8. I den amerikanska
+boken håller däremot −5 %/+10 % (5 av 8). Nordiska stoppbandet är därför en riskregel, det
+amerikanska en kalibrering.</p>
+
 <p>Att detta står i systemets egen dokumentation är avsiktligt. Ett beslutsstöd som bara
-redovisar sina träffar är inte ett beslutsstöd.</p>
+redovisar sina träffar är inte ett beslutsstöd – och ett som inte reviderar sina egna
+slutsatser när mätningen visar sig fel är sämre än inget alls.</p>
 </section>
 
 <section>

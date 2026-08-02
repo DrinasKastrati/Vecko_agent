@@ -107,7 +107,8 @@ den bara när A inte är möjlig.
    producerar samma sorts rapport som tidigare.
 2. Därefter: **ändra bara filerna i `prompts/` och pusha.** Nästa körning använder den nya
    versionen automatiskt.
-3. `prompts/veckoprompt.md` är utgången och får ALDRIG schemaläggas – den skapade dubbletter.
+3. Lägg ALDRIG till en separat måndagsprompt – `dagligprompt.md` gör LÄGE A på måndagar. Den
+   gamla `veckoprompt.md` körde rotationen en andra gång, skapade dubbletter och är raderad.
 4. `prompts/analysprompt.md` är MANUELL (körs när analyskön har poster) och behöver ingen routine.
 
 ## Varför laddaren säger "läs hela filen"

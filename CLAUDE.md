@@ -49,7 +49,6 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 
 - `index.html` MÅSTE ligga i repo-roten – annars serverar inte GitHub Pages den på sajtens rot.
 - `templates/` – strikta mallar. Routinerna får ALDRIG ändra dem (dashboardens parsningskontrakt).
-- `prompts/veckoprompt.md` – UTGÅNGEN stub. Schemalägg den ALDRIG (skapade dubbletter).
 - `prompts/START.md` – korta laddare som routinerna pekar på; prompttexten klistras aldrig in.
 - `state/lessons.md` – skrivs ENDAST av miss-retron.
 - `state/news_feed.json` – PRIMÄR nyhetskälla för alla tre routinerna, inte ett komplement.
@@ -66,9 +65,11 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 - **Manualerna har tre olika målgrupper – blanda inte ihop dem.** `Kom-igang.html` = använda
   dashboarden (enkel, ingen teknik). `Systemguide.html` = hur besluten fattas, hur de mäts och
   vad backtestet visade (djup, för den som vill förstå). `MANUAL.md` = drift åt Dren (push,
-  tester, felsökning). `Anvandarmanual.html` är den äldre kompletta manualen och överlappar nu
-  de två första. Alla `.html`-manualer renderas till PDF med `make-manual.bat` – **kör det efter
-  varje ändring**, annars ligger PDF:en kvar på gammalt innehåll utan att någon märker det.
+  tester, felsökning). **Lägg inte till en fjärde.** `Anvandarguide.html` och `Anvandarmanual.html`
+  raderades 2026-08-02 just för att de överlappade de tre ovan – innehåll som saknas ska in i rätt
+  av de tre, inte i en ny fil. De två `.html`-manualerna renderas till PDF med `make-manual.bat`
+  – **kör det efter varje ändring**, annars ligger PDF:en kvar på gammalt innehåll utan att någon
+  märker det.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
@@ -130,8 +131,8 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `reports/daily/…`). Läser `config/fokus.md`, `state/portfolj.md`, rätt mall i `templates/`, och
   **kurser i första hand ur `state/prices.json`**. Uppdaterar `state/portfolj.md` (historik är
   append-only). Committar till main.
-- **`prompts/veckoprompt.md`** är UTGÅNGEN (stub) – den separata måndagsrotationen skapade dubbletter
-  och är borttagen ur flödet. Schemalägg endast `dagligprompt.md`.
+- **En separat måndagsprompt (`veckoprompt.md`) fanns tidigare men är raderad** – den körde
+  rotationen en andra gång och skapade dubbletter. Schemalägg endast `dagligprompt.md`.
 - **`prompts/scoutprompt.md`** (USA & krypto) – FRISTÅENDE daglig scout. Läser `config/fokus_scout.md`
   + `templates/scout_case.md`, kurser ur `state/prices.json` (US-symbol / `^INDEX` / `<MYNT>-USD`),
   skriver `reports/scout/rapport-yymmdd.md`, committar till main. Täcker INTE Norden. Egen kategori
@@ -190,8 +191,8 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   **Allokeringen måste ligga efter BÅDA veckorotationerna** – därav måndag 15:30.
   **Miss-retron ligger på lördag, inte fredag kväll:** fredagens US-stängningskurser skrivs
   21:10 UTC (23:10 CEST), så en lördagskörning har komplett facit för båda böckerna.
-  `prompts/analysprompt.md` körs MANUELLT när kön har poster. `prompts/veckoprompt.md` är utgången
-  och får ALDRIG schemaläggas (skapade dubbletter).
+  `prompts/analysprompt.md` körs MANUELLT när kön har poster. En separat måndagsprompt får ALDRIG
+  läggas till igen (den skapade dubbletter och är raderad).
 - ✅ **PROMPTERNA KLISTRAS INTE IN LÄNGRE (2026-08-02):** `prompts/START.md` innehåller femradiga
   LADDARE att lägga i routinens prompt-fält i stället för hela prompttexten. Laddaren kör
   `git pull` och läser rätt fil ur `prompts/`, så en promptändring i repot slår igenom vid nästa
@@ -230,16 +231,18 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      körningen 2026-08-02.
   4. `docs/manual/`-skärmbilderna åldras. Tas nya: se kommentaren i `make-manual.bat`, och kör
      sedan skriptet så PDF:en följer med.
-  5. **Beslut kvar till Dren:** `Anvandarguide.html` (den korta tidigare guiden i roten) är nu
-     överlappad av `Anvandarmanual.pdf`. Filen är otrackad och raderas INTE utan besked.
-  2. **AUTO-PUSH ÄR AVSTÄNGD sedan 2026-08-02.** Den schemalagda uppgiften `VeckoAgent AutoPush`
-     (`auto_push.bat`, var 30:e min) är `Disabled` – den poppade upp ett konsolfönster var
-     halvtimme. **Pusha manuellt med `push.bat` efter varje session.** Slå på igen med
-     `Enable-ScheduledTask -TaskName "VeckoAgent AutoPush"`.
+  5. ✅ **Avklarat 2026-08-02:** filstädningen. `Anvandarguide.html`, `Anvandarmanual.html/.pdf`,
+     `prompts/veckoprompt.md`, `templates/case_rapport.md`, `auto_push.bat` och
+     `setup_autopush.bat` är raderade efter beslut av Dren. Se punkt 6 nedan om auto-pushen.
+  6. **AUTO-PUSH ÄR HELT BORTTAGEN (2026-08-02).** Skripten `auto_push.bat`/`setup_autopush.bat`
+     är raderade och den schemalagda Windows-uppgiften `VeckoAgent AutoPush` är avregistrerad –
+     det finns inget kvar att slå på. **Pusha manuellt med `push.bat` efter varje session.**
+     Vill du ha auto-push igen måste skriptet skrivas om (hämta det ur git-historiken före
+     2026-08-02) och uppgiften registreras på nytt.
      Notera för framtida felsökning: commitar som heter *"Uppdatering via Cowork …"* kommer från
-     **`push.bat`** (manuell), inte från auto-pushen, som skriver *"Auto-push …"* och loggar till
-     `auto_push.log`. Blanda inte ihop dem – auto-pushen avbryter dessutom på helger och utanför
-     07–19, så den kan se ut att ha kört utan att ha gjort något.
+     **`push.bat`**. Äldre commitar med *"Auto-push …"* kom från den nu borttagna auto-pushen,
+     som avbröt på helger och utanför 07–19 – den kunde alltså se ut att ha kört utan att ha
+     gjort något.
      **Fälla som kvarstår oavsett:** kör aldrig `fetch-prices.mjs`/`fetch-news.mjs` lokalt
      samtidigt som actionen skriver samma filer – en `pull --rebase` fastnar då i konflikt.
      `state/dashboard.json` och `search-index.json` är skyddade via `.gitattributes` (`-merge`),
@@ -250,6 +253,13 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      `node .github/scripts/backtest.mjs nordic 5y 4` (resp. `us 5y 4`). Kräver nät. Sista
      argumentet är antalet positioner – utan det simuleras 4 à 25 %, som böckerna faktiskt
      handlas. Gridet på 2 positioner (filerna `backtest-260731-*`) är historik.
+     **Motorn byggdes om 2026-08-02** (daglig equity-kurva med indexsleeven modellerad,
+     lookback-svep 10/20/60/120 + skip, regimfilter, hålltidssvep, out-of-sample). Kolumnen
+     `Equity %` är portföljkurvan och ska jämföras med benchmark; `Kedjat %` är det gamla
+     affärskedjemåttet och finns bara kvar för jämförelse bakåt. **Ändra ALDRIG en nivå i en
+     prompt utan att först läsa rapportens out-of-sample-avsnitt** – nordiska stoppbandet visade
+     sig vara brus (samma nivå bäst i båda halvorna i 1 fall av 8), medan US-bandet höll (5 av 8).
+     Detaljerna i `docs/HISTORIK.md`.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.
@@ -276,13 +286,14 @@ ta bort skyddet.
 - **OneDrive + git:** OneDrive-monteringen ger `.git/index.lock`-EPERM, CRLF-brus och trunkerade
   läsningar i Cowork-sandlådan. `.gitattributes` (LF) dämpar CRLF; den riktiga fixen är att klona
   repot UTANFÖR OneDrive. Sandlådan kan inte pusha – Dren committar/pushar från sin dator.
-- **Dubbel rotation på måndag (ÅTGÄRDAT):** `veckoprompt.md` är utgången och `dagligprompt.md` är
-  enda ingången (den gör LÄGE A på måndagar). Schemalägg ALDRIG en separat måndagsprompt igen –
+- **Dubbel rotation på måndag (ÅTGÄRDAT):** `dagligprompt.md` är enda ingången (den gör LÄGE A på
+  måndagar). Skapa eller schemalägg ALDRIG en separat måndagsprompt igen (`veckoprompt.md`) –
   det skapade tidigare dubbletter (`veckorapport-yymmdd_1.md`).
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
 - **Sänk inte verifieringskravet** för kurser – lösningen är pålitliga priser (prices.json), inte
   att ta bort skyddet.
-- **Radera aldrig** `state/portfolj.md` (historik/ackumulerad avkastning) eller mallarna vid en
+- **Radera aldrig** `state/portfolj.md` (historik/ackumulerad avkastning) eller de mallar en prompt
+  faktiskt läser (parsningskontraktet – kontrollera med `grep -r templates/ prompts/`) vid en
   omstrukturering.
 - **Lärdomar får ALDRIG mjuka upp kursverifiering, stopp-disciplin eller riskregler.** Miss-retron
   får skriva processregler, inte sänka skyddsnät.
@@ -302,8 +313,7 @@ ta bort skyddet.
 Allt ligger nu i repot (branch `main`) enligt strukturen i avsnitt 2 – inga lösa filer utanför.
 Drens AKTIVA lokala arbetskopia: `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31).
 Äldre kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` och OneDrive-mappen) är utfasade – gör
-inga ändringar där. Eventuella
-`SETUP.md` / `MIGRATION.md` är historiska (migreringen är gjord) och kan ignoreras.
+inga ändringar där.
 
 ---
 
