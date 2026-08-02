@@ -585,6 +585,28 @@ select#reportSelect{min-width:210px}
 .report del{color:var(--faint)}
 pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:11.8px;color:var(--text-soft);margin:0}
 
+/* ---- Avkastning: en bok i taget ----
+   Vyn räknar alltid båda böckerna, men visar den valda. Tio staplade sektioner
+   blev en vägg av siffror. Valet ligger som data-book på <section id=
+   "view-avkastning">; app.js sätter attributet, CSS:en nedan gör resten. Utan
+   attributet (t.ex. om app.js inte hunnit köra) visas nordiska boken. */
+.booktabs{display:flex;gap:4px;margin-left:auto}
+.booktabs .btn[aria-pressed="true"]{background:var(--btn-on-bg,var(--accent-soft));
+  color:var(--btn-fg-hover,var(--text));border-color:var(--accent-line,var(--border))}
+#view-avkastning .book-block[data-book="us"],
+#view-avkastning .book-block[data-book="bada"]{display:none}
+#view-avkastning[data-book="us"] .book-block{display:none}
+#view-avkastning[data-book="us"] .book-block[data-book="us"]{display:block}
+#view-avkastning[data-book="bada"] .book-block{display:none}
+#view-avkastning[data-book="bada"] .book-block[data-book="bada"]{display:block}
+/* två prickar i den gemensamma rubriken, en per bok */
+#view-avkastning .book-h .bk + .bk{margin-left:-4px}
+/* Bokrubriken får luft och en tydlig avgränsning mot det gemensamma nedanför. */
+#view-avkastning .book-h{margin-bottom:14px}
+.book-bench{margin-left:auto;color:var(--faint);font-size:11.5px;font-weight:400;
+  letter-spacing:0;text-transform:none}
+.shared-block{margin-top:26px;padding-top:20px;border-top:1px solid var(--border)}
+
 /* ================= Avkastning ================= */
 .card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r2);
   padding:16px 18px;box-shadow:var(--shadow-sm)}

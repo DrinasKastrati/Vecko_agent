@@ -223,24 +223,88 @@
       </section>
 
       <section class="view" id="view-avkastning" data-view="avkastning">
-        <div class="sec-head"><h2>Avkastning</h2><span class="hint">statistik, utveckling &amp; watchlist</span></div>
-        <h3 class="sub">Handelsstatistik</h3>
-        <div id="tradeStats"></div>
-        <h3 class="sub">Riskmått <span class="sub-date">nordiska boken · ur den kedjade equity-kurvan</span></h3>
-        <div id="riskStats"></div>
-        <h3 class="sub">Alpha mot index <span class="sub-date">utfall minus OMXS30 över samma hållperiod</span></h3>
-        <div id="alphaStats"></div>
-        <div class="card">
-          <div id="chartWrap"><canvas id="returnChart"></canvas></div>
-          <div id="chartNote"></div>
+        <!-- EN BOK ÅT GÅNGEN. Båda böckerna räknas alltid, men bara den valda
+             visas – tio staplade sektioner blev en vägg av siffror. Valet ligger
+             som data-book på <section>, base.css döljer den andra. Böckerna slås
+             medvetet ALDRIG ihop: en USD-affär mäts mot S&P 500 och en SEK-affär
+             mot OMXS30, så ett gemensamt alpha vore meningslöst. Blandad total
+             finns i Total-vyn. Blocken matas av renderBookStats() i app.js. -->
+        <div class="sec-head"><h2>Avkastning</h2>
+          <span class="hint">en bok i taget · blandad total finns under Total</span>
+          <div class="booktabs" role="group" aria-label="Välj bok">
+            <button type="button" class="btn" data-book-set="nordic" aria-pressed="true">Nordiska</button>
+            <button type="button" class="btn" data-book-set="us" aria-pressed="false">Amerikanska</button>
+            <button type="button" class="btn" data-book-set="bada" aria-pressed="false">Gemensamt</button>
+          </div>
         </div>
-        <h3 class="sub">Månadsutfall <span class="sub-date">nordiska boken · kedjat viktat utfall per månad</span></h3>
-        <div id="monthly"></div>
-        <h3 class="sub">Beslutsloggen <span class="sub-date">state/decisions.json · underlaget som kalibrerar poängvikterna</span></h3>
-        <div id="decisionStats"></div>
-        <h3 class="sub">Historik (stängda positioner)</h3>
-        <div id="history"></div>
-        <div id="bubblare"></div>
+
+        <div class="book-block" data-book="bada">
+          <div class="book-h"><span class="bk bk--n"></span><span class="bk bk--u"></span>Båda böckerna<span class="book-bench">varje affär mot sitt eget index</span></div>
+          <p class="stat-note" style="margin:0 0 14px">Alla stängda affärer i en tabell. Träffsäkerhet och
+            profit factor räknas på procenttal, så de går att slå ihop – och nettot drar rätt
+            rundturskostnad per bok (~0,25 % nordiskt, ~0,75 % med växlingspåslag i USD).
+            <b>Riskmått och månadsutfall saknas här med flit:</b> de kedjar en equity-kurva, och två
+            separat finansierade böcker i olika valutor har ingen gemensam kurva. Vill du ha den
+            blandade avkastningen finns den under <button type="button" class="rail-more" data-goto-view="total">Total →</button></p>
+          <h3 class="sub">Handelsstatistik <span class="sub-date">båda böckerna · netto per bokens egen kostnad</span></h3>
+          <div id="allTradeStats"></div>
+          <h3 class="sub">Historik (stängda positioner) <span class="sub-date">båda böckerna, senast först</span></h3>
+          <div id="allHistory"></div>
+          <details class="sblock">
+            <summary>Alpha mot respektive index</summary>
+            <h3 class="sub">Alpha <span class="sub-date">varje affär minus SITT index (OMXS30 resp. S&amp;P 500)</span></h3>
+            <div id="allAlphaStats"></div>
+          </details>
+        </div>
+
+        <div class="book-block" data-book="nordic">
+          <div class="book-h"><span class="bk bk--n"></span>Nordiska boken<span class="book-bench">mäts mot OMXS30</span></div>
+          <h3 class="sub">Handelsstatistik</h3>
+          <div id="tradeStats"></div>
+          <h3 class="sub">Historik (stängda positioner)</h3>
+          <div id="history"></div>
+          <details class="sblock">
+            <summary>Riskmått, alpha och månadsutfall</summary>
+            <h3 class="sub">Riskmått <span class="sub-date">ur den kedjade equity-kurvan</span></h3>
+            <div id="riskStats"></div>
+            <h3 class="sub">Alpha mot index <span class="sub-date">utfall minus OMXS30 över samma hållperiod</span></h3>
+            <div id="alphaStats"></div>
+            <h3 class="sub">Månadsutfall <span class="sub-date">kedjat viktat utfall per månad</span></h3>
+            <div id="monthly"></div>
+          </details>
+        </div>
+
+        <div class="book-block" data-book="us">
+          <div class="book-h"><span class="bk bk--u"></span>Amerikanska boken<span class="book-bench">USD · mäts mot S&amp;P 500</span></div>
+          <h3 class="sub">Handelsstatistik <span class="sub-date">netto inkl. växlingspåslag</span></h3>
+          <div id="usTradeStats"></div>
+          <h3 class="sub">Historik (stängda positioner)</h3>
+          <div id="usHistory"></div>
+          <details class="sblock">
+            <summary>Riskmått, alpha och månadsutfall</summary>
+            <h3 class="sub">Riskmått <span class="sub-date">ur den kedjade equity-kurvan</span></h3>
+            <div id="usRiskStats"></div>
+            <h3 class="sub">Alpha mot index <span class="sub-date">utfall minus S&amp;P 500 över samma hållperiod</span></h3>
+            <div id="usAlphaStats"></div>
+            <h3 class="sub">Månadsutfall <span class="sub-date">kedjat viktat utfall per månad</span></h3>
+            <div id="usMonthly"></div>
+          </details>
+        </div>
+
+        <!-- Gäller båda böckerna – ligger därför utanför blocken ovan. -->
+        <div class="shared-block">
+          <h3 class="sub">Utveckling <span class="sub-date">nordiska strategin mot OMXS30 och S&amp;P 500</span></h3>
+          <div class="card">
+            <div id="chartWrap"><canvas id="returnChart"></canvas></div>
+            <div id="chartNote"></div>
+          </div>
+          <details class="sblock">
+            <summary>Beslutsloggen och veckans bubblare</summary>
+            <h3 class="sub">Beslutsloggen <span class="sub-date">state/decisions.json · underlaget som kalibrerar poängvikterna</span></h3>
+            <div id="decisionStats"></div>
+            <div id="bubblare"></div>
+          </details>
+        </div>
       </section>
 
       <section class="view" id="view-retro" data-view="retro">

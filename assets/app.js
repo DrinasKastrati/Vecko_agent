@@ -287,18 +287,17 @@
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
-      const cost = this.P.costFor("nordic", S.costs);
-      const tsEl = this.el("tradeStats"); if (tsEl) tsEl.innerHTML = R.renderTradeStats(this.P.computeTradeStats(S.portfolio.history, cost));
-      const rsEl = this.el("riskStats"); if (rsEl) rsEl.innerHTML = R.renderRiskStats(this.P.computeRiskStats(S.portfolio.history));
-      const moEl = this.el("monthly"); if (moEl) moEl.innerHTML = R.renderMonthlyHeatmap(this.P.buildMonthlyStats(S.portfolio.history));
-      // Alpha: utfall mot ^OMX över exakt samma hållperiod per affär.
-      const alphaMap = this.P.computeAlpha(S.portfolio.history, S.priceHistory, "^OMX");
-      const alphaEl = this.el("alphaStats");
-      if (alphaEl) alphaEl.innerHTML = R.renderAlphaStats(this.P.computeAlphaStats(S.portfolio.history, S.priceHistory, "^OMX"), "OMXS30");
+      /* Avkastning-vyn visar BÅDA böckerna, i var sitt block. Samma rena
+         funktioner för båda – bara kostnadsmodell, benchmark och id-prefix
+         skiljer. De slås aldrig ihop: ett gemensamt alpha över en SEK-affär mot
+         OMXS30 och en USD-affär mot S&P 500 vore meningslöst. Blandad total
+         finns i Total-vyn. */
+      this.renderBookStats("", S.portfolio, "nordic", "^OMX", "OMXS30");
+      this.renderBookStats("us", S.portfolioUs, "us", "^GSPC", "S&P 500");
+      this.renderBothBooks();
       // Beslutsloggen: gör kalibreringsunderlaget synligt (och synligt när det slutat fyllas).
       const dlEl = this.el("decisionStats");
       if (dlEl) dlEl.innerHTML = R.renderDecisionStats(this.P.decisionStats(S.decisions));
-      this.el("history").innerHTML = R.renderHistory(S.portfolio, alphaMap, "OMXS30");
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();
@@ -673,6 +672,65 @@
     }
 
     // ---- US-rotation (egen USD-bok, ny flik) ----
+    /* Ett bokblock i Avkastning-vyn: handelsstatistik, riskmått, alpha,
+       månadsutfall och historik. `prefix` är "" för nordiska boken (id:n
+       tradeStats, riskStats …) och "us" för den amerikanska (usTradeStats,
+       usRiskStats …). Saknas boken lämnas blocket tomt med en förklaring i
+       stället för att försvinna tyst.
+       Returnerar alpha-kartan, som historiktabellen och Hem också använder. */
+    renderBookStats(prefix, portfolio, costKey, benchTicker, benchLabel) {
+      const S = this.state, R = this.R;
+      const id = n => prefix ? prefix + n[0].toUpperCase() + n.slice(1) : n;
+      const set = (n, html) => { const el = this.el(id(n)); if (el) el.innerHTML = html; };
+      if (!portfolio) {
+        set("tradeStats", '<div class="empty">Boken finns inte ännu.</div>');
+        ["riskStats", "alphaStats", "monthly", "history"].forEach(n => set(n, ""));
+        return {};
+      }
+      const hist = portfolio.history || [];
+      const cost = this.P.costFor(costKey, S.costs);
+      const alphaMap = this.P.computeAlpha(hist, S.priceHistory, benchTicker);
+      set("tradeStats", R.renderTradeStats(this.P.computeTradeStats(hist, cost)));
+      set("riskStats", R.renderRiskStats(this.P.computeRiskStats(hist)));
+      set("alphaStats", R.renderAlphaStats(this.P.computeAlphaStats(hist, S.priceHistory, benchTicker), benchLabel));
+      set("monthly", R.renderMonthlyHeatmap(this.P.buildMonthlyStats(hist)));
+      set("history", R.renderHistory(portfolio, alphaMap, benchLabel));
+      return alphaMap;
+    }
+
+    /* Gemensamma blocket: alla stängda affärer ur BÅDA böckerna i en tabell.
+       Varje rad märks med sin bok, och den märkningen styr sedan både
+       rundturskostnaden (nordiskt ~0,25 %, USD ~0,75 % med växlingspåslag) och
+       vilket index affären mäts mot. Det är därför de rena funktionerna tar
+       emot en funktion i stället för ett fast värde – ett snitt hade gjort
+       nettot fel åt båda håll och alpha jämfört mot fel marknad.
+
+       Riskmått och månadsutfall utelämnas AVSIKTLIGT: båda kedjar en
+       equity-kurva, och två separat finansierade böcker i olika valutor har
+       ingen gemensam kurva. Blandad avkastning hör hemma i Total-vyn. */
+    renderBothBooks() {
+      const S = this.state, R = this.R;
+      const el = this.el("allTradeStats"); if (!el) return;
+      const tag = (rows, bok) => (rows || [])
+        .filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()))
+        .map(o => Object.assign({ Bok: bok }, o));
+      const hist = tag(S.portfolio && S.portfolio.history, "Nordisk")
+        .concat(tag(S.portfolioUs && S.portfolioUs.history, "US"))
+        .sort((a, b) => String(b["Stängd"] || "").localeCompare(String(a["Stängd"] || "")));
+      const set = (id, html) => { const e = this.el(id); if (e) e.innerHTML = html; };
+      if (!hist.length) {
+        set("allTradeStats", '<div class="empty">Inga stängda affärer i någon av böckerna ännu.</div>');
+        set("allHistory", ""); set("allAlphaStats", "");
+        return;
+      }
+      const isUs = o => o.Bok === "US";
+      const costOf = o => this.P.costFor(isUs(o) ? "us" : "nordic", S.costs);
+      const benchOf = o => isUs(o) ? "^GSPC" : "^OMX";
+      set("allTradeStats", R.renderTradeStats(this.P.computeTradeStats(hist, costOf)));
+      set("allAlphaStats", R.renderAlphaStats(this.P.computeAlphaStats(hist, S.priceHistory, benchOf), "sitt index"));
+      set("allHistory", R.renderHistory({ history: hist }, this.P.computeAlpha(hist, S.priceHistory, benchOf), "Index"));
+    }
+
     renderUs() {
       const S = this.state, R = this.R;
       const el = this.el("usBody"); if (!el) return;
@@ -683,21 +741,15 @@
         const latest = S.usDailies[0] || null;
         const live = this.liveMapFor(p, latest);
         const diff = this.P.diffDailies(S.usDailies[0], S.usDailies[1]);
-        // US-boken mättes tidigare BARA med ackumulerad avkastning – halva systemet saknade
-        // träffsäkerhet, riskmått, alpha och historiktabell. Samma rena funktioner som nordiska
-        // boken, men med US-kostnad (courtage + växlingspåslag) och ^GSPC som benchmark.
-        const usCost = this.P.costFor("us", S.costs);
-        const usAlpha = this.P.computeAlpha(p.history, S.priceHistory, "^GSPC");
+        /* Den här vyn visar BOKEN just nu: nyckeltal, marknadsläge och öppna
+           positioner. Handelsstatistik, riskmått, alpha och historik låg
+           tidigare också här, men fanns då på två flikar samtidigt – de bor
+           numera enbart i Avkastning-vyn, bredvid nordiska bokens motsvarande
+           block. Duplicera inte tillbaka dem hit. */
         el.innerHTML = R.renderKPIs(p, latest) + R.renderMarket(latest)
           + R.renderHoldings(latest, p, live, {}, diff)
-          + '<h3 class="sub">Handelsstatistik <span class="sub-date">US-boken · netto inkl. växlingspåslag</span></h3>'
-          + R.renderTradeStats(this.P.computeTradeStats(p.history, usCost))
-          + '<h3 class="sub">Riskmått <span class="sub-date">ur den kedjade equity-kurvan</span></h3>'
-          + R.renderRiskStats(this.P.computeRiskStats(p.history))
-          + '<h3 class="sub">Alpha mot index <span class="sub-date">utfall minus S&amp;P 500 över samma hållperiod</span></h3>'
-          + R.renderAlphaStats(this.P.computeAlphaStats(p.history, S.priceHistory, "^GSPC"), "S&P 500")
-          + '<h3 class="sub">Historik (stängda positioner)</h3>'
-          + R.renderHistory(p, usAlpha, "S&P 500");
+          + '<p class="stat-note" style="margin:16px 0 0">Handelsstatistik, riskmått, alpha och historik för den '
+          + 'här boken finns under <button type="button" class="rail-more" data-goto-view="avkastning">Avkastning →</button></p>';
       }
       this.setupUsReportPicker();
     }
@@ -1187,6 +1239,20 @@
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
+
+      /* Bokväljaren i Avkastning-vyn. Båda böckerna renderas alltid – knappen
+         byter bara vilken som visas, så inget behöver räknas om. Valet är
+         medvetet INTE sparat: det är en jämförelseväxel man klickar fram och
+         tillbaka på, inte en inställning. */
+      const setBook = b => {
+        const v = this.el("view-avkastning"); if (!v) return;
+        v.setAttribute("data-book", b);
+        document.querySelectorAll("[data-book-set]").forEach(x =>
+          x.setAttribute("aria-pressed", String(x.dataset.bookSet === b)));
+      };
+      document.querySelectorAll("[data-book-set]").forEach(b =>
+        b.addEventListener("click", () => setBook(b.dataset.bookSet)));
+      setBook("nordic");
 
       /* Växeln i Hem-vyn. Den skriver via VSettings så valet hamnar på samma
          ställe som allt annat användaren ställt in – ingen egen lagring. */

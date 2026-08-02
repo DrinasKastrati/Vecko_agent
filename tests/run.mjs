@@ -115,6 +115,50 @@ ok("renderSimple: tål tomt anrop", (() => {
   return h.includes("sv-verdict") && !/undefined|NaN/.test(h);
 })());
 ok("renderSimple: ordlistan finns", VR.renderSimple({}).includes("Vad betyder orden?"));
+
+/* ---- gemensam vy: kostnad och index PER AFFÄR ------------------------------
+   Böckerna har olika rundturskostnad (~0,25 % nordiskt, ~0,75 % i USD med
+   växlingspåslag) och olika benchmark. I den gemensamma vyn måste därför varje
+   rad bära sin egen – ett snitt hade gjort nettot fel åt båda håll och mätt
+   alpha mot fel marknad. */
+const bok = (namn, bok_, utfall, from, to) => ({
+  Bok: bok_, "Stängd": to, "Aktie": namn, "Entry-datum": from, "Utfall %": utfall, "Vikt": "50 %"
+});
+const blandad = [bok("Alleima", "Nordisk", "+6,39 %", "2026-01-05", "2026-01-09"),
+                 bok("JPMorgan", "US", "+1,99 %", "2026-01-05", "2026-01-09")];
+ok("computeTradeStats: costPct får vara en funktion", (() => {
+  const fast = VP.computeTradeStats(blandad, 0.25);
+  const per  = VP.computeTradeStats(blandad, o => o.Bok === "US" ? 0.75 : 0.25);
+  // samma bruttotal, men nettot skiljer eftersom US-raden bär högre kostnad
+  return fast.trades === 2 && per.trades === 2 &&
+         Math.abs(fast.chainedPct - per.chainedPct) < 1e-9 &&
+         per.netChainedPct < fast.netChainedPct;
+})());
+ok("computeTradeStats: talform oförändrad", (() => {
+  const a = VP.computeTradeStats(blandad, 0.25);
+  return a.costPct === 0.25 && VP.computeTradeStats(blandad, o => 0.25).costPct === null;
+})());
+ok("computeTradeStats: funktion som ger samma värde = samma resultat", (() => {
+  const a = VP.computeTradeStats(blandad, 0.5), b = VP.computeTradeStats(blandad, () => 0.5);
+  return Math.abs(a.netChainedPct - b.netChainedPct) < 1e-12 && a.netWinRate === b.netWinRate;
+})());
+ok("computeAlpha: benchSym får vara en funktion", (() => {
+  // priceHistory har en .series-wrapper, precis som state/price_history.json
+  const ph = { series: { "^OMX": [["2026-01-05", 100], ["2026-01-09", 102]],
+                         "^GSPC": [["2026-01-05", 100], ["2026-01-09", 110]] } };
+  const perBok = VP.computeAlpha(blandad, ph, o => o.Bok === "US" ? "^GSPC" : "^OMX");
+  const v = Object.values(perBok).map(x => x.benchPct);
+  // nordiska raden mäts mot +2 %, den amerikanska mot +10 %
+  return v.some(x => Math.abs(x - 2) < 1e-9) && v.some(x => Math.abs(x - 10) < 1e-9);
+})());
+ok("computeAlphaStats: funktionsformen räknar alla affärer", (() => {
+  // priceHistory har en .series-wrapper, precis som state/price_history.json
+  const ph = { series: { "^OMX": [["2026-01-05", 100], ["2026-01-09", 102]],
+                         "^GSPC": [["2026-01-05", 100], ["2026-01-09", 110]] } };
+  const s = VP.computeAlphaStats(blandad, ph, o => o.Bok === "US" ? "^GSPC" : "^OMX");
+  // Alleima +6,39 mot +2 = slår index; JPM +1,99 mot +10 = slår inte
+  return s.trades === 2 && s.beat === 1;
+})());
 ok("tickerPill empty", VR.tickerPill("") === "");
 ok("renderHistory sortable", VR.renderHistory(p).includes("tbl--sort"));
 ok("renderPrices toolbar", VR.renderPrices({ generatedAt: new Date().toISOString(), quotes: { AAPL: { symbol: "AAPL", price: 200, marketTime: new Date().toISOString() } } }, null).includes("pxSearch"));

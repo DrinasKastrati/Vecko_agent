@@ -156,6 +156,61 @@ ok("avkastning: beslutsloggen renderad", (() => {
 ok("historik: alpha-kolumn mot OMXS30", txt("history").includes("Alpha"));
 ok("avkastning: färgkodad historik", txt("history").includes('class="pos"'));
 
+/* BÅDA böckerna ska redovisas i Avkastning-vyn, i var sitt block. Tidigare låg
+   US-bokens statistik bara i US-rotation-vyn, så en amerikansk affär (JPM)
+   syntes inte alls där en nordisk (Alleima) gjorde det. */
+ok("avkastning: nordiska boken visar sin affär", txt("history").includes("Alleima"));
+ok("avkastning: US-boken har eget statistikblock", txt("usTradeStats").includes("Profit factor"));
+ok("avkastning: US-boken visar sin affär", txt("usHistory").includes("JPMorgan"));
+ok("avkastning: US-riskmått renderade", txt("usRiskStats").includes("Max drawdown"));
+ok("avkastning: US-alpha mot S&P 500",
+  txt("usAlphaStats").includes("Snitt-alpha") || txt("usAlphaStats").includes("Ingen alpha-mätning"));
+ok("avkastning: US-månadsutfall renderat", txt("usMonthly").length > 20);
+ok("avkastning: böckerna hålls isär", txt("history").indexOf("JPMorgan") === -1);
+// US-rotation-vyn ska INTE längre duplicera statistiken – bara peka dit
+ok("us-rotation: statistiken duplicerad ej", !txt("usBody").includes("Profit factor"));
+ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-view="avkastning"'));
+
+/* Bokväljaren: båda böckerna RENDERAS alltid (assertionerna ovan läser dem),
+   men bara den valda VISAS. Tio staplade sektioner var för mycket på en gång. */
+{
+  const vy = doc.getElementById("view-avkastning");
+  ok("avkastning: nordiska boken vald från start", vy.getAttribute("data-book") === "nordic");
+  ok("avkastning: bokväljaren har tre knappar", doc.querySelectorAll("[data-book-set]").length === 3);
+  ok("avkastning: nordiska knappen markerad",
+    doc.querySelector('[data-book-set="nordic"]').getAttribute("aria-pressed") === "true");
+  doc.querySelector('[data-book-set="us"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+  ok("avkastning: växlar till amerikanska boken", vy.getAttribute("data-book") === "us");
+  ok("avkastning: markeringen följer med",
+    doc.querySelector('[data-book-set="us"]').getAttribute("aria-pressed") === "true" &&
+    doc.querySelector('[data-book-set="nordic"]').getAttribute("aria-pressed") === "false");
+  doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+  ok("avkastning: växlar tillbaka", vy.getAttribute("data-book") === "nordic");
+  ok("avkastning: de sällan lästa måtten är hopfällda",
+    doc.querySelectorAll("#view-avkastning details.sblock").length === 4);
+  ok("avkastning: diagram och beslutslogg ligger utanför bokblocken",
+    !!doc.querySelector("#view-avkastning .shared-block #returnChart"));
+
+  /* Gemensamma vyn: BÅDA böckernas affärer i en tabell. Varje rad bär sin bok,
+     och den märkningen styr både rundturskostnad och vilket index affären mäts
+     mot – ett snitt hade gjort nettot fel åt båda håll. */
+  doc.querySelector('[data-book-set="bada"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+  ok("gemensamt: växeln fungerar", vy.getAttribute("data-book") === "bada");
+  ok("gemensamt: båda affärerna i samma tabell",
+    txt("allHistory").includes("Alleima") && txt("allHistory").includes("JPMorgan"));
+  ok("gemensamt: varje rad märks med sin bok",
+    txt("allHistory").includes("Nordisk") && txt("allHistory").includes("US"));
+  ok("gemensamt: handelsstatistik räknar båda", (() => {
+    const n = dash.P.computeTradeStats(dash.state.portfolio.history, 0).trades;
+    const u = dash.P.computeTradeStats(dash.state.portfolioUs.history, 0).trades;
+    return txt("allTradeStats").includes("Profit factor") && n + u === 2;   // 1 + 1 i dag
+  })());
+  ok("gemensamt: alpha renderat", txt("allAlphaStats").length > 20);
+  ok("gemensamt: riskmått och månadsutfall utelämnade med flit",
+    !doc.querySelector("#allRiskStats") && !doc.querySelector("#allMonthly"));
+  doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+}
+
 // Kurser + nyheter + scout
 ok("kurser: px-grid med tickers", txt("prices").includes("px-item"));
 ok("nyheter: feed renderad", txt("feed").includes("feed"));

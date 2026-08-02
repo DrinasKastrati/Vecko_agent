@@ -7,6 +7,44 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (Avkastning visar båda böckerna – US-affärerna syntes inte där):
+  **Fyndet.** Dren undrade varför JPMorgan Chase inte fanns i Avkastning-vyn när Alleima gjorde
+  det. Inget var trasigt: JPM ligger i `portfolj_us.md` och Alleima i `portfolj.md`, och
+  Avkastning-vyn matades uteslutande från `state.portfolio` – alltså bara nordiska boken.
+  US-bokens handelsstatistik, riskmått, alpha och historik renderades i stället av `renderUs()`
+  in i US-rotation-vyn. Halva bokföringen låg alltså på en flik man inte tänker på när man vill
+  se "hur går det".
+  **Åtgärd.** Beräkningen bröts ut till `renderBookStats(prefix, portfolio, costKey, benchTicker,
+  benchLabel)`, som fyller ett block per bok. Avkastning-vyn har nu två block: nordiska boken mot
+  OMXS30 och amerikanska mot S&P 500, med samma mått i samma ordning. **Böckerna slås medvetet
+  inte ihop** – ett gemensamt alpha över en SEK-affär mot OMXS30 och en USD-affär mot S&P 500
+  vore meningslöst. Blandad total finns kvar i Total-vyn.
+  **US-rotation-vyn trimmades samtidigt.** Efter ändringen fanns statistiken på två flikar. Den
+  vyn visar nu bara boken just nu (nyckeltal, marknadsläge, öppna positioner) och länkar till
+  Avkastning i stället.
+  **Uppstädning direkt efteråt.** Två block med fem sektioner var gav tretton staplade rubriker –
+  Dren beskrev det som kladdigt. Vyn visar nu **en bok i taget** via en väljare i rubrikraden
+  (`data-book` på sektionen, base.css döljer den andra; båda renderas alltid, så växlingen kostar
+  ingenting). Per bok ligger **Handelsstatistik och Historik öppet** – det man faktiskt tittar på –
+  medan riskmått, alpha och månadsutfall samlats i en hopfälld `<details class="sblock">`.
+  Diagram, beslutslogg och bubblare gäller båda böckerna och flyttades till en `.shared-block`
+  under en avgränsande linje. Från 13 rubriker till 4 synliga.
+  **Tredje läget: Gemensamt.** Utöver de två bokvyerna finns ett läge som visar ALLA stängda
+  affärer i en tabell, senast först, med sin bok utskriven per rad. För att det ska bli korrekt
+  fick två rena funktioner ta emot en FUNKTION i stället för ett fast värde:
+  `computeTradeStats(history, costPct)` och `computeAlpha/computeAlphaStats(…, benchSym)`. Varje
+  rad bär nu sin egen rundturskostnad (~0,25 % nordiskt mot ~0,75 % i USD med växlingspåslag) och
+  sitt eget index (`^OMX` mot `^GSPC`). Ett snitt hade gjort nettot fel åt båda håll och mätt
+  alpha mot fel marknad. Just därför är ett gemensamt ALPHA meningsfullt trots att en gemensam
+  AVKASTNING inte är det: alpha är redan differensen mot rätt jämförelse innan talen vägs samman.
+  **Riskmått och månadsutfall utelämnades medvetet** i det läget – båda kedjar en equity-kurva,
+  och två separat finansierade böcker i olika valutor har ingen gemensam kurva. Det står utskrivet
+  i vyn, med en länk till Total där den blandade avkastningen hör hemma.
+  **Tester.** Nio nya i `tests/sim.mjs` (118) som kör mot RIKTIG data: att Alleima syns i det
+  nordiska blocket, att JPMorgan syns i det amerikanska, att US-blocket har egna riskmått och
+  alpha, att böckerna hålls isär (JPM får inte dyka upp i nordiska historiken) och att
+  US-rotation-vyn inte längre duplicerar statistiken.
+
 - ✅ 2026-08-03 (LÖST: View Transitions var orsaken till trögheten – hittad med bisect):
   **Bakgrund.** Dren rapporterade att flikbyten kändes tröga och att "hela sidan laddas om, även
   menyn". Två felsökningsomgångar med CDP-mätningar hittade INGET, eftersom jag jämförde

@@ -421,14 +421,20 @@
     return [String(o["Entry-datum"] || "").slice(0, 10), String(o["Stängd"] || "").slice(0, 10),
             stripMd(o["Aktie"] || "")].join("|");
   }
+  /* `benchSym` får vara en TICKER eller en FUNKTION (rad) => ticker. Funktionen
+     behövs för den gemensamma vyn: där mäts varje affär mot SITT eget index
+     (nordiska mot ^OMX, amerikanska mot ^GSPC). Just därför är ett gemensamt
+     alpha meningsfullt även om en gemensam avkastning inte är det – alpha är
+     redan differensen mot rätt jämförelse innan de vägs samman. */
   function computeAlpha(history, priceHistory, benchSym){
     const out = {};
+    const symOf = typeof benchSym === "function" ? benchSym : (() => benchSym);
     for (const o of history || []){
       if (!o || !o["Aktie"] || /^[–\-]$/.test(String(o["Aktie"]).trim())) continue;
       const pct = firstNumberPct(o["Utfall %"] || o["Utfall"] || "");
       const from = String(o["Entry-datum"] || "").slice(0, 10);
       const to = String(o["Stängd"] || "").slice(0, 10);
-      const bench = benchReturnPct(priceHistory, benchSym, from, to);
+      const bench = benchReturnPct(priceHistory, symOf(o), from, to);
       out[alphaKey(o)] = {
         benchPct: bench,
         alphaPct: (pct != null && bench != null) ? pct - bench : null
@@ -769,9 +775,16 @@
   // ---- trade-statistik (från Historik) ----------------------------------
   // costPct (valfri): rundturskostnad i procent per affär. Anges den redovisas
   // även netto-varianterna – bruttotalen lämnas orörda så jämförelser bakåt håller.
+  /* `costPct` får vara ett TAL (samma kostnad för alla affärer) eller en
+     FUNKTION (rad) => kostnad. Funktionsformen behövs för den gemensamma vyn,
+     där nordiska affärer bär ~0,25 % rundtur och amerikanska ~0,75 % inklusive
+     växlingspåslag – att applicera ett snitt hade gjort nettotalen fel åt båda
+     håll. Vid funktion rapporteras `costPct: null` (ingen enskild siffra gäller). */
   function computeTradeStats(history, costPct){
     const rows = (history || []).filter(o => o && o["Aktie"] && !/^[–\-]$/.test(String(o["Aktie"]).trim()));
-    const cost = Number(costPct) || 0;
+    const perRow = typeof costPct === "function";
+    const costOf = perRow ? (o => Number(costPct(o)) || 0) : (() => Number(costPct) || 0);
+    const cost = perRow ? null : (Number(costPct) || 0);
     const out = { trades:0, wins:0, losses:0, winRate:null, avgWin:null, avgLoss:null,
       profitFactor:null, best:null, worst:null, avgHoldDays:null,
       byReason:{ target:0, stop:0, rotation:0, other:0 }, chainedPct:null, sumPct:null,
@@ -792,7 +805,7 @@
         out.trades++; pcts.push(p);
         if (p > 0){ out.wins++; sumWin += p; } else if (p < 0){ out.losses++; sumLoss += p; }
         chain *= (1 + weightFrac(o) * p / 100); // per-affär vikt (default 50 %)
-        const np = netPct(p, cost);
+        const np = netPct(p, costOf(o));
         netChain *= (1 + weightFrac(o) * np / 100);
         if (np > 0){ netWins++; netSumWin += np; } else if (np < 0){ netSumLoss += np; }
       }

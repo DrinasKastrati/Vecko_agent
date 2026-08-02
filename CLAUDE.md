@@ -166,8 +166,30 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   **intradag-signalbanner** (`state/alerts.json`, KÖP/SÄLJ vid nivåkorsning) samt routinens "DATAKÄLLA
   BLOCKERAD"-notis som en gul varningsbanner (korrekt beteende – appen speglar routinens status).
 - **Analytics:** Avkastning räknar fram träffsäkerhet, snittvinst/-förlust, profit factor,
-  bästa/sämsta, snitt-hålltid och mål/stopp/rotation ur `portfolj.md`:s historik (`computeTradeStats`).
+  bästa/sämsta, snitt-hålltid och mål/stopp/rotation ur portföljhistoriken (`computeTradeStats`).
   Sparklines ritas ur `state/price_history.json`.
+- **Avkastning har TRE lägen (sedan 2026-08-03): Nordiska · Amerikanska · Gemensamt.** Alla renderas
+  alltid och ligger i DOM:en – bokväljaren (`data-book-set`) sätter bara `data-book` på
+  `<section id="view-avkastning">` och base.css döljer resten. Valet sparas medvetet INTE: det är en
+  jämförelseväxel, inte en inställning. Varje bok visar Handelsstatistik + Historik öppet; riskmått,
+  alpha och månadsutfall ligger i en hopfälld `<details class="sblock">`. Diagram, beslutslogg och
+  bubblare gäller båda och ligger i `.shared-block` under en linje.
+- **Gemensamt-läget kräver PER AFFÄR-kostnad och -index.** `computeTradeStats(history, costPct)` och
+  `computeAlpha/computeAlphaStats(history, priceHistory, benchSym)` tar numera **antingen ett värde
+  eller en funktion `(rad) => värde`**. Funktionsformen används av `renderBothBooks()`: varje rad
+  bär `Bok`, som avgör rundturskostnad (~0,25 % nordiskt, ~0,75 % i USD med växlingspåslag) och
+  benchmark (`^OMX` resp. `^GSPC`). **Använd aldrig ett snitt** – det gör nettot fel åt båda håll
+  och mäter alpha mot fel marknad. Vid funktionsform sätts `costPct: null` i resultatet.
+  **Riskmått och månadsutfall finns AVSIKTLIGT inte i gemensamt-läget:** båda kedjar en
+  equity-kurva, och två separat finansierade böcker i olika valutor har ingen gemensam kurva.
+  Blandad avkastning hör hemma i Total-vyn.
+- **Avkastning visar BÅDA böckerna, i var sitt block (sedan 2026-08-03).** `renderBookStats()`
+  matar dem med samma rena funktioner; bara kostnadsmodell, benchmark och id-prefix skiljer
+  (nordisk: `tradeStats` … mot `^OMX`; US: `usTradeStats` … mot `^GSPC`). **Slå aldrig ihop dem** –
+  ett gemensamt alpha över en SEK-affär mot OMXS30 och en USD-affär mot S&P 500 är meningslöst;
+  blandad total hör hemma i Total-vyn. Statistiken låg tidigare BARA i US-rotation-vyn, vilket
+  gjorde att en amerikansk affär (JPM) inte syntes där en nordisk (Alleima) gjorde det. Den vyn
+  visar nu bara boken just nu och länkar hit – duplicera inte tillbaka blocken dit.
 - Rena funktioner (parsning/rendering/kurslogik) testas med `node tests/run.mjs` (ingen nätåtkomst krävs).
 
 ---
