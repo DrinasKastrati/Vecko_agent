@@ -66,13 +66,32 @@ export function simulateTrade(candles, i, stopPct, targetPct, holdDays){
   return { retPct: (candles[last].c / entry - 1) * 100, reason: "rotation", days: last - i + 1 };
 }
 
-// Kör hela skelettet över universumet. candlesBySym = { SYM: candles[] }.
-// params = { lookback, stopPct, targetPct, holdDays, topN, weight }.
+/* Kör skelettet över universumet. candlesBySym = { SYM: candles[] }.
+
+   TVÅ LÄGEN – skillnaden är hela poängen med den här filen:
+
+   mode "weekly" (originalet): varje måndag byggs boken om från grunden, topN
+     nya positioner öppnas, var och en hålls högst `holdDays` dagar. Det ger
+     ~200 affärer/år. Mätningen 2026-08-02 visade att **46 % av alla exits i
+     bästa cellen var femdagarsklockan** – varken mål eller stop, alltså full
+     rundturskostnad för noll information.
+
+   mode "hold" (den regel böckerna FAKTISKT kör sedan 2026-07-31): topN platser.
+     En position behåller sin plats tills stop eller mål träffas, eller tills
+     `maxHoldDays` löper ut. Måndagens rotation fyller bara TOMMA platser.
+     Det är "BEHÅLL är standardvalet" uttryckt mekaniskt.
+
+   Utan mode "hold" mätte backtestet en strategi som inte längre körs – och
+   nivåbanden i prompterna är hämtade ur det gridet.
+
+   params = { lookback, stopPct, targetPct, holdDays, maxHoldDays, topN, weight,
+              costPct, mode }. */
 export function backtestUniverse(candlesBySym, params){
   // costPct = rundturskostnad (courtage + spread) i PROCENT per affär, dras från
   // varje affärs utfall så att kedjat resultat är netto – annars ser en strategi
   // med 50 affärer/år mycket bättre ut än den är.
-  const P = Object.assign({ lookback: 20, stopPct: 0.05, targetPct: 0.10, holdDays: 5, topN: 2, weight: 0.5, costPct: 0 }, params);
+  const P = Object.assign({ lookback: 20, stopPct: 0.05, targetPct: 0.10, holdDays: 5,
+    maxHoldDays: 30, topN: 2, weight: 0.5, costPct: 0, mode: "weekly" }, params);
   const syms = Object.keys(candlesBySym).filter(s => (candlesBySym[s] || []).length > P.lookback + 10);
   if (!syms.length) return null;
   // gemensam datumaxel = symbolen med flest candles
@@ -83,10 +102,12 @@ export function backtestUniverse(candlesBySym, params){
     const m = new Map(); candlesBySym[s].forEach((c, i) => m.set(c.d, i));
     idxBySym[s] = m;
   }
-  const trades = []; const weekly = [];
-  for (let i = P.lookback + 1; i < refC.length; i++){
-    if (!isWeekStart(refC, i)) continue;
-    const date = refC[i].d;
+  const trades = [];
+  const weekStarts = [];
+  for (let i = P.lookback + 1; i < refC.length; i++) if (isWeekStart(refC, i)) weekStarts.push(i);
+
+  // Rangordnade kandidater en given vecka (momentum som platshållare för urval).
+  const rankAt = date => {
     const ranked = [];
     for (const s of syms){
       const si = idxBySym[s].get(date);
@@ -95,28 +116,73 @@ export function backtestUniverse(candlesBySym, params){
       if (mom != null && mom > 0) ranked.push({ s, si, mom });
     }
     ranked.sort((a, b) => b.mom - a.mom);
-    const picks = ranked.slice(0, P.topN);
-    let wkRet = 0;
-    for (const p of picks){
-      const tr = simulateTrade(candlesBySym[p.s], p.si, P.stopPct, P.targetPct, P.holdDays);
-      if (!tr) continue;
-      tr.grossPct = tr.retPct;
-      tr.retPct = tr.retPct - P.costPct;   // netto efter courtage/spread
-      trades.push(Object.assign({ sym: p.s, date }, tr));
-      wkRet += P.weight * tr.retPct;
+    return ranked;
+  };
+  const openTrade = (p, date, holdCap) => {
+    const tr = simulateTrade(candlesBySym[p.s], p.si, P.stopPct, P.targetPct, holdCap);
+    if (!tr) return null;
+    tr.grossPct = tr.retPct;
+    tr.retPct = tr.retPct - P.costPct;               // netto efter courtage/spread
+    const exitIdx = Math.min(p.si + tr.days - 1, candlesBySym[p.s].length - 1);
+    tr.exitDate = candlesBySym[p.s][exitIdx].d;
+    return Object.assign({ sym: p.s, date }, tr);
+  };
+
+  if (P.mode === "hold"){
+    // topN platser; en position behåller sin plats tills den stängts.
+    const slots = new Array(P.topN).fill(null);   // null | { sym, exitDate }
+    for (const i of weekStarts){
+      const date = refC[i].d;
+      for (let k = 0; k < slots.length; k++)       // frigör stängda platser
+        if (slots[k] && slots[k].exitDate < date) slots[k] = null;
+      const free = slots.reduce((n, s) => n + (s ? 0 : 1), 0);
+      if (!free) continue;                          // allt upptaget = ingen omsättning
+      const held = new Set(slots.filter(Boolean).map(s => s.sym));
+      const picks = rankAt(date).filter(p => !held.has(p.s)).slice(0, free);
+      for (const p of picks){
+        const tr = openTrade(p, date, P.maxHoldDays);
+        if (!tr) continue;
+        trades.push(tr);
+        const k = slots.indexOf(null);
+        if (k >= 0) slots[k] = { sym: tr.sym, exitDate: tr.exitDate };
+      }
     }
-    weekly.push({ date, retPct: wkRet, picks: picks.length });
+  } else {
+    // originalet: boken byggs om varje vecka, allt hålls högst holdDays
+    for (const i of weekStarts){
+      const date = refC[i].d;
+      for (const p of rankAt(date).slice(0, P.topN)){
+        const tr = openTrade(p, date, P.holdDays);
+        if (tr) trades.push(tr);
+      }
+    }
   }
-  // statistik
+
+  /* Kedjning per STÄNGD affär i exit-ordning, inte per vecka. Med läget "hold"
+     kan en position spänna över flera veckor – en veckovis kedja skulle då
+     antingen dubbelräkna eller tappa den. Samma metod används för båda lägena
+     så jämförelsen är intern konsistent. */
+  trades.sort((a, b) => String(a.exitDate).localeCompare(String(b.exitDate)) || String(a.date).localeCompare(String(b.date)));
   const pcts = trades.map(t => t.retPct);
   const wins = pcts.filter(p => p > 0), losses = pcts.filter(p => p < 0);
   let chain = 1, peak = 1, maxDd = 0;
-  for (const w of weekly){ chain *= 1 + w.retPct / 100; if (chain > peak) peak = chain; const dd = 1 - chain / peak; if (dd > maxDd) maxDd = dd; }
+  for (const t of trades){
+    chain *= 1 + P.weight * t.retPct / 100;
+    if (chain > peak) peak = chain;
+    const dd = 1 - chain / peak; if (dd > maxDd) maxDd = dd;
+  }
+  const weekly = weekStarts;   // behålls bara för veckoräkningen i rapporten
   const sum = a => a.reduce((x, y) => x + y, 0);
   const byReason = {};
   trades.forEach(t => byReason[t.reason] = (byReason[t.reason] || 0) + 1);
+  const years = weekly.length / 52;
   return {
     params: P, weeks: weekly.length, trades: trades.length,
+    // Omsättningstakten är den enskilt största kostnaden – redovisa den explicit
+    // i stället för att låta läsaren räkna ut den ur affärsantalet.
+    tradesPerYear: years > 0 ? trades.length / years : null,
+    avgHoldDays: trades.length ? sum(trades.map(t => t.days)) / trades.length : null,
+    costDragPctPerYear: years > 0 ? (trades.length / years) * P.costPct * P.weight : null,
     winRate: trades.length ? wins.length / trades.length : null,
     avgWin: wins.length ? sum(wins) / wins.length : null,
     avgLoss: losses.length ? sum(losses) / losses.length : null,
@@ -178,10 +244,20 @@ async function main(){
     costPct = (Number(b.roundTripPct) || 0) + (Number(b.fxSpreadPct) || 0);
   } catch { console.log("Ingen config/kostnader.json – räknar brutto."); }
 
+  /* Gridet körs i BÅDA lägena. "weekly" är originalet (boken byggs om varje
+     måndag, 5 dagars håll); "hold" är den regel böckerna faktiskt kör sedan
+     2026-07-31 (platsen behålls tills stop/mål eller horisonten löper ut,
+     rotationen fyller bara tomma platser). maxHoldDays = 30 handelsdagar ≈ 6
+     veckor, den längsta katalysatorhorisonten i prompterna.
+
+     Stoppbanden i prompterna är hämtade ur "weekly"-gridet. Om rangordningen
+     mellan cellerna skiljer sig mellan lägena är de banden en artefakt av
+     femdagarsklockan, inte en egenskap hos marknaden. */
   const grid = [];
-  for (const lookback of [10, 20])
-    for (const [stopPct, targetPct] of [[0.03, 0.06], [0.04, 0.08], [0.05, 0.10]])
-      grid.push({ lookback, stopPct, targetPct, costPct, topN, weight });
+  for (const mode of ["weekly", "hold"])
+    for (const lookback of [10, 20])
+      for (const [stopPct, targetPct] of [[0.03, 0.06], [0.04, 0.08], [0.05, 0.10]])
+        grid.push({ lookback, stopPct, targetPct, costPct, topN, weight, mode, maxHoldDays: 30 });
 
   const results = grid.map(p => backtestUniverse(candlesBySym, p)).filter(Boolean);
   const bh = buyHoldPct(benchCandles);
@@ -200,16 +276,37 @@ async function main(){
   lines.push(`**Datum:** ${todayISO} | **Universum:** ${syms.length} symboler | **Positioner:** ${topN} à ${(weight * 100).toFixed(0)} % | **Benchmark (${bench}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${costPct.toFixed(2)} % per affär (netto)`);
   lines.push("");
   lines.push("> Momentum-proxy (positiv " + "lookback-avkastning, topp 2) ersätter LLM:ens case-urval.");
-  lines.push("> Resultatet validerar RAMVERKET (rotationstakt, stop-/målnivåer, 5-dagars håll) – inte strategin som helhet.");
+  lines.push("> Resultatet validerar RAMVERKET (rotationstakt, stop-/målnivåer, hållregel) – inte strategin som helhet.");
+  lines.push("> **VECKOVIS** = boken byggs om varje måndag, max 5 dagars håll (originalet).");
+  lines.push("> **BEHÅLL** = platsen behålls tills stop/mål eller 30 handelsdagar; rotationen fyller bara tomma platser (regeln böckerna kör sedan 2026-07-31).");
+  lines.push("> Kedjningen sker per stängd affär i exit-ordning, viktad – samma metod i båda lägena.");
   lines.push("");
-  lines.push("| Lookback | Stop | Mål | Veckor | Affärer | Träff % | Snittvinst | Snittförlust | PF | Kedjat % | Max DD | Mål/Stop/Rot |");
-  lines.push("|---|---|---|---|---|---|---|---|---|---|---|---|");
-  for (const r of results){
+  const row = r => {
     const p = r.params;
-    lines.push(`| ${p.lookback}d | −${(p.stopPct * 100).toFixed(0)} % | +${(p.targetPct * 100).toFixed(0)} % | ${r.weeks} | ${r.trades} | ${r.winRate == null ? "–" : Math.round(r.winRate * 100)} % | ${f(r.avgWin)} % | ${f(r.avgLoss)} % | ${r.profitFactor === Infinity ? "∞" : (r.profitFactor == null ? "–" : r.profitFactor.toFixed(2))} | ${f(r.chainedPct)} % | −${r.maxDrawdownPct.toFixed(1)} % | ${(r.byReason["mål"] || 0) + (r.byReason["mål-gap"] || 0)}/${(r.byReason["stop"] || 0) + (r.byReason["stop-gap"] || 0)}/${r.byReason["rotation"] || 0} |`);
+    const mal = (r.byReason["mål"] || 0) + (r.byReason["mål-gap"] || 0);
+    const stp = (r.byReason["stop"] || 0) + (r.byReason["stop-gap"] || 0);
+    const rot = r.byReason["rotation"] || 0;
+    return `| ${p.mode === "hold" ? "BEHÅLL" : "veckovis"} | ${p.lookback}d | −${(p.stopPct * 100).toFixed(0)} % | +${(p.targetPct * 100).toFixed(0)} % | ${r.trades} | ${r.tradesPerYear == null ? "–" : Math.round(r.tradesPerYear)} | ${r.avgHoldDays == null ? "–" : r.avgHoldDays.toFixed(1)} | ${r.winRate == null ? "–" : Math.round(r.winRate * 100)} % | ${r.profitFactor === Infinity ? "∞" : (r.profitFactor == null ? "–" : r.profitFactor.toFixed(2))} | ${f(r.chainedPct)} % | −${r.maxDrawdownPct.toFixed(1)} % | ${mal}/${stp}/${rot} |`;
+  };
+  lines.push("| Läge | Lookback | Stop | Mål | Affärer | Aff./år | Snitt dagar | Träff % | PF | Kedjat % | Max DD | Mål/Stop/Tid |");
+  lines.push("|---|---|---|---|---|---|---|---|---|---|---|---|");
+  for (const r of results.filter(x => x.params.mode === "weekly")) lines.push(row(r));
+  for (const r of results.filter(x => x.params.mode === "hold")) lines.push(row(r));
+  lines.push("");
+  // Direkt jämförelse cell för cell – den avgör om hållregeln faktiskt hjälper.
+  const ckey = r => `${r.params.lookback}/${r.params.stopPct}/${r.params.targetPct}`;
+  const wkMap = new Map(results.filter(x => x.params.mode === "weekly").map(r => [ckey(r), r]));
+  lines.push("**Hållregelns effekt, cell för cell:**");
+  lines.push("");
+  lines.push("| Cell | PF veckovis → BEHÅLL | Kedjat % veckovis → BEHÅLL | Affärer/år veckovis → BEHÅLL |");
+  lines.push("|---|---|---|---|");
+  for (const h of results.filter(x => x.params.mode === "hold")){
+    const w = wkMap.get(ckey(h)); if (!w) continue;
+    const pf = n => n === Infinity ? "∞" : (n == null ? "–" : n.toFixed(2));
+    lines.push(`| ${h.params.lookback}d −${(h.params.stopPct * 100).toFixed(0)}/+${(h.params.targetPct * 100).toFixed(0)} % | ${pf(w.profitFactor)} → **${pf(h.profitFactor)}** | ${f(w.chainedPct)} → **${f(h.chainedPct)}** | ${Math.round(w.tradesPerYear)} → **${Math.round(h.tradesPerYear)}** |`);
   }
   lines.push("");
-  lines.push("**Tolkning:** kedjat % över benchmark med rimlig max DD ⇒ skelettet bär sin egen vikt; under ⇒ LLM-urvalet måste tillföra hela edgen. Jämför stop/mål-kombinationerna mot varandra snarare än absoluttalen (momentum-proxyn är trubbigare än case-urvalet).");
+  lines.push("**Tolkning:** kedjat % över benchmark med rimlig max DD ⇒ skelettet bär sin egen vikt; under ⇒ LLM-urvalet måste tillföra hela edgen. Jämför cellerna mot varandra snarare än absoluttalen (momentum-proxyn är trubbigare än case-urvalet). **Skiljer sig rangordningen mellan lägena är nivåbanden en artefakt av hållregeln, inte en egenskap hos marknaden.**");
   lines.push("");
   lines.push("*Detta är automatiserat beslutsstöd, inte finansiell rådgivning.*");
 

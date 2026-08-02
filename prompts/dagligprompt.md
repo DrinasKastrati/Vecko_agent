@@ -42,29 +42,48 @@ Underlag: `reports/backtest/backtest-260802-nordic-top4.md` – det mekaniska sk
 (momentum-proxy, **topp 4 à 25 %**, 5 dagars håll) över 5 år och 259 veckor på 30 nordiska
 storbolag, netto efter courtage. Den tidigare körningen (`backtest-260731-nordic.md`) simulerade
 2 positioner à 50 % och matchade alltså inte hur boken faktiskt handlas sedan 2026-07-31.
-0. **FYRA POSITIONER BEKRÄFTAT AV DATA:** omkörningen slår 2-positionsversionen i VARJE cell i
-   gridet – PF upp (0,86–0,91 → 0,89–0,96), kedjat utfall ungefär halverat i förlust
-   (−50,5 % → −21,2 % i bästa cellen) och max drawdown ned ~15 procentenheter (−58 % → −40 %).
-   Spridningen gör alltså precis det den skulle. Skelettet ligger dock fortfarande under PF 1,0
-   netto: **LLM-urvalet måste tillföra hela edgen** – ramverket bär sig inte självt.
-1. **STOPPBREDD:** −3 % stop / +6 % mål är fortfarande bäst i gridet (PF 0,95–0,96 netto, minst
-   drawdown) och blir sämre ju bredare stoppen sätts – slutsatsen håller alltså även med 4
-   positioner. Håll dig i bandet **stop 3–5 % under entry** och sätt stoppen tekniskt (strax
-   under stöd) inom det bandet. Bredda ALDRIG stoppen med motiveringen "ge caset luft" – data
-   säger tvärtom. Målet ≥ 2× stoppavståndet (R/R-kravet 2:1 är oförändrat).
+0. **FYRA POSITIONER BEKRÄFTAT AV DATA:** 4 à 25 % slår 2 à 50 % i VARJE cell i gridet – PF upp,
+   kedjat utfall ungefär halverat i förlust och max drawdown ned ~15 procentenheter. Spridningen
+   gör precis det den skulle. Skelettet ligger dock fortfarande under PF 1,0 netto och under
+   ^OMX köp-och-behåll (+36,3 % på fem år): **LLM-urvalet måste tillföra hela edgen** – ramverket
+   bär sig inte självt. Därför är indexsleeven fortsatt rätt standardplacering för kapital utan
+   godkänt case.
+0b. **HÅLLREGELN ÄR MÄTT OCH BEKRÄFTAD (2026-08-02).** Backtestet kördes tidigare BARA med en
+   femdagarsklocka – boken byggdes om varje måndag. Den mätningen visade att **46 % av alla
+   exits var klockan**, alltså varken mål eller stop: full rundturskostnad för noll information.
+   Gridet kördes därför om i två lägen. Med hållregeln (platsen behålls tills stop/mål eller
+   30 handelsdagar, rotationen fyller bara TOMMA platser) faller omsättningen från **~205 till
+   68–112 affärer/år**, tidsexits från 470–747 till 12–51, och kedjat utfall förbättras i fyra
+   av sex celler. Max drawdown ned från −41,7 % till −28,5 % i den smalaste cellen.
+   **Konsekvens för LÄGE A: en position som varken träffat stop/mål eller fått sin tes punkterad
+   ska INTE poängsättas om varje måndag.** Rotationen fyller lediga platser; den omprövar inte
+   fungerande innehav. En position hålls tills (a) stop eller mål träffas, (b) tesen punkteras,
+   (c) katalysatorhorisonten löper ut, eller (d) ett nytt case har ≥ 2 poäng högre totalpoäng OCH
+   platsen skulle annars stå tom.
+1. **STOPPBREDD (OMKALIBRERAD 2026-08-02 – den gamla regeln var en artefakt):** tidigare stod här
+   att −3 %/+6 % är bäst och att stoppen aldrig får breddas. Det gällde bara under
+   femdagarsklockan: breda stopp förlorade eftersom fler affärer hann fram till tidsexit
+   (73 % av exits vid −5 %/+10 %, mot 46 % vid −3 %/+6 %). Med hållregeln vänder rangordningen –
+   bästa cellen är nu **−4 % stop / +8 % mål** (PF 0,96, kedjat −15,9 %, mot −3 %/+6 % som ger
+   PF 0,93–0,94 och −19 till −21 %). Håll dig i bandet **stop 4–5 % under entry**, sätt stoppet
+   tekniskt (strax under stöd) inom bandet, och **målet ≥ 2× stoppavståndet** (R/R 2:1 oförändrat).
+   Förbudet mot att bredda stoppen är struket – men bredda inte förbi 5 % heller, PF faller igen
+   vid −5 %/+10 %.
 2. **KOSTNADSTRÖSKEL (ny, hård regel):** rundturskostnaden står i `config/kostnader.json`
    (nordisk bok ~0,25 % per affär). Ett case får bara väljas om avståndet entry → mål är
    **minst 6 %**, dvs. ≥ 20× rundturskostnaden. Ett case med 3 % uppsida är efter courtage och
    spread inte värt en position, hur fin katalysatorn än är. Skriv ut avståndet i handelsplanen.
-3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** samma backtest är negativt netto även i
-   bästa cellen (−21,2 % kedjat) enbart av omsättningstakten – veckorotation av 4 positioner ger
-   ~200 affärer per år, dubbelt mot 2-positionsversionen. Fler positioner är alltså rätt för
-   RISKSPRIDNINGEN men höjer kostnadsdraget, vilket gör hållregeln viktigare, inte mindre
-   viktig. Därför gäller: **BEHÅLL är standardvalet** för ett
+3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN – NU MÄTT.** Veckorotation av 4 positioner ger
+   ~205 affärer/år. Med hållregeln (punkt 0b) faller det till 68–112, och kedjat utfall
+   förbättras i fyra av sex celler. Kostnadsdraget är alltså inte en bieffekt att leva med utan
+   den variabel som går att styra mest direkt. Därför gäller: **BEHÅLL är standardvalet** för ett
    innehav vars tes är intakt och vars stop/mål inte träffats – även när hålltiden passerat
    5 handelsdagar. Rotera ut en position ENDAST om (a) stop eller mål träffats, (b) tesen är
-   punkterad, eller (c) ett nytt case har MINST 2 poäng högre totalpoäng i urvalsmodellen.
-   Motivera varje rotation som inte beror på (a) eller (b) skriftligt i veckorapporten.
+   punkterad, (c) katalysatorhorisonten löpt ut, eller (d) ett nytt case har MINST 2 poäng högre
+   totalpoäng OCH en plats står tom.
+   **Att en plats är upptagen av ett fungerande innehav är i sig ett giltigt skäl att inte handla
+   den veckan.** Noll affärer en vecka är ett korrekt utfall, inte en utebliven insats.
+   Motivera varje rotation som inte beror på (a), (b) eller (c) skriftligt i veckorapporten.
 4. **REDOVISA BRUTTO OCH NETTO:** när du anger utfall i rapporten, ange bruttoutfallet som
    vanligt men nämn att dashboardens nettosiffra drar rundturskostnaden. Sänk aldrig
    kursverifieringskravet för att få fler affärer – lösningen på få affärer är bredare
@@ -74,8 +93,11 @@ storbolag, netto efter courtage. Den tidigare körningen (`backtest-260731-nordi
    | catalystType | Horisont | Målavstånd | Stop | Tidsstopp |
    |---|---|---|---|---|
    | `earnings`, `order`, `regulatory`, `buyback` | 3–6 veckor (post-earnings drift är långsam) | 12–15 % | 4–5 % | inget |
-   | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 6–9 % | 3–4 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats – obekräftade rykten dör tyst |
-   | `macro`, `turnaround`, `other` | 2–4 veckor | 8–12 % | 3–5 % | inget |
+   | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 8–10 % | 4–5 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats – obekräftade rykten dör tyst |
+   | `macro`, `turnaround`, `other` | 2–4 veckor | 8–12 % | 4–5 % | inget |
+   Stoppkolumnen är omkalibrerad 2026-08-02: den låg tidigare på 3–4 % i de två nedre raderna,
+   vilket kom ur det gamla gridet med femdagarsklocka. Med hållregeln är 4–5 % bättre i samtliga
+   celler, och målavståndet i rad 2 höjdes så R/R-kravet 2:1 fortfarande håller.
    Skriv ut vald `catalystType` och horisont i handelsplanen, och logga `horizonDays` i
    `state/decisions.json`. R/R-kravet 2:1 gäller oförändrat i alla rader.
 6. **MÅLET MÅSTE VARA NÅBART (ny hård regel):** ett mål satt från analytikerintervall är ett

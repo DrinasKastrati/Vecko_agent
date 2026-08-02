@@ -7,6 +7,44 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-02 (strategiomkalibrering – hållregeln mätt, stoppbanden var artefakter):
+  **Fyndet.** Backtestets exit-orsaker visade att **46 % av alla affärer i bästa nordiska cellen
+  stängdes av femdagarsklockan** – varken mål eller stop, alltså full rundturskostnad för noll
+  information. I bredare celler 62–73 %. Samtidigt hade prompterna redan gått över till
+  "BEHÅLL är standardvalet" (2026-07-31), men `backtest.mjs` hade `holdDays: 5` hårdkodat –
+  **gridet mätte alltså en strategi böckerna inte längre kör, och nivåbanden i prompterna var
+  hämtade ur just det gridet.**
+  **Åtgärd 1 – mätningen.** `backtestUniverse` fick ett `mode`-läge. `weekly` = originalet
+  (boken byggs om varje måndag, 5 dagars håll). `hold` = platsbaserad portfölj: topN platser, en
+  position behåller sin plats tills stop/mål eller `maxHoldDays` (30 handelsdagar ≈ längsta
+  katalysatorhorisonten), rotationen fyller bara TOMMA platser. Kedjningen gjordes om till per
+  stängd affär i exit-ordning (en veckovis kedja kan varken hantera positioner som spänner över
+  flera veckor eller jämföras mellan lägena). Nya nyckeltal: `tradesPerYear`, `avgHoldDays`,
+  `costDragPctPerYear`. Gridet kör nu båda lägena och rapporten har en jämförelse cell för cell.
+  **Resultat, nordisk bok:** omsättning **205 → 68–112 affärer/år**, tidsexits 470–747 → 12–51,
+  kedjat utfall bättre i fyra av sex celler, max drawdown −41,7 % → −28,5 %. PF i stort oförändrad
+  (0,89–0,96 → 0,91–0,96) – hållregeln skapar alltså ingen edge, den slutar bränna kostnad.
+  **Resultat, US-bok – störst effekt av allt:** PF 0,65–0,79 → **0,80–1,17**, kedjat −72/−85 %
+  → **+50,1 %** i bästa cellen (10d −5 %/+10 %). Växlingspåslaget gör varje undviken affär tre
+  gånger så värdefull som i den nordiska boken. **Detta motbevisade min egen tidigare slutsats**
+  att US-boken inte kunde fungera – den byggde på veckoläget.
+  **Åtgärd 2 – rangordningen inverterade, banden skrevs om.** Under femdagarsklockan vann smala
+  stopp (−3 %/+6 %) eftersom breda stopp lät fler affärer hinna till tidsexit. Med hållregeln
+  vänder det: nordiskt är **−4 %/+8 %** bäst (PF 0,96, kedjat −15,9 %), i US **−5 %/+10 %**
+  (PF 1,17). Nordiska bandet ändrat 3–5 % → **4–5 %**, US 4–6 % → **5–6 %**, och förbudet
+  "bredda ALDRIG stoppen" är struket – det var en artefakt, inte en marknadsegenskap.
+  Katalysatortabellernas stoppkolumner följde med (nordiskt 4–5 % rakt igenom, US 5–6 %), med
+  höjda målavstånd i ryktesraden så R/R-kravet 2:1 fortfarande håller.
+  **Åtgärd 3 – beslutstakten kopplad till horisonten.** Ny punkt 0b i båda prompterna: i LÄGE A
+  poängsätts nya case bara för LEDIGA platser. En position som varken träffat stop/mål eller fått
+  sin tes punkterad omprövas inte varje måndag. Att alla platser är upptagna är ett giltigt skäl
+  att inte handla alls den veckan.
+  **Vad som INTE ändrades:** skelettet ligger fortfarande under köp-och-behåll i båda böckerna
+  (nordiskt −15,9 % mot ^OMX +36,3 %; US +50,1 % mot ^GSPC +70,7 %). Indexsleeven är därför
+  fortsatt rätt standardplacering och LLM-urvalet måste fortfarande tillföra hela skillnaden.
+  Poängvikterna 35/30/15/20 är fortsatt okalibrerade – det kräver ≥ 15 stängda affärer i
+  beslutsloggen.
+
 - ✅ 2026-08-02 (högerspalt i Rapporter): rapporttexten är kapad i bredd med flit (radlängd är
   en läsbarhetsfråga), vilket lämnade halva skärmen tom på en bred skärm. Ytan fylls nu med en
   spalt som innehåller **innehållsförteckning** (klickbar, markerar aktivt avsnitt vid rullning),

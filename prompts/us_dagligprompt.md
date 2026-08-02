@@ -44,16 +44,33 @@ Underlag: `reports/backtest/backtest-260802-us-top4.md` – mekaniska skelettet 
 **topp 4 à 25 %**, 5 dagars håll) över 5 år och 258 veckor på 30 stora US-bolag, netto efter
 courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`) simulerade
 2 positioner à 50 % och matchade inte hur boken faktiskt handlas sedan 2026-07-31.
-0. **US-SKELETTET ÄR KLART SÄMRE ÄN DET NORDISKA:** PF 0,65–0,79 netto mot nordiska bokens
-   0,89–0,96, och kedjat utfall −73 % till −86 %. Orsaken är växlingspåslaget: 0,75 % rundtur
-   × ~200 affärer per år äter mer än hela bruttoedgen. Konsekvensen för dig är INTE att sänka
-   kraven för att jaga igen utfallet, utan tvärtom: **var mer selektiv i US-boken än i den
-   nordiska** – färre, större och längre case, och sleeven i stället för ett halvbra case.
-1. **STOPPBREDD:** till skillnad från nordiska boken presterar US-gridet BÄST med den bredaste
-   kombinationen, 20 dagars lookback / −5 % stop / +10 % mål (PF 0,79 netto, minst dåligt
-   kedjat utfall) – samma rangordning som i 2-positionskörningen. Använd bandet
-   **stop 4–6 % under entry**, satt tekniskt inom bandet, med mål ≥ 2× stoppavståndet.
-   US-aktier rör sig mer per dag än nordiska – en 3 %-stop stoppas ut på brus.
+0. **HÅLLREGELN ÄR AVGÖRANDE I US-BOKEN – STÖRRE EFFEKT ÄN NÅGON ANNAN REGEL (mätt 2026-08-02).**
+   Gridet kördes tidigare BARA med en femdagarsklocka och gav då PF 0,65–0,79 och kedjat utfall
+   −72 % till −85 % – hopplöst. Med hållregeln (platsen behålls tills stop/mål eller 30
+   handelsdagar; rotationen fyller bara TOMMA platser) blir samma skelett:
+   | Cell | PF veckovis → BEHÅLL | Kedjat % veckovis → BEHÅLL | Affärer/år |
+   |---|---|---|---|
+   | 10d −5 %/+10 % | 0,75 → **1,17** | −78,0 → **+50,1** | 204 → 71 |
+   | 20d −5 %/+10 % | 0,79 → **1,12** | −71,8 → **+35,6** | 206 → 77 |
+   | 20d −4 %/+8 %  | 0,73 → **0,93** | −79,5 → **−28,9** | 206 → 103 |
+   Skillnaden är alltså inte marginell – den avgör om boken går att driva alls. Orsaken är
+   växlingspåslaget: 0,75 % rundtur är tre gånger den nordiska kostnaden, så varje undviken
+   affär är värd tre gånger så mycket här.
+   **MEN:** +50 % på fem år ligger fortfarande UNDER ^GSPC köp-och-behåll (+70,7 %). Skelettet
+   slutar blöda men slår inte index. Sleeven (SPY) är alltså fortsatt rätt standardplacering,
+   och **LLM-urvalet måste tillföra skillnaden**. Konsekvensen är INTE att sänka kraven för att
+   jaga utfallet, utan att vara **mer selektiv i US-boken än i den nordiska** – färre, större och
+   längre case, och sleeven i stället för ett halvbra case.
+0b. **ROTATIONEN OMPRÖVAR INTE FUNGERANDE INNEHAV.** I LÄGE A poängsätts nya case bara för att
+   fylla LEDIGA platser. En position som varken träffat stop/mål eller fått sin tes punkterad
+   ska inte re-poängsättas varje måndag. Att alla fyra platser är upptagna är ett giltigt skäl
+   att inte handla alls den veckan.
+1. **STOPPBREDD (OMKALIBRERAD 2026-08-02):** US-gridet presterar klart BÄST med den bredaste
+   kombinationen, **−5 % stop / +10 % mål** – och med hållregeln är det den enda kombination som
+   ger PF över 1,0 (1,12–1,17 mot 0,80–0,93 för smalare stopp). Rangordningen är entydig och
+   motsatt den nordiska bokens. Använd bandet **stop 5–6 % under entry**, satt tekniskt inom
+   bandet, med mål ≥ 2× stoppavståndet. En 3 %-stop stoppas ut på brus i US-aktier – det syns
+   direkt i gridet: −3 %/+6 % ger PF 0,80 mot 1,17 för −5 %/+10 %.
 2. **KOSTNADSTRÖSKEL (ny, hård regel):** us-boken betalar BÅDE courtage och växlingspåslag –
    ~0,75 % rundtur enligt `config/kostnader.json`, tre gånger den nordiska bokens. Ett case får
    bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.
@@ -72,8 +89,11 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    | catalystType | Horisont | Målavstånd | Stop | Tidsstopp |
    |---|---|---|---|---|
    | `earnings`, `order`, `regulatory`, `buyback` | 3–6 veckor (post-earnings drift) | 14–18 % | 5–6 % | inget |
-   | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 8–11 % | 4–5 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats |
-   | `macro`, `turnaround`, `other` | 2–4 veckor | 10–14 % | 4–6 % | inget |
+   | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 10–12 % | 5–6 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats |
+   | `macro`, `turnaround`, `other` | 2–4 veckor | 10–14 % | 5–6 % | inget |
+   Stoppkolumnen är omkalibrerad 2026-08-02 till 5–6 % rakt igenom: gridet visar att −5 %/+10 %
+   är den ENDA kombinationen som ger PF över 1,0 med hållregeln, och att 3–4 % stoppas ut på brus
+   (PF 0,80). Målavståndet i rad 2 höjdes så R/R-kravet 2:1 håller mot det bredare stoppet.
    Målavstånden är högre än i nordiska boken eftersom rundturskostnaden är tre gånger så hög.
    Skriv ut `catalystType` och horisont i handelsplanen; logga `horizonDays` i beslutsloggen.
 6. **MÅLET MÅSTE VARA NÅBART (ny hård regel):** målavståndet i procent får vara högst **2× aktiens
@@ -164,9 +184,12 @@ courtage OCH växlingspåslag. Den tidigare körningen (`backtest-260731-us.md`)
    `state/portfolj_us.md`, beräkna utfall sedan entry, kontrollera om stop/mål träffats.
    **Innehav som hållits 5 handelsdagar säljs INTE automatiskt** – enligt "NIVÅER & OMSÄTTNING"
    är BEHÅLL standardvalet så länge tesen är intakt och varken stop eller mål träffats. Sälj vid
-   rotationen endast om (a) stop/mål träffats, (b) tesen är punkterad, eller (c) ett nytt case har
-   minst 2 poäng högre totalpoäng. Flytta stängda positioner till Historik, uppdatera ackumulerad
-   avkastning (USD).
+   rotationen endast om (a) stop/mål träffats, (b) tesen är punkterad, (c) katalysatorhorisonten
+   löpt ut, eller (d) ett nytt case har minst 2 poäng högre totalpoäng OCH en plats står tom.
+   Poängsätt nya case bara för de platser som faktiskt är lediga (punkt 0b i "NIVÅER &
+   OMSÄTTNING") – i den här boken är varje undviken affär värd tre gånger så mycket som i den
+   nordiska, eftersom växlingspåslaget tillkommer. Flytta stängda positioner till Historik,
+   uppdatera ackumulerad avkastning (USD).
 0b. LÄRDOMAR: läs "Lärdom"-fältet i de 4 senaste `reports/us_weekly/`-rapporterna SAMT de aktiva
    lärdomarna i `state/lessons.md` (miss-retrons destillat). Låt 1–2 återkommande misstag påverka
    veckans urval; nämn kort vilken lärdom som tillämpats (med L-ID där det finns).
