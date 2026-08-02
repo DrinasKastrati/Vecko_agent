@@ -572,7 +572,19 @@ Filnamn på rapporter: `daglig-yymmdd.md` och `veckorapport-yymmdd.md` (yy=år, 
   **Om beslutsloggen:** de två körningarna 1–2 aug loggade noll rader, men det är KORREKT –
   börserna var stängda och rapporterna säger uttryckligen varför. Loggningskravet har existerat
   i exakt en handelsdag (2026-07-31, backfylld), så **måndag 2026-08-03 är första riktiga testet.**
-  Testsviten: **292 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
+  **(11) Kurser-vyn visar nu VAD varje ticker är.** Vyn renderade 38 identiska kort, så ett
+  innehav såg likadant ut som ett index, ett valutapar eller en ticker som bara låg kvar i
+  watchlisten – frågan "vilka aktier bevakar den egentligen?" gick inte att besvara ur
+  gränssnittet. Ny `VParse.tickerRoles()` klassificerar varje ticker i prioritetsordning
+  innehav > plan > bubblare > sleeve > index > valuta > bevakad, med källorna portföljfilerna,
+  veckorapporternas bubblarlistor (fritext ⇒ `tickersInText`, som bara tar nordiska börssuffix
+  och parentes-tickers för att inte tolka "VD"/"USA" som symboler) och båda watchlist-filerna
+  (app.js hämtar dem nu). Korten fick färgad rollpill + dagsrörelse, vyn fick filterchips med
+  antal per roll och sortering på roll (default) / A–Ö / färskhet / dagsrörelse.
+  **Dagsrörelsen visas ENDAST om `prices.json` har `schemaVersion`** – annars renderas "–" plus
+  en varningsremsa, eftersom previousClose i äldre filer pekar ~en vecka bakåt. Samma spärr som
+  prompterna fick, fast i UI:t.
+  Testsviten: **308 tester**; sim: **34 kontroller**; `validate-decisions.mjs` OK. Allt grönt.
 
 ## 5b. Nuläge — KVAR / VALFRITT
 - ✅ **Pushat & live (2026-07-12):** hela flik-omdesignen + alla fixar/features från 2026-07-11

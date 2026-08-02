@@ -803,6 +803,96 @@
     };
   }
 
+  // ---- tickerns ROLL (Kurser-vyn) ----------------------------------------
+  // Kurser-vyn visade 38 identiska kort: ett innehav såg likadant ut som ett
+  // index, ett valutapar eller en ticker som bara låg kvar i watchlisten. Den
+  // vanligaste frågan – "vilka aktier bevakar den egentligen?" – gick alltså
+  // inte att besvara ur gränssnittet. Funktionen klassificerar varje ticker
+  // efter den roll den FAKTISKT har, i prioritetsordning: ett innehav som
+  // också står i watchlisten är ett innehav.
+  const SLEEVE_TICKERS = ["XACT-OMXS30.ST", "SPY"];
+  const ROLE_ORDER = ["innehav", "plan", "bubblare", "sleeve", "index", "valuta", "bevakad"];
+  const ROLE_LABEL = {
+    innehav: "Innehav", plan: "Plan", bubblare: "Bubblare", sleeve: "Indexdel",
+    index: "Index", valuta: "Valuta", bevakad: "Bevakad"
+  };
+
+  // Tickers ur en watchlist-fil (kommentarer och tomrader bort).
+  function parseWatchlist(txt){
+    return String(txt || "").split(/\r?\n/).map(l => l.trim())
+      .filter(l => l && !l.startsWith("#")).map(l => l.toUpperCase());
+  }
+
+  // Bubblarlistan i veckorapporten är fritext ("Hansa Biopharma (HNSA.ST) – …"),
+  // inte tabellrader, så tickern måste plockas ur texten. Nordiska känns igen på
+  // börssuffixet; amerikanska bara när de står inom parentes, annars skulle
+  // versaler mitt i en mening (VD, USA, AI) tolkas som tickers.
+  function tickersInText(s){
+    const t = String(s || ""), out = [];
+    const nordic = /\b[A-Z][A-Z0-9]{0,5}(?:-[A-Z0-9]{1,4})?\.(?:ST|OL|CO|HE)\b/g;
+    let m;
+    while ((m = nordic.exec(t))) out.push(m[0]);
+    const paren = /\(([A-Z]{1,5})(?:\s*[/|]|\))/g;
+    while ((m = paren.exec(t))) out.push(m[1]);
+    return [...new Set(out)];
+  }
+
+  function tickerRoles(o){
+    o = o || {};
+    const out = {};
+    const set = (t, role, book) => {
+      const k = String(t || "").trim().toUpperCase();
+      if (!k) return;
+      const prev = out[k];
+      // Lägre index i ROLE_ORDER vinner – en ticker byter aldrig ned sig.
+      if (prev && ROLE_ORDER.indexOf(prev.role) <= ROLE_ORDER.indexOf(role)) return;
+      out[k] = { role, label: ROLE_LABEL[role], book: book || (prev && prev.book) || null };
+    };
+    const rowsOf = (p, key) => (p && Array.isArray(p[key])) ? p[key] : [];
+    const tickerOf = r => r && (r.ticker || r.Ticker || r["Yahoo-ticker"] || "");
+
+    for (const [p, book] of [[o.portfolio, "nordic"], [o.portfolioUs, "us"]]){
+      for (const h of rowsOf(p, "holdings")) set(tickerOf(h), "innehav", book);
+      for (const h of rowsOf(p, "pending")) set(tickerOf(h), "plan", book);
+    }
+    for (const [w, book] of [[o.weekly, "nordic"], [o.usWeekly, "us"]])
+      for (const b of rowsOf(w, "bubblare")){
+        if (typeof b === "string") for (const t of tickersInText(b)) set(t, "bubblare", book);
+        else set(tickerOf(b), "bubblare", book);
+      }
+    for (const [txt, book] of [[o.watchlist, "nordic"], [o.watchlistUs, "us"]])
+      for (const t of parseWatchlist(txt)) set(t, "bevakad", book);
+
+    // Mönsterbaserade roller läggs sist men vinner över "bevakad": ett index är
+    // ett index även när det står i en watchlist-fil.
+    for (const t of Object.keys(out)){
+      if (SLEEVE_TICKERS.includes(t)) { if (out[t].role === "bevakad") out[t] = { role: "sleeve", label: ROLE_LABEL.sleeve, book: out[t].book }; }
+      else if (/^\^/.test(t)) out[t] = { role: "index", label: ROLE_LABEL.index, book: out[t].book };
+      else if (/=X$/.test(t)) out[t] = { role: "valuta", label: ROLE_LABEL.valuta, book: out[t].book };
+    }
+    return out;
+  }
+
+  // Roll för en ticker som inte fanns i någon källa (t.ex. hämtad ur en rapport).
+  function roleFor(roles, ticker){
+    const k = String(ticker || "").trim().toUpperCase();
+    if (roles && roles[k]) return roles[k];
+    if (SLEEVE_TICKERS.includes(k)) return { role: "sleeve", label: ROLE_LABEL.sleeve, book: null };
+    if (/^\^/.test(k)) return { role: "index", label: ROLE_LABEL.index, book: null };
+    if (/=X$/.test(k)) return { role: "valuta", label: ROLE_LABEL.valuta, book: null };
+    return { role: "bevakad", label: ROLE_LABEL.bevakad, book: null };
+  }
+
+  // Dagsrörelse ur prices.json. Returnerar null om filen saknar schemaVersion:
+  // previousClose pekade då ~en vecka bakåt och talet vore en veckorörelse
+  // förklädd till dagsrörelse (se fetch-prices.mjs). Hellre tomt än fel.
+  function dayChangePct(prices, sym){
+    if (!prices || !prices.schemaVersion) return null;
+    const q = prices.quotes && prices.quotes[sym];
+    if (!q || q.price == null || !q.previousClose) return null;
+    return (q.price / q.previousClose - 1) * 100;
+  }
+
   // ---- intradag-monitorns hälsa ------------------------------------------
   // alerts.json skrevs tidigare bara när signalmängden ändrades, så en tom fil
   // betydde antingen "frisk monitor utan signaler" eller "monitorn har varit
@@ -861,6 +951,7 @@
     computeGauge, buildDecisionHistory, nextRoutineRun, diffDailies, searchDocs, weightFrac, combinedReturn,
     parseLessons, buildTradeSeries, buildMonthlyStats, computeRiskStats,
     costFor, netPct, fxRate, DEFAULT_COSTS, monitorStatus,
+    tickerRoles, roleFor, parseWatchlist, tickersInText, dayChangePct, ROLE_ORDER, ROLE_LABEL,
     benchReturnPct, computeAlpha, computeAlphaStats, alphaKey,
     parseDecisions, decisionStats
   };

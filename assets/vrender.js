@@ -361,7 +361,20 @@
               : Math.round(mins / 1440) + " dygn sedan";
     return { txt, cls: mins > 3 * 1440 ? "px-stale" : "px-fresh" };
   }
-  function renderPrices(prices, history){
+  // roles (valfri): VParse.tickerRoles(...) – utan den beter sig vyn som förut.
+  // Rollen är hela poängen med kortet: ett innehav, en väntande plan, indexdelen
+  // och en ticker som bara ligger kvar i watchlisten säger helt olika saker, men
+  // såg tidigare exakt likadana ut.
+  const ROLE_HINT = {
+    innehav: "Öppen position i portföljen",
+    plan: "Väntande plan – köps först när entry-villkoret nås",
+    bubblare: "Case som var nära att väljas; följs upp vid nästa rotation",
+    sleeve: "Indexdelen – bär kapital utan aktivt case, har varken stopp eller mål",
+    index: "Jämförelseindex, inget innehav",
+    valuta: "Valutakurs, inget innehav",
+    bevakad: "Bevakad ticker ur watchlisten – inget innehav och ingen plan"
+  };
+  function renderPrices(prices, history, roles){
     if (!prices || !prices.quotes)
       return `<div class="px-card"><div class="px-head"><span class="t">Kurser (prices.json)</span></div>`
            + `<div class="empty">Inga kurser hämtade ännu – kör pris-actionen (Actions → “Hämta kurser”).</div></div>`;
@@ -369,21 +382,51 @@
     const syms = Object.keys(prices.quotes);
     const ok = prices.okCount != null ? prices.okCount
              : syms.filter(s => prices.quotes[s] && !prices.quotes[s].error).length;
+    const order = ["innehav", "plan", "bubblare", "sleeve", "index", "valuta", "bevakad"];
+    const roleOf = s => {
+      const k = String(s).toUpperCase();
+      const r = roles && roles[k];
+      if (r) return r;
+      if (/^\^/.test(k)) return { role: "index", label: "Index" };
+      if (/=X$/.test(k)) return { role: "valuta", label: "Valuta" };
+      return { role: "bevakad", label: "Bevakad" };
+    };
+    const counts = {};
+    for (const s of syms){ const r = roleOf(s).role; counts[r] = (counts[r] || 0) + 1; }
+
     const items = syms.map(s => {
       const q = prices.quotes[s] || {};
       const tk = q.symbol || s;
+      const r = roleOf(tk);
       const tMs = q.marketTime ? (Date.parse(q.marketTime) || 0) : 0;
+      const badge = `<span class="px-role px-role--${esc(r.role)}" title="${esc(ROLE_HINT[r.role] || "")}">${esc(r.label)}</span>`;
       if (q.error || q.price == null)
-        return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="0"><div class="px-tk"><span>${esc(s)}</span><span class="px-err">⚠</span></div>`
-             + `<div class="px-pr px-err">–</div><div class="px-tm" title="${esc(q.error || "ingen kurs")}">${esc(truncate(q.error || "ingen kurs", 22))}</div></div>`;
+        return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="0" data-role="${esc(r.role)}"><div class="px-tk"><span>${esc(s)}</span><span class="px-err">⚠</span></div>`
+             + `<div class="px-pr px-err">–</div><div class="px-tm" title="${esc(q.error || "ingen kurs")}">${esc(truncate(q.error || "ingen kurs", 22))}</div>${badge}</div>`;
       const mt = pxAge(q.marketTime);
       const price = String(q.price) + (q.currency ? " " + q.currency : "");
       const tm = q.marketTime ? q.marketTime.slice(0, 16).replace("T", " ") : "okänd tid";
       const ser = history && history.series && history.series[q.symbol || s];
-      return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="${tMs}"><div class="px-tk"><span>${esc(tk)}</span>`
+      // Dagsrörelsen kräver att filen är skriven efter previousClose-rättelsen
+      // (schemaVersion). Saknas den visas inget tal alls – ett felaktigt
+      // procenttal är värre än inget, det var precis så veckorörelser kunde
+      // publiceras som dagsrörelser.
+      const chg = (prices.schemaVersion && q.previousClose) ? (q.price / q.previousClose - 1) * 100 : null;
+      const chgHtml = chg == null
+        ? `<span class="px-chg px-chg--na" title="${esc(prices.schemaVersion ? "previousClose saknas för denna ticker" : "prices.json är skriven före previousClose-rättelsen (saknar schemaVersion) – dagsrörelse kan inte räknas ur den")}">–</span>`
+        : `<span class="px-chg ${chg >= 0 ? "pos" : "neg"}" title="Sedan föregående sessions stängning">${esc(signPct(chg))}</span>`;
+      return `<div class="px-item" data-tk="${esc(String(tk).toUpperCase())}" data-t="${tMs}" data-role="${esc(r.role)}"><div class="px-tk"><span>${esc(tk)}</span>`
            + `<span class="${mt.cls}">${mt.cls === "px-fresh" ? "✓" : "⚠"}</span></div>`
-           + `<div class="px-pr">${esc(price)}</div><div class="px-tm">${esc(tm)}</div>${sparkline(ser)}</div>`;
+           + `<div class="px-pr">${esc(price)}${chgHtml}</div><div class="px-tm">${esc(tm)}</div>${sparkline(ser)}${badge}</div>`;
     }).join("");
+
+    const CHIP_LABEL = { innehav: "Innehav", plan: "Planer", bubblare: "Bubblare",
+      sleeve: "Indexdel", index: "Index", valuta: "Valuta", bevakad: "Bevakade" };
+    const chips = [`<button class="px-chip on" data-role="alla">Alla ${syms.length}</button>`]
+      .concat(order.filter(r => counts[r]).map(r =>
+        `<button class="px-chip px-chip--${esc(r)}" data-role="${esc(r)}" title="${esc(ROLE_HINT[r] || "")}">${esc(CHIP_LABEL[r])} ${counts[r]}</button>`))
+      .join("");
+
     return `<div class="px-card">
       <div class="px-head">
         <span class="t">Kurser (prices.json)</span>
@@ -392,11 +435,15 @@
         <div class="px-tools">
           <input id="pxSearch" class="px-search" type="search" placeholder="Filtrera ticker…" autocomplete="off" spellcheck="false"/>
           <select id="pxSort" class="px-sort" title="Sortering">
+            <option value="role">Roll</option>
             <option value="az">A–Ö</option>
             <option value="fresh">Färskhet</option>
+            <option value="chg">Dagsrörelse</option>
           </select>
         </div>
       </div>
+      <div class="px-chips" id="pxChips">${chips}</div>
+      ${prices.schemaVersion ? "" : `<div class="px-warn">Dagsrörelser visas inte: <code>prices.json</code> saknar <code>schemaVersion</code> och är skriven före rättelsen av <code>previousClose</code>. Talen fylls i vid nästa kurshämtning.</div>`}
       ${syms.length ? `<div class="px-grid" id="pxGrid">${items}</div>`
                     : `<div class="empty">Inga tickers i prices.json ännu – fyll <code>config/watchlist.txt</code>.</div>`}
     </div>`;

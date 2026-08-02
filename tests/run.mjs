@@ -620,6 +620,48 @@ ok("fetchFeedText fångar kastade fel", await (async () => {
   return !r.ok && /timeout/.test(r.status);
 })());
 
+// ---- tickerroller i Kurser-vyn ----
+const rolePortf = { holdings: [{ ticker: "SAAB-B.ST" }], pending: [{ ticker: "MORLD.OL" }] };
+const roleUs = { holdings: [{ ticker: "SPY" }], pending: [] };
+const roleWeekly = { bubblare: ["Hansa Biopharma (HNSA.ST) – nära men rankad under", "Boozt (BOOZT.ST) stark"] };
+const roleUsWeekly = { bubblare: ["HCA Healthcare (HCA / NYSE) – bankrotation"] };
+const roles = VP.tickerRoles({
+  portfolio: rolePortf, portfolioUs: roleUs, weekly: roleWeekly, usWeekly: roleUsWeekly,
+  watchlist: "# kommentar\nXACT-OMXS30.ST\nSCA-B.ST\nSAAB-B.ST\n^OMX\n",
+  watchlistUs: "AAPL\nUSDSEK=X\n^GSPC\n"
+});
+ok("roll: innehav", roles["SAAB-B.ST"].role === "innehav" && roles["SAAB-B.ST"].book === "nordic");
+ok("roll: innehav vinner över watchlist", roles["SAAB-B.ST"].role !== "bevakad");
+ok("roll: pending blir plan", roles["MORLD.OL"].role === "plan");
+ok("roll: bubblare ur fritext", roles["HNSA.ST"].role === "bubblare" && roles["BOOZT.ST"].role === "bubblare");
+ok("roll: US-bubblare inom parentes", roles["HCA"].role === "bubblare" && roles["HCA"].book === "us");
+ok("roll: sleeve känns igen", roles["XACT-OMXS30.ST"].role === "sleeve" && VP.roleFor(roles, "SPY").role === "innehav");
+ok("roll: index och valuta", roles["^OMX"].role === "index" && roles["USDSEK=X"].role === "valuta");
+ok("roll: watchlist-ticker utan annan roll", roles["AAPL"].role === "bevakad" && roles["SCA-B.ST"].role === "bevakad");
+ok("roleFor faller tillbaka på mönster", VP.roleFor({}, "^GSPC").role === "index"
+  && VP.roleFor(null, "EURSEK=X").role === "valuta" && VP.roleFor({}, "NVDA").role === "bevakad");
+ok("parseWatchlist hoppar kommentarer", VP.parseWatchlist("# x\n\nabc.st\n").length === 1);
+ok("tickersInText plockar inte versaler mitt i mening",
+  VP.tickersInText("VD:n i USA sålde aktier").length === 0);
+// dagsrörelse får INTE räknas ur en fil skriven före previousClose-rättelsen
+const pxNew = { schemaVersion: "2026-08-02-prevclose", quotes: { X: { price: 110, previousClose: 100 } } };
+const pxOld = { quotes: { X: { price: 110, previousClose: 100 } } };
+ok("dayChangePct räknar med schemaVersion", Math.abs(VP.dayChangePct(pxNew, "X") - 10) < 1e-9);
+ok("dayChangePct vägrar utan schemaVersion", VP.dayChangePct(pxOld, "X") === null);
+ok("renderPrices visar roll-chip och dagsrörelse", (() => {
+  const h = VR.renderPrices({ schemaVersion: "v", generatedAt: new Date().toISOString(),
+    quotes: { "SAAB-B.ST": { price: 110, previousClose: 100, currency: "SEK", marketTime: new Date().toISOString() } } },
+    null, { "SAAB-B.ST": { role: "innehav", label: "Innehav" } });
+  return h.includes("px-role--innehav") && h.includes("Innehav") && h.includes("+10") && h.includes("px-chips");
+})());
+ok("renderPrices varnar när schemaVersion saknas", (() => {
+  const h = VR.renderPrices({ generatedAt: new Date().toISOString(),
+    quotes: { X: { price: 110, previousClose: 100, marketTime: new Date().toISOString() } } }, null, {});
+  return h.includes("px-warn") && h.includes("px-chg--na");
+})());
+ok("renderPrices utan roller fungerar som förut",
+  VR.renderPrices({ quotes: {}, generatedAt: new Date().toISOString() }).includes("Inga tickers"));
+
 // ---- monitorns hjärtslag i dashboarden ----
 ok("monitorStatus null utan fil", VP.monitorStatus(null) === null);
 ok("monitorStatus okänd när checkedAt saknas", (() => {

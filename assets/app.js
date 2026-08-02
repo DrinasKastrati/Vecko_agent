@@ -66,12 +66,14 @@
         const lessonsPath = paths.find(p => /(^|\/)lessons\.md$/i.test(p));
         const costsPath = paths.find(p => /(^|\/)kostnader\.json$/i.test(p));
         const decisionsPath = paths.find(p => /(^|\/)decisions\.json$/i.test(p));
+        const wlPath = paths.find(p => /(^|\/)watchlist\.txt$/i.test(p));
+        const wlUsPath = paths.find(p => /(^|\/)watchlist_us\.txt$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
         const dMetas = metas.filter(m => m.type === "daily").slice(0, 10);
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -86,7 +88,9 @@
           allocPath ? this.fetchJSON(this.raw(allocPath)).catch(() => null) : Promise.resolve(null),
           lessonsPath ? this.getMd(lessonsPath).catch(() => null) : Promise.resolve(null),
           costsPath ? this.fetchJSON(this.raw(costsPath)).catch(() => null) : Promise.resolve(null),
-          decisionsPath ? this.fetchJSON(this.raw(decisionsPath)).catch(() => null) : Promise.resolve(null)
+          decisionsPath ? this.fetchJSON(this.raw(decisionsPath)).catch(() => null) : Promise.resolve(null),
+          wlPath ? this.getMd(wlPath).catch(() => null) : Promise.resolve(null),
+          wlUsPath ? this.getMd(wlUsPath).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -104,6 +108,8 @@
         this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
         this.state.costs = costs || this.P.DEFAULT_COSTS;
         this.state.decisions = decisions;
+        this.state.watchlist = wlTxt;
+        this.state.watchlistUs = wlUsTxt;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
         this.renderAll();
         this.setStatus("ok");
@@ -162,7 +168,14 @@
       this.el("market").innerHTML = R.renderMarket(latestDaily);
       this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap(), this.buildDecisionMap(latestDaily), this.P.diffDailies(S.dailies[0], S.dailies[1]));
       this.renderPxBadge();
-      const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory);
+      // Rollerna gör Kurser-vyn läsbar: innehav, plan, bubblare, indexdel och
+      // rena bevakningar såg tidigare exakt likadana ut.
+      const roles = this.P.tickerRoles({
+        portfolio: S.portfolio, portfolioUs: S.portfolioUs,
+        weekly: S.weeklies[0], usWeekly: S.usWeeklies[0],
+        watchlist: S.watchlist, watchlistUs: S.watchlistUs
+      });
+      const pxEl = this.el("prices"); if (pxEl) pxEl.innerHTML = R.renderPrices(S.prices, S.priceHistory, roles);
       this.el("feed").innerHTML = R.renderFeed(S.feed);
       const sbEl = this.el("scoutBody"); if (sbEl) sbEl.innerHTML = R.renderScout(S.scouts[0] || null);
       this.renderAnalysisIndex();
@@ -242,23 +255,47 @@
       }).forEach(r => tb.appendChild(r));
     }
 
+    // Fritext OCH rollchip filtrerar samma lista – båda måste stämma.
     filterPrices() {
       const inp = this.el("pxSearch"), grid = this.el("pxGrid");
       if (!grid) return;
       const q = ((inp && inp.value) || "").toUpperCase().trim();
       this._pxQuery = q;
-      grid.querySelectorAll(".px-item").forEach(it =>
-        it.style.display = !q || (it.dataset.tk || "").includes(q) ? "" : "none");
+      const role = this._pxRole || "alla";
+      grid.querySelectorAll(".px-item").forEach(it => {
+        const okText = !q || (it.dataset.tk || "").includes(q);
+        const okRole = role === "alla" || (it.dataset.role || "") === role;
+        it.style.display = okText && okRole ? "" : "none";
+      });
+    }
+    setPriceRole(role) {
+      this._pxRole = role || "alla";
+      const chips = this.el("pxChips");
+      if (chips) chips.querySelectorAll(".px-chip").forEach(c =>
+        c.classList.toggle("on", (c.dataset.role || "alla") === this._pxRole));
+      this.filterPrices();
     }
     sortPrices() {
       const sel = this.el("pxSort"), grid = this.el("pxGrid");
       if (!grid) return;
-      const mode = (sel && sel.value) || "az";
+      const mode = (sel && sel.value) || "role";
       this._pxSort = mode;
-      [...grid.children].sort((a, b) =>
-        mode === "fresh" ? (Number(b.dataset.t) || 0) - (Number(a.dataset.t) || 0)
-                         : (a.dataset.tk || "").localeCompare(b.dataset.tk || "", "sv")
-      ).forEach(n => grid.appendChild(n));
+      // Rollordningen är densamma som i VParse.ROLE_ORDER: det man äger först,
+      // rena bevakningar sist. Inom en roll sorteras alfabetiskt.
+      const order = this.P.ROLE_ORDER || ["innehav", "plan", "bubblare", "sleeve", "index", "valuta", "bevakad"];
+      const rank = n => { const i = order.indexOf(n.dataset.role || "bevakad"); return i < 0 ? order.length : i; };
+      const chg = n => {
+        const t = (n.querySelector(".px-chg") || {}).textContent || "";
+        const v = parseFloat(String(t).replace(",", ".").replace(/[^\d.+-]/g, ""));
+        return isNaN(v) ? -Infinity : v;
+      };
+      const az = (a, b) => (a.dataset.tk || "").localeCompare(b.dataset.tk || "", "sv");
+      [...grid.children].sort((a, b) => {
+        if (mode === "fresh") return (Number(b.dataset.t) || 0) - (Number(a.dataset.t) || 0);
+        if (mode === "chg") return chg(b) - chg(a);
+        if (mode === "role") return (rank(a) - rank(b)) || az(a, b);
+        return az(a, b);
+      }).forEach(n => grid.appendChild(n));
     }
 
     // Återställ UI-läge efter varje re-render (rapport-höjd, sektioner, filter).
@@ -272,8 +309,10 @@
         if (st === false) d.open = false;
       });
       const inp = this.el("pxSearch"), sel = this.el("pxSort");
-      if (inp && this._pxQuery) { inp.value = this._pxQuery; this.filterPrices(); }
-      if (sel && this._pxSort) { sel.value = this._pxSort; this.sortPrices(); }
+      if (inp && this._pxQuery) { inp.value = this._pxQuery; }
+      if (this._pxRole && this._pxRole !== "alla") this.setPriceRole(this._pxRole);
+      else this.filterPrices();
+      if (sel) { sel.value = this._pxSort || "role"; this.sortPrices(); }
     }
 
     // ---- kurshistorik-modal (klick på kort i Kurser) ----
@@ -809,6 +848,8 @@
         if (th) { this.sortTable(th); return; }
         const sr = e.target.closest("[data-open-report]");
         if (sr) { this.openReportByName(sr.dataset.openReport, sr.dataset.rtype); return; }
+        const chip = e.target.closest(".px-chip");
+        if (chip) { this.setPriceRole(chip.dataset.role || "alla"); return; }
         const px = e.target.closest(".px-item");
         if (px && px.dataset.tk) { this.openPxChart(px.dataset.tk); return; }
         if (e.target.id === "pxModal" || e.target.id === "pxModalClose") this.closePxChart();
