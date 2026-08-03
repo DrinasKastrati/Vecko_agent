@@ -351,19 +351,25 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   mappnamnet på disk). Node v24 på plats. Auto-push-tasken är registrerad men AVSTÄNGD sedan
   2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
-- **KVAR efter genomgången (2026-08-02) – i prioritetsordning:**
-  1. **Kör `push.bat`.** Hela 08-02-paketet ligger lokalt. Extra viktigt att det sker FÖRE
-     måndagens rotation: `previousClose`-fixen måste vara i repot innan `prices.yml` kör 05:00
-     UTC, annars fattar rotationen beslut på falska dagsrörelser en dag till.
-  2. **Verifiera måndag 2026-08-03 att fixarna bitit:** (a) `state/prices.json` – jämför någon
-     ticker mot en extern kurs, dagsrörelsen ska nu vara en DAGSrörelse; (b) `state/alerts.json`
-     – fältet `checkedAt` ska finnas och stämplas om under dagen; (c) `state/decisions.json` –
-     rotationerna ska lägga rader UTAN `source: backfill`, syns direkt i Avkastning-vyns nya
-     Beslutslogg-ruta; (d) båda portföljerna ska ha migrerat kassa till sleeven (prompternas
-     punkt 4c) – nordiska boken låg på 50 % kassa, US-boken 100 %.
-  3. **Kör `movers.yml` manuellt en gång** (Actions → "Veckans rörelser" → Run workflow) för att
-     förgodkänna den, eller lita på lördagskörningen. `state/movers.json` finns redan lokalt från
-     körningen 2026-08-02.
+- **KVAR (uppdaterad 2026-08-03 17:50) – i prioritetsordning:**
+  1. **Kör `movers.yml` manuellt en gång** (Actions → "Veckans rörelser" → Run workflow).
+     `state/movers.json` har fortfarande `asOf: 2026-07-30`, alltså en session efter – lördagens
+     körning läser torsdagsstängningar i stället för fredagens (veckorapport-260803 punkt 6), och
+     orsaken är inte utredd. Watchdogen larmar först vid 9 dygn, så felet är osynligt tills dess.
+  2. **`docs/manual/`-skärmbilderna åldras.** Tas nya: se kommentaren i `make-manual.bat`, kör
+     sedan skriptet så PDF:erna följer med.
+  3. **Bevaka att nyhetsfönstret fyller på sig.** Handelsdagsfönstret infördes 2026-08-03 17:xx, så
+     filen bar då bara den dagens poster (`window.tradingDaysCovered: 1`). Den självläker en dag i
+     taget; är den inte uppe i 5 senast fredag 2026-08-07 är det ett verkligt fel, inte eftersläpning.
+     Watchdogen larmar under 5.
+  4. **Första skarpa körningen av `auto_merge.yml`-grinden är inte sedd.** Nästa routine-commit blir
+     provet: kontrollera i Actions att stegen `validate-decisions`/`run.mjs`/`theme.mjs` körde och att
+     `dashboard.json` byggdes om i samma jobb. Faller grinden lämnas `claude/**`-branchen kvar –
+     inget arbete försvinner, men rapporten når inte main förrän felet är åtgärdat.
+- ✅ **Avklarat 2026-08-03 (var punkt 1–2 i 08-02-listan):** `push.bat` körd; (a) dagsrörelserna
+  stämmer och filen bär `schemaVersion 2026-08-02-prevclose`; (b) `alerts.json` har `checkedAt`;
+  (c) `decisions.json` har 15 rader varav 0 med `source: backfill`; (d) båda böckerna har migrerat
+  kassa till sleeven (nordisk 65 % XACT, US-boken öppnade AMZN + SPY 2026-08-03).
   4. `docs/manual/`-skärmbilderna åldras. Tas nya: se kommentaren i `make-manual.bat`, och kör
      sedan skriptet så PDF:en följer med.
   5. ✅ **Avklarat 2026-08-02:** filstädningen. `Anvandarguide.html`, `Anvandarmanual.html/.pdf`,

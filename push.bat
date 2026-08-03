@@ -63,7 +63,9 @@ if errorlevel 1 (
 )
 
 echo.
-echo Klart! Dashboarden uppdateras inom nagon minut.
+rem  Inget utropstecken har: med enabledelayedexpansion ater cmd ett ensamt "!"
+rem  ur echo-texten, sa "Klart!" skrevs ut som "Klart".
+echo Klart - dashboarden uppdateras inom nagon minut.
 pause
 exit /b 0
 
