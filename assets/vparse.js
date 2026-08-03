@@ -286,7 +286,9 @@
       cases: [], bubblare: [], radar: []
     };
     out.facit.accum = firstNumberPct(field(md, "Ackumulerad avkastning sedan strategistart"));
-    out.facit.outcome = field(md, "Veckans portföljutfall (50/50)");
+    // Mallen skriver "(viktat)" sedan 4 positioner infördes; äldre rapporter har "(50/50)".
+    out.facit.outcome = field(md, "Veckans portföljutfall (viktat)")
+      || field(md, "Veckans portföljutfall (50/50)");
     out.facit.lesson = field(md, "Lärdom");
 
     for (const s of splitSections(md)){

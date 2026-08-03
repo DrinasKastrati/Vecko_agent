@@ -39,7 +39,8 @@ export function buildDigest(md, dateISO, isWeekly){
   const pend = md.match(/##\s+Pending-planer\s*\n([\s\S]*?)(?=\n##\s|$)/i);
   if (pend && clean(pend[1])) out.push("", "**Pending-planer:** " + clean(pend[1]).slice(0, 600));
   if (isWeekly){
-    const facit = md.match(/\*\*Veckans portföljutfall \(50\/50\):?\*\*\s*([^\n|]*)/i);
+    // "(viktat)" är mallens etikett sedan 4 positioner; "(50/50)" finns i äldre rapporter.
+    const facit = md.match(/\*\*Veckans portföljutfall \((?:viktat|50\/50)\):?\*\*\s*([^\n|]*)/i);
     if (facit && clean(facit[1])) out.push("", "**Veckans utfall:** " + clean(facit[1]));
   }
   out.push("", "_Automatisk digest ur " + (isWeekly ? "veckorapporten" : "dagliga rapporten") +

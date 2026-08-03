@@ -149,6 +149,27 @@ redovisat utfall.</p>
   <li>Inte fyra bolag med samma riskprofil – fyra positioner i samma sektor är i praktiken en position.</li>
 </ul>
 
+<h3>Marknadsregimen: en hård spärr före poängen</h3>
+<p>Sedan 3 augusti 2026 gäller ett <b>regimfilter</b> i båda böckerna, och det ligger <em>före</em>
+poängmodellen: ligger indexet (OMXS30 respektive S&amp;P 500) <b>under sitt 200-dagars glidande
+medelvärde</b> öppnas <b>inga nya positioner alls</b>. Tomma platser går till indexdelen, så
+kapitalet står kvar i marknaden – regeln stänger av <em>urvalet</em>, inte exponeringen.</p>
+<ul>
+  <li>Det är en <b>spärr</b>, inte en höjd ribba. En tidigare formulering («kräv två poäng mer»)
+  var en uppmjukning av det som faktiskt mättes, och den mildare varianten har aldrig mätts.</li>
+  <li><b>Samma fönster i båda böckerna.</b> Nordiskt är MA100 marginellt bättre på avkastning
+  (+26,9 % mot +21,7 %) men sämre på drawdown, medan MA200 vinner med 24 procentenheter i den
+  amerikanska boken. Olika fönster per marknad är precis den trimning som out-of-sample-testet
+  visat är brus.</li>
+  <li>Går medelvärdet <b>inte</b> att beräkna (färre än 200 dagliga stängningar i serien) behandlas
+  regimen som <b>av</b>. Osäkerhet drar alltid åt det strängare hållet.</li>
+  <li>Regeln gäller <b>enbart nyöppning</b>. Befintliga innehav sköts av sina stopp och mål som
+  vanligt, och regimen får aldrig användas som skäl att strunta i ett stopp.</li>
+</ul>
+<p>Underlaget står i avsnitt 9. Kort: filtret är den enda regeln i hela backtestmaterialet som slår
+dagens uppsättning i fyra av fyra halvor och marknader, och det ungefär halverar max drawdown.
+Men det får <em>inte</em> skelettet att slå index – det gör det mindre dåligt.</p>
+
 <div class="box box--ok">
 <b>Case tvingas aldrig fram</b>
 Räcker inte fyra kandidater till godkänt fylls bara de platser som håller. Resten går till
@@ -347,15 +368,19 @@ vilket också ger en ärlig drawdown. Talen nedan kommer ur den ombyggda motorn.
 <h3>Vad som gäller efter ombyggnaden</h3>
 <table>
 <tr><th>Marknad</th><th>Bästa cell</th><th>Index (köp och behåll)</th><th>Max drawdown</th></tr>
-<tr><td>Nordisk</td><td class="num">+43,7 %</td><td>OMXS30 <span class="num">+36,3 %</span></td>
+<tr><td>Nordisk</td><td class="num">+42,2 %</td><td>OMXS30 <span class="num">+37,6 %</span></td>
     <td class="num">−17,8 %</td></tr>
 <tr><td>US</td><td class="num">+55,7 %</td><td>S&amp;P 500 <span class="num">+70,7 %</span></td>
     <td class="num">−33,6 %</td></tr>
 </table>
 <p>Den nordiska bästa cellen använder <b>120 dagars momentumfönster</b> och hållregeln; med de
-gamla 10–20-dagarsfönstren ger samma nivåer −18,9 till −34,1 %. Skillnaden mellan «ramverket
+gamla 10–20-dagarsfönstren ger samma nivåer −20,0 till −23,1 %. Skillnaden mellan «ramverket
 bär sig inte» och «ramverket slår index» låg alltså i en parameter som aldrig testades. I den
 amerikanska boken är fönstret mindre avgörande – där är det stoppbredden som styr.</p>
+<p class="meta">Den nordiska kostnaden är sedan 3 augusti 2026 <b>nivåstyrd per symbol</b>
+(0,25 % vid minst 20 MSEK omsatt per dag, 0,75 % vid minst 3, annars 1,5 %) i stället för ett
+platt tal, härledd ur varje bolags uppmätta medianomsättning. Därför skiljer sig talen någon
+tiondel från versionen dagen före.</p>
 
 <div class="box box--stop">
 <b>Slutsatsen, rakt ut</b>
@@ -372,10 +397,14 @@ skillnaden är att ramverket inte längre motarbetar det.
   bästa cellen.</li>
   <li><b>Fyra positioner slår två</b> i varje enskild cell – profit factor upp, förlusten ungefär
   halverad, max drawdown ned cirka 15 procentenheter.</li>
-  <li><b>Marknadsregimen.</b> Att bara öppna nya positioner när index ligger över sitt glidande
-  medelvärde lyfter den nordiska boken från −18,9 % till +28,9 % och den amerikanska från
-  +42,1 % till +70,2 %, med lägre drawdown i båda. Detta är det enskilt starkaste filtret efter
-  hållregeln.</li>
+  <li><b>Marknadsregimen – den starkaste replikationen i hela materialet.</b> Att bara öppna nya
+  positioner när index ligger över sitt <b>200-dagars</b> glidande medelvärde lyfter den nordiska
+  boken från −20,2 % till <b>+21,7 %</b> och den amerikanska från +42,1 % till <b>+70,2 %</b>. Max
+  drawdown faller från −41,4 % till −27,0 % respektive från −29,3 % till −23,6 %, och exponeringen
+  sjunker till 65–69 %. Jämfört med <em>dagens uppsättning</em> vinner regeln i <b>fyra av fyra</b>
+  halvor och marknader (nordiskt +4,4 % mot −27,2 % och −5,5 % mot −7,4 %; amerikanskt +18,2 % mot
+  +7,5 % och +34,6 % mot +21,0 %). Inget annat i materialet replikerar så. <b>Regeln är därför
+  aktiv sedan 3 augusti 2026</b>, som hård spärr i båda böckerna – se avsnitt 3.</li>
   <li><b>Långt momentumfönster slår kort</b> i den nordiska boken. I USA är bilden mer blandad,
   men det bästa enskilda utfallet i hela rapporten är ett 60-dagars fönster med de senaste 20
   dagarna bortskippade: <b>+110,3 %</b>.</li>
@@ -386,6 +415,37 @@ skillnaden är att ramverket inte längre motarbetar det.
 out-of-sample-testet – samma nivå vinner i båda halvorna i bara 1 fall av 8. I den amerikanska
 boken håller däremot −5 %/+10 % (5 av 8). Nordiska stoppbandet är därför en riskregel, det
 amerikanska en kalibrering.</p>
+
+<h3>Håller vinnarna ihop? Nej.</h3>
+<p>Svepen ovan varierar en dimension i taget. Den 3 augusti 2026 kördes de tre starkaste enskilda
+fynden <em>tillsammans</em> – hållregeln, 120 dagars fönster med de senaste 20 bortskippade, och
+regimfiltret – mätt halva för halva mot samma halvas index. Kravet sattes i förväg: <b>slå
+benchmark i båda halvorna</b>.</p>
+<div class="box box--stop">
+<b>Ingen kombination klarade kravet, i någon av marknaderna</b>
+Varje variant slår index i den ena halvan och förlorar i den andra. Slutsatsen är att skelettet
+inte tillför mätbar <em>avkastning</em> över indexdelen, och att ingen nivå, hålltid eller
+fönsterlängd får ändras på det här underlaget.
+</div>
+<p>Det som däremot är stabilt är ett <em>riskmönster</em>, inte ett avkastningsmönster: regimfiltret
+halverar ungefär max drawdown i båda böckerna. Det uppför sig som en försäkring – den nordiska
+MA200-varianten slår index i den svaga halvan (+4,4 % mot −0,4 %) och förlorar i den starka
+(−5,5 % mot +38,2 %). Det är därför regeln är påslagen trots att kombinationstestet föll.</p>
+
+<h3>Begränsar 30 namn urvalet? Tvärtom.</h3>
+<p>En rimlig invändning är att universumet är för smalt. Den mättes med tre nordiska universum över
+samma period: 30 storbolag, 110 namn (Large + Mid Cap) och 153 namn med småbolag. Skelettet
+<b>kollapsar monotont med bredden</b> – medianen av alla 24 parameterceller gick out-of-sample från
+−1,4 % till −16,3 % till −50,9 %, och bästa cellen från +42,3 % till −1,0 % till −41,2 %.</p>
+<p>Det är inte urvalsbrus: hela gridet försämras, inte bara toppcellen. Orsaken är att regeln «topp
+fyra på efterföljande avkastning» blir <em>sämre</em> ju fler namn den får välja bland – toppen av
+en större fördelning är mer extrem och vänder tillbaka hårdare. En uppdelning av tappet ger cirka
+38 procentenheter urval och 22 procentenheter kostnad: billigare courtage räddar det inte.</p>
+<p class="meta">Vad testet mäter är momentum-proxyn, inte det katalysatordrivna urvalet – som per
+konstruktion avvisar överköpta namn (RSI över 75) och därmed sorterar bort just de bolag som fäller
+siffrorna. Bredd är alltså inte motbevisad för routinen. Men bevisbördan ligger hos den som vill
+bredda, och varje sådant förslag måste komma med en urvalsregel som blir <em>strängare</em> när
+bredden ökar.</p>
 
 <p>Att detta står i systemets egen dokumentation är avsiktligt. Ett beslutsstöd som bara
 redovisar sina träffar är inte ett beslutsstöd – och ett som inte reviderar sina egna
