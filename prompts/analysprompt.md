@@ -12,7 +12,13 @@ slutsats) och spara den som en cachad rapport i git.
 ## ARBETSGÅNG
 1. Läs `state/analysis_queue.json`. Ta alla poster i `pending`. Finns inga → skriv inget och
    avsluta.
-2. Läs mallen `templates/analys_mall.md` (STRIKT mall – du får ALDRIG ändra eller skriva över den).
+2. Läs `prompts/aktieanalys_prompt.md` – **huvudprompten** i det dokumentet är analysens
+   struktur och ton (fem numrerade avsnitt, Bull/Base/Bear-tabell med riktkurser, tydligt
+   omdöme). Den ersatte `templates/analys_mall.md` 2026-08-03. Använd även "Tillägg att
+   klistra på vid behov" i samma fil när bolaget matchar en situation (olönsamt/bioteknik,
+   IPO, utdelningsbolag, förvärv, vändningscase). Analysfilerna PARSAS INTE av dashboarden –
+   den renderar dem som markdown – så strukturen får utvecklas fritt, till skillnad från
+   mallarna i `templates/`.
 3. För VARJE pending-ticker:
    a. Bestäm typ ur tickerformatet: vanlig symbol = USA (NYSE/Nasdaq); `<X>.ST/.OL/.CO/.HE` =
       Norden; `<MYNT>-USD` = krypto; `^...` = index.
@@ -34,12 +40,16 @@ slutsats) och spara den som en cachad rapport i git.
       - Källkrav: etablerade finansmedier (Bloomberg, Reuters, WSJ, FT, CNBC, DI m.fl.). Rykten
         markeras "⚠️ RYKTE – EJ BEKRÄFTAT (källa, datum)". Ignorera sociala medier och forum.
    c2. DELTA MOT CACHE: finns en tidigare analys för samma ticker i `reports/analysis/` – läs den
-      senaste och fyll mallens sektion "## Sedan senast" med 2–3 rader om vad som ändrats sedan
-      dess (kurs, viktiga nyheter, ändrad slutsats + varför). Är detta första analysen för
-      tickern: utelämna sektionen helt.
-   d. Skriv analysen enligt mallens rubriker, inkl. Bull case, Bear case/risker och en sammanvägd
-      SLUTSATS (Köpvärd / Neutral / Undvik) med tydlig brasklapp att det inte är finansiell
-      rådgivning.
+      senaste och lägg in en sektion "## Sedan senast (yymmdd)" direkt efter ansvarsfriskrivningen,
+      med 2–3 rader om vad som ändrats (kurs, viktiga nyheter, ändrad slutsats + varför). Är detta
+      första analysen för tickern: utelämna sektionen helt.
+   d. Skriv analysen enligt huvudprompten i `prompts/aktieanalys_prompt.md`: ansvarsfriskrivning
+      överst, de fem numrerade avsnitten (verksamheten · finansiell hälsa · värdering & peers med
+      minst en NAMNGIVEN konkurrent · ägarstruktur · exakt tre rangordnade risker), därefter
+      Bull/Base/Bear i tabell med riktkurser OCH procentuell avkastning från dagens kurs, och sist
+      ett omdöme i klammer – **[TECKNA] / [KÖP] / [BEHÅLL] / [AVVAKTA] / [AVSTÅ]** – med nästa
+      katalysator (datum) och vad som skulle få dig att ändra dig. Källor i slutet.
+      Riktkurserna är ILLUSTRATIVA scenariopriser, inte prognoser – skriv ut det.
    e. Spara som `reports/analysis/analys-<TICKER>-yymmdd.md` (dagens VERIFIERADE datum, TICKER i versaler,
       t.ex. `analys-NVDA-260710.md`, `analys-BTC-USD-260710.md`). Finns filen för dagens datum
       redan: skriv över DEN – skapa ALDRIG en suffixad dubblett.

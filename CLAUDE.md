@@ -49,6 +49,12 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 
 - `index.html` MÅSTE ligga i repo-roten – annars serverar inte GitHub Pages den på sajtens rot.
 - `templates/` – strikta mallar. Routinerna får ALDRIG ändra dem (dashboardens parsningskontrakt).
+  **Undantag: aktieanalyserna.** Dashboarden PARSAR INTE `reports/analysis/*.md` – den renderar dem
+  som markdown och hittar dem enbart på filnamnet (`analys-<TICKER>-yymmdd.md`). Därför styrs deras
+  form sedan 2026-08-03 av `prompts/aktieanalys_prompt.md` (Drens egen analysprompt: fem numrerade
+  avsnitt, peers med namngiven konkurrent, ägarstruktur, exakt tre rangordnade risker,
+  Bull/Base/Bear-tabell med riktkurser, omdöme i klammer `[KÖP]`/`[BEHÅLL]`/`[AVVAKTA]`/`[AVSTÅ]`/
+  `[TECKNA]`). `templates/analys_mall.md` är därmed URKOPPLAD – ingen prompt läser den längre.
 - `prompts/START.md` – korta laddare som routinerna pekar på; prompttexten klistras aldrig in.
 - `state/lessons.md` – skrivs ENDAST av miss-retron.
 - `state/news_feed.json` – PRIMÄR nyhetskälla för alla tre routinerna, inte ett komplement.
@@ -220,6 +226,15 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
    pending, skriver `reports/analysis/analys-TICKER-yymmdd.md`, flyttar posten till done, committar.
 5. Dashboarden pollar och visar analysen; sedan är den cachad. Filnamn: `analys-<TICKER>-yymmdd.md`.
    Ingen Anthropic API-nyckel behövs – arbetaren är en vanlig Claude/Cowork-körning.
+
+**Analysens FORM ligger i `prompts/aktieanalys_prompt.md` (sedan 2026-08-03), inte i `templates/`.**
+`analysprompt.md` styr ARBETSGÅNGEN (kön, kursverifiering, filnamn, commit); analysprompten styr
+INNEHÅLLET. Den filen har tre delar: huvudprompt (används normalt), kort version (för snabbanalys)
+och en tabell med **tillägg per situation** – olönsamt bolag/bioteknik (kassa, burn rate, runway,
+utspädningsrisk), IPO (free float efter cornerstone, lock-up, cash-out), utdelningsbolag (täcks
+utdelningen av FCF), förvärv, vändningscase. Använd rätt tillägg; ett bioteknikbolag utan
+runway-avsnitt är en ofullständig analys. Kravet på verifierad kurs + tidsstämpel gäller
+oförändrat och står i BÅDA filerna – sänk det aldrig.
 
 ---
 

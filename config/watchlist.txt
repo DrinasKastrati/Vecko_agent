@@ -28,6 +28,9 @@ SUBC.OL
 # EQNR.OL
 
 # --- Analys-köade tickers (auto) ---
+OSSD.ST
+# OssDsign – analyserad 2026-08-03. Q2-rapport 2026-08-18 är den avgörande mätpunkten;
+# utan verifierad kurs i prices.json går analysen inte att följa upp efter rapporten.
 # SAAB.ST fanns här men EXISTERAR INTE på Yahoo (bolaget handlas som SAAB-B.ST) och stod för
 # hela "1 av 38 misslyckade" i prices.json. Borttagen 2026-08-02. Analyskön skriver in tickers
 # ordagrant som de köats – kontrollera klassbeteckningen innan en ny rad läggs till här.
