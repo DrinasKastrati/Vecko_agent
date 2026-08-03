@@ -365,6 +365,17 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      ett tal ELLER en funktion `(sym) => procent`. Dashboarden är oförändrad och läser fortfarande
      `roundTripPct`. `VECKO_FLAT_COST=1` finns BARA för dekomponering och skriver till ett eget
      filnamn (`…-flatcost.md`) – aldrig som beslutsunderlag för ett universum med småbolag.
+     **KOMBINATIONERNA ÄR KÖRDA – INGEN PARAMETER FICK ÄNDRAS (2026-08-03).** Rapportens nya
+     avsnitt 6 kör de tre starkaste enskilda fynden TILLSAMMANS (hållregeln + lookback 120d/skip 20
+     + regimfilter), var och en mätt på båda halvorna mot samma halvas benchmark. Kravet sattes i
+     FÖRVÄG: slå benchmark i BÅDA halvorna. **Ingen kombination gjorde det, i någon av marknaderna.**
+     Ändra därför inte lookback, hålltid eller nivåband på det underlaget – och kör om avsnitt 6
+     innan någon gör det ändå. Mönstret som DÄREMOT är stabilt är ett riskmönster, inte ett
+     avkastningsmönster: regimfiltret halverar ungefär max drawdown (nordiskt −41,4 % → −21,6 %,
+     US −29,3 % → −23,6 %) och sänker exponeringen till ~58–65 %. Det uppför sig som en försäkring
+     – nordiska MA200-varianten slår benchmark i den svaga halvan (+4,4 % mot −0,4 %) och förlorar
+     i den starka (−5,5 % mot +38,2 %). Att teckna den försäkringen är ett PREFERENSVAL åt Dren,
+     inte något backtestet kan avgöra. Fråga – anta aldrig.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.

@@ -1052,6 +1052,57 @@ ok("backtestUniverse tål tomt/för kort underlag", (() => {
          BT.backtestUniverse({ X: synthUp.slice(0, 3) }, { lookback: 20 }) === null;
 })());
 
+/* ---- backfill av price_history (2026-08-03) -------------------------------
+   Regimfiltret (MA100), MACD och EMA200 gick inte att beräkna live eftersom
+   filen bara innehöll 16 sessioner. Backfillen fyller hålet EN gång. Testerna
+   låser den enda regel som kan förstöra data: mergen får aldrig radera
+   befintlig historik, och dagens egna punkt får inte skrivas över av en
+   obekräftad Yahoo-bar.                                                      */
+const BF = await mod(".github/scripts/backfill-history.mjs");
+ok("candlesToSeries plockar datum + stängning, hoppar hål", (() => {
+  const j = { chart: { result: [{ timestamp: [1753912800, 1753999200, 1754085600],
+    indicators: { quote: [{ close: [10, null, 12] }] } }] } };
+  const s = BF.candlesToSeries(j);
+  return s.length === 2 && s[0][1] === 10 && s[1][1] === 12 && /^\d{4}-\d{2}-\d{2}$/.test(s[0][0]);
+})());
+ok("candlesToSeries tål skräp", BF.candlesToSeries(null).length === 0 && BF.candlesToSeries({}).length === 0 &&
+   BF.candlesToSeries({ chart: { result: [{}] } }).length === 0);
+ok("mergeSeries: Yahoo vinner på gamla datum", (() => {
+  const m = BF.mergeSeries([["2026-01-02", 99]], [["2026-01-02", 100]], "2026-08-03");
+  return m.length === 1 && m[0][1] === 100;
+})());
+ok("mergeSeries: dagens egna punkt rörs INTE", (() => {
+  // pris-hämtaren har skrivit dagens värde; Yahoo kan mitt på dagen ge en obekräftad bar
+  const m = BF.mergeSeries([["2026-08-03", 500]], [["2026-08-03", 480]], "2026-08-03");
+  return m.length === 1 && m[0][1] === 500;
+})());
+ok("mergeSeries: dagens punkt läggs till om den saknas", (() => {
+  const m = BF.mergeSeries([], [["2026-08-03", 480]], "2026-08-03");
+  return m.length === 1 && m[0][1] === 480;
+})());
+ok("mergeSeries raderar aldrig befintliga datum", (() => {
+  const gammal = [["2026-01-02", 1], ["2026-01-03", 2]];
+  const m = BF.mergeSeries(gammal, [["2026-02-01", 3]], "2026-08-03");
+  return m.length === 3 && m[0][0] === "2026-01-02" && m[2][0] === "2026-02-01";
+})());
+ok("mergeSeries sorterar och kapar till de SENASTE punkterna", (() => {
+  const f = [["2026-01-05", 5], ["2026-01-01", 1], ["2026-01-03", 3]];
+  const m = BF.mergeSeries([], f, "2026-08-03", 2);
+  return m.length === 2 && m[0][0] === "2026-01-03" && m[1][0] === "2026-01-05";
+})());
+ok("collectSymbols slår ihop historik och watchlists, hoppar kommentarer", (() => {
+  const s = BF.collectSymbols({ "AAA.ST": [] }, ["# kommentar\nBBB.ST\n\n  CCC.OL  \n"]);
+  return s.length === 3 && s.includes("AAA.ST") && s.includes("BBB.ST") && s.includes("CCC.OL");
+})());
+/* REGRESSIONSVAKT: benchmarken måste ha djup nog för regimfiltret. Utan den
+   här assertionen kan filen tunnas ut igen utan att någon märker det – och då
+   tillämpar rotationen punkt 2b "i sin strängare riktning" utan att kunna mäta,
+   vilket är exakt vad som hände 2026-08-03. 100 punkter = MA100. */
+ok("price_history bär MA100 för båda benchmarken", (() => {
+  const h = JSON.parse(readFileSync(resolve(root, "state/price_history.json"), "utf8")).series || {};
+  return (h["^OMX"] || []).length >= 100 && (h["^GSPC"] || []).length >= 100;
+})());
+
 /* ---- backtest: kostnad per symbol (2026-08-03) ----------------------------
    Universumet breddades med småbolag. En FAST kostnad på 0,25 % beskriver en
    likvid large cap; på ett bolag med 0,5 MSEK/dag är den fel med en faktor 4–6,

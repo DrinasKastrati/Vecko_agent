@@ -623,6 +623,36 @@ async function main(){
   const bestAinB = bestA ? bMap.get(cellKey(bestA.params)) : null;
   const medB = median(gridB.map(r => r.equityPct));
 
+  /* --- svep 7: KOMBINATIONER (tillagt 2026-08-03) ---------------------------
+     Svepen ovan varierar EN dimension i taget från basfallet. Det är medvetet –
+     ett stort kors låter en "bästa cell" plockas ur brus. Men det betyder också
+     att vi aldrig sett vad vinnarna gör TILLSAMMANS, och de tre starkaste
+     enskilda fynden (hållregeln, lookback 120 med skip, regimfiltret) pekar åt
+     samma håll i båda marknaderna.
+
+     Kombinationerna nedan är HYPOTESER, inte optimering: listan är kort, fast,
+     och skriven i förväg ur de enskilda svepen. Var och en mäts på BÅDA halvorna
+     separat mot samma halvas benchmark. En kombination som slår index i bara den
+     ena halvan är brus – kravet för att få ändra en prompt är att den slår
+     benchmark i BÅDA. Nivåerna hålls på basfallets, eftersom out-of-sample-
+     avsnittet visat att stop/mål-bandet inte är stabilt och alltså inte ska
+     optimeras. */
+  const COMBOS = [
+    { namn: "Basfall (som böckerna körs i dag)", over: {} },
+    { namn: "+ lookback 120d", over: { lookback: 120 } },
+    { namn: "+ lookback 120d, skip 20d", over: { lookback: 120, skip: 20 } },
+    { namn: "+ 120d/skip20 + regim MA100", over: { lookback: 120, skip: 20, regimeMa: 100 } },
+    { namn: "+ 120d/skip20 + regim MA200", over: { lookback: 120, skip: 20, regimeMa: 200 } },
+    { namn: "+ 120d/skip20 + MA100 + horisont 60d", over: { lookback: 120, skip: 20, regimeMa: 100, maxHoldDays: 60 } },
+    { namn: "Bara regim MA200 (annars basfall)", over: { regimeMa: 200 } }
+  ];
+  const comboRuns = COMBOS.map(c => ({
+    namn: c.namn,
+    hela: run(c.over),
+    halvaA: run(c.over, inA, benchA),
+    halvaB: run(c.over, inB, benchB)
+  }));
+
   const bh = buyHoldPct(benchCandles);
   const bhA = buyHoldBetween(benchCandles, null, mid), bhB = buyHoldBetween(benchCandles, mid, null);
   const f = n => n == null ? "–" : (n > 0 ? "+" : "") + n.toFixed(2);
@@ -774,13 +804,37 @@ async function main(){
     : " **Nivåbandet är INTE stabilt.** Vilken stop/mål-nivå som ser bäst ut beror på vilken period som mäts. Behandla banden i prompterna som en riskregel (R/R och kostnadströskel), inte som en optimerad parameter."));
   lines.push("");
 
-  /* ---- 6. Kostnadsmodellen ------------------------------------------------
+  /* ---- 6. Kombinationer ---------------------------------------------------- */
+  lines.push("## 6. Kombinationer – håller vinnarna ihop? (tillagt 2026-08-03)");
+  lines.push("");
+  lines.push("Svepen ovan varierar **en** dimension i taget från basfallet, medvetet: ett stort kors låter en \"bästa cell\" plockas ur brus. Men då ser man heller aldrig vad vinnarna gör tillsammans. Listan nedan är kort, fast och skriven i förväg ur de enskilda svepen – **hypoteser, inte optimering**. Nivåerna hålls på basfallets, eftersom avsnitt 5 visat att stop/mål-bandet inte är stabilt och därför inte ska optimeras.");
+  lines.push("");
+  lines.push(`**Kravet för att få ändra en prompt: slå benchmark i BÅDA halvorna.** Halva 1 (${dates[0]} → ${mid}) benchmark ${f(bhA)} %, halva 2 (${mid} → ${dates[dates.length - 1]}) benchmark ${f(bhB)} %.`);
+  lines.push("");
+  lines.push("| Kombination | Hela perioden | Halva 1 | Halva 2 | Slår bench i båda? | Investerad | Max DD (hela) |");
+  lines.push("|---|---|---|---|---|---|---|");
+  for (const c of comboRuns){
+    const a = c.halvaA, b = c.halvaB, h = c.hela;
+    const slarA = a && bhA != null && a.equityPct > bhA;
+    const slarB = b && bhB != null && b.equityPct > bhB;
+    const badge = (slarA && slarB) ? "**JA**" : (slarA || slarB) ? "nej (bara en halva)" : "nej";
+    lines.push(`| ${c.namn} | ${h ? f(h.equityPct) + " %" : "–"} | ${a ? f(a.equityPct) + " %" : "–"} | ${b ? f(b.equityPct) + " %" : "–"} | ${badge} | ${h ? pct(h.exposurePct) : "–"} | ${h ? "−" + h.maxDrawdownPct.toFixed(1) + " %" : "–"} |`);
+  }
+  lines.push("");
+  const vinnare = comboRuns.filter(c => c.halvaA && c.halvaB && bhA != null && bhB != null &&
+                                        c.halvaA.equityPct > bhA && c.halvaB.equityPct > bhB);
+  lines.push(vinnare.length
+    ? `**${vinnare.length} kombination(er) slår benchmark i båda halvorna:** ${vinnare.map(v => v.namn).join(", ")}. Det är den enda grupp som får motivera en promptändring – och även då gäller survivorship-varningen överst.`
+    : "**Ingen kombination slår benchmark i båda halvorna.** Ändra därför INGEN nivå eller regel i prompterna på det här underlaget. Slutsatsen som bär är i stället den tråkiga: skelettet tillför inte mätbar avkastning över indexsleeven, och edgen måste komma från katalysatorurvalet – som den här motorn inte mäter.");
+  lines.push("");
+
+  /* ---- 7. Kostnadsmodellen ------------------------------------------------
      En kostnadsmodell som inte går att granska är en kostnadsmodell man inte ska
      lita på – särskilt när hela poängen med körningen är att jämföra universum
      av olika likviditet. Därför redovisas varje symbols uppmätta omsättning och
      vilken nivå den hamnade i. */
   if (costTable){
-    lines.push("## 6. Kostnadsmodell – nivå per symbol");
+    lines.push("## 7. Kostnadsmodell – nivå per symbol");
     lines.push("");
     lines.push("Rundturskostnaden är **inte** ett enda tal i den här körningen. Den härleds ur varje symbols **medianomsättning per dag** (kurs × volym, median över perioden, normaliserad till SEK med fasta valutafaktorer). Median och inte medel: en enda rapportdag med tiodubbel volym ska inte få ett illikvitt bolag att framstå som likvidt.");
     lines.push("");

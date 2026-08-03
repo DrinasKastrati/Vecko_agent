@@ -7,6 +7,36 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (Backfill av price_history + kombinationskörning – och ett negativt resultat som fick stå):
+  **Backfillen.** `state/price_history.json` innehöll 16 sessioner. Det räckte inte för regimfiltret
+  (punkt 2b kräver MA100 för `^OMX`), MACD (~35 stängningar) eller EMA200. Rotationen 2026-08-03
+  kunde alltså inte mäta 3 av 5 indikatorer i sitt eget tekniska filter och tillämpade regimfiltret
+  "i sin strängare riktning" utan data – samtidigt som backtestet visade att regimfiltret är den
+  enda parameter som förbättrar både avkastning och drawdown i BÅDA marknaderna. Systemet körde
+  blint på sin bästa regel. **Diagnosen i veckorapportens åtgärdspunkt 3 var dessutom fel:**
+  retentionen i `fetch-prices.mjs` är redan 250 punkter (`arr.slice(-250)`), filen var bara ny.
+  Rätt åtgärd var backfill, inte höjt tak. `.github/scripts/backfill-history.mjs` (engångsskript,
+  merge-regel: Yahoos stängning vinner på alla datum UTOM dagens, där pris-hämtarens egen punkt
+  behålls; symboler som inte går att hämta lämnas orörda – skriptet raderar aldrig historik).
+  Utfall: 60/60 hämtade, +14 203 punkter, 59 av 60 symboler har nu ≥ 200 punkter. `^OMX` 3 265,94
+  mot MA100 3 105,12 ⇒ regimen är PÅ och går att MÄTA. Ett regressionstest låser att båda
+  benchmarken bär minst 100 punkter.
+  **Kombinationskörningen.** Motorn sveper en dimension i taget, så vinnarna hade aldrig testats
+  ihop. Nytt avsnitt 6 kör sju fasta kombinationer (hållregeln + 120d/skip 20 + MA100/MA200 +
+  horisont), var och en mätt på BÅDA halvorna mot samma halvas benchmark. **Kravet sattes i förväg:
+  slå benchmark i båda halvorna.** Utfall: **ingen kombination klarade det, i någon marknad.**
+  Nordiskt slog de bästa kombinationerna benchmark stort i halva 2 (+51 till +57 % mot +38,2 %) men
+  förlorade i halva 1 (−8 till −25 % mot −0,4 %); i USA var det tvärtom. Det är signaturen för
+  parametrar som passar en marknadsregim, inte en edge.
+  **Varför inget ändrades.** Regeln skrevs innan siffrorna fanns, och den fick gälla när den gav
+  fel svar – det är hela poängen med att sätta kravet i förväg. Ingen lookback, hålltid eller
+  nivåändring gjordes. Det som DÄREMOT replikerar är ett RISKmönster: regimfiltret halverar ungefär
+  max drawdown (nordiskt −41,4 % → −21,6 %, US −29,3 % → −23,6 %) och sänker exponeringen till
+  ~58–65 %. Nordiska MA200-varianten slår benchmark i den SVAGA halvan (+4,4 % mot −0,4 %) och
+  förlorar i den starka (−5,5 % mot +38,2 %) – alltså en försäkring med en premie, inte en
+  vinstmaskin. Om premien är värd att betala är ett preferensval åt Dren, inte något motorn kan
+  avgöra, och lämnades därför öppet.
+
 - ✅ 2026-08-03 (Universumbredden mätt: 30 vs 110 vs 153 namn – bredd förstör skelettet):
   **Frågan.** Dren noterade att rotationen bara ser ~110 bolag och att småbolag som OssDsign
   aldrig kommer med, och drog den rimliga slutsatsen: "kör vi ändå bara 110 stora bolag är det
