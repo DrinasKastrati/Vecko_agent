@@ -381,16 +381,14 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
 - **KVAR (uppdaterad 2026-08-03 19:20) – i prioritetsordning:**
-  0. **PUSH-NOTISER ÄR BYGGDA MEN INTE AKTIVERADE – kräver tre steg av Dren.** Koden, testerna
-     och workflowen ligger på plats; det som saknas är nycklar och en registrerad telefon.
-     (a) ✅ KLART – nyckelparet är genererat: publik nyckel i `config/push.json`, privat i `.env`
-     (gitignorerad, skrivs medvetet aldrig ut). (b) Kopiera värdet efter `VAPID_PRIVATE_KEY=` i
-     `.env` till hemligheten `VAPID_PRIVATE_KEY` (Settings → Secrets and variables → Actions).
-     **Kör aldrig om (a)** – ett nytt par gör alla registrerade enheter tysta. (c) `push.bat`, sedan på
-     telefonen: 🔔 → godkänn → skicka in det förifyllda ärendet "push: …". Verifiera med
-     Actions → "Intradag-monitor" → Run workflow → `testnotis`. Steg för steg i `MANUAL.md` §4.
-     **Tills (a)+(b) är gjorda loggar monitorn "VAPID-nycklar saknas … hoppar över push" – det är
-     inte ett fel, men det betyder att inga notiser går ut.**
+  0. **PUSH-NOTISER: verifierade i skarp körning 2026-08-03 22:03 UTC.** En testnotis krypterades,
+     accepterades av FCM och nådde telefonen (Android 10). Nyckelparet är genererat (publik i
+     `config/push.json`, privat i `.env` – **kör aldrig om `vapid-keys.mjs`**, ett nytt par gör
+     alla registrerade enheter tysta), telefonen ligger i `state/push_subs.json`.
+     **Kvar att bekräfta:** att hemligheten `VAPID_PRIVATE_KEY` verkligen är satt i GitHub –
+     den lokala testkörningen läste nyckeln ur `.env` och bevisar alltså INTE att runnern har den.
+     Provet är nästa monitor-körning: loggen ska inte säga "VAPID-nycklar saknas … hoppar över
+     push". Manuellt prov: Actions → "Intradag-monitor" → Run workflow → `testnotis`.
   1. **Kör `movers.yml` manuellt en gång** (Actions → "Veckans rörelser" → Run workflow).
      `state/movers.json` har fortfarande `asOf: 2026-07-30`, alltså en session efter – lördagens
      körning läser torsdagsstängningar i stället för fredagens (veckorapport-260803 punkt 6), och
@@ -514,6 +512,15 @@ ta bort skyddet.
 - **Dubbel rotation på måndag (ÅTGÄRDAT):** `dagligprompt.md` är enda ingången (den gör LÄGE A på
   måndagar). Skapa eller schemalägg ALDRIG en separat måndagsprompt igen (`veckoprompt.md`) –
   det skapade tidigare dubbletter (`veckorapport-yymmdd_1.md`).
+- **TVÅ GITHUB-KONTON (fälla, kostade hela push-aktiveringen 2026-08-03).** Repot ägs av
+  **DrinasKastrati**, men telefonen är inloggad som **Drinas-k** (samma person). Varje
+  issue-driven Action som grindar på `github.event.issue.user.login == github.repository_owner`
+  hoppar därför tyst över allt som skickas in FRÅN TELEFONEN: körningen blir `completed/skipped`,
+  vilket ser GRÖNT ut i Actions-listan och inte lämnar ett enda felmeddelande. Symptomet var att
+  `state/push_subs.json` aldrig dök upp. `push_subscribe.yml` grindar sedan dess på en LISTA
+  (`contains(fromJSON('["DrinasKastrati","Drinas-k"]'), …)`). **`analys_queue.yml` har KVAR den
+  gamla enkonto-grinden** – en analys beställd från telefonen försvinner alltså spårlöst på exakt
+  samma sätt. Fixa den när någon rör den filen.
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
 - **Sänk inte verifieringskravet** för kurser – lösningen är pålitliga priser (prices.json), inte
   att ta bort skyddet.

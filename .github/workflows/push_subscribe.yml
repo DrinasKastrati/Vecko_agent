@@ -20,7 +20,14 @@ concurrency:
 
 jobs:
   subscribe:
-    if: ${{ github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'push:') }}
+    # ÄGARKONTROLLEN MÅSTE VARA EN LISTA, INTE `== github.repository_owner`.
+    # Dren har två GitHub-konton: repot ägs av DrinasKastrati, men telefonen är
+    # inloggad som Drinas-k. Ärende #10 ("push: Android 10") skapades därför av
+    # fel login och jobbet hoppades över – `completed/skipped`, alltså GRÖNT i
+    # Actions-listan och utan ett enda felmeddelande. Symptomet blev att
+    # push_subs.json aldrig dök upp och inga notiser kom fram.
+    # Lägg till ett konto här, inte en ny gren i logiken.
+    if: ${{ contains(fromJSON('["DrinasKastrati","Drinas-k"]'), github.event.issue.user.login) && startsWith(github.event.issue.title, 'push:') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
