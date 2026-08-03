@@ -1,0 +1,410 @@
+{
+ "generatedAt": "2026-08-03T15:23:24.421Z",
+ "horizons": [
+  5,
+  20
+ ],
+ "minN": 8,
+ "counts": {
+  "decisions": 10,
+  "measurable": 10,
+  "missing": 0,
+  "pending": 7
+ },
+ "missingSymbols": [],
+ "byHorizon": {
+  "5": {
+   "all": {
+    "n": 3,
+    "meanAlphaPct": 6.75,
+    "medianAlphaPct": 5.98,
+    "meanPct": 6.78,
+    "beatIndexPct": 100,
+    "insufficient": true,
+    "need": 5
+   },
+   "byAction": {
+    "KÖP": {
+     "n": 2,
+     "meanAlphaPct": 7.14,
+     "medianAlphaPct": 7.14,
+     "meanPct": 6.35,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 6
+    },
+    "SÄLJ": {
+     "n": 1,
+     "meanAlphaPct": 5.98,
+     "medianAlphaPct": 5.98,
+     "meanPct": 7.66,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 7
+    },
+    "BEHÅLL": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "AVVAKTA": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    }
+   },
+   "byBook": {
+    "nordic": {
+     "n": 2,
+     "meanAlphaPct": 7.85,
+     "medianAlphaPct": 7.85,
+     "meanPct": 8.43,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 6
+    },
+    "us": {
+     "n": 1,
+     "meanAlphaPct": 4.57,
+     "medianAlphaPct": 4.57,
+     "meanPct": 3.5,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 7
+    }
+   },
+   "byCatalyst": {
+    "earnings": {
+     "n": 2,
+     "meanAlphaPct": 7.85,
+     "medianAlphaPct": 7.85,
+     "meanPct": 8.43,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 6
+    },
+    "macro": {
+     "n": 1,
+     "meanAlphaPct": 4.57,
+     "medianAlphaPct": 4.57,
+     "meanPct": 3.5,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 7
+    },
+    "order": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "other": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    }
+   },
+   "selectionEdge": {
+    "horizon": 5,
+    "bought": {
+     "n": 2,
+     "meanAlphaPct": 7.14,
+     "medianAlphaPct": 7.14,
+     "meanPct": 6.35,
+     "beatIndexPct": 100,
+     "insufficient": true,
+     "need": 6
+    },
+    "passed": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "edgePct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "bought": 6,
+     "passed": 8
+    }
+   }
+  },
+  "20": {
+   "all": {
+    "n": 0,
+    "meanAlphaPct": null,
+    "medianAlphaPct": null,
+    "meanPct": null,
+    "beatIndexPct": null,
+    "insufficient": true,
+    "need": 8
+   },
+   "byAction": {
+    "KÖP": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "SÄLJ": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "BEHÅLL": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "AVVAKTA": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    }
+   },
+   "byBook": {
+    "nordic": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "us": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    }
+   },
+   "byCatalyst": {
+    "earnings": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "macro": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "order": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "other": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    }
+   },
+   "selectionEdge": {
+    "horizon": 20,
+    "bought": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "passed": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "edgePct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "bought": 8,
+     "passed": 8
+    }
+   }
+  }
+ },
+ "rows": [
+  {
+   "date": "2026-07-14",
+   "ticker": "ALLEI.ST",
+   "book": "nordic",
+   "action": "KÖP",
+   "catalystType": "earnings",
+   "sector": "Material/specialstål",
+   "reconstructed": true,
+   "fwd": {
+    "5": {
+     "pct": 9.19,
+     "benchPct": -0.52,
+     "alphaPct": 9.71,
+     "toDate": "2026-07-21"
+    }
+   }
+  },
+  {
+   "date": "2026-07-17",
+   "ticker": "ALLEI.ST",
+   "book": "nordic",
+   "action": "SÄLJ",
+   "catalystType": "earnings",
+   "sector": "Material/specialstål",
+   "reconstructed": true,
+   "fwd": {
+    "5": {
+     "pct": 7.66,
+     "benchPct": 1.67,
+     "alphaPct": 5.98,
+     "toDate": "2026-07-24"
+    }
+   }
+  },
+  {
+   "date": "2026-07-21",
+   "ticker": "JPM",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "macro",
+   "sector": "Bank/finans",
+   "reconstructed": true,
+   "fwd": {
+    "5": {
+     "pct": 3.5,
+     "benchPct": -1.07,
+     "alphaPct": 4.57,
+     "toDate": "2026-07-28"
+    }
+   }
+  },
+  {
+   "date": "2026-07-30",
+   "ticker": "JPM",
+   "book": "us",
+   "action": "SÄLJ",
+   "catalystType": "macro",
+   "sector": "Bank/finans",
+   "reconstructed": true,
+   "fwd": {}
+  },
+  {
+   "date": "2026-07-30",
+   "ticker": "SAAB-B.ST",
+   "book": "nordic",
+   "action": "KÖP",
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
+   "reconstructed": true,
+   "fwd": {}
+  },
+  {
+   "date": "2026-07-31",
+   "ticker": "SAAB-B.ST",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
+   "reconstructed": true,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "SAAB-B.ST",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Försvarsindustri",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "BOOZT.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "E-handel/detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "SCA-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Skog/material",
+   "reconstructed": false,
+   "fwd": {}
+  }
+ ]
+}

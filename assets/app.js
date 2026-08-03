@@ -80,10 +80,13 @@
       if (!d || d.version !== 1 || !Array.isArray(d.metas) || !d.metas.length) return false;
 
       const j = p => this.fetchJSON(this.raw(p)).catch(() => null);
-      const [prices, queue, priceHistory, alerts, alloc, costs, decisions] = await Promise.all([
+      // decision_eval.json bakas medvetet INTE in i dashboard.json: den skrivs av
+      // pris-jobbet var 30:e minut (när ett beslut mognar) och skulle tvinga fram en
+      // ombyggnad lika ofta – samma skäl som för prices/alerts/decisions.
+      const [prices, queue, priceHistory, alerts, alloc, costs, decisions, decisionEval] = await Promise.all([
         j("state/prices.json"), j("state/analysis_queue.json"), j("state/price_history.json"),
         j("state/alerts.json"), j("state/allocation.json"), j("config/kostnader.json"),
-        j("state/decisions.json")
+        j("state/decisions.json"), j("state/decision_eval.json")
       ]);
 
       const S = this.state;
@@ -100,6 +103,7 @@
       S.watchlistUs = d.watchlistUs || null;
       S.prices = prices; S.queue = queue; S.priceHistory = priceHistory; S.alerts = alerts;
       S.allocation = alloc; S.costs = costs || this.P.DEFAULT_COSTS; S.decisions = decisions;
+      S.decisionEval = decisionEval;
       S.feed = this.P.buildFeed(S.dailies, S.weeklies);
       this._alertsPath = "state/alerts.json";
       this._prebuiltAt = d.generatedAt || null;
@@ -122,6 +126,7 @@
         const lessonsPath = paths.find(p => /(^|\/)lessons\.md$/i.test(p));
         const costsPath = paths.find(p => /(^|\/)kostnader\.json$/i.test(p));
         const decisionsPath = paths.find(p => /(^|\/)decisions\.json$/i.test(p));
+        const decEvalPath = paths.find(p => /(^|\/)decision_eval\.json$/i.test(p));
         const wlPath = paths.find(p => /(^|\/)watchlist\.txt$/i.test(p));
         const wlUsPath = paths.find(p => /(^|\/)watchlist_us\.txt$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
@@ -129,7 +134,7 @@
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt, decisionEval] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -146,7 +151,8 @@
           costsPath ? this.fetchJSON(this.raw(costsPath)).catch(() => null) : Promise.resolve(null),
           decisionsPath ? this.fetchJSON(this.raw(decisionsPath)).catch(() => null) : Promise.resolve(null),
           wlPath ? this.getMd(wlPath).catch(() => null) : Promise.resolve(null),
-          wlUsPath ? this.getMd(wlUsPath).catch(() => null) : Promise.resolve(null)
+          wlUsPath ? this.getMd(wlUsPath).catch(() => null) : Promise.resolve(null),
+          decEvalPath ? this.fetchJSON(this.raw(decEvalPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -164,6 +170,7 @@
         this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
         this.state.costs = costs || this.P.DEFAULT_COSTS;
         this.state.decisions = decisions;
+        this.state.decisionEval = decisionEval;
         this.state.watchlist = wlTxt;
         this.state.watchlistUs = wlUsTxt;
         this.state.feed = this.P.buildFeed(this.state.dailies, this.state.weeklies);
@@ -298,6 +305,11 @@
       // Beslutsloggen: gör kalibreringsunderlaget synligt (och synligt när det slutat fyllas).
       const dlEl = this.el("decisionStats");
       if (dlEl) dlEl.innerHTML = R.renderDecisionStats(this.P.decisionStats(S.decisions));
+      // Urvalsmätningen: svarar på om katalysatorurvalet tillför något, utan att
+      // invänta stängda affärer. Ligger öppet (inte i en details) eftersom det är
+      // den frågan backtestet lämnade obesvarad.
+      const deEl = this.el("decisionEval");
+      if (deEl) deEl.innerHTML = R.renderDecisionEval(S.decisionEval);
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();

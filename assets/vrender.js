@@ -606,6 +606,81 @@
       <div class="stat-note">Kategorier med färre än ${s.minPerType} affärer är markerade som brus – de får inte styra poängvikterna. Indexsleevens transaktioner är exkluderade.</div>`;
   }
 
+  // ---- beslutsutvärdering (Avkastning) -----------------------------------
+  // VARFÖR: backtestet visar att skelettet inte bär – edgen ska komma ur
+  // katalysatorurvalet, och det mättes inte av någonting. Handelsstatistiken
+  // kräver STÄNGDA affärer (två stycken 2026-08-03). Den här rutan mäter i
+  // stället VARJE beslut mot efterföljande kurs, inklusive de AVVISADE. De
+  // avvisade är hela poängen: går de bättre än de köpta är filtret för strängt.
+  // Underlaget växer med ~10–15 rader i veckan i stället för ~1 i månaden.
+  const ACTION_SV = { "KÖP": "Köpta", "SÄLJ": "Sålda", "BEHÅLL": "Behållna", "AVVAKTA": "Avvisade" };
+  function renderDecisionEval(ev){
+    if (!ev || !ev.counts)
+      return `<div class="empty">Ingen beslutsutvärdering ännu – <code>state/decision_eval.json</code> skrivs av pris-jobbet ur beslutsloggen och kurshistoriken.</div>`;
+    const hs = ev.horizons || [5, 20];
+    const h1 = hs[0], h2 = hs[1];
+    const B = ev.byHorizon || {};
+    const at = (h, key) => (B[h] && B[h].byAction && B[h].byAction[key]) || null;
+    const edge = (B[h1] && B[h1].selectionEdge) || null;
+    const pct = v => v == null ? "–" : signPct(v);
+    const mature = ev.counts.measurable - ev.counts.pending;
+    const cell = (label, val, cls, sub, tip) =>
+      `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><div class="stat-l">${esc(label)}</div><div class="stat-v ${cls || ""}">${val}</div>${sub ? `<div class="stat-s">${esc(sub)}</div>` : ""}</div>`;
+    const edgeVal = edge && !edge.insufficient ? pct(edge.edgePct) : "för tidigt";
+    const edgeSub = edge
+      ? (edge.insufficient
+          ? "behöver " + (edge.need.bought || 0) + " fler köpta, " + (edge.need.passed || 0) + " fler avvisade"
+          : edge.verdict)
+      : "";
+    const head = `<div class="stat-grid">
+      ${cell("Mätbara beslut", String(ev.counts.measurable) + " / " + ev.counts.decisions,
+        ev.counts.missing ? "neg" : "",
+        ev.counts.missing ? ev.counts.missing + " utan kurshistorik" : "alla har kurshistorik",
+        "Beslut i decisions.json som går att mäta mot price_history.json. Indexsleeven räknas inte – den följer per definition sitt eget benchmark.")}
+      ${cell("Mogna (" + h1 + " dgr)", String(mature),
+        "", ev.counts.pending + " väntar på " + h1 + " handelsdagar",
+        "Ett beslut kan mätas först när kurshistoriken sträcker sig " + h1 + " handelsdagar framåt. Omogna beslut räknas ALDRIG som nollresultat – det skulle dra alla medelvärden mot mitten.")}
+      ${cell("Urvalsedge " + h1 + " dgr", edgeVal,
+        edge && !edge.insufficient ? (edge.edgePct > 0 ? "pos" : edge.edgePct < 0 ? "neg" : "") : "",
+        edgeSub,
+        "Skillnaden i snitt-alpha mellan de köpta och de avvisade kandidaterna. Positivt = urvalet skilde dem i rätt riktning. Detta är den enda mätningen som inte kräver stängda affärer.")}
+      ${cell("Köpta som slog index", at(h1, "KÖP") && at(h1, "KÖP").beatIndexPct != null
+          ? at(h1, "KÖP").beatIndexPct + " %" : "–",
+        "", at(h1, "KÖP") ? "n = " + at(h1, "KÖP").n : "",
+        "Andel köpbeslut vars kurs gick bättre än bokens index över " + h1 + " handelsdagar.")}
+    </div>`;
+    const order = ["KÖP", "AVVAKTA", "BEHÅLL", "SÄLJ"];
+    const rows = order.filter(k => at(h1, k) || at(h2, k)).map(k => {
+      const a = at(h1, k) || { n: 0 }, b = at(h2, k) || { n: 0 };
+      const thin = a.insufficient;
+      return `<tr class="${thin ? "dl-thin" : ""}">
+        <td>${esc(ACTION_SV[k] || k)}</td>
+        <td>${a.n}${thin ? ` <span class="dl-flag" title="Under ${ev.minN} mätpunkter – siffrorna är brus, inte resultat">brus</span>` : ""}</td>
+        <td class="${a.meanAlphaPct > 0 ? "pos" : a.meanAlphaPct < 0 ? "neg" : ""}">${pct(a.meanAlphaPct)}</td>
+        <td>${a.beatIndexPct == null ? "–" : a.beatIndexPct + " %"}</td>
+        <td class="${b.meanAlphaPct > 0 ? "pos" : b.meanAlphaPct < 0 ? "neg" : ""}">${pct(b.meanAlphaPct)}</td>
+      </tr>`;
+    }).join("");
+    const table = rows ? `<div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Beslut</th><th title="Antal mogna mätpunkter">Mätpunkter</th>
+      <th title="Snittavkastning minus index över ${h1} handelsdagar">Snitt-alpha ${h1} d</th>
+      <th title="Andel som gick bättre än index">Slog index</th>
+      <th title="Snittavkastning minus index över ${h2} handelsdagar">Snitt-alpha ${h2} d</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`
+      : `<div class="empty">Inga beslut har hunnit mogna ${h1} handelsdagar ännu.</div>`;
+    const miss = (ev.missingSymbols || []).length
+      ? `<div class="stat-note">Omätbara tickers: ${esc(ev.missingSymbols.join(", "))} – de saknas i
+         <code>state/price_history.json</code> och beslutet kan därför aldrig utvärderas. Lägg dem i
+         <code>config/watchlist.txt</code> respektive <code>watchlist_us.txt</code> så hämtas de framöver.</div>`
+      : "";
+    return head + table + miss + `<div class="stat-note">Raderna med
+      <span class="dl-flag">brus</span> har färre än ${ev.minN} mätpunkter och får inte styra något beslut.
+      <b>Avvisade</b> är kandidater som fick AVVAKTA – de är det kontrafaktiska underlaget: går de
+      systematiskt bättre än de köpta är urvalsfiltret för strängt, går de sämre tjänar det sitt
+      uppehälle. Allt mäts mot bokens eget index (OMXS30 respektive S&amp;P 500) över exakt samma
+      fönster, aldrig absolut.</div>`;
+  }
+
   // ---- lärdomskort (Retro-fliken, ur state/lessons.md) -------------------
   function lessonCol(o, re){
     const k = Object.keys(o || {}).find(key => re.test(key));
@@ -931,7 +1006,8 @@
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
-    renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats };
+    renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,
+    renderDecisionEval };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

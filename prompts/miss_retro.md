@@ -121,6 +121,29 @@ starkaste/svagaste kategorierna under "Träffbild" i rapporten. Mönster här ä
 för POÄNGMODELLENS viktning (katalysator/teknik/makro/RR) – men kräv ≥ 8 affärer i en kategori
 innan den bedöms, annars är det brus. Före 15 SÄLJ-rader: skriv endast antal loggade beslut.
 
+## STEG 3e – URVALSMÄTNINGEN (finns FÖRE 15 SÄLJ-rader)
+Läs `state/decision_eval.json` (skrivs LLM-fritt av `.github/scripts/decision_eval.mjs` i pris-jobbet).
+Den mäter VARJE beslut i `decisions.json` mot efterföljande kurs 5 och 20 handelsdagar framåt, och
+mot bokens eget index över samma fönster – alltså också de AVVISADE kandidaterna (AVVAKTA). Därför
+finns underlag här långt innan steg 3d:s 15 SÄLJ-rader, som i praktiken är år bort.
+
+Redovisa under **Träffbild** i rapporten (lägg INGEN ny sektion – mallen är ett parsningskontrakt):
+1. `counts` – antal beslut, mätbara, ännu inte mogna. Utan detta går siffrorna inte att tolka.
+2. `byHorizon.5.selectionEdge` – skillnaden i snitt-alpha mellan köpta och avvisade. Står
+   `insufficient: true`: skriv **"för tidigt"** plus hur många rader som fattas. Skriv ALDRIG ut
+   en edge-siffra som fältet inte ger.
+3. `byHorizon.5.byCatalyst` – vilka katalysatortyper som gett positiv alpha. Grupper med
+   `insufficient` är BRUS och får inte bli lärdom.
+4. `missingSymbols` – tickers vi fattat beslut om som saknar kurshistorik. De är **omätbara för
+   alltid**: historiken backfillas bara för symboler som hämtas. Är listan icke-tom är det ett
+   PROCESSFEL av den mätbara sorten – åtgärden är att lägga dem i `config/watchlist.txt` respektive
+   `config/watchlist_us.txt`, och den får skrivas som lärdom även utan tre veckors svit.
+
+**Tolkningsregel som inte får mjukas upp:** går de AVVISADE systematiskt bättre än de köpta är det
+en indikation på att urvalsfiltret är för strängt – men det är INTE ett skäl att sänka ett skyddsnät
+(kursverifiering, stopp-disciplin, likviditetsgolv, källkrav). En lärdom härifrån får ändra hur
+kandidater rankas och vilka spärrar som är rimliga i poängmodellen, aldrig verifieringskraven.
+
 ## STEG 4 – DESTILLERA LÄRDOMAR
 1. Max 2 NYA lärdomar per retro, och endast ur missar, exits ELLER idéflödets facit (≥ 3 veckors
    svit) bedömda som PROCESSFEL. Hellre noll än en tveksam.

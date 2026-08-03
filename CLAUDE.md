@@ -58,6 +58,28 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
 - `prompts/START.md` – korta laddare som routinerna pekar på; prompttexten klistras aldrig in.
 - `state/lessons.md` – skrivs ENDAST av miss-retron.
 - `state/news_feed.json` – PRIMÄR nyhetskälla för alla tre routinerna, inte ett komplement.
+  **Fönstret mäts i HANDELSDAGAR (10), inte timmar – sedan 2026-08-03.** Det var 48 timmar, vilket
+  kollapsade över helgen: måndag 05:58 UTC låg fredagens sista hämtning 55 timmar bakåt och rensades
+  bort, så veckorotationen läste ett fönster på **47 minuter** och fick gå till git-historiken efter
+  fredagens poster. Taket per källa och dygn (30) finns för att DAGARNA ska överleva, och det globala
+  taket (2000) är medvetet satt över vad per-dygn-taket kan producera (6 × 30 × 10 = 1800) – är det
+  lägre blir per-dygn-taket verkningslöst och fönstret kollapsar igen, bara långsammare. Ett test
+  vaktar invarianten. Fältet `window` (täckning, `missingDays`, `perSource`) gör täckningen
+  KONTROLLERBAR; watchdogen larmar under 5 handelsdagar. **Webbappen läser INTE filen** (Nyheter-vyn
+  byggs ur rapporterna), så fönsterstorleken kostar inget i dashboarden.
+- `state/decision_eval.json` – GENERERAD av `.github/scripts/decision_eval.mjs`, som körs i
+  pris-jobbet (`prices.yml`) direkt efter hämtningen. Märkt `-merge` i `.gitattributes`. Redigera
+  aldrig för hand. **Varför den finns:** backtestet visar att skelettet inte tillför avkastning över
+  indexsleeven ⇒ edgen måste komma ur katalysatorurvalet, och ingenting mätte urvalet.
+  `computeTradeStats` kräver STÄNGDA affärer (2 st) och retrons beslutsstatistik kräver 15 SÄLJ-rader
+  – år bort. Den här filen mäter i stället VARJE rad i `decisions.json` mot efterföljande kurs 5/20
+  handelsdagar framåt och mot bokens index (^OMX/^GSPC) över samma fönster, **inklusive de AVVISADE
+  (AVVAKTA)**. De avvisade är hela poängen: de är det kontrafaktiska underlaget, och underlaget växer
+  med ~10–15 rader/vecka i stället för ~1/månad. Två regler som inte får luckras upp: (1) ett omoget
+  beslut räknas ALDRIG som noll – det drar alla medelvärden mot mitten, det ska utelämnas; (2) inget
+  uttalande under `minN` (8) mätpunkter – fältet skriver `insufficient` + hur många rader som fattas.
+  Skriptet skriver bara vid FAKTISK ändring (`generatedAt` jämförs inte), annars gav det ~48 tomma
+  commits per dygn.
 - `state/decisions.json` – append-only, valideras i CI av `validate-decisions.mjs`.
 - `state/portfolj.md` / `portfolj_us.md` – historiken är append-only. Radera aldrig filerna.
 - `config/universe_nordic_movers.txt` – används BARA av `movers.mjs` (missdetektion), inte av pris-hämtaren.
@@ -79,6 +101,13 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   ändra där, inte i respektive fils `<style>`-block. Blocken innehåller bara det som är unikt
   för filen plus Systemguidens nio medvetna överskrivningar.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
+- **Watchdogen (`.github/scripts/watchdog.mjs`) bevakar två saker som är TYSTA fel.** (1) Regimfiltret
+  behandlar en oberäknelig MA200 som AV, alltså inga nya positioner – det gör indexserien i
+  `price_history.json` till en tyst spärr för HELA boken: faller `^OMX`/`^GSPC` ur pris-hämtningen
+  slutar boken ta positioner utan att något går fel någonstans, och rapporten kan inte skilja det
+  från en genuint svag marknad. Larmar per index under 200 stängningar. (2) Nyhetsfönstrets
+  TÄCKNING, inte bara `generatedAt` – en fil kan vara färsk och ändå för tunn, och bara det första
+  mättes tidigare. Båda kontrollerna är bakåtkompatibla: saknas fälten är watchdogen tyst.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
 
@@ -174,6 +203,11 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
 - **Analytics:** Avkastning räknar fram träffsäkerhet, snittvinst/-förlust, profit factor,
   bästa/sämsta, snitt-hålltid och mål/stopp/rotation ur portföljhistoriken (`computeTradeStats`).
   Sparklines ritas ur `state/price_history.json`.
+- **Rutan "Tillför urvalet något?"** i Avkastning renderas av `VRender.renderDecisionEval` ur
+  `state/decision_eval.json` (hämtas direkt, bakas medvetet INTE in i `dashboard.json` – den ändras
+  när ett beslut mognar). Den ligger ÖPPET, inte i en `details`, eftersom det är den fråga backtestet
+  lämnade obesvarad. Renderaren är ren och testas utan DOM. **Låt den aldrig visa ett tal som
+  `insufficient`-fältet inte ger** – hela poängen är att den säger "för tidigt" när den inte vet.
 - **Avkastning har TRE lägen (sedan 2026-08-03): Nordiska · Amerikanska · Gemensamt.** Alla renderas
   alltid och ligger i DOM:en – bokväljaren (`data-book-set`) sätter bara `data-book` på
   `<section id="view-avkastning">` och base.css döljer resten. Valet sparas medvetet INTE: det är en

@@ -33,11 +33,18 @@ jobs:
           node-version: "20"
       - name: Hämta kurser
         run: node .github/scripts/fetch-prices.mjs
+      # Beslutsutvärderingen är en REN FUNKTION av decisions.json + price_history.json
+      # och hör därför hemma direkt efter hämtningen: den färska historiken är precis
+      # det som gör ett tidigare beslut moget att mäta. LLM-fritt, ingen nätåtkomst,
+      # några millisekunder. Faller den ska INTE kursbevakningen falla med den.
+      - name: Utvärdera beslutsloggen mot efterföljande kurs
+        continue-on-error: true
+        run: node .github/scripts/decision_eval.mjs
       - name: Committa prices.json om ändrad
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/prices.json state/price_history.json
+          git add state/prices.json state/price_history.json state/decision_eval.json
           if git diff --cached --quiet; then
             echo "Inga kursandringar - hoppar over commit."
           else

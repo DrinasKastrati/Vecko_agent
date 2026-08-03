@@ -169,6 +169,16 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
 6. WATCHLIST-HYGIEN: håll `config/watchlist_us.txt` fokuserad (≤ 25 symboler). Ta bort symboler
    som varken är innehav, pending, bubblare eller nämnts de senaste 14 dagarna. Behåll alltid
    indexen `^GSPC`/`^IXIC`. Ta ALDRIG bort aktiva innehav eller pending-planer.
+   **`^GSPC` är dessutom regimfiltrets serie** (punkt 2b) – faller den ur hämtningen kan MA200 inte
+   beräknas, regimen behandlas som AV och boken slutar öppna nya positioner utan att något går fel.
+6b. VARJE SYMBOL DU FATTAT ETT BESLUT OM SKA IN I WATCHLISTEN – ÄVEN AVVAKTA (sedan 2026-08-03).
+   En rad i `state/decisions.json` för en symbol som `prices.yml` inte hämtar blir **omätbar för
+   alltid**: `price_history.json` backfillas bara för hämtade symboler, så det finns ingen kurs att
+   jämföra beslutet mot i efterhand. `.github/scripts/decision_eval.mjs` mäter varje beslut mot
+   efterföljande kurs och mot `^GSPC` över samma fönster, och de AVVISADE kandidaterna är hela det
+   kontrafaktiska underlaget – går de systematiskt bättre än de köpta är urvalsfiltret för strängt.
+   Kontrollera `missingSymbols` i `state/decision_eval.json`; står din symbol där, lägg in den.
+   Detta går FÖRE taket på 25 symboler.
 7. DATUM & FILNAMN: verifiera dagens FAKTISKA datum (t.ex. via `date`) innan filnamnet skapas –
    fel datum ger dubbletter och trasig sortering i dashboarden.
 8. OM PUSH MISSLYCKAS (sandlådan saknar ofta credentials): committa lokalt om det går, annars

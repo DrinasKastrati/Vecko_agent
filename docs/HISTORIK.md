@@ -7,6 +7,47 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (Urvalet blev MÄTBART; nyhetsfönstret i handelsdagar; watchdogen bevakar den nya
+  tysta spärren): tre saker som alla följer av samma diagnos – systemet mätte sig själv flitigt men
+  mätte inte det som avgör om det fungerar.
+  **(1) `.github/scripts/decision_eval.mjs` – beslutsutvärdering.** Backtestets slutsats är att
+  skelettet inte tillför avkastning över indexsleeven, alltså måste edgen komma ur
+  katalysatorurvalet. Ingenting mätte urvalet: `computeTradeStats` kräver STÄNGDA affärer (2 st) och
+  retrons beslutsstatistik 15 SÄLJ-rader, alltså år av väntan. Men varje rad i `decisions.json` har
+  ticker, datum och verifierad kurs, och `price_history.json` bär 250 stängningar sedan backfillen –
+  därför går VARJE beslut att poängsätta mot utfallet 5 och 20 handelsdagar framåt, mot bokens index
+  (^OMX/^GSPC) över samma fönster. **Inklusive de avvisade (AVVAKTA), som är hela poängen:** de är
+  ett kontrafaktiskt underlag, och går de systematiskt bättre än de köpta är filtret för strängt.
+  Underlaget växer med ~10–15 mätpunkter/vecka i stället för ~1/månad. Två hederlighetsregler:
+  ett omoget beslut räknas ALDRIG som noll (det drar medelvärden mot mitten och får en tunn mätning
+  att se stabil ut), och inget uttalande under 8 mätpunkter – då står `insufficient` + hur många
+  rader som fattas. Körs i `prices.yml` direkt efter hämtningen (LLM-fritt, `continue-on-error` så
+  kursbevakningen aldrig faller med den) och skriver bara vid FAKTISK ändring: `generatedAt` ensamt
+  hade gett ~48 tomma commits per dygn. Ny ruta i Avkastning ("Tillför urvalet något?"), öppen och
+  inte i en `details`, eftersom det är den fråga backtestet lämnade obesvarad. `missingSymbols`
+  listar tickers som saknar kurshistorik – de är omätbara FÖR ALLTID, så prompternas punkt 6b
+  kräver nu att varje ticker man fattat beslut om ligger i watchlisten, före taket på 25.
+  Miss-retron fick STEG 3e som läser filen (och får skriva lärdom ur den, men aldrig sänka ett
+  skyddsnät).
+  **(2) Nyhetsfönstret mäts i HANDELSDAGAR (10), inte timmar.** Fönstret var 48 timmar. Över en helg
+  ligger fredagens sista hämtning 55 timmar bakåt, så måndagens veckorotation – körningen som mest av
+  alla behöver flera dagars nyheter – läste ett fönster på **47 MINUTER** och fick gå till
+  git-historiken efter fredagens poster (dokumenterat i veckorapport-260803 punkt 2). Nytt tak per
+  källa och dygn (30) så att ett pratigt flöde (mfn: ~40 poster/timme) inte tränger ut varken de
+  andra flödena eller de äldre DAGARNA. Det globala taket (2000) är medvetet satt över vad
+  per-dygn-taket kan producera (6 × 30 × 10 = 1800): är det lägre blir per-dygn-taket verkningslöst
+  och fönstret kollapsar igen, bara långsammare – ett test vaktar invarianten. Nytt fält `window`
+  (täckning, `missingDays`, `perSource`) gör täckningen kontrollerbar i stället för antagen.
+  Webbappen läser inte filen (Nyheter-vyn byggs ur rapporterna), så fönstret kostar inget där.
+  **(3) Watchdogen fick två kontroller för TYSTA fel.** Regimfiltret från samma dag behandlar en
+  oberäknelig MA200 som AV – alltså inga nya positioner. Det gör indexserien till en tyst spärr för
+  HELA boken: faller `^OMX`/`^GSPC` ur pris-hämtningen slutar boken ta positioner utan att något går
+  fel någonstans, och en rapport som skriver "regimen är AV" ser identisk ut oavsett om marknaden är
+  svag eller datat saknas. Larmar nu per index under 200 stängningar. Dessutom: nyhetsfönstrets
+  TÄCKNING, inte bara `generatedAt` – en fil kan vara färsk och ändå för tunn, och bara det första
+  mättes. Båda är bakåtkompatibla (utan fälten är watchdogen tyst).
+  Verifierat: **434 enhetstester · 121 temakontroller · 30 datakontroller**, allt grönt.
+
 - ✅ 2026-08-03 (Backfill av price_history + kombinationskörning – och ett negativt resultat som fick stå):
   **Backfillen.** `state/price_history.json` innehöll 16 sessioner. Det räckte inte för regimfiltret
   (punkt 2b kräver MA100 för `^OMX`), MACD (~35 stängningar) eller EMA200. Rotationen 2026-08-03

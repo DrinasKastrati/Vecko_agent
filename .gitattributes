@@ -18,3 +18,9 @@
 # `-diff` håller dessutom diffarna läsbara: en 98 kB enradig JSON säger inget.
 state/dashboard.json     -merge -diff
 state/search-index.json  -merge -diff
+
+# state/decision_eval.json skrivs av .github/scripts/decision_eval.mjs i samma
+# jobb som pris-hämtningen (var 30:e minut) och är en REN FUNKTION av
+# decisions.json + price_history.json. Samma resonemang som ovan: den ska byggas
+# om, aldrig handmergas.
+state/decision_eval.json -merge -diff

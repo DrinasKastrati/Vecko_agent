@@ -699,6 +699,150 @@ ok("alla backfyllda rader är märkta med source",
   dec.decisions.filter(r => "source" in r).every(r => r.source === "backfill-260731") &&
   dec.decisions.filter(r => r.source === "backfill-260731").length === 6);
 
+// ---- beslutsutvärdering (decision_eval.mjs) ----
+// Mätningen som gör urvalet mätbart UTAN stängda affärer: varje beslut, även de
+// avvisade, poängsätts mot efterföljande kurs och mot sin boks index.
+const DE = await mod(".github/scripts/decision_eval.mjs");
+const serie = (start, closes) => closes.map((c, i) => {
+  const d = new Date(Date.UTC(2026, 6, start + i));
+  return [d.toISOString().slice(0, 10), c];
+});
+// 2026-07-01 och framåt, ett värde per rad (helgdagar spelar ingen roll – serien
+// är redan en lista över handelsdagar i verkligheten).
+const upp = serie(1, [100, 101, 102, 103, 104, 110]);
+ok("forwardReturn 5 steg framåt", (() => {
+  const r = DE.forwardReturn(upp, "2026-07-01", 5);
+  return r && Math.abs(r.pct - 10) < 1e-9 && r.toDate === "2026-07-06";
+})());
+ok("forwardReturn null när serien inte räcker",
+  DE.forwardReturn(upp, "2026-07-04", 5) === null);
+ok("forwardReturn startar på FÖRSTA stängningen >= beslutsdatum", (() => {
+  const r = DE.forwardReturn(upp, "2026-06-20", 1);   // före seriens start
+  return r && r.fromDate === "2026-07-01";
+})());
+ok("forwardReturn tål trasiga värden",
+  DE.forwardReturn([["2026-07-01", 0], ["2026-07-02", 5]], "2026-07-01", 1) === null &&
+  DE.forwardReturn(null, "2026-07-01", 1) === null &&
+  DE.forwardReturn(upp, null, 1) === null);
+// Ett omoget beslut får ALDRIG räknas som noll – det drar medelvärdet mot mitten.
+ok("omoget beslut ger tom fwd, inte nolla", (() => {
+  const r = DE.evalRow({ date: "2026-07-04", ticker: "X.ST", book: "nordic", action: "KÖP" },
+    s => (s === "X.ST" ? upp : null), [5]);
+  return Object.keys(r.fwd).length === 0 && !r.missing;
+})());
+ok("evalRow räknar alpha mot rätt boks index", (() => {
+  const bench = serie(1, [100, 100, 100, 100, 100, 105]);   // index +5 %
+  const r = DE.evalRow({ date: "2026-07-01", ticker: "X.ST", book: "nordic", action: "KÖP" },
+    s => (s === "X.ST" ? upp : s === "^OMX" ? bench : null), [5]);
+  return Math.abs(r.fwd[5].pct - 10) < 1e-9 && Math.abs(r.fwd[5].benchPct - 5) < 1e-9 &&
+         Math.abs(r.fwd[5].alphaPct - 5) < 1e-9;
+})());
+ok("evalRow US-bok mäts mot ^GSPC", (() => {
+  const bench = serie(1, [100, 100, 100, 100, 100, 120]);
+  const r = DE.evalRow({ date: "2026-07-01", ticker: "JPM", book: "us", action: "KÖP" },
+    s => (s === "JPM" ? upp : s === "^GSPC" ? bench : null), [5]);
+  return r.fwd[5].benchPct === 20 && r.fwd[5].alphaPct === -10;
+})());
+ok("evalRow flaggar saknad kurshistorik", (() => {
+  const r = DE.evalRow({ date: "2026-07-01", ticker: "OKÄND.ST", book: "nordic", action: "AVVAKTA" },
+    () => null, [5]);
+  return r.missing === true;
+})());
+// Uttalar sig aldrig på för lite data.
+const fake = n => Array.from({ length: n }, (_, i) => ({ action: "KÖP", fwd: { 5: { pct: 1, benchPct: 0, alphaPct: i % 2 ? 2 : -1 } } }));
+ok("summarize under minN är insufficient med need", (() => {
+  const s = DE.summarize(fake(3), 5, 8);
+  return s.insufficient === true && s.need === 5 && s.n === 3;
+})());
+ok("summarize över minN uttalar sig", (() => {
+  const s = DE.summarize(fake(8), 5, 8);
+  return !s.insufficient && s.n === 8 && s.beatIndexPct === 50;
+})());
+ok("summarize hoppar över rader utan alpha",
+  DE.summarize([{ fwd: {} }, { fwd: { 5: { pct: 1, benchPct: null, alphaPct: null } } }], 5, 1).n === 0);
+// KÄRNFRÅGAN: köpta mot avvisade.
+const mkRows = (action, alpha, n) => Array.from({ length: n }, () =>
+  ({ action, fwd: { 5: { pct: alpha, benchPct: 0, alphaPct: alpha } } }));
+ok("selectionEdge kräver minN i BÅDA grupperna", (() => {
+  const e = DE.selectionEdge([...mkRows("KÖP", 5, 8), ...mkRows("AVVAKTA", 1, 2)], 5, 8);
+  return e.insufficient === true && e.need.passed === 6 && e.need.bought === 0 && e.edgePct === null;
+})());
+ok("selectionEdge positiv edge", (() => {
+  const e = DE.selectionEdge([...mkRows("KÖP", 5, 8), ...mkRows("AVVAKTA", 1, 8)], 5, 8);
+  return e.edgePct === 4 && /rätt riktning/.test(e.verdict);
+})());
+ok("selectionEdge fångar för strängt filter", (() => {
+  const e = DE.selectionEdge([...mkRows("KÖP", 0, 8), ...mkRows("AVVAKTA", 6, 8)], 5, 8);
+  return e.edgePct === -6 && /för strängt/.test(e.verdict);
+})());
+ok("selectionEdge kallar små skillnader brus", (() => {
+  const e = DE.selectionEdge([...mkRows("KÖP", 2, 8), ...mkRows("AVVAKTA", 1.5, 8)], 5, 8);
+  return /brus/.test(e.verdict);
+})());
+// Hela körningen: indexsleeven ska bort, saknade tickers ska bli en åtgärdslista.
+ok("evaluate filtrerar bort indexsleeven", (() => {
+  const db = { decisions: [
+    { date: "2026-07-01", ticker: "X.ST", book: "nordic", action: "KÖP", catalystType: "order" },
+    { date: "2026-07-01", ticker: "XACT-OMXS30.ST", book: "nordic", action: "KÖP", catalystType: "index" }
+  ] };
+  const r = DE.evaluate(db, { series: { "X.ST": upp, "^OMX": upp } }, { horizons: [5], minN: 8 });
+  return r.counts.decisions === 1 && !r.rows.some(x => x.ticker === "XACT-OMXS30.ST");
+})());
+ok("evaluate listar omätbara tickers", (() => {
+  const db = { decisions: [{ date: "2026-07-01", ticker: "SAKNAS.ST", book: "nordic", action: "AVVAKTA", catalystType: "order" }] };
+  const r = DE.evaluate(db, { series: {} }, { horizons: [5], minN: 8 });
+  return r.missingSymbols.length === 1 && r.missingSymbols[0] === "SAKNAS.ST" && r.counts.missing === 1;
+})());
+ok("evaluate räknar omogna beslut separat", (() => {
+  const db = { decisions: [{ date: "2026-07-05", ticker: "X.ST", book: "nordic", action: "KÖP", catalystType: "order" }] };
+  const r = DE.evaluate(db, { series: { "X.ST": upp, "^OMX": upp } }, { horizons: [5], minN: 8 });
+  return r.counts.pending === 1 && r.counts.measurable === 1;
+})());
+ok("evaluate tål tom beslutslogg", (() => {
+  const r = DE.evaluate({ decisions: [] }, { series: {} }, { horizons: [5], minN: 8 });
+  return r.counts.decisions === 0 && r.byHorizon[5].selectionEdge.insufficient === true;
+})());
+// Den riktiga filen ska gå att utvärdera utan att kasta, och aldrig uttala sig i dag.
+ok("evaluate mot repots faktiska filer", (() => {
+  const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
+  const ph = JSON.parse(readFileSync(resolve(root, "state/price_history.json"), "utf8"));
+  const r = DE.evaluate(db, ph);
+  return r.counts.decisions > 0 && r.byHorizon[5].selectionEdge.insufficient === true &&
+         r.missingSymbols.length === 0;
+})());
+
+// renderDecisionEval: ren funktion, ingen DOM. Får ALDRIG visa en siffra som ser
+// ut som ett svar när underlaget är för tunt.
+ok("renderDecisionEval tom data ger tomtillstånd",
+  /Ingen beslutsutvärdering/.test(VR.renderDecisionEval(null)));
+ok("renderDecisionEval visar 'för tidigt' under minN", (() => {
+  const db = { decisions: [
+    { date: "2026-07-01", ticker: "X.ST", book: "nordic", action: "KÖP", catalystType: "order" },
+    { date: "2026-07-01", ticker: "Y.ST", book: "nordic", action: "AVVAKTA", catalystType: "order" }
+  ] };
+  const ev = DE.evaluate(db, { series: { "X.ST": upp, "Y.ST": upp, "^OMX": upp } }, { horizons: [5, 20], minN: 8 });
+  const html = VR.renderDecisionEval(ev);
+  return /för tidigt/.test(html) && /brus/.test(html) && /fler avvisade/.test(html);
+})());
+ok("renderDecisionEval visar edge när underlaget räcker", (() => {
+  const ev = { counts: { decisions: 20, measurable: 20, missing: 0, pending: 0 }, minN: 2,
+    horizons: [5, 20], missingSymbols: [],
+    byHorizon: { 5: {
+      byAction: { "KÖP": { n: 8, meanAlphaPct: 4, beatIndexPct: 75 },
+                  "AVVAKTA": { n: 8, meanAlphaPct: -1, beatIndexPct: 25 } },
+      selectionEdge: { edgePct: 5, verdict: "urvalet skiljer köpta från avvisade i rätt riktning" }
+    }, 20: { byAction: {} } } };
+  const html = VR.renderDecisionEval(ev);
+  return /\+5\.00 %/.test(html) && /rätt riktning/.test(html) && /Avvisade/.test(html) &&
+         /75 %/.test(html) && !/brus/.test(html.slice(0, html.indexOf("Raderna med")));
+})());
+ok("renderDecisionEval listar omätbara tickers som åtgärd", (() => {
+  const ev = { counts: { decisions: 1, measurable: 0, missing: 1, pending: 0 }, minN: 8,
+    horizons: [5, 20], missingSymbols: ["SAKNAS.ST"], byHorizon: { 5: {}, 20: {} } };
+  const html = VR.renderDecisionEval(ev);
+  return /SAKNAS\.ST/.test(html) && /watchlist\.txt/.test(html);
+})());
+
 // ---- nyhetsingestion (fetch-news.mjs, rena funktioner) ----
 const NW = await mod(".github/scripts/fetch-news.mjs");
 const rssXml = [
