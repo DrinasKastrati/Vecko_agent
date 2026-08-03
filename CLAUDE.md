@@ -358,14 +358,15 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      orsaken är inte utredd. Watchdogen larmar först vid 9 dygn, så felet är osynligt tills dess.
   2. **`docs/manual/`-skärmbilderna åldras.** Tas nya: se kommentaren i `make-manual.bat`, kör
      sedan skriptet så PDF:erna följer med.
-  3. **Bevaka att nyhetsfönstret fyller på sig.** Handelsdagsfönstret infördes 2026-08-03 17:xx, så
-     filen bar då bara den dagens poster (`window.tradingDaysCovered: 1`). Den självläker en dag i
-     taget; är den inte uppe i 5 senast fredag 2026-08-07 är det ett verkligt fel, inte eftersläpning.
-     Watchdogen larmar under 5.
-  4. **Första skarpa körningen av `auto_merge.yml`-grinden är inte sedd.** Nästa routine-commit blir
+  3. **Första skarpa körningen av `auto_merge.yml`-grinden är inte sedd.** Nästa routine-commit blir
      provet: kontrollera i Actions att stegen `validate-decisions`/`run.mjs`/`theme.mjs` körde och att
      `dashboard.json` byggdes om i samma jobb. Faller grinden lämnas `claude/**`-branchen kvar –
      inget arbete försvinner, men rapporten når inte main förrän felet är åtgärdat.
+- ✅ **Verifierat i skarp körning 2026-08-03 (samma kväll):** `news.yml` 15:56 UTC skrev `window`-fältet
+  och fönstret bar **6 av 10 handelsdagar direkt** (äldsta post 2026-07-27) – flödena serverar själva
+  äldre poster, så det behövde inte fyllas på dag för dag. Taket per källa och dygn band vid exakt 30
+  för fyra flöden, som avsett. `prices.yml` 15:42 UTC körde `decision_eval.mjs` på runnern och
+  committade filen (13 beslut, 13 mätbara, 0 utan kurshistorik).
 - ✅ **Avklarat 2026-08-03 (var punkt 1–2 i 08-02-listan):** `push.bat` körd; (a) dagsrörelserna
   stämmer och filen bär `schemaVersion 2026-08-02-prevclose`; (b) `alerts.json` har `checkedAt`;
   (c) `decisions.json` har 15 rader varav 0 med `source: backfill`; (d) båda böckerna har migrerat
