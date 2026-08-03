@@ -653,8 +653,15 @@ ok("isAppendOnly: tillägg sist är OK",
 ok("isAppendOnly: ändrad historisk rad fångas",
   !VD.isAppendOnly([goodRow], [{ ...goodRow, price: 999 }]));
 ok("isAppendOnly: raderad rad fångas", !VD.isAppendOnly([goodRow, goodRow], [goodRow]));
+// VARFÖR assertionen ser ut så här: den kontrollerade tidigare att SAMTLIGA rader var
+// backfyllda, vilket bara stämde så länge filen enbart innehöll rekonstruktionen från
+// 2026-07-31. Första gången en routine appendade en riktig beslutsrad (v32-rotationen
+// 2026-08-03) föll testet – trots att det var precis vad som skulle hända. Testet mäter
+// nu det namnet lovar: de sex rekonstruerade raderna är kvar och märkta, och ingen rad
+// bär en annan source-stämpel. Livrader saknar fältet helt och är alltså tillåtna.
 ok("alla backfyllda rader är märkta med source",
-  dec.decisions.filter(r => r.source === "backfill-260731").length === dec.decisions.length);
+  dec.decisions.filter(r => "source" in r).every(r => r.source === "backfill-260731") &&
+  dec.decisions.filter(r => r.source === "backfill-260731").length === 6);
 
 // ---- nyhetsingestion (fetch-news.mjs, rena funktioner) ----
 const NW = await mod(".github/scripts/fetch-news.mjs");

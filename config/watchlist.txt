@@ -15,6 +15,12 @@ SF.ST
 HNSA.ST
 SCA-B.ST
 NOKIA.HE
+# Bubblare v32 (veckorapport-260803) – tillagda enligt L-2 så att prices.json får en
+# verifierad kurs till nästa rotation. Ingen av dem fanns i prices.json 2026-08-03 och
+# reservkällorna (Yahoo/Avanza/stooq) är 403-spärrade från routinens körmiljö.
+ASSA-B.ST
+BETS-B.ST
+SUBC.OL
 
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
