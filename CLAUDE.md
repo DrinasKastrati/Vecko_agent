@@ -81,6 +81,13 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   Skriptet skriver bara vid FAKTISK ändring (`generatedAt` jämförs inte), annars gav det ~48 tomma
   commits per dygn.
 - `state/decisions.json` – append-only, valideras i CI av `validate-decisions.mjs`.
+  **HELA bruttolistan loggas i LÄGE A sedan 2026-08-03**, inte bara de valda: varje kandidat som föll
+  bort får en `AVVAKTA`-rad med den namngivna spärren i `reason`. Rotationen 2026-08-03 hade 16
+  bruttokandidater och loggade 3 rader – med hela listan växer det kontrafaktiska underlaget i
+  `state/decision_eval.json` ~5× snabbare. Kandidater som föll på att kursen inte kunde verifieras loggas med
+  `price: null` (validatorn tillåter det). **Det är INGEN uppmjukning av kursverifieringskravet** –
+  raden dokumenterar att inget kursbaserat beslut fattades, och en rad med `price: null` får aldrig
+  bli ett KÖP.
 - `state/portfolj.md` / `portfolj_us.md` – historiken är append-only. Radera aldrig filerna.
 - `config/universe_nordic_movers.txt` – används BARA av `movers.mjs` (missdetektion), inte av pris-hämtaren.
 - `assets/themes/base.css` – all struktur; hårdkoda aldrig färg/radie/typsnitt där, lägg en token.

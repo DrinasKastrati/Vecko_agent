@@ -699,6 +699,25 @@ ok("alla backfyllda rader är märkta med source",
   dec.decisions.filter(r => "source" in r).every(r => r.source === "backfill-260731") &&
   dec.decisions.filter(r => r.source === "backfill-260731").length === 6);
 
+// Bruttolistan loggas i sin helhet sedan 2026-08-03, inklusive kandidater som föll
+// på att kursen inte kunde verifieras. En sådan rad har price: null och MÅSTE vara
+// giltig – annars kan prompten inte följa sin egen instruktion.
+ok("AVVAKTA med price null är en giltig rad", (() => {
+  const row = { date: "2026-08-03", book: "nordic", mode: "A", ticker: "HNSA.ST",
+    action: "AVVAKTA", price: null, currency: "SEK", weight: 0, entry: null, stop: null,
+    target: null, rr: null, catalystType: "earnings", sector: "Bioteknik", rsi: null,
+    reason: "Kurs ej verifierad – ingen post i prices.json och reservkällan svarade 403.",
+    lessonIds: [] };
+  return VD.validateDecision(row, 0).length === 0;
+})());
+ok("statistiken tål rader utan verifierad kurs", (() => {
+  const s = VP.decisionStats({ decisions: [
+    { date: "2026-08-03", book: "nordic", mode: "A", ticker: "X.ST", action: "AVVAKTA",
+      price: null, catalystType: "order", reason: "r", lessonIds: [] }
+  ] });
+  return s && s.rows === 1;
+})());
+
 // ---- beslutsutvärdering (decision_eval.mjs) ----
 // Mätningen som gör urvalet mätbart UTAN stängda affärer: varje beslut, även de
 // avvisade, poängsätts mot efterföljande kurs och mot sin boks index.

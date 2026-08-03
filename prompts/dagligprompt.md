@@ -241,6 +241,18 @@ Gör följande för VARJE innehav i `state/portfolj.md`:
 ## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena
 Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/decisions.json`
 (en rad per innehavsbeslut i LÄGE B; en rad per KÖP/SÄLJ/valt case i LÄGE A). Regler:
+0. **LOGGA HELA BRUTTOLISTAN I LÄGE A, INTE BARA DE VALDA (sedan 2026-08-03).** Varje kandidat som
+   nådde bruttolistan och föll bort ska ha en `AVVAKTA`-rad med den NAMNGIVNA spärren i `reason`
+   (RSI, kostnadströskel, sektorkoncentration, binärt event, saknad kurs …). Skälet är mätning:
+   `.github/scripts/decision_eval.mjs` poängsätter varje rad mot efterföljande kurs och mot index,
+   och de avvisade kandidaterna är det KONTRAFAKTISKA underlaget – går de systematiskt bättre än de
+   köpta är urvalsfiltret för strängt. Rotationen 2026-08-03 hade 16 bruttokandidater men loggade
+   3 rader; med hela listan växer underlaget ~5× snabbare, och det är den enda mätningen av urvalet
+   som inte kräver stängda affärer.
+   **Kandidater som föll på att kursen inte kunde verifieras SKA också loggas**, med `price: null`
+   (validatorn tillåter det) och spärren i `reason`. Det SÄNKER INTE kursverifieringskravet – raden
+   dokumenterar tvärtom att inget kursbaserat beslut fattades, precis som punkt 4 i KRAV PÅ FÄRSK
+   DATA kräver. Läs det aldrig som en lucka: en rad med `price: null` får aldrig bli ett KÖP.
 1. APPEND-ONLY: befintliga rader får ALDRIG ändras, raderas eller sorteras om. Nya rader läggs
    sist. Schemat står i filens `comment`-fält – följ det exakt.
 2. `book`: "nordic". `catalystType`: välj NÄRMASTE enum-värde (earnings/order/ma_rumor/

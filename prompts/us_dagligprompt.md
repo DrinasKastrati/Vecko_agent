@@ -377,7 +377,14 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
 
 ## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena
 Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/decisions.json`
-(delas med nordiska boken – sätt `book`: "us"). Samma regler som nordiska prompten:
+(delas med nordiska boken – sätt `book`: "us"). **LOGGA HELA BRUTTOLISTAN I LÄGE A, inte bara de
+valda (sedan 2026-08-03):** varje kandidat som föll bort får en `AVVAKTA`-rad med den NAMNGIVNA
+spärren i `reason`. `.github/scripts/decision_eval.mjs` mäter varje rad mot efterföljande kurs och
+mot `^GSPC`, och de avvisade är det KONTRAFAKTISKA underlaget – går de systematiskt bättre än de
+köpta är urvalsfiltret för strängt. Kandidater som föll på att kursen inte kunde verifieras loggas
+med `price: null` (validatorn tillåter det); det sänker INTE verifieringskravet utan dokumenterar
+att inget kursbaserat beslut fattades, och en sådan rad får aldrig bli ett KÖP.
+Samma regler som nordiska prompten:
 APPEND-ONLY (ändra/radera aldrig befintliga rader), `catalystType` ur enum-listan i filens
 `comment`-fält (aldrig egna värden), `price` som tal i USD, `weight` som andel (0.5 = 50 %),
 vid SÄLJ fylls `outcomePct`, `holdDays` och `realizedRr` (utfall delat med planerat stoppavstånd,
