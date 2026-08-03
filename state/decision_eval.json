@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-03T15:23:24.421Z",
+ "generatedAt": "2026-08-03T15:42:39.287Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 10,
-  "measurable": 10,
+  "decisions": 13,
+  "measurable": 13,
   "missing": 0,
-  "pending": 7
+  "pending": 10
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -403,6 +403,36 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Skog/material",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "AMZN",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "earnings",
+   "sector": "Moln/e-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "MSFT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-03",
+   "ticker": "JPM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bank/finans",
    "reconstructed": false,
    "fwd": {}
   }
