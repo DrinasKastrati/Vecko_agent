@@ -46,6 +46,17 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
   svag eller datat saknas. Larmar nu per index under 200 stängningar. Dessutom: nyhetsfönstrets
   TÄCKNING, inte bara `generatedAt` – en fil kan vara färsk och ändå för tunn, och bara det första
   mättes. Båda är bakåtkompatibla (utan fälten är watchdogen tyst).
+  **(4) `auto_merge.yml` kör CI själv.** GitHub startar medvetet inga workflows för pushar gjorda med
+  den inbyggda `GITHUB_TOKEN`, och både `test.yml` och `dashboard.yml` lyssnar på `push` mot main.
+  Allt routinerna producerade nådde alltså main utan validering och utan dashboard-ombyggnad
+  (veckorapport-260803 punkt 8: auto-mergen körde 05:54 och 07:00, senaste `test.yml` var 23:30 dagen
+  före – på en commit från `push.bat`). Triggern går inte att få tillbaka, så actionen kör nu
+  `validate-decisions.mjs` + `run.mjs` + `theme.mjs` FÖRE pushen och bygger om dashboard-filerna
+  efteråt. Faller grinden pushas ingenting: mergen kastas lokalt, branchen lämnas kvar så inget
+  arbete försvinner, och jobbet failar synligt i Actions. `data.mjs` hålls utanför (nätberoende,
+  ~110 hämtningar). Verifierat lokalt att grinden verkligen biter: en medvetet trasig `action`-rad
+  i `decisions.json` ger `validate-decisions.mjs` exit 1, och båda testsviterna avslutar med
+  `process.exit(fail ? 1 : 0)`.
   Verifierat: **434 enhetstester · 121 temakontroller · 30 datakontroller**, allt grönt.
 
 - ✅ 2026-08-03 (Backfill av price_history + kombinationskörning – och ett negativt resultat som fick stå):

@@ -101,6 +101,16 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   ändra där, inte i respektive fils `<style>`-block. Blocken innehåller bara det som är unikt
   för filen plus Systemguidens nio medvetna överskrivningar.
 - Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
+- **`auto_merge.yml` KÖR CI SJÄLV (sedan 2026-08-03) – rör inte den grinden.** GitHub startar
+  medvetet inga workflows för pushar gjorda med den inbyggda `GITHUB_TOKEN` (skydd mot rekursiva
+  körningar), och både `test.yml` och `dashboard.yml` lyssnar på `push` mot main. Följden var att
+  ALLT routinerna producerade nådde main utan validering och utan dashboard-ombyggnad – CI var i
+  praktiken avstängt för systemets egen output. Eftersom triggern inte går att få tillbaka kör
+  actionen nu `validate-decisions.mjs` + `tests/run.mjs` + `tests/theme.mjs` INNAN den pushar, och
+  bygger om `dashboard.json`/`search-index.json` efteråt. **Faller grinden pushas ingenting:** mergen
+  kastas lokalt (`git reset --hard origin/main`), branchen lämnas KVAR så inget arbete försvinner,
+  och jobbet failar synligt. `tests/data.mjs` är medvetet utanför grinden (hämtar ~110 filer över
+  nätet) och körs bara i `test.yml`.
 - **Watchdogen (`.github/scripts/watchdog.mjs`) bevakar två saker som är TYSTA fel.** (1) Regimfiltret
   behandlar en oberäknelig MA200 som AV, alltså inga nya positioner – det gör indexserien i
   `price_history.json` till en tyst spärr för HELA boken: faller `^OMX`/`^GSPC` ur pris-hämtningen

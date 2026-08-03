@@ -23,6 +23,17 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      # KRÄVS av grinden nedan. GitHub startar medvetet INGA workflows för pushar
+      # gjorda med den inbyggda GITHUB_TOKEN (skydd mot rekursiva körningar), och
+      # både test.yml och dashboard.yml lyssnar på push mot main. Följden var att
+      # varje routine-commit som nådde main via den här actionen hoppade över BÅDE
+      # valideringen och ombyggnaden av dashboard.json – CI var i praktiken avstängt
+      # för allt systemet självt producerar (veckorapport-260803 punkt 8). Vi kan
+      # inte få GitHub att trigga workflowsen, så vi kör dem HÄR i stället.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Merga till main och ta bort branchen
         run: |
           git config user.name "github-actions[bot]"
@@ -44,14 +55,55 @@ jobs:
           FAIL=0
           for BRANCH in $BRANCHES; do
             echo "==> Mergar $BRANCH till main"
-            if git merge "origin/$BRANCH" -m "Auto-merge: $BRANCH -> main"; then
-              git push origin main
-              git push origin --delete "$BRANCH"
-              echo "==> Klart: $BRANCH mergad till main och borttagen."
-            else
+            if ! git merge "origin/$BRANCH" -m "Auto-merge: $BRANCH -> main"; then
               git merge --abort
               echo "::error::Mergekonflikt i $BRANCH - branchen lamnas kvar for manuell hantering."
               FAIL=1
+              continue
             fi
+
+            # ---- GRINDEN: samma kontroller som test.yml skulle ha kort ----------
+            # Faller nagon av dem SKA ingenting pushas. Poangen med valideringen ar
+            # att en trasig decisions.json eller en trasig ren funktion inte ska na
+            # main - och den poangen forsvann helt nar pushen inte triggade CI.
+            # Vid fel: mergen kastas lokalt, branchen lamnas KVAR (inget arbete
+            # forsvinner) och jobbet failar synligt i Actions.
+            if ! node .github/scripts/validate-decisions.mjs; then
+              echo "::error::validate-decisions.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
+            if ! node tests/run.mjs; then
+              echo "::error::tests/run.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
+            # tests/data.mjs korrs medvetet INTE har: den hamtar ~110 filer over
+            # natet och ar darmed bade langsam och beroende av att raw.github svarar.
+            # Den halls kvar i test.yml, som gar pa pushar med Drens credentials.
+            if ! node tests/theme.mjs; then
+              echo "::error::tests/theme.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
+
+            # ---- Dashboard-bygget, som dashboard.yml annars hade gjort ----------
+            # Utan detta ligger state/dashboard.json kvar pa forra versionen och
+            # appen visar gammal data tills nagon pushar med egna credentials.
+            if node .github/scripts/build-dashboard.mjs; then
+              git add state/dashboard.json state/search-index.json
+              if ! git diff --cached --quiet; then
+                git commit -m "Dashboard-data efter auto-merge: $BRANCH"
+              fi
+            else
+              echo "::warning::build-dashboard.mjs failade - dashboard.json kan ligga efter. Mergen pushas anda."
+            fi
+
+            git push origin main
+            git push origin --delete "$BRANCH"
+            echo "==> Klart: $BRANCH mergad, validerad, dashboard ombyggd och branchen borttagen."
           done
           exit $FAIL
