@@ -91,6 +91,33 @@ och inget förlorat – lös den för hand eller be Claude titta på den. Skript
 som öppnas (ett klick) → säg "analysera kön" i Cowork. Analysen dyker upp i dashboarden och
 cachas där.
 
+**Slå på push-notiser (engångsjobb, sedan bara 🔔 per telefon):**
+
+1. I repomappen: `node .github/scripts/vapid-keys.mjs`. Den skriver den **publika** nyckeln till
+   `config/push.json` (committas) och den **privata** till `.env`, som är gitignorerad. Den
+   privata skrivs medvetet inte ut i terminalen – en utskriven hemlighet hamnar i skrollbufferten
+   och i loggar. *(Kört 2026-08-03: nycklarna finns redan, hoppa till steg 2.)*
+2. Öppna `.env`, kopiera värdet efter `VAPID_PRIVATE_KEY=` och lägg det som hemlighet i GitHub:
+   Settings → Secrets and variables → Actions → New repository secret → namn `VAPID_PRIVATE_KEY`.
+   Den får aldrig hamna i repot.
+3. `push.bat` så `config/push.json` når GitHub.
+4. På telefonen: öppna dashboarden, lägg till den på startskärmen, tryck 🔔, godkänn, och skicka
+   in det förifyllda GitHub-ärendet ("push: …"). Enheten hamnar i `state/push_subs.json`.
+5. Testa: Actions → "Intradag-monitor" → Run workflow → kryssa i `testnotis`. En testnotis ska
+   dyka upp på telefonen inom några sekunder.
+
+Vill du inte ha enhetens endpoint publikt i repot: hoppa över steg 4:s ärende och lägg i stället
+hela prenumerations-JSON:en i hemligheten `PUSH_SUBSCRIPTIONS` (en array). Avsändaren läser båda.
+
+Notiserna skickas av `push-notify.mjs` från monitorns timkörning, alltså **inom en timme under
+börstid** – inte i sekunden. En egen workflow hade inte hjälpt: GitHub startar inga workflows för
+commits gjorda med `GITHUB_TOKEN`, och det är så både `alerts.json` och rapporterna når main.
+
+Kommer inga notiser: kolla i tur och ordning att (a) `config/push.json` har en `vapidPublicKey`,
+(b) hemligheten `VAPID_PRIVATE_KEY` finns, (c) `state/push_subs.json` innehåller telefonen,
+(d) monitorns logg inte säger "Inga prenumerationer" eller "VAPID-nycklar saknas". Byt **aldrig**
+VAPID-par i onödan – alla registrerade enheter blir tysta tills de tryckt 🔔 igen.
+
 **Köra testerna** (efter kodändringar, i terminalen i repomappen):
 
     node tests/run.mjs        (enhetstester, ska vara 100 % gröna)

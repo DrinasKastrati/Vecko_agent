@@ -287,5 +287,27 @@ for (const m of indexSrc.match(/src="(assets\/[^"]+\.js)"/g) || []) {
   ok(`sw.js precachar ${p}`, swSrc.includes(`"./${p}"`));
 }
 
+/* PUSH-NOTISER. Två saker som annars går sönder TYST:
+   (1) `new Notification(...)` kastar "Illegal constructor" på Android – felet
+       låg i app.js till 2026-08-03 bakom ett tomt catch, så 🔔-knappen såg ut
+       att fungera men gjorde ingenting på telefonen. Gå via
+       registration.showNotification().
+   (2) utan push-hanterare i sw.js kommer ingenting fram när appen är stängd,
+       och vissa webbläsare avregistrerar en prenumeration vars push-event
+       inte resulterar i en synlig notis. */
+const appSrc = readFileSync(join(root, "assets/app.js"), "utf8");
+// Kommentarerna FÅR nämna konstruktorn (de förklarar varför den är förbjuden) –
+// testet gäller koden, så block- och radkommentarer stryks först.
+const appCode = appSrc.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+ok("app.js använder inte new Notification (illegal constructor på Android)", !/new\s+Notification\s*\(/.test(appCode));
+ok("app.js går via showNotification", appSrc.includes("showNotification("));
+ok("sw.js har en push-hanterare", /addEventListener\(\s*"push"/.test(swSrc));
+ok("sw.js visar alltid en notis vid push", /"push"[\s\S]{0,600}showNotification/.test(swSrc));
+ok("sw.js hanterar klick på notisen", /addEventListener\(\s*"notificationclick"/.test(swSrc));
+ok("sw.js fångar roterad prenumeration", /addEventListener\(\s*"pushsubscriptionchange"/.test(swSrc));
+ok("config/push.json finns och saknar privat nyckel",
+  (() => { const c = JSON.parse(readFileSync(join(root, "config/push.json"), "utf8"));
+           return "vapidPublicKey" in c && !JSON.stringify(c).match(/privateKey/i); })());
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -1,0 +1,65 @@
+name: Registrera push-enhet (issue -> push_subs.json)
+
+# Nyckellös och LLM-fri, precis som analys_queue.yml. Appen öppnar ett
+# förifyllt issue "push: <enhet>" med prenumerationens JSON; den här actionen
+# lägger den i state/push_subs.json, kvitterar och stänger issuet.
+# Kroppen innehåller endpoint + publika nycklar – se push-sub-add.mjs om varför
+# det inte är känsligt, och vilket alternativ som finns om man ändå vill slippa.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: push-subscribe
+  cancel-in-progress: false
+
+jobs:
+  subscribe:
+    if: ${{ github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'push:') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Lägg prenumerationen i push_subs.json
+        env:
+          BODY: ${{ github.event.issue.body }}
+          TITLE: ${{ github.event.issue.title }}
+        run: |
+          LABEL=$(printf '%s' "$TITLE" | sed -E 's/^[Pp]ush:[[:space:]]*//')
+          printf '%s' "$BODY" | node .github/scripts/push-sub-add.mjs "" "$LABEL"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/push_subs.json
+          if git diff --cached --quiet; then
+            echo "Prenumerationen fanns redan – inget att committa."
+          else
+            git commit -m "Push: registrera enhet ($LABEL)"
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
+      - name: Kvittera och stäng issue
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok = '${{ job.status }}' === 'success';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: ok
+                ? 'Enheten är registrerad för push-notiser. Nästa KÖP/SÄLJ-signal skickas hit. Testa direkt: Actions → "Intradag-monitor" → Run workflow med `testnotis: true`. Ärendet stängs automatiskt.'
+                : 'Kunde INTE registrera enheten – prenumerations-JSON:en i kroppen gick inte att tolka. Öppna 🔔 i appen igen och skicka det förifyllda ärendet oförändrat.'
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, state: 'closed'
+            });

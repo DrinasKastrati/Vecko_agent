@@ -24,3 +24,11 @@ state/search-index.json  -merge -diff
 # decisions.json + price_history.json. Samma resonemang som ovan: den ska byggas
 # om, aldrig handmergas.
 state/decision_eval.json -merge -diff
+
+# Push-notisernas statefiler. push_sent.json är en ren dedupe-lista (skrivs av
+# monitorns timkörning) och push_subs.json en enhetsregistrering (skrivs av
+# push_subscribe.yml). Konfliktmarkörer i någon av dem är värre än vanligt:
+# push-notify.mjs kan då inte tolka filen, hoppar över allt – och resultatet
+# är TYSTNAD, inte ett fel. Vid konflikt: ta versionen från origin.
+state/push_sent.json     -merge
+state/push_subs.json     -merge

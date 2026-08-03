@@ -14,7 +14,7 @@
    Cachen töms inte automatiskt på gamla nycklar – CACHE-namnet nedan bumpas
    manuellt om formatet på det som cachas ändras.
    ========================================================================== */
-const CACHE = "vecko-agent-v1";
+const CACHE = "vecko-agent-v2";
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */
@@ -46,6 +46,61 @@ self.addEventListener("activate", e => {
   e.waitUntil(caches.keys()
     .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
+});
+
+/* ============================================================================
+   PUSH-NOTISER (KÖP/SÄLJ till telefonen även när appen är STÄNGD).
+
+   Det här är den enda vägen till en notis på en telefon. Sidan kan visa en
+   notis via `new Notification(...)` på skrivbordet, men på Android kastar den
+   konstruktorn "Illegal constructor" – och den kräver ändå att fliken är
+   öppen. En push väcker service workern utan att appen körs; avsändaren är
+   .github/scripts/push-notify.mjs på GitHub-runnern.
+
+   Nyttolasten är JSON: { title, body, tag, url, ts }. Saknas eller är trasig
+   visas ändå EN notis – en tyst push är värre än en vag, eftersom vissa
+   webbläsare avregistrerar prenumerationen om ett push-event inte resulterar
+   i en synlig notis.
+   ========================================================================== */
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { try { d = { body: e.data.text() }; } catch (e2) {} }
+  const title = d.title || "Aktie bot";
+  e.waitUntil(self.registration.showNotification(title, {
+    body: d.body || "Ny signal i portföljen.",
+    tag: d.tag || "vecko-agent",
+    renotify: true,
+    // Vibration + krav på interaktion: en KÖP/SÄLJ-signal ska inte kunna
+    // försvinna oläst ur notisskuggan medan telefonen ligger i fickan.
+    vibrate: [120, 60, 120],
+    requireInteraction: true,
+    timestamp: d.ts || Date.now(),
+    icon: "./assets/icon.svg",
+    badge: "./assets/icon.svg",
+    data: { url: d.url || "#hem" }
+  }));
+});
+
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  const hash = (e.notification.data && e.notification.data.url) || "#hem";
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    // Finns appen redan öppen: fokusera den och byt vy, öppna inte ett andra fönster.
+    for (const c of list) {
+      if (c.url.indexOf(self.registration.scope) === 0 && "focus" in c) {
+        c.navigate(self.registration.scope + hash).catch(() => {});
+        return c.focus();
+      }
+    }
+    return self.clients.openWindow(self.registration.scope + hash);
+  }));
+});
+
+/* Prenumerationen roteras ibland av push-tjänsten. Utan det här slutar
+   notiserna tyst – den gamla endpointen svarar 410 och den nya är okänd. */
+self.addEventListener("pushsubscriptionchange", e => {
+  e.waitUntil(self.clients.matchAll({ includeUncontrolled: true }).then(list =>
+    list.forEach(c => c.postMessage({ type: "push-resubscribe" }))));
 });
 
 self.addEventListener("fetch", e => {

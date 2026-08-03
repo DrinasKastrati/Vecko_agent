@@ -1504,5 +1504,73 @@ ok("renderReportRail tomt läge ger tom sträng", VR.renderReportRail({}) === ""
 ok("renderReportRail döljer innehållsförteckning vid en enda rubrik",
   !VR.renderReportRail({ outline: [{ level: 2, text: "En", id: "en" }], digest: {} }).includes("data-toc"));
 
+/* ---- push-notiser -------------------------------------------------------
+   Den viktigaste raden i hela filen är RFC-vektorn nedan. Ett fel i
+   nyckelhärledningen ger INGET synligt fel: push-tjänsten svarar 201 (den
+   läser aldrig innehållet) och telefonen kastar paketet tyst. Utan en fast
+   vektor hade "inga notiser kommer fram" varit omöjligt att skilja från
+   "inga signaler har inträffat".
+-------------------------------------------------------------------------- */
+const WP = await mod(".github/scripts/webpush.mjs");
+const PN = await mod(".github/scripts/push-notify.mjs");
+const PS = await mod(".github/scripts/push-sub-add.mjs");
+
+{ // RFC 8291 §5 – officiell testvektor, byte för byte
+  const uaPub = WP.unb64u("BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4");
+  const asPub = WP.unb64u("BP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A8");
+  const body = WP.encryptPayload(
+    "When I grow up, I want to be a watermelon",
+    uaPub,
+    WP.unb64u("BTBZMqHH6r4Tts7J_aSIgg"),
+    { salt: WP.unb64u("DGv6ra1nlYgDCS1FRnbzlw"),
+      as: { privateKey: WP.privFromRaw(WP.unb64u("yfWPiYE-n46HLnH0KqZOF1fJJU3MYrct3AELtAQ-oRw"), asPub), publicRaw: asPub } });
+  ok("webpush: RFC 8291 §5 testvektor", WP.b64u(body) ===
+    "DGv6ra1nlYgDCS1FRnbzlwAAEABBBP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A_yl95bQpu6cVPTpK4Mqgkf1CXztLVBSt2Ks3oZwbuwXPXLWyouBWLVWGNWQexSgSxsj_Qulcy4a-fN");
+}
+{ // Slumpat salt/nyckel varje gång – annars återanvänds en nonce mellan sändningar.
+  const kp = WP.generateVapidKeys();
+  const uaPub = WP.unb64u(kp.publicKey), auth = Buffer.alloc(16, 7);
+  const a = WP.b64u(WP.encryptPayload("x", uaPub, auth));
+  const b = WP.b64u(WP.encryptPayload("x", uaPub, auth));
+  ok("webpush: nytt salt per kryptering", a !== b);
+  const hdr = WP.vapidAuthHeader("https://fcm.googleapis.com/fcm/send/abc", kp.publicKey, kp.privateKey, "mailto:a@b.c", 1000);
+  const claims = JSON.parse(Buffer.from(hdr.split(" ")[1].split(".")[1].replace(/,$/, ""), "base64").toString());
+  ok("webpush: VAPID-huvudets aud är ORIGIN, inte hela endpointen", claims.aud === "https://fcm.googleapis.com");
+  ok("webpush: VAPID-huvudet har giltighetstid och k=", claims.exp === 1000 + 43200 && hdr.includes(", k=" + kp.publicKey));
+  // Signaturen måste vara ES256 i JOSE-format (r||s). Node ger DER som standard,
+  // och DER ger 401 från FCM – ett fel som annars bara syns som "inga notiser".
+  const { createVerify } = await import("node:crypto");
+  const jwt = hdr.split(" ")[1].replace(/,$/, "").replace(/^t=/, "");
+  const [h1, p1, s1] = jwt.split(".");
+  ok("webpush: VAPID-signaturen verifierar mot den publika nyckeln",
+    createVerify("SHA256").update(h1 + "." + p1).verify(
+      { key: WP.pubFromRaw(WP.unb64u(kp.publicKey)), dsaEncoding: "ieee-p1363" }, WP.unb64u(s1)));
+}
+{ // Urvalet: bara KÖP/SÄLJ ska nå telefonen.
+  const dec = { decisions: [
+    { date: "2026-08-03", book: "nordic", ticker: "SAAB-B.ST", action: "KÖP", price: 500, currency: "SEK", reason: "katalysator" },
+    { date: "2026-08-03", book: "us", ticker: "MSFT", action: "AVVAKTA", price: 464, reason: "RSI 78" },
+    { date: "2026-08-03", book: "us", ticker: "JPM", action: "BEHÅLL", price: 351, reason: "oförändrad" },
+    { date: "2026-06-01", book: "nordic", ticker: "GAMMAL.ST", action: "SÄLJ", price: 10, reason: "för gammal" }
+  ] };
+  const n = PN.decisionNotifications(dec, new Date("2026-08-03T12:00:00Z"));
+  ok("push: bara KÖP/SÄLJ notifieras", n.length === 1 && n[0].title.includes("SAAB-B.ST"));
+  ok("push: gamla rader notifieras inte", !n.some(x => x.key.includes("GAMMAL")));
+  const al = PN.alertNotifications({ active: [{ ticker: "ALLEI.ST", type: "SÄLJ", reason: "stop-loss träffad", level: 74, price: 73.5, currency: "SEK" }] });
+  ok("push: alerts blir notiser", al.length === 1 && al[0].body.includes("nivå 74") && al[0].url === "#hem");
+  ok("push: dedupe hoppar över redan skickade", PN.pending([...al, ...n], [al[0].key]).length === 1);
+  ok("push: taket per körning håller", PN.pending(Array.from({ length: 30 }, (_, i) => ({ key: "k" + i })), []).length === 5);
+}
+{ // Prenumerationen måste valideras – en trasig endpoint ger annars ett tyst 400 varje timme.
+  const good = { endpoint: "https://fcm.googleapis.com/fcm/send/abc", keys: { p256dh: WP.b64u(Buffer.concat([Buffer.from([4]), Buffer.alloc(64, 1)])), auth: WP.b64u(Buffer.alloc(16, 2)) } };
+  ok("push-sub: giltig prenumeration accepteras", PS.validate(good).endpoint === good.endpoint);
+  ok("push-sub: plockas ur ett ```json-block", PS.parseSubscription("text\n```json\n" + JSON.stringify(good) + "\n```\n").endpoint === good.endpoint);
+  const bad = (o, why) => { try { PS.validate(o); return false; } catch (e) { return true; } };
+  ok("push-sub: http avvisas", bad(Object.assign({}, good, { endpoint: "http://x.y/z" })));
+  ok("push-sub: fel nyckellängd avvisas", bad({ endpoint: good.endpoint, keys: { p256dh: "AAAA", auth: good.keys.auth } }));
+  const up = PS.upsert({ subscriptions: [Object.assign({}, good, { label: "gammal" })] }, good, "ny", "2026-08-03T00:00:00Z");
+  ok("push-sub: samma endpoint ersätts, dubbleras inte", up.subscriptions.length === 1 && up.subscriptions[0].label === "ny");
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

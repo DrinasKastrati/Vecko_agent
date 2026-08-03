@@ -542,14 +542,118 @@
       return "https://www.avanza.se/sok.html?query=" + encodeURIComponent(base);
     }
 
-    // ---- skrivbordsnotiser för intradag-signaler ----
-    updateNotifBtn() {
+    /* ---- notiser -------------------------------------------------------
+       TVÅ MEKANISMER, och skillnaden är hela poängen:
+
+       1. PUSH (registration.pushManager). Skickas från GitHub-runnern av
+          .github/scripts/push-notify.mjs och väcker service workern ÄVEN NÄR
+          APPEN ÄR STÄNGD. Det här är det som fungerar på en telefon.
+       2. Lokal notis medan fliken är öppen (pollAlerts var 5:e minut). Ren
+          bonus på skrivbordet; på en telefon är appen aldrig öppen när
+          signalen kommer.
+
+       ANVÄND ALDRIG `new Notification(...)`. På Android (Chrome och Samsung
+       Internet) är konstruktorn förbjuden – "Illegal constructor" – och
+       felet fångades tidigare av ett tomt catch, så knappen såg ut att
+       fungera men gjorde ingenting. Gå alltid via service-worker-
+       registreringens showNotification().
+    -------------------------------------------------------------------- */
+    async swReady() {
+      if (!("serviceWorker" in navigator)) return null;
+      try { return await navigator.serviceWorker.ready; } catch (e) { return null; }
+    }
+    async showLocalNotification(title, opts) {
+      const reg = await this.swReady();
+      if (!reg) return false;
+      try { await reg.showNotification(title, opts); return true; } catch (e) { return false; }
+    }
+    pushSupported() {
+      return ("serviceWorker" in navigator) && ("PushManager" in window) && ("Notification" in window);
+    }
+    async updateNotifBtn() {
       const nb = this.el("notifBtn"); if (!nb) return;
-      const on = ("Notification" in window) && Notification.permission === "granted" && !!this.cacheGet("vr_notif_on");
+      const granted = ("Notification" in window) && Notification.permission === "granted";
+      let sub = null;
+      if (this.pushSupported() && granted) {
+        const reg = await this.swReady();
+        if (reg) { try { sub = await reg.pushManager.getSubscription(); } catch (e) {} }
+      }
+      // "på" kräver BÅDE en prenumeration OCH att den registrerats i repot –
+      // en prenumeration som ingen avsändare känner till ger noll notiser,
+      // och knappen får inte påstå något annat.
+      const registered = !!this.cacheGet("vr_push_registered");
+      const on = !!sub && registered;
       nb.classList.toggle("on", on);
-      nb.textContent = on ? "🔔 Notiser på" : "🔔 Notiser";
-      if (("Notification" in window) && Notification.permission === "denied")
-        nb.title = "Notiser blockerade – tillåt för denna sajt i webbläsarens inställningar.";
+      // Behåll .btn-lbl-spannet – temana döljer det på smala skärmar, och en
+      // ren textContent hade tagit bort det och tvingat fram etiketten igen.
+      nb.innerHTML = "🔔<span class=\"btn-lbl\"> " +
+        (on ? "Notiser på" : (sub && !registered ? "Slutför notiser" : "Notiser")) + "</span>";
+      nb.title = on
+        ? "Push-notiser är på: KÖP/SÄLJ skickas hit även när appen är stängd. Tryck för att stänga av."
+        : (sub && !registered
+          ? "Prenumerationen är skapad men inte registrerad i repot – tryck för att skicka in GitHub-ärendet."
+          : (("Notification" in window) && Notification.permission === "denied"
+            ? "Notiser blockerade – tillåt för den här sajten i webbläsarens inställningar."
+            : "Push-notiser vid KÖP/SÄLJ, även när appen är stängd."));
+    }
+    // base64url -> Uint8Array. pushManager.subscribe kräver rå binär nyckel.
+    urlB64ToBytes(s) {
+      const pad = "=".repeat((4 - s.length % 4) % 4);
+      const bin = atob((s + pad).replace(/-/g, "+").replace(/_/g, "/"));
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+    async enablePush() {
+      if (!this.pushSupported()) { alert("Den här webbläsaren stöder inte push-notiser. Installera sidan som app (Lägg till på startskärmen) och försök igen."); return; }
+      if (location.protocol !== "https:" && location.hostname !== "localhost") { alert("Push kräver https – öppna dashboarden via github.io-adressen."); return; }
+      if (Notification.permission !== "granted") {
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") { this.updateNotifBtn(); return; }
+      }
+      const reg = await this.swReady();
+      if (!reg) { alert("Service workern är inte igång ännu. Ladda om sidan och försök igen."); return; }
+
+      let cfg = null;
+      try { cfg = await this.fetchJSON(this.raw("config/push.json")); } catch (e) {}
+      if (!cfg || !cfg.vapidPublicKey) {
+        alert("Push är inte konfigurerat ännu: config/push.json saknar vapidPublicKey.\n\nKör en gång på datorn:\n  node .github/scripts/vapid-keys.mjs\noch lägg den privata nyckeln som hemligheten VAPID_PRIVATE_KEY.");
+        return;
+      }
+      let sub;
+      try {
+        sub = await reg.pushManager.getSubscription();
+        if (!sub) sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlB64ToBytes(cfg.vapidPublicKey)
+        });
+      } catch (e) {
+        alert("Kunde inte skapa prenumerationen: " + (e && e.message));
+        return;
+      }
+      this.registerSubscription(sub);
+    }
+    // Registreringen går via ett förifyllt GitHub-ärende – samma nyckellösa
+    // mönster som analyskön. Ett klick i appen, ett i GitHub, sedan är det klart.
+    registerSubscription(sub) {
+      const j = sub.toJSON ? sub.toJSON() : sub;
+      const payload = JSON.stringify({ endpoint: j.endpoint, keys: j.keys }, null, 1);
+      const label = (navigator.userAgent.match(/\((?:Linux; )?([^;)]+)/) || [])[1] || "enhet";
+      const url = this.repoURL + "/issues/new?title=" + encodeURIComponent("push: " + label.slice(0, 40)) +
+        "&body=" + encodeURIComponent("Registrera den här enheten för push-notiser. Skicka in ärendet oförändrat.\n\n```json\n" + payload + "\n```");
+      window.open(url, "_blank", "noopener");
+      this.cacheSet("vr_push_registered", true);
+      this.updateNotifBtn();
+    }
+    async disablePush() {
+      const reg = await this.swReady();
+      if (reg) {
+        try { const s = await reg.pushManager.getSubscription(); if (s) await s.unsubscribe(); } catch (e) {}
+      }
+      // Ingen städning behövs i repot: avsändaren får 410 på nästa försök och
+      // plockar bort den döda prenumerationen själv (push-notify.mjs).
+      this.cacheSet("vr_push_registered", false);
+      this.updateNotifBtn();
     }
     // Lätt poll av enbart alerts.json (var 5:e min) + notis för NYA signaler.
     async pollAlerts() {
@@ -565,14 +669,19 @@
         const fresh = act.filter(s => !seen.has(key(s)));
         if (!fresh.length) return;
         this.cacheSet("vr_alert_seen", [...new Set([...seen, ...act.map(key)])].slice(-100));
-        const on = this.cacheGet("vr_notif_on");
-        if (on && ("Notification" in window) && Notification.permission === "granted")
-          fresh.forEach(s => { try {
-            new Notification(s.type + " " + s.ticker, {
+        // Notis medan fliken är öppen. Push (från servern) täcker det stängda
+        // fallet; den här täcker att man sitter med appen framme och slipper
+        // vänta på nästa monitor-körning. Dubbletter undviks av `tag`:
+        // push och lokal notis använder samma taggnamn per ticker.
+        if (("Notification" in window) && Notification.permission === "granted")
+          for (const s of fresh)
+            await this.showLocalNotification((s.type === "KÖP" ? "🟢 KÖP" : "🔴 SÄLJ") + " · " + s.ticker, {
               body: s.reason + (s.level != null ? " (nivå " + s.level + ")" : "") + (s.price != null ? " · kurs " + s.price : ""),
-              tag: key(s)
+              tag: "alert-" + s.ticker,
+              renotify: true,
+              icon: "./assets/icon.svg",
+              data: { url: "#hem" }
             });
-          } catch (e) {} });
       } catch (e) {}
     }
 
@@ -1367,20 +1476,20 @@
           if (d.open) this.refreshClamps();
         }
       }, true);
-      // Skrivbordsnotiser: begär tillstånd vid klick, växla av/på därefter.
+      // Notisknappen: slår på/av PUSH (fungerar med appen stängd), inte bara
+      // en flik-lokal notis. Se kommentaren vid updateNotifBtn().
       const nb = this.el("notifBtn");
       if (nb) {
         if (!("Notification" in window)) nb.style.display = "none";
         else {
           this.updateNotifBtn();
           nb.addEventListener("click", async () => {
-            if (Notification.permission !== "granted") {
-              const perm = await Notification.requestPermission();
-              if (perm === "granted") this.cacheSet("vr_notif_on", true);
-            } else {
-              this.cacheSet("vr_notif_on", !this.cacheGet("vr_notif_on"));
-            }
-            this.updateNotifBtn();
+            const reg = await this.swReady();
+            let sub = null;
+            if (reg) { try { sub = await reg.pushManager.getSubscription(); } catch (e) {} }
+            if (sub && this.cacheGet("vr_push_registered")) return this.disablePush();
+            if (sub) return this.registerSubscription(sub);   // skapad men aldrig inskickad
+            return this.enablePush();
           });
         }
       }
@@ -1404,6 +1513,15 @@
       if (location.protocol !== "https:" && location.hostname !== "localhost") return;
       navigator.serviceWorker.register("sw.js").catch(e =>
         console.warn("[dashboard] service worker kunde inte registreras:", e && e.message));
+      // Push-tjänsten roterar ibland prenumerationen. Service workern kan inte
+      // registrera om den själv (den kan inte öppna ett GitHub-ärende), så den
+      // ropar hit – annars slutar notiserna tyst.
+      navigator.serviceWorker.addEventListener("message", e => {
+        if (e.data && e.data.type === "push-resubscribe") {
+          this.cacheSet("vr_push_registered", false);
+          this.enablePush();
+        }
+      });
     }
     boot() {
       this.initNav(); this.initEvents(); this.registerSW(); this.load(false);

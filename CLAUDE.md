@@ -36,8 +36,9 @@ beslutslogg (`decisions.json` + validator) och backtest (`backtest.mjs`).
 6. **Intradag-monitor** – en NYCKELLÖS, LLM-FRI Action (`.github/workflows/monitor.yml` +
    `scripts/alerts.mjs`) som varje timme under börstid jämför öppna innehav/pending mot
    stop/mål/entry ur `state/portfolj.md` och flaggar KÖP/SÄLJ-signaler till `state/alerts.json`
-   (dashboard-banner + GitHub-issue/e-post). Ren aritmetik → **noll tokens**; ersätter INTE
-   routinens omdöme utan larmar bara att en nivå korsats.
+   (dashboard-banner + GitHub-issue/e-post + **push-notis till telefonen sedan 2026-08-03**).
+   Ren aritmetik → **noll tokens**; ersätter INTE routinens omdöme utan larmar bara att en nivå
+   korsats.
 
 - **Repo:** https://github.com/DrinasKastrati/Vecko_agent  (publikt, branch `main`)
 - **Dashboard (GitHub Pages):** https://drinaskastrati.github.io/Vecko_agent/
@@ -107,7 +108,35 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   märker det. Deras GEMENSAMMA utseende ligger i `assets/manual.css` (utbruten 2026-08-02) –
   ändra där, inte i respektive fils `<style>`-block. Blocken innehåller bara det som är unikt
   för filen plus Systemguidens nio medvetna överskrivningar.
-- Actions `monitor`/`news`/`movers`/`analys_queue` är nyckellösa och LLM-fria – de kostar noll tokens.
+- **Push-notiser (sedan 2026-08-03): `.github/scripts/webpush.mjs` + `push-notify.mjs`, körs i
+  `monitor.yml`.** Den gamla 🔔-knappen gjorde två fel, båda TYSTA: (1) den använde
+  `new Notification(...)`, som på Android är en förbjuden konstruktor ("Illegal constructor") och
+  kastade in i ett tomt `catch` – knappen såg ut att fungera men gjorde ingenting på telefonen;
+  (2) den byggde på en `setInterval` i appen, alltså bara medan fliken låg öppen, vilket på en
+  telefon i praktiken är aldrig. En äkta push måste skickas FRÅN en server och väcker service
+  workern med appen stängd. Servern är GitHub-runnern. **Använd aldrig `new Notification` igen** –
+  gå via `registration.showNotification()`; `tests/theme.mjs` larmar.
+  Kryptot (RFC 8291 aes128gcm + RFC 8292 VAPID) är skrivet med bara `node:crypto`, eftersom
+  monitor.yml aldrig kört `npm install` och inte ska börja. **Ett fel i nyckelhärledningen syns
+  ingenstans:** push-tjänsten svarar 201 (den läser aldrig innehållet) och telefonen kastar
+  paketet tyst – symptomet blir "inga notiser", utan felmeddelande. Därför verifieras det mot
+  RFC 8291 §5:s officiella testvektor i `tests/run.mjs` ("webpush: RFC 8291 §5"), byte för byte,
+  plus att VAPID-signaturen är ES256 i JOSE-format (`ieee-p1363`; DER ger 401 från FCM).
+  **Kör det testet efter varje ändring i webpush.mjs.**
+  Bara **KÖP/SÄLJ** notifieras – aldrig BEHÅLL/AVVAKTA. Samma regel som styr "något att göra?" i
+  Hem-vyn: systemet lägger inga ordrar, så bara köp och sälj är åtgärdbart. Håll dem i synk.
+  `state/push_sent.json` är dedupe-listan; **första körningen skickar med flit ingenting** (den
+  fyller bara listan), annars hade femton historiska beslut landat som femton notiser samtidigt.
+  Nycklar: publik i `config/push.json` (committas), privat i hemligheten `VAPID_PRIVATE_KEY`.
+  **Byt aldrig par i onödan** – alla registrerade enheter blir tysta tills de tryckt 🔔 igen.
+  Enheter registreras via ett förifyllt issue ("push: …") som `push_subscribe.yml` lägger i
+  `state/push_subs.json` – samma nyckellösa mönster som analyskön; alternativet är hemligheten
+  `PUSH_SUBSCRIPTIONS`, och avsändaren läser båda. Latensen är monitorns egen (≤ 1 h under
+  börstid): en egen workflow som lyssnar på push mot main hade ALDRIG gått igång, eftersom GitHub
+  inte startar workflows för commits gjorda med `GITHUB_TOKEN` – och det är så både `alerts.json`
+  och rapporterna når main.
+- Actions `monitor`/`news`/`movers`/`analys_queue`/`push_subscribe` är nyckellösa och LLM-fria –
+  de kostar noll tokens.
 - **`auto_merge.yml` KÖR CI SJÄLV (sedan 2026-08-03) – rör inte den grinden.** GitHub startar
   medvetet inga workflows för pushar gjorda med den inbyggda `GITHUB_TOKEN` (skydd mot rekursiva
   körningar), och både `test.yml` och `dashboard.yml` lyssnar på `push` mot main. Följden var att
@@ -351,7 +380,17 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   mappnamnet på disk). Node v24 på plats. Auto-push-tasken är registrerad men AVSTÄNGD sedan
   2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
-- **KVAR (uppdaterad 2026-08-03 17:50) – i prioritetsordning:**
+- **KVAR (uppdaterad 2026-08-03 19:20) – i prioritetsordning:**
+  0. **PUSH-NOTISER ÄR BYGGDA MEN INTE AKTIVERADE – kräver tre steg av Dren.** Koden, testerna
+     och workflowen ligger på plats; det som saknas är nycklar och en registrerad telefon.
+     (a) ✅ KLART – nyckelparet är genererat: publik nyckel i `config/push.json`, privat i `.env`
+     (gitignorerad, skrivs medvetet aldrig ut). (b) Kopiera värdet efter `VAPID_PRIVATE_KEY=` i
+     `.env` till hemligheten `VAPID_PRIVATE_KEY` (Settings → Secrets and variables → Actions).
+     **Kör aldrig om (a)** – ett nytt par gör alla registrerade enheter tysta. (c) `push.bat`, sedan på
+     telefonen: 🔔 → godkänn → skicka in det förifyllda ärendet "push: …". Verifiera med
+     Actions → "Intradag-monitor" → Run workflow → `testnotis`. Steg för steg i `MANUAL.md` §4.
+     **Tills (a)+(b) är gjorda loggar monitorn "VAPID-nycklar saknas … hoppar över push" – det är
+     inte ett fel, men det betyder att inga notiser går ut.**
   1. **Kör `movers.yml` manuellt en gång** (Actions → "Veckans rörelser" → Run workflow).
      `state/movers.json` har fortfarande `asOf: 2026-07-30`, alltså en session efter – lördagens
      körning läser torsdagsstängningar i stället för fredagens (veckorapport-260803 punkt 6), och
