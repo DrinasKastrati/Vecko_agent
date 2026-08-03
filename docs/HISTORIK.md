@@ -36,6 +36,22 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
   förlorar i den starka (−5,5 % mot +38,2 %) – alltså en försäkring med en premie, inte en
   vinstmaskin. Om premien är värd att betala är ett preferensval åt Dren, inte något motorn kan
   avgöra, och lämnades därför öppet.
+  **Beslutet, samma dag.** Dren delegerade valet ("ta det beslut du tror genererar mest vinst").
+  Regimfiltret slogs PÅ, som HÅRD spärr, med MA200 i BÅDA böckerna. Motiveringen är att rätt
+  jämförelse inte är mot benchmark utan mot DAGENS uppsättning: "bara regim MA200" slår basfallet i
+  fyra av fyra halvor/marknader (nordiskt +4,4 % mot −27,2 % och −5,5 % mot −7,4 %; US +18,2 % mot
+  +7,5 % och +34,6 % mot +21,0 %) OCH sänker max drawdown i båda. Inget annat i materialet
+  replikerar över båda marknaderna och båda halvorna.
+  Två skärpningar mot den tidigare texten i prompterna: (1) regeln var formulerad som "höj ribban
+  ett steg, kräv ≥ 2 poäng mer" – en uppmjukning av det som faktiskt mättes. Backtestet modellerar
+  en HÅRD spärr, och den mjuka varianten har aldrig mätts; nu gäller spärren. (2) Nordiska boken
+  gick MA100 → MA200 trots att MA100 ger 5 pp mer nordiskt (+26,9 % mot +21,7 %), eftersom MA200
+  vinner med 24 pp i US-boken (+70,2 % mot +46,0 %) och har lägre drawdown i BÅDA. Att välja
+  fönster per marknad är precis den trimning som out-of-sample-avsnittet visat är brus (nivåbandet
+  skilde sig mellan halvorna i 7 av 8 fall). Ett fönster, båda böckerna, färre rattar att
+  överanpassa. Saknas 200 punkter behandlas regimen som AV.
+  **Vad beslutet inte gör:** det får inte skelettet att slå index. Nordiskt +21,7 % mot ^OMX
+  +37,3 %, US +70,2 % mot ^GSPC +70,7 %. Det gör skelettet mindre dåligt och halverar nedgångarna.
 
 - ✅ 2026-08-03 (Universumbredden mätt: 30 vs 110 vs 153 namn – bredd förstör skelettet):
   **Frågan.** Dren noterade att rotationen bara ser ~110 bolag och att småbolag som OssDsign

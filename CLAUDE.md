@@ -374,8 +374,20 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      avkastningsmönster: regimfiltret halverar ungefär max drawdown (nordiskt −41,4 % → −21,6 %,
      US −29,3 % → −23,6 %) och sänker exponeringen till ~58–65 %. Det uppför sig som en försäkring
      – nordiska MA200-varianten slår benchmark i den svaga halvan (+4,4 % mot −0,4 %) och förlorar
-     i den starka (−5,5 % mot +38,2 %). Att teckna den försäkringen är ett PREFERENSVAL åt Dren,
-     inte något backtestet kan avgöra. Fråga – anta aldrig.
+     i den starka (−5,5 % mot +38,2 %).
+     **BESLUTET ÄR TAGET (2026-08-03, delegerat av Dren): regimfiltret är PÅ, HÅRT, MA200 i BÅDA
+     böckerna.** Grunden är inte jämförelsen mot benchmark utan mot DAGENS uppsättning: "bara regim
+     MA200" slår basfallet i FYRA AV FYRA halvor/marknader (nordiskt +4,4 % mot −27,2 % och −5,5 %
+     mot −7,4 %; US +18,2 % mot +7,5 % och +34,6 % mot +21,0 %) och sänker max drawdown i båda
+     (−41,4 → −27,0 % resp. −29,3 → −23,6 %). Inget annat i materialet replikerar så.
+     Två skärpningar mot tidigare formulering: (1) regeln är en **spärr** – inga nya positioner när
+     regimen är av – inte "höj ribban 2 poäng", eftersom det MÄTTA är en hård spärr och den mjuka
+     varianten aldrig mätts; (2) nordiska boken gick MA100 → **MA200** trots att MA100 ger 5 pp mer
+     nordiskt, därför att MA200 vinner med 24 pp i US-boken och olika fönster per marknad är precis
+     den trimning som out-of-sample-avsnittet visat är brus. Saknas 200 punkter i serien behandlas
+     regimen som AV (strängare riktning vid osäkerhet). **Regeln gör INTE att skelettet slår index**
+     – den gör det mindre dåligt med halverad drawdown. Ändra inte tillbaka utan att köra om
+     avsnitt 4 och 6 i backtestet.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.

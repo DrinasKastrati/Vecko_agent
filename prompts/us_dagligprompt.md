@@ -100,14 +100,24 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    ~0,75 % rundtur enligt `config/kostnader.json`, tre gånger den nordiska bokens. Ett case får
    bara väljas om avståndet entry → mål är **minst 8 %**, dvs. ≥ 10× rundturskostnaden.
    Skriv ut avståndet i handelsplanen.
-2b. **MARKNADSREGIMEN ÄR DET STARKASTE ENSKILDA FILTRET (nytt 2026-08-02).** Att bara öppna NYA
+2b. **MARKNADSREGIMEN ÄR HÅRD SPÄRR, INTE EN HÖJD RIBBA (skärpt 2026-08-03).** Att bara öppna NYA
    positioner när ^GSPC ligger över sitt 200-dagars glidande medel lyfter skelettet från +42,1 %
-   till **+70,2 %** (PF 1,17) och drar ned max drawdown från −29,3 % till **−23,6 %**. MA100 ger
-   +46,0 %. MA200 är alltså det som gäller i US-boken – motsatt nordiska boken, där MA100 är bäst.
-   **Regel:** kontrollera i LÄGE A om S&P 500 handlas över sitt 200-dagars glidande medel. Gör den
-   inte det: höj ribban för NYA positioner ett steg (kräv ≥ 2 poäng mer än vanligt) och låt hellre
-   platsen stå i SPY-sleeven. Gäller ENBART nyöppning – befintliga innehav sköts av sina stop/mål,
-   och regeln får ALDRIG användas som skäl att strunta i ett stop.
+   till **+70,2 %** (PF 1,17) och drar ned max drawdown från −29,3 % till **−23,6 %**. Mätt halva
+   för halva slår MA200 dagens uppsättning i BÅDA halvorna (+18,2 % mot +7,5 %, och +34,6 % mot
+   +21,0 %), och samma sak gäller nordiska boken – fyra av fyra. MA100 ger bara +46,0 %.
+   **Regel:** kontrollera i LÄGE A om S&P 500 ligger över sitt **200-dagars** glidande medel, räknat
+   ur `state/price_history.json` (serien bär 250 punkter sedan backfillen 2026-08-03).
+   * Regim **PÅ** (kurs > MA200): normalt urval.
+   * Regim **AV** (kurs ≤ MA200): **öppna INGA nya positioner.** Tomma platser ligger i
+     SPY-sleeven. Detta är en spärr, inte en poängjustering – den tidigare formuleringen
+     ("höj ribban ett steg") var en uppmjukning av det som faktiskt mättes.
+   * Går MA200 inte att beräkna: behandla regimen som **AV**. Strängare riktning vid osäkerhet.
+   **Samma fönster i båda böckerna sedan 2026-08-03** (nordiska boken gick från MA100 till MA200) –
+   olika fönster per marknad är den per-marknads-trimning som out-of-sample-avsnittet visat är brus.
+   Gäller ENBART nyöppning – befintliga innehav sköts av sina stop/mål, och regeln får ALDRIG
+   användas som skäl att strunta i ett stop.
+   **Vad regeln INTE gör:** den får inte skelettet att slå index (^GSPC +70,7 % köp-och-behåll över
+   samma period). Den gör det mindre dåligt och sänker nedgångarna.
 3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN:** med växlingspåslaget inräknat blir samma
    backtest kraftigt negativt (−44 % i bästa veckovis-cellen, 4 positioner) enbart av
    omsättningstakten – ~200 affärer per år × 0,75 % rundtur är ~150 % i ren kostnad.

@@ -89,14 +89,29 @@ nedan kommer ur den ombyggda motorn – tidigare formuleringar i den här filen 
    (nordisk bok ~0,25 % per affär). Ett case får bara väljas om avståndet entry → mål är
    **minst 6 %**, dvs. ≥ 20× rundturskostnaden. Ett case med 3 % uppsida är efter courtage och
    spread inte värt en position, hur fin katalysatorn än är. Skriv ut avståndet i handelsplanen.
-2b. **MARKNADSREGIMEN ÄR DEN STARKASTE ENSKILDA FILTRERINGEN (nytt 2026-08-02).** Att bara öppna
-   NYA positioner när ^OMX ligger över sitt glidande medelvärde lyfter skelettet från −18,9 % till
-   **+28,9 % (MA100)** respektive **+23,6 % (MA200)**, och drar ned max drawdown från −41,4 % till
-   −27 à −29 %. Kapitalet står då i sleeven i stället.
-   **Regel:** kontrollera i LÄGE A om OMXS30 handlas över sitt 100-dagars glidande medel. Gör den
-   inte det: höj ribban för NYA positioner ett steg (kräv ≥ 2 poäng mer än vanligt) och låt hellre
-   platsen stå i indexsleeven. Regeln gäller ENBART nyöppning – befintliga innehav sköts av sina
-   stop/mål som vanligt, och den får ALDRIG användas som skäl att strunta i ett stop.
+2b. **MARKNADSREGIMEN ÄR HÅRD SPÄRR, INTE EN HÖJD RIBBA (skärpt 2026-08-03).** Att bara öppna NYA
+   positioner när ^OMX ligger över sitt glidande medel lyfter skelettet från **−20,2 % till
+   +21,7 % (MA200)** och drar ned max drawdown från **−41,4 % till −27,0 %**. Mätt halva för halva
+   slår MA200 dagens uppsättning i BÅDA halvorna (+4,4 % mot −27,2 %, och −5,5 % mot −7,4 %), och
+   samma sak gäller US-boken – fyra av fyra. Det är den starkaste replikationen i hela
+   backtestmaterialet. Kapitalet står i sleeven i stället, alltså kvar i marknaden.
+   **Regel:** kontrollera i LÄGE A om OMXS30 ligger över sitt **200-dagars** glidande medel, räknat
+   ur `state/price_history.json` (serien bär 250 punkter sedan backfillen 2026-08-03).
+   * Regim **PÅ** (kurs > MA200): normalt urval enligt punkt 1–2.
+   * Regim **AV** (kurs ≤ MA200): **öppna INGA nya positioner.** Tomma platser ligger i
+     indexsleeven. Detta är en spärr, inte en poängjustering – den tidigare formuleringen
+     ("höj ribban ett steg, kräv ≥ 2 poäng mer") var en uppmjukning av det som faktiskt mättes,
+     och den mildare varianten har aldrig mätts.
+   * Går MA200 inte att beräkna (färre än 200 punkter i serien): behandla regimen som **AV**.
+     Strängare riktning vid osäkerhet, aldrig svagare.
+   **MA200 gäller BÅDA böckerna.** Nordiskt är MA100 marginellt bättre på avkastning (+26,9 % mot
+   +21,7 %) men sämre på drawdown, medan MA200 vinner med 24 procentenheter i US-boken. Att välja
+   olika fönster per marknad är precis den per-marknads-trimning som out-of-sample-avsnittet visat
+   är brus (nivåbandet skilde sig mellan halvorna i 7 av 8 fall). Ett fönster, båda böckerna.
+   Regeln gäller ENBART nyöppning – befintliga innehav sköts av sina stop/mål som vanligt, och den
+   får ALDRIG användas som skäl att strunta i ett stop.
+   **Vad regeln INTE gör:** den får inte skelettet att slå index. Den gör det mindre dåligt och
+   halverar nedgångarna. Ändra den inte tillbaka utan att köra om avsnitt 4 och 6 i backtestet.
 3. **OMSÄTTNING ÄR DEN STÖRSTA ENSKILDA KOSTNADEN – NU MÄTT.** Veckorotation av 4 positioner ger
    ~205 affärer/år. Med hållregeln (punkt 0b) faller det till 66–117, och utfallet
    förbättras i samtliga tolv celler. Kostnadsdraget är alltså inte en bieffekt att leva med utan
