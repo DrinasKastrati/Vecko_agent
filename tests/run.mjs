@@ -1052,6 +1052,81 @@ ok("backtestUniverse tål tomt/för kort underlag", (() => {
          BT.backtestUniverse({ X: synthUp.slice(0, 3) }, { lookback: 20 }) === null;
 })());
 
+/* ---- backtest: kostnad per symbol (2026-08-03) ----------------------------
+   Universumet breddades med småbolag. En FAST kostnad på 0,25 % beskriver en
+   likvid large cap; på ett bolag med 0,5 MSEK/dag är den fel med en faktor 4–6,
+   och felet gör backtestet FÖR BRA – alltså exakt det underlag som skulle få oss
+   att bredda universumet på fel grunder. Testerna låser att kostnaden härleds ur
+   uppmätt omsättning och att den faktiskt slår igenom i både affärsnetto och
+   equity.                                                                     */
+ok("parseCandles bär volym, null när den saknas", (() => {
+  const j = v => ({ chart: { result: [{ timestamp: [1753912800], indicators: { quote: [{ open: [10], high: [12], low: [9], close: [11], volume: v }] } }] } });
+  return BT.parseCandles(j([5000]))[0].v === 5000 && BT.parseCandles(j([null]))[0].v === null &&
+         BT.parseCandles(j(undefined))[0].v === null;
+})());
+ok("medianTurnover är median, inte medel", (() => {
+  // 24 dagar à 1000 i omsättning + en enda rapportdag på 1 000 000.
+  // Medel skulle bli ~41 000, medianen ska stanna på 1000.
+  const c = [];
+  for (let i = 0; i < 24; i++) c.push({ d: "2026-01-" + String(i + 1).padStart(2, "0"), c: 10, v: 100 });
+  c.push({ d: "2026-02-01", c: 10, v: 100000 });
+  return BT.medianTurnover(c) === 1000;
+})());
+ok("medianTurnover null vid för tunt eller volymlöst underlag", (() => {
+  const utanVolym = Array.from({ length: 30 }, (_, i) => ({ d: "d" + i, c: 10, v: null }));
+  const fatal = Array.from({ length: 5 }, (_, i) => ({ d: "d" + i, c: 10, v: 100 }));
+  return BT.medianTurnover(utanVolym) === null && BT.medianTurnover(fatal) === null &&
+         BT.medianTurnover([]) === null && BT.medianTurnover(null) === null;
+})());
+ok("toSEK skalar per börssuffix", (() => {
+  return BT.toSEK(100, "VOLV-B.ST") === 100 &&
+         Math.abs(BT.toSEK(100, "NOKIA.HE") - 100 * BT.FX_TO_SEK[".HE"]) < 1e-9 &&
+         Math.abs(BT.toSEK(100, "NOVO-B.CO") - 100 * BT.FX_TO_SEK[".CO"]) < 1e-9 &&
+         BT.toSEK(null, "X.ST") === null;
+})());
+const TIERS = [
+  { minTurnoverSEK: 20000000, roundTripPct: 0.25 },
+  { minTurnoverSEK: 3000000, roundTripPct: 0.75 },
+  { minTurnoverSEK: 0, roundTripPct: 1.5 }
+];
+ok("costForTurnover väljer rätt nivå vid gränserna", (() => {
+  return BT.costForTurnover(50e6, TIERS) === 0.25 && BT.costForTurnover(20e6, TIERS) === 0.25 &&
+         BT.costForTurnover(19.9e6, TIERS) === 0.75 && BT.costForTurnover(3e6, TIERS) === 0.75 &&
+         BT.costForTurnover(0.5e6, TIERS) === 1.5;
+})());
+ok("costForTurnover: okänd omsättning ⇒ DYRASTE nivån", (() => {
+  // Att gissa billigt på det vi inte kan mäta är felet modellen finns för att undvika.
+  return BT.costForTurnover(null, TIERS) === 1.5 && BT.costForTurnover(undefined, TIERS) === 1.5 &&
+         BT.costForTurnover(1e9, []) === 0;
+})());
+ok("buildCostTable ger nivå per symbol", (() => {
+  const likvid = Array.from({ length: 30 }, (_, i) => ({ d: "d" + i, c: 100, v: 500000 }));   // 50 MSEK/dag
+  const illikvid = Array.from({ length: 30 }, (_, i) => ({ d: "d" + i, c: 4, v: 100000 }));   // 0,4 MSEK/dag
+  const t = BT.buildCostTable({ "STOR.ST": likvid, "LITEN.ST": illikvid }, TIERS);
+  return t.bySym["STOR.ST"] === 0.25 && t.bySym["LITEN.ST"] === 1.5 &&
+         t.turnover["STOR.ST"] === 50e6 && t.turnover["LITEN.ST"] === 4e5;
+})());
+ok("backtestUniverse tar costPct som FUNKTION per symbol", (() => {
+  /* Två identiska serier, olika kostnad. Den dyra symbolen måste ge lägre netto,
+     och avgCostPct ska landa mellan de två nivåerna – annars appliceras en enda
+     kostnad på båda och hela småbolagsjämförelsen mäter fel. */
+  const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold",
+              topN: 2, weight: 0.5, benchCandles: synthBenchUp, sleeve: true };
+  const kandidater = { BILLIG: synthUp, DYR: synthUp.map(c => Object.assign({}, c)) };
+  const fast = BT.backtestUniverse(kandidater, Object.assign({}, p, { costPct: 0 }));
+  const funk = BT.backtestUniverse(kandidater, Object.assign({}, p, { costPct: s => s === "DYR" ? 2 : 0 }));
+  return funk.equityPct < fast.equityPct && funk.avgCostPct > 0 && funk.avgCostPct <= 2 &&
+         fast.avgCostPct === 0;
+})());
+ok("costPct som funktion drar rätt belopp per affär", (() => {
+  // En enda symbol, vikt 1: nettot ska vara exakt brutto minus den symbolens nivå.
+  const p = { lookback: 5, stopPct: 0.99, targetPct: 0.99, maxHoldDays: 3, mode: "hold",
+              topN: 1, weight: 1, costPct: () => 1.25 };
+  const bt = BT.backtestUniverse({ X: synthUp }, p);
+  return bt.avgCostPct === 1.25 &&
+         Math.abs(bt.costDragPctPerYear - bt.tradesPerYear * 1.25) < 1e-9;
+})());
+
 // ---- rapportens högerspalt: innehållsförteckning + sammanfattning ----
 // Fältraden följer daglig_mall.md – parseDaily läser "Läge" som **fält**,
 // inte som rubrik, så en syntetisk rapport måste ha samma form som mallen.

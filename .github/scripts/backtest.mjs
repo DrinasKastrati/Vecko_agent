@@ -51,7 +51,11 @@ export function parseCandles(json){
   for (let i = 0; i < r.timestamp.length; i++){
     const o = q.open && q.open[i], h = q.high && q.high[i], l = q.low && q.low[i], c = q.close && q.close[i];
     if ([o, h, l, c].some(v => v == null || isNaN(v))) continue;
-    out.push({ d: new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10), o, h, l, c });
+    // v = volym. Får saknas (index har ingen) – då blir omsättningsmåttet null och
+    // symbolen hamnar i den dyraste kostnadsnivån, vilket är rätt håll att fela åt.
+    const v = q.volume && q.volume[i];
+    out.push({ d: new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10), o, h, l, c,
+               v: (v == null || isNaN(v)) ? null : v });
   }
   return out;
 }
@@ -67,6 +71,64 @@ export function momentumAt(candles, i, lookback, skip = 0){
   const base = candles[j].c, now = candles[end].c;
   if (!base || !now) return null;
   return now / base - 1;
+}
+
+/* ---- LIKVIDITET OCH KOSTNAD PER SYMBOL (tillagt 2026-08-03) ---------------
+   Motorn drog tidigare EN kostnad (0,25 %) på alla affärer. Det talet är hämtat
+   ur `config/kostnader.json` och beskriver en likvid large cap: courtage plus en
+   spread som i praktiken är noll. Applicerat på ett småbolag är det fel med en
+   faktor 4–6, och felet går ÅT FEL HÅLL – ett universum med småbolag ser då
+   bättre ut i backtestet än det kan bli live. Kostnaden härleds därför nu ur
+   symbolens EGEN omsättning, mätt på samma candles som allt annat. */
+
+/* Median daglig omsättning (kurs × volym) över de sista `days` handelsdagarna,
+   uttryckt i symbolens EGEN valuta. Median, inte medel: en enda rapportdag med
+   tio gånger normalvolymen ska inte göra ett illikvitt bolag likvidt på papper.
+   Returnerar null när volym saknas (index) eller underlaget är för tunt. */
+export function medianTurnover(candles, days = 250){
+  if (!Array.isArray(candles) || !candles.length) return null;
+  const slice = candles.slice(-days).filter(c => c && c.v != null && c.v > 0 && c.c > 0);
+  if (slice.length < 20) return null;
+  const vals = slice.map(c => c.c * c.v).sort((a, b) => a - b);
+  const m = vals.length >> 1;
+  return vals.length % 2 ? vals[m] : (vals[m - 1] + vals[m]) / 2;
+}
+
+/* Grov normalisering till SEK så att ett finskt och ett svenskt bolag hamnar i
+   samma nivå. Fasta faktorer, inte hämtade kurser: nivågränserna ligger så
+   glest (3 / 20 MSEK) att ett par procents valutafel aldrig flyttar en symbol
+   mellan två nivåer, och en nätberoende växelkurs i en ren funktion vore värre. */
+export const FX_TO_SEK = { ".ST": 1, ".OL": 1.0, ".CO": 1.5, ".HE": 11.0, "": 10.5 };
+export function toSEK(amount, sym){
+  if (amount == null) return null;
+  const suffix = /\.(ST|OL|CO|HE)$/.test(sym || "") ? (sym.match(/\.(ST|OL|CO|HE)$/)[0]) : "";
+  return amount * (FX_TO_SEK[suffix] != null ? FX_TO_SEK[suffix] : 1);
+}
+
+/* Rundturskostnad i procent för en given daglig omsättning (SEK).
+   `tiers` = [{ minTurnoverSEK, roundTripPct }, …] sorterade fallande på gräns.
+   Saknas omsättning helt (null) används den DYRASTE nivån – att gissa billigt
+   på ett bolag vi inte kan mäta är exakt det fel modellen finns för att undvika. */
+export function costForTurnover(turnoverSEK, tiers){
+  if (!Array.isArray(tiers) || !tiers.length) return 0;
+  const sorted = tiers.slice().sort((a, b) => (b.minTurnoverSEK || 0) - (a.minTurnoverSEK || 0));
+  if (turnoverSEK == null) return Number(sorted[sorted.length - 1].roundTripPct) || 0;
+  for (const t of sorted) if (turnoverSEK >= (Number(t.minTurnoverSEK) || 0)) return Number(t.roundTripPct) || 0;
+  return Number(sorted[sorted.length - 1].roundTripPct) || 0;
+}
+
+/* Bygger { sym: kostnad% } för hela universumet + en sammanfattning per nivå.
+   Exporteras separat från backtestUniverse så att rapporten kan visa VILKA
+   symboler som hamnade var – en kostnadsmodell man inte kan granska är en
+   kostnadsmodell man inte ska lita på. */
+export function buildCostTable(candlesBySym, tiers, days = 250){
+  const bySym = {}, turnover = {};
+  for (const sym of Object.keys(candlesBySym)){
+    const t = toSEK(medianTurnover(candlesBySym[sym], days), sym);
+    turnover[sym] = t;
+    bySym[sym] = costForTurnover(t, tiers);
+  }
+  return { bySym, turnover };
 }
 
 // Är candles[i] första handelsdagen i en ny vecka? (måndags-proxy)
@@ -176,9 +238,15 @@ export function backtestUniverse(candlesBySym, params){
   // costPct = rundturskostnad (courtage + spread) i PROCENT per affär, dras från
   // varje affärs utfall så att redovisat resultat är netto – annars ser en strategi
   // med 50 affärer/år mycket bättre ut än den är.
+  // Får vara ETT TAL (samma kostnad för alla) ELLER en FUNKTION `(sym) => procent`.
+  // Funktionsformen är hela poängen med småbolagsjämförelsen: ett universum där
+  // halva listan har 1,5 % spread får inte mätas med large cap-nivån 0,25 %.
   const P = Object.assign({ lookback: 20, skip: 0, stopPct: 0.05, targetPct: 0.10, holdDays: 5,
     maxHoldDays: 30, topN: 2, weight: 0.5, costPct: 0, mode: "weekly",
     benchCandles: null, sleeve: false, regimeMa: 0 }, params);
+  const costOf = typeof P.costPct === "function"
+    ? (sym => Number(P.costPct(sym)) || 0)
+    : (() => Number(P.costPct) || 0);
   const syms = Object.keys(candlesBySym).filter(s => (candlesBySym[s] || []).length > P.lookback + P.skip + 10);
   if (!syms.length) return null;
   // gemensam datumaxel = symbolen med flest candles
@@ -231,7 +299,8 @@ export function backtestUniverse(candlesBySym, params){
     const tr = simulateTrade(candlesBySym[p.s], p.si, P.stopPct, P.targetPct, holdCap);
     if (!tr) return null;
     tr.grossPct = tr.retPct;
-    tr.retPct = tr.retPct - P.costPct;               // netto efter courtage/spread
+    tr.costPct = costOf(p.s);
+    tr.retPct = tr.retPct - tr.costPct;              // netto efter courtage/spread
     tr.exitDate = candlesBySym[p.s][tr.exitIdx].d;
     tr.entryDate = candlesBySym[p.s][tr.entryIdx].d;
     return Object.assign({ sym: p.s, date }, tr);
@@ -292,7 +361,7 @@ export function backtestUniverse(candlesBySym, params){
     }
     // kostnaden tas på exitdagen så equity och affärsnetto säger samma sak
     const ke = axisPos.get(t.exitDate);
-    if (ke != null) stockRet[ke] -= P.weight * P.costPct / 100;
+    if (ke != null) stockRet[ke] -= P.weight * (t.costPct != null ? t.costPct : costOf(t.sym)) / 100;
     // upptagen plats gäller HELA innehavsperioden, även dagar då just den
     // börsen var stängd – annars skulle sleeven felaktigt få de dagarna
     const a = axisPos.get(t.entryDate), b = axisPos.get(t.exitDate);
@@ -353,7 +422,11 @@ export function backtestUniverse(candlesBySym, params){
     // i stället för att låta läsaren räkna ut den ur affärsantalet.
     tradesPerYear: years > 0 ? trades.length / years : null,
     avgHoldDays: trades.length ? sum(trades.map(t => t.days)) / trades.length : null,
-    costDragPctPerYear: years > 0 ? (trades.length / years) * P.costPct * P.weight : null,
+    // Med kostnad per symbol finns inget enda "P.costPct" att multiplicera med –
+    // dra i stället den faktiskt betalda kostnaden ur affärerna.
+    avgCostPct: trades.length ? sum(trades.map(t => t.costPct || 0)) / trades.length : null,
+    costDragPctPerYear: years > 0 && trades.length
+      ? (sum(trades.map(t => t.costPct || 0)) / years) * P.weight : null,
     exposurePct: axis.length ? (occSum / (axis.length * P.topN)) * 100 : null,
     winRate: trades.length ? wins.length / trades.length : null,
     avgWin: wins.length ? sum(wins) / wins.length : null,
@@ -426,8 +499,19 @@ async function main(){
   // kostnadsdraget per affär blir jämförbara med hur boken faktiskt handlas.
   const topN = Math.max(1, Number(process.argv[4]) || 4);
   const weight = 1 / topN;
-  const uniFile = market === "us" ? "config/backtest_universe_us.txt" : "config/backtest_universe_nordic.txt";
-  const benchSym = market === "us" ? "^GSPC" : "^OMX";
+  /* Universumvarianter (tillagt 2026-08-03). Frågan "ska vi ta in mindre bolag?"
+     kan inte besvaras med argument, bara genom att köra samma skelett över tre
+     olika breddar och jämföra mot SAMMA benchmark. `nordic` är oförändrad så att
+     äldre rapporter går att jämföra med. */
+  const UNI = {
+    "nordic":       "config/backtest_universe_nordic.txt",
+    "nordic-mid":   "config/backtest_universe_nordic_mid.txt",
+    "nordic-broad": "config/backtest_universe_nordic_broad.txt",
+    "us":           "config/backtest_universe_us.txt"
+  };
+  const uniFile = UNI[market] || UNI.nordic;
+  const isUS = market === "us";
+  const benchSym = isUS ? "^GSPC" : "^OMX";
   if (!existsSync(uniFile)){ console.error("Saknar " + uniFile); process.exit(1); }
   const syms = readFileSync(uniFile, "utf8").split("\n").map(l => l.trim()).filter(l => l && !l.startsWith("#"));
 
@@ -441,13 +525,46 @@ async function main(){
   const benchCandles = await fetchCandles(benchSym, range);
   if (!benchCandles.length) console.log("VARNING: benchmark " + benchSym + " kunde inte hämtas – sleeve och regimfilter blir verkningslösa.");
 
-  // Transaktionskostnad ur config/kostnader.json (rundtur i procent per affär).
-  let costPct = 0;
+  /* Transaktionskostnad ur config/kostnader.json.
+     Finns `liquidityTiers` för marknaden används KOSTNAD PER SYMBOL, härledd ur
+     symbolens egen medianomsättning. Det är nödvändigt så snart universumet
+     innehåller annat än large cap: en fast large cap-kostnad på ett småbolag gör
+     backtestet systematiskt för optimistiskt, alltså exakt det fel som skulle få
+     oss att bredda universumet på felaktiga grunder. Saknas nivåerna faller
+     motorn tillbaka på det gamla enda talet. */
+  let costPct = 0, costTable = null, tiers = null;
   try {
     const c = JSON.parse(readFileSync("config/kostnader.json", "utf8"));
-    const b = market === "us" ? c.us : c.nordic;
+    const b = isUS ? c.us : c.nordic;
     costPct = (Number(b.roundTripPct) || 0) + (Number(b.fxSpreadPct) || 0);
+    const fx = isUS ? (Number(b.fxSpreadPct) || 0) : 0;
+    /* VECKO_FLAT_COST=1 stänger av nivåerna och kör den gamla fasta kostnaden.
+       Finns BARA för att kunna dela upp ett sämre resultat i "kostnad" och
+       "urval": kör samma universum med och utan nivåer, så är skillnaden exakt
+       kostnadens andel. Använd aldrig flat kostnad som beslutsunderlag för ett
+       universum med småbolag – då är talen för bra. */
+    if (process.env.VECKO_FLAT_COST === "1"){
+      console.log("VECKO_FLAT_COST=1 – kör FAST kostnad " + costPct.toFixed(2) + " % (endast för dekomponering).");
+    } else if (Array.isArray(b.liquidityTiers) && b.liquidityTiers.length){
+      tiers = b.liquidityTiers;
+      const built = buildCostTable(candlesBySym, tiers);
+      // Växlingspåslaget är valutarelaterat, inte likviditetsrelaterat – det läggs
+      // på ovanpå nivån i stället för att bakas in i tabellen.
+      costTable = { bySym: {}, turnover: built.turnover };
+      for (const s of Object.keys(built.bySym)) costTable.bySym[s] = built.bySym[s] + fx;
+    }
   } catch { console.log("Ingen config/kostnader.json – räknar brutto."); }
+  // Detta värde går in i COMMON nedan: funktion om nivåer finns, annars ett tal.
+  const costParam = costTable ? (sym => costTable.bySym[sym] != null ? costTable.bySym[sym] : costPct) : costPct;
+  if (costTable){
+    const grupper = {};
+    for (const s of Object.keys(costTable.bySym)){
+      const k = costTable.bySym[s].toFixed(2);
+      (grupper[k] = grupper[k] || []).push(s);
+    }
+    console.log("Kostnadsnivåer (rundtur % → antal symboler): " +
+      Object.keys(grupper).sort().map(k => k + " % → " + grupper[k].length).join(" · "));
+  }
 
   /* Basfall = så böckerna FAKTISKT handlas efter omkalibreringen 2026-08-02:
      hållregeln, 30 handelsdagars horisont, sleeven på, inget regimfilter.
@@ -456,7 +573,7 @@ async function main(){
      att en "bästa cell" plockas ur ett stort kors (se punkt 3 i filhuvudet). */
   const LEVELS = [[0.03, 0.06], [0.04, 0.08], [0.05, 0.10]];
   const baseLevel = market === "us" ? [0.05, 0.10] : [0.04, 0.08];
-  const COMMON = { topN, weight, costPct, benchCandles, sleeve: true, maxHoldDays: 30, regimeMa: 0 };
+  const COMMON = { topN, weight, costPct: costParam, benchCandles, sleeve: true, maxHoldDays: 30, regimeMa: 0 };
   const BASE = Object.assign({}, COMMON, { mode: "hold", lookback: 20, skip: 0,
     stopPct: baseLevel[0], targetPct: baseLevel[1] });
 
@@ -522,7 +639,10 @@ async function main(){
   const todayISO = `${yyyy}-${mm}-${dd}`;
   const lines = [];
   lines.push(`# Backtest av mekaniska skelettet – ${market} (${range})`);
-  lines.push(`**Datum:** ${todayISO} | **Universum:** ${syms.length} symboler | **Positioner:** ${topN} à ${(weight * 100).toFixed(0)} % | **Benchmark (${benchSym}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${costPct.toFixed(2)} % per affär (netto)`);
+  const kostText = costTable
+    ? `nivåstyrd per symbol (${tiers.map(t => t.roundTripPct + " %").join(" / ")}), se avsnitt 6`
+    : `${costPct.toFixed(2)} % per affär (netto)`;
+  lines.push(`**Datum:** ${todayISO} | **Marknad/universum:** \`${market}\` (${uniFile}) | **Universum:** ${syms.length} symboler | **Positioner:** ${topN} à ${(weight * 100).toFixed(0)} % | **Benchmark (${benchSym}) köp-och-behåll:** ${f(bh)} % | **Transaktionskostnad:** ${kostText}`);
   lines.push("");
   lines.push("> Momentum-proxy (positiv lookback-avkastning, topp N) ersätter LLM:ens case-urval.");
   lines.push("> Resultatet validerar RAMVERKET (rotationstakt, stop-/målnivåer, hållregel) – inte strategin som helhet.");
@@ -654,12 +774,45 @@ async function main(){
     : " **Nivåbandet är INTE stabilt.** Vilken stop/mål-nivå som ser bäst ut beror på vilken period som mäts. Behandla banden i prompterna som en riskregel (R/R och kostnadströskel), inte som en optimerad parameter."));
   lines.push("");
 
+  /* ---- 6. Kostnadsmodellen ------------------------------------------------
+     En kostnadsmodell som inte går att granska är en kostnadsmodell man inte ska
+     lita på – särskilt när hela poängen med körningen är att jämföra universum
+     av olika likviditet. Därför redovisas varje symbols uppmätta omsättning och
+     vilken nivå den hamnade i. */
+  if (costTable){
+    lines.push("## 6. Kostnadsmodell – nivå per symbol");
+    lines.push("");
+    lines.push("Rundturskostnaden är **inte** ett enda tal i den här körningen. Den härleds ur varje symbols **medianomsättning per dag** (kurs × volym, median över perioden, normaliserad till SEK med fasta valutafaktorer). Median och inte medel: en enda rapportdag med tiodubbel volym ska inte få ett illikvitt bolag att framstå som likvidt.");
+    lines.push("");
+    lines.push("| Nivå (rundtur) | Gräns (median MSEK/dag) | Antal symboler | Symboler |");
+    lines.push("|---|---|---|---|");
+    const sortedTiers = tiers.slice().sort((a, b) => (b.minTurnoverSEK || 0) - (a.minTurnoverSEK || 0));
+    for (const t of sortedTiers){
+      const inTier = Object.keys(costTable.bySym).filter(s => {
+        const tv = costTable.turnover[s];
+        return costForTurnover(tv, tiers) === t.roundTripPct;
+      }).sort();
+      lines.push(`| ${t.roundTripPct} % | ≥ ${((t.minTurnoverSEK || 0) / 1e6).toFixed(1)} | ${inTier.length} | ${inTier.join(", ") || "–"} |`);
+    }
+    lines.push("");
+    const utan = Object.keys(costTable.turnover).filter(s => costTable.turnover[s] == null);
+    if (utan.length) lines.push(`**${utan.length} symboler saknar volymdata** och har medvetet placerats i den DYRASTE nivån (${utan.join(", ")}) – att gissa billigt på det vi inte kan mäta är precis det fel modellen finns för att undvika.`);
+    lines.push("");
+    lines.push("> ⚠️ **Nivåerna är en schablon, inte uppmätt spread.** De är satta i `config/kostnader.json` efter vad en privat nätmäklarkund typiskt betalar i courtage plus observerad spread i respektive likviditetsklass. Verklig spread i ett illikvitt bolag varierar kraftigt över tid och är värst exakt när man vill ut. Läs därför resultatet för det breda universumet som ett TAK för vad det kan ge, inte som en prognos.");
+    lines.push("");
+  }
+
   lines.push("**Tolkning:** equity % över benchmark med rimlig max DD ⇒ skelettet bär sin egen vikt; under ⇒ LLM-urvalet måste tillföra hela edgen. Jämför cellerna mot varandra snarare än absoluttalen (momentum-proxyn är trubbigare än case-urvalet). **Skiljer sig rangordningen mellan lägena är nivåbanden en artefakt av hållregeln, inte en egenskap hos marknaden.** Väg alltid in survivorship-varningen överst.");
   lines.push("");
   lines.push("*Detta är automatiserat beslutsstöd, inte finansiell rådgivning.*");
 
   mkdirSync("reports/backtest", { recursive: true });
-  const out = `reports/backtest/backtest-${ymd}-${market}-top${topN}.md`;
+  /* Flat-kostnadskörningen MÅSTE få ett eget filnamn. Utan suffixet skriver den
+     över den riktiga rapporten för samma marknad och dag – vilket hände en gång
+     2026-08-03 och innebar att den enda körning som faktiskt dög som
+     beslutsunderlag försvann bakom en diagnostikkörning. */
+  const suffix = process.env.VECKO_FLAT_COST === "1" ? "-flatcost" : "";
+  const out = `reports/backtest/backtest-${ymd}-${market}-top${topN}${suffix}.md`;
   writeFileSync(out, lines.join("\n") + "\n");
   console.log("\nSkrev " + out);
   // Kompakt konsolsammanfattning – hela rapporten finns i filen.

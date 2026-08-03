@@ -7,6 +7,57 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-03 (Universumbredden mätt: 30 vs 110 vs 153 namn – bredd förstör skelettet):
+  **Frågan.** Dren noterade att rotationen bara ser ~110 bolag och att småbolag som OssDsign
+  aldrig kommer med, och drog den rimliga slutsatsen: "kör vi ändå bara 110 stora bolag är det
+  mer värt att köpa index och slippa huvudvärken." Frågan var alltså inte kosmetisk – den
+  ifrågasatte om strategin har någon edge kvar över huvud taget.
+  **Två spärrar hittades först.** (a) `config/universe_nordic_movers.txt` innehåller 110
+  large/mid cap-namn, så movers-kanalen kan strukturellt aldrig visa ett småbolag. (b) Även när
+  ett småbolag kommer in via `news_feed.json` – vilket det gör, MFN täcker hela First North, och
+  v32-listan innehöll Precise Biometrics, Himalaya Shipping och Norse Atlantic – fälls det av
+  likviditetskravet i prompternas punkt 2 (≥ 3 MSEK/dag). OssDsign omsätter ~0,55 MSEK/dag och
+  missar med 5×. Preferensfilen `config/fokus.md` bjuder alltså uttryckligen in First North medan
+  maskineriet stänger ute det.
+  **Mätningen i stället för argumentet.** Tre universumfiler byggdes –
+  `backtest_universe_nordic.txt` (30 large, oförändrad), `_nordic_mid.txt` (110 = movers-listan),
+  `_nordic_broad.txt` (153, + 43 mindre nordiska bolag validerade mot Yahoo; sju kandidater föll
+  bort som ogiltiga symboler). Samma skelett, samma 5-årsperiod, samma benchmark:
+
+  | Universum | Symboler | Bästa cell | OOS vald cell | **OOS median av alla 24 celler** |
+  |---|---|---|---|---|
+  | `nordic` | 30 | +42,30 % | +29,14 % | **−1,44 %** |
+  | `nordic-mid` | 110 | −0,96 % | +3,00 % | **−16,32 %** |
+  | `nordic-broad` | 153 | −41,24 % | −30,98 % | **−50,91 %** |
+
+  (benchmark ^OMX +37,26 % över perioden, +37,84 % out-of-sample)
+
+  **Slutsatsen och varför den håller.** Det är medianen över HELA gridet som kollapsar monotont,
+  inte bara toppcellen – alltså en egenskap hos universumet, inte urvalsbrus. Mekanismen: "topp 4
+  på efterföljande avkastning" blir en sämre regel ju fler namn den får, eftersom toppen av en
+  större fördelning är mer extrem och vänder tillbaka hårdare. Backtestet mäter alltså exakt den
+  regel som prompten redan förbjuder (RSI > 75 avvisas, "rörelsen har redan inträffat – jaga den
+  aldrig"). **Det som testet därför INTE bevisar** är att bredd skadar det katalysatordrivna
+  urvalet; det bevisar att bredd + naiv rangordning är destruktivt, och att bevisbördan ligger hos
+  den som vill bredda.
+  **Kostnad kontra urval, dekomponerat.** Samma breda universum kördes om med fast large
+  cap-kostnad (`VECKO_FLAT_COST=1`): bästa cell −8,56 %, OOS −9,12 %, OOS-median −27,64 %. Tappet
+  från `nordic` till `nordic-broad` out-of-sample (60 pp) delas alltså i **~38 pp urval och ~22 pp
+  kostnad**. Billigare courtage räddar det inte – det är regeln som går sönder, inte spreaden.
+  **Byggt på vägen.** `backtest.mjs` tar nu kostnad PER SYMBOL: `costPct` får vara ett tal eller
+  en funktion `(sym) => procent` (samma mönster som `computeTradeStats`), och nivån härleds ur
+  symbolens uppmätta MEDIANomsättning (kurs × volym, normaliserad till SEK) mot
+  `config/kostnader.json` → `nordic.liquidityTiers`. Median och inte medel: en enda rapportdag med
+  tiodubbel volym ska inte göra ett illikvitt bolag likvidt på papper. Saknas volymdata används
+  DYRASTE nivån – att gissa billigt på det man inte kan mäta är precis det fel modellen finns för
+  att undvika (det gjorde ICA/DOMETIC/BIOT felaktigt dyra, 3 av 153). Rapportens nya avsnitt 6
+  listar varje symbols nivå, eftersom en kostnadsmodell man inte kan granska inte är värd att
+  lita på. Utan detta hade `nordic-broad` mätts med large cap-kostnad och sett 33 pp bättre ut än
+  den är – alltså exakt det underlag som skulle fått oss att bredda på felaktiga grunder.
+  **Fälla som slog till direkt:** dekomponeringskörningen skrev först över den riktiga
+  broad-rapporten (samma filnamn, samma dag). `VECKO_FLAT_COST=1` skriver numera till
+  `…-flatcost.md`. Nio nya tester låser kostnadsmodellen (377 passed).
+
 - ✅ 2026-08-03 (Avkastning visar båda böckerna – US-affärerna syntes inte där):
   **Fyndet.** Dren undrade varför JPMorgan Chase inte fanns i Avkastning-vyn när Alleima gjorde
   det. Inget var trasigt: JPM ligger i `portfolj_us.md` och Alleima i `portfolj.md`, och

@@ -1,0 +1,173 @@
+# Backtest-universum Norden – BREDD 3: large + mid + small cap (Yahoo-format).
+# Används ENDAST av .github/scripts/backtest.mjs:  node .github/scripts/backtest.mjs nordic-broad 5y 4
+#
+# VARFÖR FILEN FINNS (2026-08-03): de 110 namnen i -mid är alla stora nog att
+# vara institutionellt ägda. En privat bok kan handla där fonder inte kan, och
+# det är den enda platsen där en edge mot index rimligen finns kvar. Filen är
+# -mid plus 43 mindre nordiska bolag (validerade mot Yahoo 2026-08-03; sju
+# kandidater föll bort som ogiltiga symboler och är utelämnade).
+#
+# LÄS RESULTATET MED TVÅ VARNINGAR:
+#  1. KOSTNAD. Flera av namnen nedan omsätter under 3 MSEK/dag. backtest.mjs
+#     sätter därför kostnad PER SYMBOL ur uppmätt medianomsättning
+#     (config/kostnader.json -> nordic.liquidityTiers). Utan det blir resultatet
+#     systematiskt för bra.
+#  2. SURVIVORSHIP. Small caps avnoteras, kraschar och köps upp betydligt oftare
+#     än large caps. Listan innehåller per konstruktion bara överlevare, så biasen
+#     är STÖRRE här än i de två smalare filerna – jämför aldrig -broad mot -mid
+#     utan att väga in det.
+VOLV-B.ST
+ERIC-B.ST
+ATCO-A.ST
+ATCO-B.ST
+SAND.ST
+SEB-A.ST
+SWED-A.ST
+SHB-A.ST
+NDA-SE.ST
+HM-B.ST
+INVE-B.ST
+ABB.ST
+AZN.ST
+SAAB-B.ST
+BOL.ST
+SKF-B.ST
+ALFA.ST
+EVO.ST
+ESSITY-B.ST
+ASSA-B.ST
+EPI-A.ST
+EPI-B.ST
+HEXA-B.ST
+NIBE-B.ST
+SINCH.ST
+TEL2-B.ST
+TELIA.ST
+GETI-B.ST
+ELUX-B.ST
+SCA-B.ST
+ALIV-SDB.ST
+KINV-B.ST
+MIPS.ST
+SCST.ST
+VPLAY-B.ST
+EQT.ST
+RATO-B.ST
+STIL.ST
+CTM.ST
+BOOZT.ST
+SF.ST
+HNSA.ST
+LIFCO-B.ST
+INDT.ST
+LATO-B.ST
+BEIJ-B.ST
+TREL-B.ST
+DOM.ST
+FABG.ST
+CAST.ST
+BALD-B.ST
+SBB-B.ST
+SAGA-B.ST
+ARJO-B.ST
+VITR.ST
+BIOT.ST
+SWEC-B.ST
+NCC-B.ST
+SKA-B.ST
+PEAB-B.ST
+JM.ST
+THULE.ST
+DOMETIC.ST
+HUSQ-B.ST
+AAK.ST
+AXFO.ST
+ICA.ST
+NOLA-B.ST
+CLAS-B.ST
+NEWA-B.ST
+VOLCAR-B.ST
+TRUE-B.ST
+EMBRAC-B.ST
+STAR-B.ST
+G5EN.ST
+PDX.ST
+ALLEI.ST
+EQNR.OL
+DNB.OL
+YAR.OL
+AKRBP.OL
+MOWI.OL
+KOG.OL
+NHY.OL
+ORK.OL
+TEL.OL
+SALM.OL
+FRO.OL
+SUBC.OL
+AKSO.OL
+MORLD.OL
+NOVO-B.CO
+MAERSK-B.CO
+DSV.CO
+CARL-B.CO
+VWS.CO
+ORSTED.CO
+GMAB.CO
+COLO-B.CO
+DEMANT.CO
+TRYG.CO
+NOKIA.HE
+KNEBV.HE
+SAMPO.HE
+FORTUM.HE
+NESTE.HE
+UPM.HE
+STERV.HE
+WRT1V.HE
+ORNBV.HE
+
+# --- Tillagda mindre bolag (2026-08-03) ---
+OSSD.ST
+BONEX.ST
+XVIVO.ST
+SEDANA.ST
+ISOFOL.ST
+GARO.ST
+NOTE.ST
+HANZA.ST
+BUFAB.ST
+SYSR.ST
+ADDT-B.ST
+LAGR-B.ST
+INSTAL.ST
+BALCO.ST
+CINT.ST
+TOBII.ST
+IVSO.ST
+MYCR.ST
+HEM.ST
+CRAD-B.ST
+RVRC.ST
+BIOA-B.ST
+KAR.ST
+LIAB.ST
+BEIA-B.ST
+NCAB.ST
+SDIP-B.ST
+VIMIAN.ST
+NIVI-B.ST
+EOLU-B.ST
+NEL.OL
+AKER.OL
+BWLPG.OL
+HAFNI.OL
+ELK.OL
+BAVA.CO
+ZEAL.CO
+NETC.CO
+ROCK-B.CO
+HARVIA.HE
+TOKMAN.HE
+REG1V.HE
+QTCOM.HE

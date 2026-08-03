@@ -1,7 +1,15 @@
 {
   "comment": "Transaktionskostnad per AFFÄR (rundtur: köp + sälj) uttryckt i procent av positionens värde. Används av dashboardens avkastningsberäkning och av backtest.mjs så att redovisade tal är NETTO, inte brutto. Justera mot din faktiska courtageklass hos mäklaren. roundTripPct täcker courtage + typisk spread; fxSpreadPct är växlingspåslaget som tas ut vid handel i utländsk valuta (tillkommer för us-boken, båda vägarna).",
-  "nordic": { "roundTripPct": 0.25 },
+  "nordic": {
+    "roundTripPct": 0.25,
+    "liquidityTiers": [
+      { "minTurnoverSEK": 20000000, "roundTripPct": 0.25 },
+      { "minTurnoverSEK": 3000000, "roundTripPct": 0.75 },
+      { "minTurnoverSEK": 0, "roundTripPct": 1.5 }
+    ]
+  },
   "us": { "roundTripPct": 0.25, "fxSpreadPct": 0.5 },
-  "updatedAt": "2026-07-31",
-  "source": "Schablon för svensk nätmäklare (Avanza/Nordnet mini-klass): ~0,25 % courtage tur och retur på nordiska affärer, samma på USA-affärer plus ~0,25 % växlingspåslag per växling (0,5 % rundtur)."
+  "updatedAt": "2026-08-03",
+  "source": "Schablon för svensk nätmäklare (Avanza/Nordnet mini-klass): ~0,25 % courtage tur och retur på nordiska affärer, samma på USA-affärer plus ~0,25 % växlingspåslag per växling (0,5 % rundtur).",
+  "liquidityTiersComment": "TILLAGT 2026-08-03. roundTripPct ovan beskriver en LIKVID large cap, där spreaden i praktiken är noll och courtaget är hela kostnaden. Applicerad på ett småbolag är siffran fel med en faktor 4–6, och felet går ÅT FEL HÅLL: ett backtest över ett universum med småbolag ser då BÄTTRE ut än vad boken kan leverera live – precis det underlag som skulle få oss att bredda universumet på felaktiga grunder. backtest.mjs väljer därför nivå per symbol ur medianomsättningen (kurs × volym, normaliserad till SEK). Gränsen 3 MSEK/dag är samma tal som likviditetskravet i prompternas punkt 2, så nivåerna och urvalsregeln talar om samma sak. Nivåerna är SCHABLONER, inte uppmätt spread: satta efter typisk spread per likviditetsklass hos svensk nätmäklare, och de ska läsas som ett TAK för vad ett illikvitt universum kan ge, inte som en prognos. Fältet påverkar INTE dashboarden – den läser fortfarande roundTripPct, eftersom böckerna hittills bara handlat likvida namn. Börjar en bok handla under 20 MSEK/dag ska dashboardens kostnadsberäkning läggas om på samma nivåer."
 }

@@ -344,6 +344,27 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      prompt utan att först läsa rapportens out-of-sample-avsnitt** – nordiska stoppbandet visade
      sig vara brus (samma nivå bäst i båda halvorna i 1 fall av 8), medan US-bandet höll (5 av 8).
      Detaljerna i `docs/HISTORIK.md`.
+     **BREDDA ALDRIG UNIVERSUMET UTAN ATT KÖRA OM DETTA (mätt 2026-08-03).** Frågan "begränsar
+     30 namn oss?" mättes med tre universum över samma period: `nordic` (30 large), `nordic-mid`
+     (110 = movers-listan), `nordic-broad` (153, + 43 småbolag). Skelettet KOLLAPSAR monotont med
+     bredden – medianen av alla 24 celler out-of-sample gick **−1,4 % → −16,3 % → −50,9 %**, och
+     bästa cellen +42,3 % → −1,0 % → −41,2 %. Det är inte urvalsbrus: hela gridet försämras, inte
+     bara toppcellen. Orsaken är att "topp 4 på efterföljande avkastning" blir en SÄMRE regel ju
+     fler namn den får – toppen av en större fördelning är mer extrem och vänder tillbaka hårdare.
+     En dekomponering (`VECKO_FLAT_COST=1`, kör om med fast 0,25 %) delar tappet i **~38 pp urval
+     och ~22 pp kostnad**: billigare courtage räddar det INTE. Slutsats: håll `nordic` som
+     backtestuniversum, och varje förslag att bredda måste komma med en urvalsregel som blir
+     STRÄNGARE när bredden ökar. Notera dock vad testet mäter: momentum-proxyn, inte det
+     katalysatordrivna urvalet (som avvisar RSI > 75 och alltså per konstruktion sorterar bort just
+     de namn som fäller siffrorna). Bredd är därmed inte motbevisad för routinen – men bevisbördan
+     ligger hos den som vill bredda.
+     **Kostnad per symbol (sedan 2026-08-03):** `config/kostnader.json` → `nordic.liquidityTiers`
+     (0,25 % ≥ 20 MSEK/dag · 0,75 % ≥ 3 · 1,5 % därunder). `backtest.mjs` väljer nivå ur symbolens
+     UPPMÄTTA medianomsättning; saknas volymdata används dyraste nivån (det gjorde ICA/DOMETIC/BIOT
+     felaktigt dyra i broad-körningen – 3 av 153, försumbart men värt att veta). `costPct` får vara
+     ett tal ELLER en funktion `(sym) => procent`. Dashboarden är oförändrad och läser fortfarande
+     `roundTripPct`. `VECKO_FLAT_COST=1` finns BARA för dekomponering och skriver till ett eget
+     filnamn (`…-flatcost.md`) – aldrig som beslutsunderlag för ett universum med småbolag.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.
