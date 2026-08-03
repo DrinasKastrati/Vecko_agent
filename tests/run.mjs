@@ -291,6 +291,42 @@ ok("watchdog tyst när movers.json är från senaste lördagen",
 ok("watchdog larmar när movers.json saknas",
   WD.checkStale({ ...wdBase, moversGeneratedAt: null }).some(p => p.key === "movers"));
 
+// REGIMFILTRET (2026-08-03): en indexserie under 200 punkter tystar hela bokens
+// nyöppning, och rapporten kan inte skilja det från en svag marknad.
+ok("watchdog larmar när ^OMX inte räcker till MA200",
+  WD.checkStale({ ...wdBase, regimeSeries: { "^OMX": 16, "^GSPC": 250 } })
+    .some(p => p.key === "regime-^OMX"));
+ok("watchdog larmar per index, inte generellt",
+  (() => {
+    const p = WD.checkStale({ ...wdBase, regimeSeries: { "^OMX": 250, "^GSPC": 3 } });
+    return p.some(x => x.key === "regime-^GSPC") && !p.some(x => x.key === "regime-^OMX");
+  })());
+ok("watchdog tyst när båda serierna räcker",
+  !WD.checkStale({ ...wdBase, regimeSeries: { "^OMX": 200, "^GSPC": 250 } })
+    .some(p => String(p.key).startsWith("regime-")));
+ok("watchdog larmar när indexet saknas helt ur price_history",
+  WD.checkStale({ ...wdBase, regimeSeries: { "^OMX": 0, "^GSPC": 0 } })
+    .filter(p => String(p.key).startsWith("regime-")).length === 2);
+ok("watchdog utan regimeSeries = tyst (bakåtkompatibelt)",
+  !WD.checkStale(wdBase).some(p => String(p.key).startsWith("regime-")));
+
+// NYHETSFÖNSTRET: färsk fil och tunn fil är TVÅ olika fel. Den gamla kontrollen
+// mätte bara generatedAt, så 47 minuters fönster passerade som friskt.
+ok("watchdog larmar på för tunt nyhetsfönster",
+  WD.checkStale({ ...wdBase, newsWindow: { tradingDays: 10, tradingDaysCovered: 1, missingDays: ["2026-07-16"] } })
+    .some(p => p.key === "news-window"));
+ok("watchdog tyst när fönstret bär 5 handelsdagar",
+  !WD.checkStale({ ...wdBase, newsWindow: { tradingDays: 10, tradingDaysCovered: 5, missingDays: [] } })
+    .some(p => p.key === "news-window"));
+ok("färsk men tunn fil larmar ändå",
+  (() => {
+    const p = WD.checkStale({ ...wdBase, newsGeneratedAt: "2026-07-17T10:00:00Z",
+      newsWindow: { tradingDays: 10, tradingDaysCovered: 1, missingDays: [] } });
+    return p.some(x => x.key === "news-window") && !p.some(x => x.key === "news");
+  })());
+ok("watchdog utan newsWindow = tyst (filer före 2026-08-03)",
+  !WD.checkStale({ ...wdBase, newsGeneratedAt: "2026-07-17T09:00:00Z" }).some(p => p.key === "news-window"));
+
 // ---- monitorns hjärtslag (alerts.mjs) ----
 ok("heartbeat förfaller när stämpeln är gammal",
   AL.heartbeatDue({ checkedAt: "2026-07-17T05:00:00Z" }, "2026-07-17T10:00:00Z"));
@@ -685,6 +721,76 @@ const mergedNews = NW.mergeNews(
 ok("mergeNews dedupe på url", mergedNews.filter(i => i.u === "https://x.se/a").length === 1 && mergedNews[0].src !== "old");
 ok("mergeNews åldersrensning", !mergedNews.some(i => i.u === "https://x.se/old"));
 ok("mergeNews tak", NW.mergeNews([], rssItems, nowIso, 48, 1).length === 1);
+
+// Fönstret i HANDELSDAGAR (2026-08-03): 48 timmar kollapsade över helgen och gav
+// veckorotationen ett fönster på 47 minuter. Måndag måste fredagens poster leva kvar.
+ok("ageHoursForTradingDays måndag 5 dgr = tisdag 00:00 UTC",
+  NW.ageHoursForTradingDays("2026-08-03T08:00:00Z", 5) === 152);
+ok("ageHoursForTradingDays hoppar över helgen",
+  NW.ageHoursForTradingDays("2026-08-03T08:00:00Z", 1) === 8 &&
+  NW.ageHoursForTradingDays("2026-08-03T08:00:00Z", 2) === 8 + 72);
+ok("ageHoursForTradingDays lördag räknar bakåt till fredag",
+  NW.ageHoursForTradingDays("2026-08-01T12:00:00Z", 1) === 36);
+ok("ageHoursForTradingDays trasigt datum ger reserv",
+  NW.ageHoursForTradingDays("inte ett datum", 5) === 48);
+// Regressionen som fällde v32-rotationen: fredagsposter måndag morgon.
+const fridayItem = { t: "Fredagsnyhet", u: "https://x.se/fre", d: "2026-07-31T20:00:00Z", src: "mfn" };
+ok("48h-fönstret tappade fredagen på måndagen",
+  NW.mergeNews([fridayItem], [], "2026-08-03T05:58:00Z", 48, 300).length === 0);
+ok("handelsdagsfönstret behåller fredagen på måndagen",
+  NW.mergeNews([fridayItem], [], "2026-08-03T05:58:00Z",
+    NW.ageHoursForTradingDays("2026-08-03T05:58:00Z", 5), 300).length === 1);
+
+// Tak per källa och dygn: ett pratigt flöde får inte tränga ut de andra.
+const chatty = [
+  { t: "a", u: "https://m.se/1", d: "2026-08-03T10:00:00Z", src: "mfn" },
+  { t: "b", u: "https://m.se/2", d: "2026-08-03T09:00:00Z", src: "mfn" },
+  { t: "c", u: "https://m.se/3", d: "2026-08-03T08:00:00Z", src: "mfn" },
+  { t: "d", u: "https://g.se/1", d: "2026-08-03T07:00:00Z", src: "globenewswire" }
+];
+const capped = NW.mergeNews([], chatty, "2026-08-03T12:00:00Z", 48, 300, 2);
+ok("mergeNews tak per källa och dygn",
+  capped.filter(i => i.src === "mfn").length === 2 &&
+  capped.some(i => i.src === "globenewswire"));
+ok("mergeNews taket behåller de NYASTE i dygnet",
+  capped.filter(i => i.src === "mfn").every(i => i.t !== "c"));
+ok("mergeNews tak 0 = avstängt",
+  NW.mergeNews([], chatty, "2026-08-03T12:00:00Z", 48, 300, 0).length === 4);
+// Det globala taket får ALDRIG bli den bindande gränsen – då äter de nyaste dagarna
+// platsen och fönstret kollapsar igen, bara långsammare. Invarianten skyddar det.
+ok("globalt tak ligger över vad per-dygn-taket kan producera", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-news.mjs"), "utf8");
+  const num = re => { const m = src.match(re); return m ? Number(m[1]) : NaN; };
+  const feeds = NW.parseFeedList(readFileSync(resolve(root, "config/news_feeds.txt"), "utf8")).length;
+  const maxItems = num(/MAX_ITEMS\s*=\s*(\d+)/);
+  const perDay = num(/MAX_PER_SOURCE_DAY\s*=\s*(\d+)/);
+  const days = num(/WINDOW_TRADING_DAYS\s*=\s*(\d+)/);
+  return feeds > 0 && maxItems >= feeds * perDay * days;
+})());
+// Och per-dygn-taket måste faktiskt bevara en äldre dag när en nyare är full.
+ok("äldre dag överlever ett fullt nyare dygn", (() => {
+  const many = [];
+  for (let i = 0; i < 50; i++)
+    many.push({ t: "ny" + i, u: "https://m.se/n" + i, d: "2026-08-03T10:00:00Z", src: "mfn" });
+  many.push({ t: "gammal", u: "https://m.se/old", d: "2026-07-30T10:00:00Z", src: "mfn" });
+  const r = NW.mergeNews([], many, "2026-08-03T12:00:00Z",
+    NW.ageHoursForTradingDays("2026-08-03T12:00:00Z", 10), 40, 30);
+  return r.some(i => i.t === "gammal");
+})());
+
+// Täckningen ska gå att KONTROLLERA, inte antas.
+const cov = NW.newsCoverage(
+  [{ t: "x", d: "2026-08-03T10:00:00Z", src: "mfn" },
+   { t: "y", d: "2026-07-31T10:00:00Z", src: "mfn" },
+   { t: "z", d: "2026-07-31T09:00:00Z", src: "sec-8k" }],
+  "2026-08-03T12:00:00Z", 5);
+ok("newsCoverage räknar handelsdagar", cov.tradingDaysCovered === 2 && cov.distinctDays === 2);
+ok("newsCoverage listar saknade dagar",
+  cov.missingDays.includes("2026-07-30") && cov.missingDays.includes("2026-07-29") &&
+  !cov.missingDays.includes("2026-08-01") && !cov.missingDays.includes("2026-07-31"));
+ok("newsCoverage per källa", cov.perSource.mfn === 2 && cov.perSource["sec-8k"] === 1);
+ok("newsCoverage tom lista kraschar inte",
+  NW.newsCoverage([], "2026-08-03T12:00:00Z", 5).tradingDaysCovered === 0);
 ok("parseFeedList", (() => { const f = NW.parseFeedList("# kommentar\nmfn|https://mfn.se/rss\nrad-utan-pipe\n"); return f.length === 1 && f[0].name === "mfn"; })());
 ok("uaFor sec.gov får kontakt-UA", /kastratidrinas@gmail\.com/.test(NW.uaFor("https://www.sec.gov/cgi-bin/browse-edgar?output=atom")));
 ok("uaFor övriga får browser-UA", /Mozilla/.test(NW.uaFor("https://mfn.se/all/s.rss")) && /Mozilla/.test(NW.uaFor("https://notsec.gov.example.com/x")));

@@ -67,6 +67,10 @@ och rapportflöde samt trovärdiga marknadsrykten.
    av news-actionen) och skanna rubrikerna som PRIMÄR råvara för case-jakten – det täcker
    flödet systematiskt. Rubriker som bygger ett case verifieras via länken (datum + avsändare)
    innan de används; källkritik-reglerna nedan gäller oförändrat.
+   FÖNSTRET ÄR 10 HANDELSDAGAR (sedan 2026-08-03; det var 48 timmar och kollapsade över
+   helgen). Fältet `window` överst i filen visar `tradingDaysCovered`, `oldest`/`newest`,
+   `missingDays` och `perSource` – nämn i rapporten om fönstret bär färre än 5 handelsdagar,
+   och dra ALDRIG slutsatsen "inga nyheter" ur ett tomt fönster.
 
 ## KÄLLKRITIK & BRUSFILTRERING (hård)
 - Rykten godkänns ENDAST från etablerade finansmedier (Bloomberg, Reuters, WSJ, FT, CNBC,

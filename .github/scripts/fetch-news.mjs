@@ -13,8 +13,27 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
 // SEC:s access-policy kräver en User-Agent som deklarerar kontaktuppgift; en
 // browser-UA ger 403 mot deras EDGAR-flöden.
 const SEC_UA = "Vecko_agent/1.0 (kastratidrinas@gmail.com)";
-const MAX_ITEMS = 300;         // tak i news_feed.json
-const MAX_AGE_H = 48;          // äldre poster än så rensas
+// FÖNSTRET MÄTS I HANDELSDAGAR, INTE TIMMAR (ändrat 2026-08-03).
+// Prompterna kräver "de senaste 5 handelsdagarna" ur den här filen. Ett fönster
+// på 48 timmar KAN inte leverera det, och kollapsar dessutom just när det behövs
+// mest: måndag 05:58 UTC ligger fredagens sista hämtning (22:14) 55 timmar bakåt,
+// alltså utanför fönstret. Resultatet var att veckorotationen – körningen som mest
+// av alla behöver flera dagars nyheter – läste ett fönster på 47 MINUTER och fick
+// gå till git-historiken för att hitta fredagens poster.
+// 10 handelsdagar ger dubbel marginal mot kravet på 5.
+const WINDOW_TRADING_DAYS = 10;
+const MAX_AGE_H = 48;          // reserv om fönstret inte kan räknas ut
+// Tak per källa och dygn: ett pratigt flöde ska inte kunna tränga ut de andra, och
+// – viktigare – DAGARNA måste överleva. mfn levererar ~40 poster i timmen på
+// morgonen; utan ett per-dygn-tak fyller de senaste två dagarna hela filen och
+// fönstret kollapsar igen, bara långsammare än 48-timmarsvarianten gjorde.
+const MAX_PER_SOURCE_DAY = 30;
+// Det GLOBALA taket är medvetet satt ÖVER vad per-dygn-taket kan producera
+// (6 flöden × 30 × 10 dagar = 1800), så att det aldrig blir den bindande gränsen.
+// Är det globala taket lägre är det per-dygn-taket verkningslöst: de nyaste dagarna
+// äter platsen och de äldsta faller bort ändå. Ändras något av talen: kontrollera
+// att MAX_ITEMS > flöden × MAX_PER_SOURCE_DAY × WINDOW_TRADING_DAYS.
+const MAX_ITEMS = 2000;
 
 // Rätt User-Agent per värd (sec.gov kräver kontakt-UA, övriga vill ha browser-UA).
 export function uaFor(url){
@@ -60,8 +79,30 @@ export function parseRss(xml, srcName){
   return out;
 }
 
-// Slår ihop gamla + nya poster: dedupe (url, annars titel+källa), åldersrensning, tak.
-export function mergeNews(oldItems, newItems, nowIso, maxAgeH, maxItems){
+// Hur många TIMMAR bakåt är N handelsdagar, räknat från nowIso? Lördag och söndag
+// hoppas över, och fönstret sträcker sig till 00:00 UTC den N:te handelsdagen bakåt
+// så att hela den dagens poster ryms (annars beror fönstret på klockslaget).
+export function ageHoursForTradingDays(nowIso, tradingDays){
+  const now = new Date(nowIso);
+  if (isNaN(now)) return MAX_AGE_H;
+  const n = Math.max(1, tradingDays || 1);
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  let counted = 0;
+  // Dagen vi står på räknas som den första handelsdagen om den är en vardag.
+  if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) counted = 1;
+  while (counted < n){
+    d.setUTCDate(d.getUTCDate() - 1);
+    if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) counted++;
+  }
+  return Math.ceil((now.getTime() - d.getTime()) / 3600e3);
+}
+
+// Postens dygn (UTC) – grupperingsnyckel för taket per källa och dag.
+function dayOf(it){ return it && it.d ? String(it.d).slice(0, 10) : "okänt"; }
+
+// Slår ihop gamla + nya poster: dedupe (url, annars titel+källa), åldersrensning,
+// tak per källa och dygn, och till sist ett globalt tak.
+export function mergeNews(oldItems, newItems, nowIso, maxAgeH, maxItems, perSourceDay){
   const cutoff = Date.parse(nowIso) - (maxAgeH || MAX_AGE_H) * 3600e3;
   const seen = new Set(); const out = [];
   for (const it of [...(newItems || []), ...(oldItems || [])]){
@@ -73,7 +114,51 @@ export function mergeNews(oldItems, newItems, nowIso, maxAgeH, maxItems){
     out.push(it);
   }
   out.sort((a, b) => (b.d || "").localeCompare(a.d || ""));
+  const cap = perSourceDay || MAX_PER_SOURCE_DAY;
+  if (cap > 0){
+    const perDay = new Map();
+    const kept = [];
+    for (const it of out){                       // out är sorterad nyast först
+      const k = (it.src || "?") + "|" + dayOf(it);
+      const n = (perDay.get(k) || 0);
+      if (n >= cap) continue;                    // äldsta posterna i dygnet ryker
+      perDay.set(k, n + 1);
+      kept.push(it);
+    }
+    return kept.slice(0, maxItems || MAX_ITEMS);
+  }
   return out.slice(0, maxItems || MAX_ITEMS);
+}
+
+// Täckningen i fönstret, så att en routine (och preflight) kan KONTROLLERA att
+// filen faktiskt bär de handelsdagar prompten kräver – i stället för att anta det.
+export function newsCoverage(items, nowIso, tradingDays){
+  const list = (items || []).filter(i => i && i.d);
+  const days = [...new Set(list.map(dayOf))].sort();
+  const perDay = {}; const perSource = {};
+  for (const it of list){
+    perDay[dayOf(it)] = (perDay[dayOf(it)] || 0) + 1;
+    perSource[it.src || "?"] = (perSource[it.src || "?"] || 0) + 1;
+  }
+  // Handelsdagar (vardagar) i fönstret som saknar poster helt.
+  const wanted = [];
+  const now = new Date(nowIso);
+  if (!isNaN(now)){
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    while (wanted.length < Math.max(1, tradingDays || 1)){
+      if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) wanted.push(d.toISOString().slice(0, 10));
+      d.setUTCDate(d.getUTCDate() - 1);
+    }
+  }
+  return {
+    tradingDays: tradingDays || WINDOW_TRADING_DAYS,
+    oldest: days[0] || null,
+    newest: days[days.length - 1] || null,
+    distinctDays: days.length,
+    tradingDaysCovered: wanted.filter(d => perDay[d]).length,
+    missingDays: wanted.filter(d => !perDay[d]),
+    perDay, perSource
+  };
 }
 
 export function parseFeedList(txt){
@@ -136,14 +221,19 @@ async function main(){
     fresh = fresh.concat(items);
   }
 
-  const merged = mergeNews(old.items, fresh, nowIso);
+  const ageH = ageHoursForTradingDays(nowIso, WINDOW_TRADING_DAYS);
+  const merged = mergeNews(old.items, fresh, nowIso, ageH, MAX_ITEMS, MAX_PER_SOURCE_DAY);
+  const window = newsCoverage(merged, nowIso, WINDOW_TRADING_DAYS);
   writeFileSync("state/news_feed.json", JSON.stringify({
     generatedAt: nowIso,
     feeds: status,
     count: merged.length,
+    window,
     items: merged
   }, null, 1) + "\n");
-  console.log("news_feed.json:", merged.length, "poster.", JSON.stringify(status));
+  console.log("news_feed.json:", merged.length, "poster,", window.tradingDaysCovered + "/" +
+    window.tradingDays, "handelsdagar täckta (" + (window.oldest || "?") + " → " +
+    (window.newest || "?") + ").", JSON.stringify(status));
 }
 
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop());

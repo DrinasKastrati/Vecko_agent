@@ -255,6 +255,11 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
       kommande 5 handelsdagar.
    g0) NYHETSDRIVEN KANDIDATGENERERING (OBLIGATORISKT, GÖR DENNA FÖRST): gå igenom
       `state/news_feed.json` för de senaste 5 handelsdagarna INNAN du skannar ur minnet.
+      **Fönstret är 10 handelsdagar sedan 2026-08-03** (det var 48 timmar, vilket kollapsade
+      över helgen och gav måndagsrotationen 47 minuters nyheter). Läs fältet `window` överst i
+      filen och redovisa `tradingDaysCovered` av `tradingDays` i rapporten; täcker fönstret
+      färre än 5 handelsdagar ska det stå explicit, med `missingDays` listade. Dra ALDRIG
+      slutsatsen "inga nyheter" ur ett tomt fönster.
       SEC 8-K-flödet är särskilt värdefullt (rapporter, avtal, ledningsförändringar, M&A
       registreras där först) och GlobeNewswires earnings-flöde fångar rapportöverraskningar.
       Klassificera varje relevant rubrik mot katalysator-enumen i `state/decisions.json` och

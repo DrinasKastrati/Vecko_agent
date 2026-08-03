@@ -102,6 +102,44 @@ export function checkStale(opts){
           "`feeds`-statusen i filen – routinerna använder den som PRIMÄR nyhetsradar." });
   }
 
+  // REGIMFILTRET: sedan 2026-08-03 öppnar rotationerna INGA nya positioner när
+  // indexet ligger under sitt MA200 – och behandlar "går inte att beräkna" som AV.
+  // Det gör indexserien i price_history.json till en TYST SPÄRR för hela boken:
+  // faller ^OMX eller ^GSPC ur pris-hämtningen, eller trimmas serien under 200
+  // punkter, slutar boken ta nya positioner utan att något går fel någonstans.
+  // Ingen annan kontroll fångar det, och en rapport som skriver "regimen är AV"
+  // ser exakt likadan ut oavsett om marknaden är svag eller datat saknas.
+  if (opts.regimeSeries){
+    for (const [sym, len] of Object.entries(opts.regimeSeries)){
+      const n200 = Number(len) || 0;
+      if (n200 >= 200) continue;
+      problems.push({ key: "regime-" + sym, title: "Watchdog: regimfiltret kan inte mätas för " + sym,
+        body: "`state/price_history.json` har " + n200 + " daterade stängningar för `" + sym +
+          "` – MA200 kräver 200. Rotationsprompternas punkt 2b behandlar en oberäknelig regim " +
+          "som **AV**, alltså öppnas INGA nya positioner i den boken, och rapporten kan inte " +
+          "skilja det från en genuint svag marknad. Kontrollera att symbolen finns i " +
+          "`config/watchlist.txt`/`watchlist_us.txt` och att `prices.yml` hämtar den; " +
+          "backfilla annars serien (`fetch-prices.mjs` behåller 250 punkter)." });
+    }
+  }
+
+  // NYHETSFÖNSTRET: prompterna kräver 5 handelsdagar ur news_feed.json. Fönstret var
+  // tidigare 48 timmar och kollapsade över helgen till 47 minuter utan att något
+  // larmade – filen såg färsk ut, för generatedAt var minuter gammal. Färskhet och
+  // TÄCKNING är alltså två olika saker, och bara den första kontrollerades.
+  if (opts.newsWindow){
+    const w = opts.newsWindow;
+    const covered = Number(w.tradingDaysCovered) || 0;
+    if (covered < 5)
+      problems.push({ key: "news-window", title: "Watchdog: nyhetsfönstret bär bara " + covered + " handelsdagar",
+        body: "`state/news_feed.json` täcker " + covered + " av " + (w.tradingDays || "?") +
+          " handelsdagar" + (w.missingDays && w.missingDays.length ? " (saknar " +
+          w.missingDays.slice(0, 6).join(", ") + ")" : "") + ". Prompternas punkt 1g0 kräver 5 " +
+          "handelsdagar för den nyhetsdrivna kandidatgenereringen. Filen kan vara FÄRSK och " +
+          "ändå för tunn – det är två olika fel. Kontrollera `feeds`-statusen och att " +
+          "`fetch-news.mjs` kör med handelsdagsfönstret (fältet `window` ska finnas)." });
+  }
+
   return problems;
 }
 
@@ -121,8 +159,19 @@ export function latestDecisionYmd(db){
 function main(){
   let gen = null;
   try { gen = JSON.parse(readFileSync("state/prices.json", "utf8")).generatedAt || null; } catch {}
-  let newsGen = null;
-  try { newsGen = JSON.parse(readFileSync("state/news_feed.json", "utf8")).generatedAt || null; } catch {}
+  let newsGen = null, newsWindow = null;
+  try {
+    const nf = JSON.parse(readFileSync("state/news_feed.json", "utf8"));
+    newsGen = nf.generatedAt || null;
+    newsWindow = nf.window || null;   // saknas i filer skrivna före 2026-08-03
+  } catch {}
+  // Regimfiltrets indexserier: nordisk bok mäts mot ^OMX, US-boken mot ^GSPC.
+  let regimeSeries = null;
+  try {
+    const ph = JSON.parse(readFileSync("state/price_history.json", "utf8"));
+    const s = (ph && ph.series) || {};
+    regimeSeries = { "^OMX": (s["^OMX"] || []).length, "^GSPC": (s["^GSPC"] || []).length };
+  } catch {}
   let decisions = null;
   try { decisions = latestDecisionYmd(JSON.parse(readFileSync("state/decisions.json", "utf8"))); } catch {}
   let moversAt = null;
@@ -142,7 +191,9 @@ function main(){
     latestDecisionDate: decisions,
     alertsCheckedAt: alertsAt,
     moversGeneratedAt: moversAt,
-    newsGeneratedAt: newsGen
+    newsGeneratedAt: newsGen,
+    newsWindow,
+    regimeSeries
   });
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");
