@@ -1,11 +1,19 @@
 # Portfölj – US-rotation (USD)
-**Senast uppdaterad:** 2026-07-31 (LÄGE B daglig bevakning – 100 % kassa bibehålls, inga trades. Inga öppna positioner att bevaka; `alerts.json` active tom; inga aktiva pending-planer. Inget ersättningsköp från bubblarlistan: bankrotation (WFC/MS) saknar teknisk vändningsbekräftelse efter hökaktig Fed 29/7, INTC −9 % i pågående halvledarkorrektion, och XOM/CVX rapporterar Q2 i just detta pass (binärt event – köps ej in i). Extrem megacap-dispersion tors 30/7 (MSFT +18 % vs META −11 %; AMZN +AH efter AWS-beat vs AAPL −AH på svag guidning). Dry powder hålls; full rotation avgörs i LÄGE A måndag 2026-08-03. Se `reports/us_daily/us-daglig-260731.md`. Föregående: 2026-07-30 SÄLJ JPM @ 344,71 (+1,99 %, stopp bruten), se Historik.)
-**Ackumulerad avkastning sedan start:** +0,89 % (första stängda affären: JPM +1,99 % brutto × 45 % vikt, USD)
+**Senast uppdaterad:** 2026-08-03 14:15 CEST (LÄGE A veckorotation v32 – marknadsregim PÅ: S&P 500 7 489,72 > MA200 7 024,11. Sleeve-migreringen enligt promptens punkt 4c GENOMFÖRD: kassan gick från 100 % till 0 %. KÖP AMZN 12,5 % @ 271,58 USD (ben 1 av 2 enligt punkt 4a, ben 2 ligger som limit ≤ 262,00) och KÖP indexsleeve SPY 87,5 % @ 747,03 USD. Endast ett case klarade samtliga hårda krav – MSFT (RSI 78 + punkt 1b:s varning för brant uppgång utan längre trend) och JPM (katalysator 3 veckor gammal, kursen över vår utstoppningsnivå) lades i stället som villkorade bubblar-planer. Se `reports/us_weekly/us-veckorapport-260803.md`. Föregående: 2026-07-31 LÄGE B, ingen förändring; 2026-07-30 SÄLJ JPM @ 344,71 (+1,99 %, stopp bruten), se Historik.)
+**Ackumulerad avkastning sedan start:** +0,89 % (första stängda affären: JPM +1,99 % brutto × 45 % vikt, USD – oförändrad, ingen position stängdes i denna körning)
 
 ## Aktuellt innehav
 | Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Vikt | Anteckning |
 |---|---|---|---|---|---|---|---|---|
-| – | – | – | – | – | – | – | – | Inga öppna positioner – 100 % kassa efter SÄLJ JPM 2026-07-30 (stopp bruten). Dry powder inför LÄGE A-rotation måndag. |
+| Amazon.com | AMZN | NASDAQ | 2026-08-03 | 271,58 USD | 256,50 USD | 310,00 USD | 12,5 % | Ben 1 av 2 (punkt 4a). Katalysator: Q2 30/7 AMC – AWS +37 % (snabbast på 18 kvartal), marginal 39,4 %, koncern +19,6 %; 8 riktkurshöjningar (GS 375, JPM 365, Benchmark 400). `catalystType: earnings`, horisont 25 handelsdagar, R/R 1:2,5. Kurs verifierad ur prices.json/Yahoo chart API, marketTime 2026-07-31T20:00:01Z. Stoppen 256,50 ligger under fredagens dagslägsta 262,06 och flyttas ALDRIG ned, inte heller när ben 2 fylls. |
+| Indexsleeve (SPY) | SPY | NYSE Arca | 2026-08-03 | 747,03 USD | – | – | 87,5 % | Oallokerat kapital parkerat i index enligt promptens punkt 4c – sleeven säljs aldrig på nedgång och har därför varken stop eller mål. Minskas när ett aktieköp kräver kapital (ben 2 i AMZN samt de två villkorade planerna nedan). Kurs verifierad ur prices.json/Yahoo chart API, marketTime 2026-07-31T20:00:00Z. Loggad i `decisions.json` med `catalystType: "index"`. |
+
+### Pending veckorotation v32 (beslutad i us-veckorapport-260803.md)
+| Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |
+|---|---|---|---|---|---|---|---|---|
+| Amazon.com | AMZN | NASDAQ | Ben 2: köp vid rekyl till verifierad kurs ≤ 262,00 USD (fredagens dagslägsta 262,055 – testet av om rapportgapet håller) | 256,50 USD (oförändrad, flyttas ej ned) | 310,00 USD | 1:2,5 | 12,5 % | **AKTIV** – giltig 5 handelsdagar t.o.m. 2026-08-10, därefter avförs den delen och kapitalet stannar i sleeven. Vid fyllnad blir viktat entry 266,79 USD. |
+| Microsoft | MSFT | NASDAQ | BUBBLARE: köp ENDAST vid rekyl till verifierad kurs ≤ 445,00 USD (ref. 464,72 USD, marketTime 2026-07-31T20:00:01Z) | 420,00 USD (−5,62 %) | 500,00 USD (+12,36 %) | 1:2,2 | 25 % | **BUBBLARE** – aktiv, giltig 5 handelsdagar t.o.m. 2026-08-10. Ej köpt till marknadskurs: RSI 78 (>75) och 20-dagarsuppgången (+20,2 %) överstiger hela 120-dagarsrörelsen (+12,4 %). Kapitalet tas ur sleeven vid trigger. |
+| JPMorgan Chase | JPM | NYSE | BUBBLARE: köp ENDAST vid rekyl till verifierad kurs ≤ 340,00 USD (ref. 351,79 USD, marketTime 2026-07-31T20:00:02Z) | 321,00 USD (−5,59 %) | 378,00 USD (+11,18 %) | 1:2,0 | 25 % | **BUBBLARE** – aktiv, giltig 5 handelsdagar t.o.m. 2026-08-10. Nivån ligger medvetet UNDER utstoppningskursen 344,71 (2026-07-30); ingen återköpsjakt uppåt. Nåbarhetsmarginalen är tunn (tak 11,7 % mot mål 11,18 %) – planen avförs hellre än förlängs. |
 
 ### Pending veckorotation v30 (beslutad i us-veckorapport-260720.md)
 | Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |
@@ -16,7 +24,7 @@
 *Nivåerna är planen från `us-veckorapport-260720.md` (verifierade kurser ur `state/prices.json`, marketTime 17/7 – senaste tillgängliga verifierade stängning inför den första körningen). XOM-raden justeras proportionellt mot faktisk verifierad kurs när/om positionen öppnas.*
 
 ## Kassa
-100 % (dry powder – JPM avvecklat 2026-07-30 via bruten stopp; kassan hålls oallokerad genom veckans binärkluster (AAPL+AMZN efter stängning tors 30/7, PCE + XOM/CVX-rapporter fre 31/7) för deploy på renare rotationssetup, avgörs i LÄGE A måndag)
+0 % (sleeve-migreringen enligt promptens punkt 4c genomförd 2026-08-03: hela den tidigare kassan på 100 % är nu allokerad – 87,5 % i indexsleeven SPY och 12,5 % i AMZN ben 1. Oallokerat kapital ska hädanefter ligga i sleeven, aldrig på konto; tid utanför marknaden är en garanterad kostnad mot index.)
 
 ## Historik (append-only – rader får ALDRIG raderas eller ändras)
 | Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |

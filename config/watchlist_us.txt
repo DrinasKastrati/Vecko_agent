@@ -44,14 +44,16 @@ RIOT
 # Miner/AI-compute-konvergens (case 2026-07-21)
 IREN
 
-# --- Bubblare US-rotationen v31 (L-2: en bubblare ska ha verifierad kurs samma vecka) ---
+# --- Bubblare US-rotationen v32 (L-2: en bubblare ska ha verifierad kurs samma vecka) ---
 # Utan kurs kan monitorn inte larma på dem, en villkorad plan kan inte läggas och
 # retron kan inte utvärdera idén i efterhand (fyra av fem var omätbara 2026-08-01).
 # Omfattas av watchlist-hygienen: nämns de inte på 14 handelsdagar ska de rensas.
-HCA
-NOC
+# 2026-08-03: HCA, NOC och MS strukna som bubblare i us-veckorapport-260803.md (samtliga
+# under EMA200 / RSI 32) och därmed borttagna. JPM tillagd – ny villkorad plan ≤ 340,00 USD,
+# och utan rad här kan monitorn inte larma när nivån korsas.
+# MSFT, GOOGL och NVDA ligger redan under "Stora USA-aktier" ovan.
 WFC
-MS
+JPM
 
 # --- Analys-köade tickers ---
 NVO
