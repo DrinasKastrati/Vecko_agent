@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- BADGE-ikonen: den lilla symbolen Android visar i statusraden.
+       Android tonar om den till en enfärgad mask och kastar all färg, så den
+       måste vara VIT PÅ GENOMSKINLIGT och utan bakgrundsplatta – en färgad
+       ikon här blir en vit klump. Samma stapelmotiv som assets/icon.svg,
+       fast i en enda färg. Rendera om med make-icons.bat efter ändring. -->
+  <rect x="8" y="11" width="4" height="13" rx="1" fill="#ffffff"/>
+  <rect x="9" y="6" width="2" height="6" fill="#ffffff"/>
+  <rect x="9" y="23" width="2" height="4" fill="#ffffff"/>
+  <rect x="20" y="8" width="4" height="11" rx="1" fill="#ffffff"/>
+  <rect x="21" y="5" width="2" height="4" fill="#ffffff"/>
+  <rect x="21" y="18" width="2" height="7" fill="#ffffff"/>
+</svg>

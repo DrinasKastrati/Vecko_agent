@@ -123,6 +123,14 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   RFC 8291 §5:s officiella testvektor i `tests/run.mjs` ("webpush: RFC 8291 §5"), byte för byte,
   plus att VAPID-signaturen är ES256 i JOSE-format (`ieee-p1363`; DER ger 401 från FCM).
   **Kör det testet efter varje ändring i webpush.mjs.**
+  **Notisikonen måste vara PNG** (`assets/icon-192.png` + `assets/badge-96.png`, byggda av
+  `.github/scripts/make-icons.mjs`). Android/Chrome renderar INTE svg i en notis: pekar `icon` på
+  en svg blir notisen helt utan ikon, tyst och utan felmeddelande. `badge` är statusradens lilla
+  symbol och tonas om till en enfärgad mask – därav den separata vita filen; en färgad badge blir
+  en vit klump. `tests/theme.mjs` larmar om någon pekar tillbaka på en svg. SVG-filerna är kvar
+  och fortfarande rätt format för favicon och dashboardens logotyp.
+  `--preview` skickar ett exempel av varje sort, byggt av driftens EGNA funktioner – gör aldrig om
+  det till handskrivna strängar, då visar förhandsvisningen något annat än det som kommer.
   Bara **KÖP/SÄLJ** notifieras – aldrig BEHÅLL/AVVAKTA. Samma regel som styr "något att göra?" i
   Hem-vyn: systemet lägger inga ordrar, så bara köp och sälj är åtgärdbart. Håll dem i synk.
   `state/push_sent.json` är dedupe-listan; **första körningen skickar med flit ingenting** (den

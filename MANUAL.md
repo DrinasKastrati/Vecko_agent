@@ -106,6 +106,19 @@ cachas där.
 5. Testa: Actions → "Intradag-monitor" → Run workflow → kryssa i `testnotis`. En testnotis ska
    dyka upp på telefonen inom några sekunder.
 
+**Se hur notiserna ser ut** utan att vänta på en riktig signal (kräver att `.env` finns lokalt):
+
+    node .github/scripts/push-notify.mjs --preview --dry-run   (bara i terminalen)
+    node .github/scripts/push-notify.mjs --preview             (skickar till telefonen)
+
+Exemplen byggs av samma funktioner som driften, så de visar exakt det format som kommer.
+Varken `--preview` eller `--test` rör `push_sent.json`.
+
+**Notisikonen** är `assets/icon-192.png` + `assets/badge-96.png` (statusradens lilla symbol).
+De MÅSTE vara PNG – Android renderar inte svg i en notis, och en svg där ger en notis helt utan
+ikon utan att något felmeddelande syns. Ändras `assets/icon.svg` eller `assets/icon-badge.svg`:
+kör `node .github/scripts/make-icons.mjs` (formen ligger i skriptet och speglar SVG:erna).
+
 Vill du inte ha enhetens endpoint publikt i repot: hoppa över steg 4:s ärende och lägg i stället
 hela prenumerations-JSON:en i hemligheten `PUSH_SUBSCRIPTIONS` (en array). Avsändaren läser båda.
 

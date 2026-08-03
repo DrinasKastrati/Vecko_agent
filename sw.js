@@ -14,7 +14,7 @@
    Cachen töms inte automatiskt på gamla nycklar – CACHE-namnet nedan bumpas
    manuellt om formatet på det som cachas ändras.
    ========================================================================== */
-const CACHE = "vecko-agent-v2";
+const CACHE = "vecko-agent-v3";
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */
@@ -22,6 +22,9 @@ const SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
+  // Notisikonerna: hämtas av systemet när en notis visas, ofta utan nät.
+  "./assets/icon-192.png",
+  "./assets/badge-96.png",
   "./assets/theme.js",
   "./assets/settings.js",
   "./assets/vparse.js",
@@ -75,8 +78,13 @@ self.addEventListener("push", e => {
     vibrate: [120, 60, 120],
     requireInteraction: true,
     timestamp: d.ts || Date.now(),
-    icon: "./assets/icon.svg",
-    badge: "./assets/icon.svg",
+    // MÅSTE VARA PNG. Android/Chrome renderar inte svg i en notis – pekade man
+    // hit på assets/icon.svg blev notisen helt utan ikon, utan att något
+    // felmeddelande syntes någonstans. `badge` är statusradens lilla symbol och
+    // tonas om till en enfärgad mask, därav den separata vita filen.
+    // Byggs av .github/scripts/make-icons.mjs.
+    icon: "./assets/icon-192.png",
+    badge: "./assets/badge-96.png",
     data: { url: d.url || "#hem" }
   }));
 });

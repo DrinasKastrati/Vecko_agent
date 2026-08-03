@@ -305,6 +305,17 @@ ok("sw.js har en push-hanterare", /addEventListener\(\s*"push"/.test(swSrc));
 ok("sw.js visar alltid en notis vid push", /"push"[\s\S]{0,600}showNotification/.test(swSrc));
 ok("sw.js hanterar klick på notisen", /addEventListener\(\s*"notificationclick"/.test(swSrc));
 ok("sw.js fångar roterad prenumeration", /addEventListener\(\s*"pushsubscriptionchange"/.test(swSrc));
+// Notisikonen måste vara raster. En svg här ger en notis UTAN ikon på Android,
+// helt tyst – inget felmeddelande, den ser bara tom ut.
+for (const [namn, src] of [["sw.js", swSrc], ["app.js", appCode]])
+  ok(`${namn}: notisikonen är png, inte svg`, !/\b(icon|badge)\s*:\s*"[^"]*\.svg"/.test(src));
+ok("ikonfilerna finns", ["assets/icon-192.png", "assets/icon-512.png", "assets/badge-96.png"]
+  .every(p => readFileSync(join(root, p)).subarray(1, 4).toString() === "PNG"));
+ok("sw.js precachar notisikonerna",
+  swSrc.includes('"./assets/icon-192.png"') && swSrc.includes('"./assets/badge-96.png"'));
+ok("manifest.json har png-ikoner för startskärmen",
+  (() => { const m = JSON.parse(readFileSync(join(root, "manifest.json"), "utf8"));
+           return ["192x192", "512x512"].every(s => m.icons.some(i => i.sizes === s && i.type === "image/png")); })());
 ok("config/push.json finns och saknar privat nyckel",
   (() => { const c = JSON.parse(readFileSync(join(root, "config/push.json"), "utf8"));
            return "vapidPublicKey" in c && !JSON.stringify(c).match(/privateKey/i); })());

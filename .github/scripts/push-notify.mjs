@@ -24,7 +24,14 @@
 
    Kör:  node .github/scripts/push-notify.mjs
          node .github/scripts/push-notify.mjs --test     (en testnotis, inget annat)
+         node .github/scripts/push-notify.mjs --preview  (ett exempel av VARJE sort)
          node .github/scripts/push-notify.mjs --dry-run  (visa vad som skulle skickas)
+
+   --preview bygger sina exempel med SAMMA funktioner som driften
+   (alertNotifications/decisionNotifications) på påhittad indata. Skriv aldrig
+   om det till handknådade strängar – då visar förhandsvisningen något annat
+   än det som faktiskt kommer, vilket är värre än ingen förhandsvisning alls.
+   Varken --test eller --preview rör push_sent.json.
    ========================================================================== */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { sendPush } from "./webpush.mjs";
@@ -112,8 +119,26 @@ function dropGone(endpoints){
   }
 }
 
+// Ett exempel av varje sort notiserna kan ha, byggt av driftens egna funktioner.
+export function previewNotifications(today = new Date()){
+  const d = today.toISOString().slice(0, 10);
+  return [
+    ...alertNotifications({ active: [
+      { ticker: "SAAB-B.ST", type: "SÄLJ", reason: "stop-loss träffad", level: 540, price: 538.2, currency: "SEK" },
+      { ticker: "ALLEI.ST", type: "KÖP", reason: "entry-villkor uppfyllt", level: 72, price: 71.8, currency: "SEK" }
+    ] }),
+    ...decisionNotifications({ decisions: [
+      { date: d, book: "nordic", ticker: "VOLV-B.ST", action: "KÖP", price: 312.4, currency: "SEK",
+        reason: "Q2 över estimat, orderingång +14 %. Entry 312,40, stop 289,00, mål 358,00." },
+      { date: d, book: "us", ticker: "AMZN", action: "SÄLJ", price: 231.05, currency: "USD",
+        reason: "Målkurs nådd efter AWS-lyftet. Positionen stängd, kapitalet till indexsleeven." }
+    ] }, today)
+  ].map((n, i) => Object.assign({}, n, { key: "preview|" + i, tag: "preview-" + i }));
+}
+
 export async function run(argv = []){
   const test = argv.includes("--test");
+  const prev = argv.includes("--preview");
   const dry  = argv.includes("--dry-run");
 
   const cfg = readJSON(CFG_PATH, {});
@@ -140,6 +165,8 @@ export async function run(argv = []){
   if (test){
     queue = [{ key: "test|" + Date.now(), title: "🔔 Testnotis", tag: "test",
                body: "Push fungerar. Riktiga notiser kommer vid KÖP/SÄLJ.", url: "#hem" }];
+  } else if (prev){
+    queue = previewNotifications();
   } else {
     const all = [...alertNotifications(readJSON("state/alerts.json", {})),
                  ...decisionNotifications(readJSON("state/decisions.json", {}))];
@@ -170,7 +197,7 @@ export async function run(argv = []){
   }
   dropGone([...new Set(gone)]);
 
-  if (!test){
+  if (!test && !prev){
     const keys = [...sentKeys, ...queue.map(n => n.key)].slice(-MAX_KEYS);
     writeFileSync(SENT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), keys }, null, 2) + "\n");
   }

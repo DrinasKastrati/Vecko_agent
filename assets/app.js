@@ -679,7 +679,9 @@
               body: s.reason + (s.level != null ? " (nivå " + s.level + ")" : "") + (s.price != null ? " · kurs " + s.price : ""),
               tag: "alert-" + s.ticker,
               renotify: true,
-              icon: "./assets/icon.svg",
+              // PNG, inte svg – se kommentaren vid push-hanteraren i sw.js.
+              icon: "./assets/icon-192.png",
+              badge: "./assets/badge-96.png",
               data: { url: "#hem" }
             });
       } catch (e) {}
