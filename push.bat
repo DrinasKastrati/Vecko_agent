@@ -34,7 +34,10 @@ if "%AHEAD%"=="0" (
   exit /b 0
 )
 
-echo Pushar %AHEAD% commit(s) till GitHub...
+rem  Parenteserna escapas aven har, trots att raden ligger utanfor ett if-block:
+rem  hamnar den nagon gang INNE i ett block blir felet samma tysta exit 255 som pa
+rem  rad 53, och det ar inte vart att upptacka en andra gang.
+echo Pushar %AHEAD% commit^(s^) till GitHub...
 git pull --rebase --autostash origin main
 if errorlevel 1 call :resolve_rebase
 if errorlevel 1 (
@@ -50,7 +53,11 @@ git push origin main
 if errorlevel 1 (
   echo.
   echo NAGOT GICK FEL - se felmeddelandet ovan. Vanligaste orsaken
-  echo ar en laskonflikt (.git/index.lock) - vanta 10 sek och kor igen.
+  rem  Parenteserna MASTE escapas med ^ inne i ett if-block. Oescapade stangde de
+  rem  blocket i fortid nar cmd parsade filen, varpa resten av raden kordes som ett
+  rem  eget kommando och skriptet dog med "- was unexpected at this time." EFTER en
+  rem  lyckad push (exit 255 pa en korning som gjort allt ratt). 2026-08-03.
+  echo ar en laskonflikt ^(.git/index.lock^) - vanta 10 sek och kor igen.
   pause
   exit /b 1
 )

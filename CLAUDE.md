@@ -492,11 +492,14 @@ ta bort skyddet.
   ALLTIHOP, vilket är avsiktligt; (b) före 2026-08-02 stannade skriptet tyst mitt i rebasen med
   detached HEAD och skrev ändå `pause` – ser du en gammal körning som "såg klar ut" men inget kom
   fram till GitHub, är det den buggen. Kontrollera `git status -sb`.
-  **(c) ÖPPET (sett 2026-08-03): skriptet returnerar exit 255 med `- was unexpected at this time.`
-  EFTER en LYCKAD push.** Det inträffar på grenen där `git pull --rebase` faktiskt rebasar (två av
-  två sådana körningar), inte på "inga ändringar"-grenen. Pushen HAR gått fram – felet är ett
-  batch-parsefel, inte ett git-fel. Verifiera alltid med `git status -sb` innan du pushar om;
-  automatisering som läser exitkoden kommer att tro att pushen misslyckades.
+  **(c) ÅTGÄRDAT 2026-08-03: exit 255 med `- was unexpected at this time.` EFTER en LYCKAD push.**
+  Orsaken var en OESCAPAD parentes i ett `echo` inne i `if errorlevel 1 (`-blocket:
+  `echo ar en laskonflikt (.git/index.lock) - vanta …`. cmd parsar hela blocket när det LÄSES, så
+  `)` i sökvägen stängde blocket i förtid och resten av raden kördes som ett eget kommando –
+  villkorslöst, alltså även när pushen gått bra. **Parenteser i `echo` inuti ett block måste escapas
+  med `^`** (`^(` / `^)`), precis som `make-manual.bat` redan gjorde. Symptomet var lömskt: exit 255
+  på en körning som gjort allt rätt, vilket får automatisering som läser exitkoden att tro att
+  pushen misslyckades. Verifiera alltid med `git status -sb` innan du pushar om.
 
 ---
 
