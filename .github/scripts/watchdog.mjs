@@ -214,7 +214,16 @@ export function checkEarningsCalendar(opts){
   const problems = [];
   if (!generatedAt) return problems;          // bakåtkompatibelt: saknas fältet, var tyst
   const age = (new Date(now) - Date.parse(generatedAt)) / 3600e3;
-  if (isFinite(age) && age > maxAgeHours)
+  /* Ett OLÄSBART generatedAt får inte tystas ned. Fältet finns (så filen är inte
+     från före kalendern) men går inte att tolka ⇒ åldern kan inte mätas ⇒
+     kalendern är i praktiken oövervakad. Utan den här grenen blev NaN > gräns
+     falskt och kontrollen teg, vilket är samma sorts tysta fel den ska fånga. */
+  if (!isFinite(age))
+    problems.push({ key: "earnings-calendar", title: "Watchdog: rapportkalenderns tidsstämpel går inte att läsa",
+      body: "`state/earnings_calendar.json` har ett `generatedAt` som inte kan tolkas (" +
+        JSON.stringify(generatedAt) + "). Åldern går därmed inte att mäta och kalendern är " +
+        "oövervakad. Kontrollera att `earnings-calendar.mjs` skrev filen korrekt." });
+  else if (age > maxAgeHours)
     problems.push({ key: "earnings-calendar", title: "Watchdog: rapportkalendern är inaktuell",
       body: "`state/earnings_calendar.json` är " + Math.round(age) + " timmar gammal (gräns " +
         maxAgeHours + " h). Den hämtas av `prices.yml` på 05:00-cronen. Fylls den inte på " +

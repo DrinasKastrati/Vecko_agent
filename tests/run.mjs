@@ -1628,6 +1628,27 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
                                   { stopPct: 0.055, targetPct: 0.16, holdDays: 20 });
   ok("earnings: PEAD_D0C prövar inte entry-dagens egen low (look-ahead)", d0c.reason === "horisont");
 
+  /* OMOGNA AFFÄRER FÅR ALDRIG RÄKNAS (bugg hittad 2026-08-04).
+     Ligger händelsen närmare seriens slut än horisonten hinner affären aldrig
+     få sitt utfall. Före rättningen returnerades en affär med `days: 0` och
+     retPct = −kostnaden, vilket drog alla medelvärden mot noll – exakt det
+     decision_eval.mjs förbjuder. Men en affär som HUNNIT träffa stop eller mål
+     är färdig och ska räknas, hur lite serie som än återstår. */
+  const cEnd = mk(40);
+  cEnd[39] = { d: cEnd[39].d, o: 110, h: 112, l: 109, c: 111, v: 5000 };
+  const evEnd = { i: 39, d: cEnd[39].d, gapPct: 0.10 };
+  ok("earnings: omogen affär på sista candlen räknas inte (D0C)",
+     BE.peadTradeAtClose(cEnd, evEnd, { stopPct: 0.055, targetPct: 0.16, holdDays: 25 }) === null);
+  ok("earnings: omogen affär på sista candlen räknas inte (D0)",
+     BE.peadTrade(cEnd, evEnd, { offset: 0, stopPct: 0.055, targetPct: 0.16, holdDays: 25 }) === null);
+  // Stop träffad nära seriens slut = FÄRDIG affär, ska räknas.
+  const cStop = mk(40);
+  cStop[35] = { d: cStop[35].d, o: 110, h: 112, l: 109, c: 111, v: 5000 };
+  for (let i = 36; i < 40; i++) cStop[i] = { d: cStop[i].d, o: 90, h: 91, l: 89, c: 90, v: 1000 };
+  const stopped = BE.peadTradeAtClose(cStop, { i: 35, d: cStop[35].d, gapPct: 0.10 },
+                                     { stopPct: 0.055, targetPct: 0.16, holdDays: 25 });
+  ok("earnings: stop träffad nära seriens slut är en färdig affär", stopped && stopped.reason === "stop-gap");
+
   // summarize: under minN uttalar sig inte, precis som decision_eval.
   const sFew = BE.summarize(Array.from({ length: 5 }, () => ({ retPct: 1, days: 1 })), 20);
   ok("earnings: under minN säger summarize 'insufficient'", sFew.insufficient === true && sFew.missing === 15);
@@ -1708,6 +1729,19 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      SC.validateCandidate(Object.assign({}, base, { status: "promoted", decidedBy: "r.md",
        decidedAt: "2026-08-05", decisionReason: "alla fem grindar håller, R/R 2,4" }), 0).length === 0);
 
+  /* Tickerformat och kursrimlighet (hittat vid fuzzning 2026-08-04).
+     "BRK B" och en negativ kurs accepterades tidigare – båda ger tysta fel
+     längre fram: symbolen slås upp ordagrant av pris-hämtaren, och kursen
+     används för att räkna stop och mål. */
+  ok("kandidat: ticker med mellanslag avvisas", bad({ ticker: "BRK B" }));
+  ok("kandidat: ticker i gemener avvisas", bad({ ticker: "pltr" }));
+  ok("kandidat: Yahoo-format accepteras",
+     !bad({ ticker: "XACT-OMXS30.ST" }) && !bad({ ticker: "BTC-USD" }) &&
+     !bad({ ticker: "^GSPC" }) && !bad({ ticker: "USDSEK=X" }));
+  ok("kandidat: negativ kurs avvisas", bad({ price: -5 }));
+  ok("kandidat: nollkurs avvisas", bad({ price: 0 }));
+  ok("kandidat: null-kurs är fortfarande tillåten", !bad({ price: null, priceAsOf: null }));
+
   ok("kandidat: dubblett-id fångas",
      SC.validateFile({ candidates: [base, Object.assign({}, base)] }).some(e => /dubblett/.test(e)));
 
@@ -1752,6 +1786,38 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: "2026-08-04T05:00:00Z" }).length === 0);
   ok("watchdog: saknat fält är bakåtkompatibelt tyst",
      WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: null }).length === 0);
+  /* Ett oläsbart generatedAt måste larma: fältet FINNS men går inte att tolka,
+     alltså är kalendern oövervakad. Tegs det bort blev NaN > gräns falskt och
+     kontrollen tystnade – samma sorts tysta fel den ska fånga. */
+  ok("watchdog: oläsbar tidsstämpel larmar",
+     WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: "inte-ett-datum" }).length === 1);
+}
+
+/* ---- RAPPORTKALENDERNS FELKLASSIFICERING (2026-08-04) -------------------
+   `errors` måste vara TOM i friskt läge, annars går den inte att larma på.
+   Indexsleeven (SPY, XACT-OMXS30.ST) ligger i båda böckerna och plockas alltid
+   upp, så utan uppdelningen hade två permanenta 404:or dolt ett verkligt fel. */
+{
+  const EC = await mod(".github/scripts/earnings-calendar.mjs");
+  const res = (status, body) => async () => ({ ok: status >= 200 && status < 300, status,
+    json: async () => body, text: async () => JSON.stringify(body) });
+  const auth = { cookie: "c", crumb: "x" };
+  const r404 = await EC.fetchCalendar("SPY", auth, res(404, {}));
+  ok("kalender: 404 är 'gäller inte', inte ett fel", !!r404.notApplicable && !r404.error);
+  ok("kalender: 401 är ett verkligt fel", (await EC.fetchCalendar("X", auth, res(401, {}))).error === "HTTP 401");
+  ok("kalender: nätfel fångas", !!(await EC.fetchCalendar("X", auth, async () => { throw new Error("ECONNRESET"); })).error);
+
+  // getCrumb måste avvisa en HTML-felsida – annars skickas skräp som crumb och
+  // varje efterföljande anrop får 401 utan att orsaken syns.
+  const hdr = c => ({ getSetCookie: () => c, get: () => (c[0] || null) });
+  ok("kalender: HTML som crumb avvisas",
+     await EC.getCrumb(async () => ({ headers: hdr(["A=1; Path=/"]), ok: true, status: 200,
+       text: async () => "<html>error</html>" })) === null);
+  ok("kalender: orimligt lång crumb avvisas",
+     await EC.getCrumb(async () => ({ headers: hdr(["A=1"]), ok: true, status: 200,
+       text: async () => "x".repeat(200) })) === null);
+  ok("kalender: utan cookie ges upp",
+     await EC.getCrumb(async () => ({ headers: hdr([]) })) === null);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

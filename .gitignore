@@ -20,6 +20,12 @@ package-lock.json
 .env.local
 auto_push.log
 
-# watchdog.mjs skriver hit när RUNNER_TEMP saknas (dvs. vid lokal körning) –
-# i Actions hamnar filen i runnerns temp-katalog och ska aldrig committas.
+# Skript som skriver till `(RUNNER_TEMP || ".")` lägger sin utfil i REPO-ROTEN
+# vid lokal körning – i Actions hamnar den i runnerns temp-katalog. Ingen av dem
+# ska committas. Det här är inte kosmetika: `push.bat` kör `git add -A`, så en
+# strökfil från en lokal felsökningskörning åker med in i repot vid nästa push.
+# `watchdog.json` fångades 2026-08-02; de två andra hade samma mönster men
+# saknades i listan till 2026-08-04.
 watchdog.json
+alerts_new.json
+digest.json

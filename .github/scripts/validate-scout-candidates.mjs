@@ -38,7 +38,14 @@ export function validateCandidate(c, i){
 
   if (!/^\d{6}-[A-Z0-9.\-^]{1,14}$/.test(c.id || "")) e.push(at("id måste vara yymmdd-TICKER"));
   if (!isIso(c.date)) e.push(at("date måste vara åååå-mm-dd"));
+  /* Tickern MÅSTE vara Yahoo-format. `fetch-prices.mjs`, monitorn och böckerna
+     slår alla upp symbolen ordagrant – en ticker med mellanslag ("BRK B") eller
+     gemener ger en tyst miss, inte ett felmeddelande. Tillåter bokstäver,
+     siffror, punkt, bindestreck, inledande ^ (index) och = (valutapar):
+     ALLEI.ST · XACT-OMXS30.ST · BRK-B · BTC-USD · ^GSPC · USDSEK=X. */
   if (!c.ticker || typeof c.ticker !== "string") e.push(at("ticker saknas"));
+  else if (!/^\^?[A-Z0-9][A-Z0-9.\-=]{0,13}$/.test(c.ticker))
+    e.push(at(`ticker "${c.ticker}" är inte Yahoo-format (versaler, inga mellanslag)`));
   if (!BOOKS.includes(c.book)) e.push(at(`book måste vara ${BOOKS.join("|")}`));
   if (!SOURCES.includes(c.source)) e.push(at(`source måste vara ${SOURCES.join("|")}`));
   if (!CATALYST_TYPES.includes(c.catalystType))
@@ -49,6 +56,9 @@ export function validateCandidate(c, i){
   else if (c.thesis.length > 300) e.push(at("thesis får vara högst 300 tecken"));
   if (!c.sourceRef || typeof c.sourceRef !== "string") e.push(at("sourceRef saknas (källa + datum)"));
   if (!isNumOrNull(c.price)) e.push(at("price måste vara tal eller null"));
+  // En kurs på 0 eller mindre är inte en kurs. Utan kontrollen kan ett
+  // parsningsfel bli ett "verifierat" pris som en bok räknar stop och mål ur.
+  else if (isNum(c.price) && c.price <= 0) e.push(at("price måste vara > 0 (eller null om kursen saknas)"));
   if (c.priceAsOf != null && typeof c.priceAsOf !== "string") e.push(at("priceAsOf måste vara ISO-sträng eller null"));
   // En kurs utan tidsstämpel är inte en verifierad kurs. Kravet är detsamma som
   // i prompterna och får inte sänkas här bara för att fältet är valfritt.

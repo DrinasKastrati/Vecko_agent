@@ -131,6 +131,15 @@ export function peadTrade(candles, ev, opts = {}){
   if (i >= candles.length) return null;
   const tr = simulateTrade(candles, i, stopPct, targetPct, holdDays);
   if (!tr) return null;
+  /* OMOGEN AFFÄR RÄKNAS ALDRIG (rättat 2026-08-04). Ligger händelsen närmare
+     seriens slut än horisonten hinner affären aldrig få sitt utfall –
+     simulateTrade returnerar då "rotation" på sista tillgängliga candle. En
+     sådan trunkerad affär är INTE ett mätvärde: den drar alla medelvärden mot
+     noll, precis som decision_eval.mjs redan säger om omogna beslut. En affär
+     som HUNNIT träffa stop eller mål är däremot färdig, hur lite serie som än
+     återstår – därför prövas trunkeringen bara mot horisont-exiten. */
+  const truncated = (i + holdDays - 1) > (candles.length - 1);
+  if (truncated && tr.reason === "rotation") return null;
   return {
     arm: "PEAD" + offset, d: ev.d, entryDate: candles[tr.entryIdx].d, exitDate: candles[tr.exitIdx].d,
     entryPrice: tr.entryPrice, exitPrice: tr.exitPrice, grossPct: tr.retPct, costPct,
@@ -167,6 +176,9 @@ export function peadTradeAtClose(candles, ev, opts = {}){
     if (day.o >= target)      { exitIdx = j; exitPrice = day.o; reason = "mål-gap";  break; }
     if (day.h >= target)      { exitIdx = j; exitPrice = target; reason = "mål";     break; }
   }
+  // Samma mognadskrav som i peadTrade: en affär som aldrig hann få sitt utfall
+  // är inte ett mätvärde. "horisont" är den här funktionens rotations-exit.
+  if ((i + holdDays) > (candles.length - 1) && reason === "horisont") return null;
   const grossPct = (exitPrice / entry - 1) * 100;
   return {
     arm: "PEAD_D0C", d: ev.d, entryDate: candles[i].d, exitDate: candles[exitIdx].d,

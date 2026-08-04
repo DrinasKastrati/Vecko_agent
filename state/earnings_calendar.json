@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-04T20:43:58.392Z",
+  "generatedAt": "2026-08-04T20:52:19.206Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -7,7 +7,8 @@
   "counts": {
     "requested": 34,
     "resolved": 32,
-    "failed": 2,
+    "failed": 0,
+    "notApplicable": 2,
     "upcoming": 5
   },
   "upcoming": [
@@ -352,8 +353,9 @@
       "revenueConsensus": 2171235880
     }
   ],
-  "errors": {
-    "SPY": "HTTP 404",
-    "XACT-OMXS30.ST": "HTTP 404"
+  "errors": {},
+  "notApplicable": {
+    "SPY": "instrumentet har inga rapporter (ETF/index/valuta)",
+    "XACT-OMXS30.ST": "instrumentet har inga rapporter (ETF/index/valuta)"
   }
 }

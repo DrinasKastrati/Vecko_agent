@@ -1,6 +1,6 @@
 # Backtest: rapporthandel (nordic, 5y)
 
-**Körd:** 2026-08-04 20:15 UTC · **Universum:** `config/backtest_universe_nordic.txt` (30 symboler) · **Benchmark:** ^OMX
+**Körd:** 2026-08-04 20:50 UTC · **Universum:** `config/backtest_universe_nordic.txt` (30 symboler) · **Benchmark:** ^OMX
 
 **Frågan:** ska boken köpa INFÖR en rapport (på förväntningar) eller EFTER en bekräftad överraskning (post-earnings drift)?
 
@@ -33,9 +33,9 @@ Detekterade händelser: **138** i SET_GAP (PEAD-armarna) · **322** i SET_VOL (P
 |---|---|---|---|---|---|---|---|---|
 | PRE_ALL | 322 | -0.8 % | -0.5 % | 43 % | 0.65 | -0.9 % | -11.2 % | 5 % |
 | PRE_MOM | 202 | -0.1 % | -0.1 % | 48 % | 0.93 | -0.4 % | -10.6 % | 4 % |
-| PEAD_D0 | 65 | +2.3 % | -0.7 % | 48 % | 2.07 | +2.5 % | -5.8 % | 0 % |
-| PEAD_D0C | 65 | +1.2 % | -1.1 % | 48 % | 1.45 | +0.9 % | -5.8 % | 0 % |
-| PEAD_D1 | 65 | +0.4 % | -2.8 % | 38 % | 1.12 | -0.0 % | -5.8 % | 0 % |
+| PEAD_D0 | 64 | +2.3 % | -0.8 % | 47 % | 2.03 | +2.6 % | -5.8 % | 0 % |
+| PEAD_D0C | 64 | +1.1 % | -1.5 % | 47 % | 1.41 | +0.9 % | -5.8 % | 0 % |
+| PEAD_D1 | 64 | +0.3 % | -2.9 % | 38 % | 1.09 | -0.0 % | -5.8 % | 0 % |
 
 **Sämsta decil** = medelutfallet i de 10 % värsta affärerna. **Andel ≤ −10 %** = hur ofta en enskild position tappar mer än en tiondel. Båda kolumnerna finns för hävstångsfrågan: en arm med tjock vänstersvans tål ingen belåning oavsett medelvärde.
 
@@ -47,9 +47,9 @@ Brytdatum: **2024-01-26**. En arm som bara fungerar i en halva är brus.
 |---|---|---|---|---|---|
 | PRE_ALL | 97 | -0.6 % | 226 | -1.0 % | ja (−/−) |
 | PRE_MOM | 61 | -0.3 % | 141 | -0.1 % | ja (−/−) |
-| PEAD_D0 | 9 | för få | 57 | +2.6 % | – |
-| PEAD_D0C | 9 | för få | 57 | +2.0 % | – |
-| PEAD_D1 | 9 | för få | 57 | +1.0 % | – |
+| PEAD_D0 | 9 | för få | 56 | +2.5 % | – |
+| PEAD_D0C | 9 | för få | 56 | +1.9 % | – |
+| PEAD_D1 | 9 | för få | 56 | +1.0 % | – |
 
 ## 4. Känslighet mot detektionströsklarna
 
@@ -59,8 +59,8 @@ Varje arm svepas över tröskeln i SIN egen händelsemängd. Att svepa PRE över
 
 | Gap-tröskel | Händelser | PEAD_D0 medel | PEAD_D0C medel | PEAD_D1 medel |
 |---|---|---|---|---|
-| ≥ 3 % | 195 | +1.0 % | +0.3 % | -0.0 % |
-| ≥ 4 % | 138 | +2.3 % | +1.2 % | +0.4 % |
+| ≥ 3 % | 195 | +0.8 % | +0.2 % | -0.1 % |
+| ≥ 4 % | 138 | +2.3 % | +1.1 % | +0.3 % |
 | ≥ 6 % | 61 | +3.6 % | +3.7 % | +1.9 % |
 
 **PRE-armarna över volym-tröskeln (SET_VOL, inget gapvillkor):**
@@ -73,7 +73,7 @@ Varje arm svepas över tröskeln i SIN egen händelsemängd. Att svepa PRE över
 
 ## 5. Latenskostnaden
 
-Ett dygns fördröjning kostar **+2.0 procentenheter** per affär (PEAD_D0 +2.3 % → PEAD_D1 +0.4 %). Det är priset för att routinen kör före marknadens öppning och bara har föregående stängning verifierad. Skillnaden är liten nog att fördröjningen inte i sig underkänner armen.
+Ett dygns fördröjning kostar **+2.0 procentenheter** per affär (PEAD_D0 +2.3 % → PEAD_D1 +0.3 %). Det är priset för att routinen kör före marknadens öppning och bara har föregående stängning verifierad. Skillnaden är liten nog att fördröjningen inte i sig underkänner armen.
 
 ## 6. Regimfiltrets bidrag
 
@@ -83,17 +83,17 @@ Huvudtabellerna ovan är körda MED regimfiltret på (benchmark > MA200), efters
 |---|---|---|---|---|---|
 | PRE_ALL | 322 | -0.8 % | 514 | -1.2 % | +0.4 pp |
 | PRE_MOM | 202 | -0.1 % | 277 | -0.6 % | +0.5 pp |
-| PEAD_D0 | 65 | +2.3 % | 94 | +1.2 % | +1.1 pp |
-| PEAD_D0C | 65 | +1.2 % | 94 | +1.0 % | +0.2 pp |
-| PEAD_D1 | 65 | +0.4 % | 94 | +0.4 % | -0.1 pp |
+| PEAD_D0 | 64 | +2.3 % | 93 | +1.1 % | +1.1 pp |
+| PEAD_D0C | 64 | +1.1 % | 93 | +0.9 % | +0.2 pp |
+| PEAD_D1 | 64 | +0.3 % | 93 | +0.4 % | -0.1 pp |
 
 ## 7. Slutsats
 
 - **PRE_ALL: UNDERKÄND** (halva A -0.6 % < 0.5 % · halva B -1.0 % < 0.5 % · alpha -0.9 % ≤ 0) · hela perioden -0.8 % medel, median -0.5 %, alpha -0.9 %, träff 43 %, sämsta decil -11.2 %, andel ≤ −10 %: 5 %
 - **PRE_MOM: UNDERKÄND** (halva A -0.3 % < 0.5 % · halva B -0.1 % < 0.5 % · alpha -0.4 % ≤ 0) · hela perioden -0.1 % medel, median -0.1 %, alpha -0.4 %, träff 48 %, sämsta decil -10.6 %, andel ≤ −10 %: 4 %
-- **PEAD_D0: UNDERKÄND** (för få mätpunkter i en halva) · hela perioden +2.3 % medel, median -0.7 %, alpha +2.5 %, träff 48 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
-- **PEAD_D0C: UNDERKÄND** (för få mätpunkter i en halva) · hela perioden +1.2 % medel, median -1.1 %, alpha +0.9 %, träff 48 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
-- **PEAD_D1: UNDERKÄND** (för få mätpunkter i en halva · alpha -0.0 % ≤ 0) · hela perioden +0.4 % medel, median -2.8 %, alpha -0.0 %, träff 38 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
+- **PEAD_D0: UNDERKÄND** (för få mätpunkter i en halva) · hela perioden +2.3 % medel, median -0.8 %, alpha +2.6 %, träff 47 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
+- **PEAD_D0C: UNDERKÄND** (för få mätpunkter i en halva) · hela perioden +1.1 % medel, median -1.5 %, alpha +0.9 %, träff 47 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
+- **PEAD_D1: UNDERKÄND** (för få mätpunkter i en halva · alpha -0.0 % ≤ 0) · hela perioden +0.3 % medel, median -2.9 %, alpha -0.0 %, träff 38 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
 
 **Kravet är satt i förväg** och har fyra led: (1) ≥ 0.5 % medel i halva A, (2) ≥ 0.5 % medel i halva B, (3) positiv alpha över hela perioden, (4) överlever känslighetssvepet i sin egen händelsemängd. Ledet om 0.5 % finns för att ett medelvärde som inte täcker rundturskostnaden inte är en edge – ett rent `> 0`-krav släppte igenom +0,04 % på avrundning i den första körningen.
 

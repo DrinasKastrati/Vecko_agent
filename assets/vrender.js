@@ -922,6 +922,14 @@
 
   function renderSimple(m){
     m = m || {};
+    /* KLARSPRÅK: sleeven heter "Indexsleeve (SPY)" i portfolj.md, och det ordet
+       är branschjargong. Det ENKLA lägets hela uppgift är att slippa sådant, så
+       namnet skrivs om VID VISNING – portfolj.md är parsningskontrakt och får
+       inte döpas om. Sleeven blev ett innehav 2026-08-03; sedan dess visade
+       startvyn ordet för en läsare som inte kan det, både i innehavslistan och i
+       händelseloggen. Använd den här överallt där ett innehavsnamn skrivs ut. */
+    const plainName = x => String((x && (x.name || x.ticker)) || "")
+      .replace(/indexsleeven?/i, "Indexfond");
     const books = m.books || [];
     const todo = (m.actions || []).filter(a => a.decision === "KÖP" || a.decision === "SÄLJ");
     const held = [];
@@ -935,7 +943,7 @@
         <div class="sv-q">Behöver du göra något i dag?</div>
         <div class="sv-a">Ja – ${todo.length} ${todo.length === 1 ? "affär" : "affärer"} att lägga.</div>
         <ul class="sv-todo">${todo.map(a =>
-          `<li><b>${esc(a.decision === "KÖP" ? "Köp" : "Sälj")} ${esc(a.name || a.ticker)}</b>${
+          `<li><b>${esc(a.decision === "KÖP" ? "Köp" : "Sälj")} ${esc(plainName(a))}</b>${
             a.why ? ` – ${esc(truncate(a.why, 150))}` : ""}</li>`).join("")}</ul>
         <p class="sv-note">Roboten lägger inga ordrar själv. Den föreslår, du bestämmer.</p>
       </div>`;
@@ -969,7 +977,7 @@
           const sinceTxt = h.since ? ` <span class="sv-since">${esc(h.since)} sedan köpet</span>` : "";
           const sleeve = h.isSleeve
             ? ` <span class="sv-tag">indexfond – här parkeras pengar som inte ligger i enskilda aktier</span>` : "";
-          return `<li><b>${esc(h.name || h.ticker)}</b>${sinceTxt}${sleeve}</li>`;
+          return `<li><b>${esc(plainName(h))}</b>${sinceTxt}${sleeve}</li>`;
         }).join("")}</ul>`
       : `<p class="sv-empty">Inget innehav just nu. Pengarna står i indexfonden.</p>`;
     const owns = `<div class="sv-card"><h3>Vad roboten äger</h3>${ownList}</div>`;
@@ -978,7 +986,7 @@
     const acts = (m.actions || []);
     const happened = acts.length
       ? `<ul class="sv-log">${acts.map(a =>
-          `<li>Roboten <b>${esc(SIMPLE_VERB[a.decision] || String(a.decision || "").toLowerCase())}</b> ${esc(a.name || a.ticker)}${
+          `<li>Roboten <b>${esc(SIMPLE_VERB[a.decision] || String(a.decision || "").toLowerCase())}</b> ${esc(plainName(a))}${
             a.decision === "AVVAKTA" ? " eftersom kursen inte gick att bekräfta" : ""}.</li>`).join("")}</ul>`
       : `<p class="sv-empty">Inga beslut fattade i dag.</p>`;
     const today = `<div class="sv-card">

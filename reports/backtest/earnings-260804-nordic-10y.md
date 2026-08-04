@@ -1,6 +1,6 @@
 # Backtest: rapporthandel (nordic, 10y)
 
-**Körd:** 2026-08-04 20:16 UTC · **Universum:** `config/backtest_universe_nordic.txt` (30 symboler) · **Benchmark:** ^OMX
+**Körd:** 2026-08-04 20:50 UTC · **Universum:** `config/backtest_universe_nordic.txt` (30 symboler) · **Benchmark:** ^OMX
 
 **Frågan:** ska boken köpa INFÖR en rapport (på förväntningar) eller EFTER en bekräftad överraskning (post-earnings drift)?
 
@@ -33,9 +33,9 @@ Detekterade händelser: **233** i SET_GAP (PEAD-armarna) · **580** i SET_VOL (P
 |---|---|---|---|---|---|---|---|---|
 | PRE_ALL | 580 | -0.6 % | -0.5 % | 46 % | 0.76 | -0.7 % | -10.3 % | 4 % |
 | PRE_MOM | 371 | -0.1 % | -0.1 % | 50 % | 0.97 | -0.3 % | -10.2 % | 4 % |
-| PEAD_D0 | 125 | +1.6 % | -1.4 % | 45 % | 1.62 | +2.2 % | -5.8 % | 0 % |
-| PEAD_D0C | 125 | +1.2 % | -1.9 % | 47 % | 1.43 | +1.2 % | -6.1 % | 0 % |
-| PEAD_D1 | 125 | +0.6 % | -2.3 % | 42 % | 1.21 | +0.6 % | -6.1 % | 0 % |
+| PEAD_D0 | 124 | +1.6 % | -1.4 % | 44 % | 1.61 | +2.3 % | -5.8 % | 0 % |
+| PEAD_D0C | 124 | +1.1 % | -1.9 % | 47 % | 1.41 | +1.2 % | -6.1 % | 0 % |
+| PEAD_D1 | 124 | +0.6 % | -2.6 % | 42 % | 1.19 | +0.6 % | -6.1 % | 0 % |
 
 **Sämsta decil** = medelutfallet i de 10 % värsta affärerna. **Andel ≤ −10 %** = hur ofta en enskild position tappar mer än en tiondel. Båda kolumnerna finns för hävstångsfrågan: en arm med tjock vänstersvans tål ingen belåning oavsett medelvärde.
 
@@ -47,9 +47,9 @@ Brytdatum: **2021-08-04**. En arm som bara fungerar i en halva är brus.
 |---|---|---|---|---|---|
 | PRE_ALL | 228 | -0.1 % | 352 | -0.9 % | ja (−/−) |
 | PRE_MOM | 154 | +0.2 % | 217 | -0.3 % | **NEJ** |
-| PEAD_D0 | 60 | +0.9 % | 65 | +2.3 % | **JA (+/+)** |
-| PEAD_D0C | 60 | +1.2 % | 65 | +1.2 % | **JA (+/+)** |
-| PEAD_D1 | 60 | +0.9 % | 65 | +0.4 % | **JA (+/+)** |
+| PEAD_D0 | 60 | +0.9 % | 64 | +2.3 % | **JA (+/+)** |
+| PEAD_D0C | 60 | +1.2 % | 64 | +1.1 % | **JA (+/+)** |
+| PEAD_D1 | 60 | +0.9 % | 64 | +0.3 % | **JA (+/+)** |
 
 ## 4. Känslighet mot detektionströsklarna
 
@@ -59,8 +59,8 @@ Varje arm svepas över tröskeln i SIN egen händelsemängd. Att svepa PRE över
 
 | Gap-tröskel | Händelser | PEAD_D0 medel | PEAD_D0C medel | PEAD_D1 medel |
 |---|---|---|---|---|
-| ≥ 3 % | 355 | +0.7 % | +0.3 % | +0.1 % |
-| ≥ 4 % | 233 | +1.6 % | +1.2 % | +0.6 % |
+| ≥ 3 % | 355 | +0.6 % | +0.3 % | +0.0 % |
+| ≥ 4 % | 233 | +1.6 % | +1.1 % | +0.6 % |
 | ≥ 6 % | 113 | +1.8 % | +1.7 % | +0.6 % |
 
 **PRE-armarna över volym-tröskeln (SET_VOL, inget gapvillkor):**
@@ -83,17 +83,17 @@ Huvudtabellerna ovan är körda MED regimfiltret på (benchmark > MA200), efters
 |---|---|---|---|---|---|
 | PRE_ALL | 580 | -0.6 % | 919 | -0.8 % | +0.2 pp |
 | PRE_MOM | 371 | -0.1 % | 525 | -0.3 % | +0.2 pp |
-| PEAD_D0 | 125 | +1.6 % | 188 | +1.1 % | +0.5 pp |
-| PEAD_D0C | 125 | +1.2 % | 188 | +1.2 % | -0.0 pp |
-| PEAD_D1 | 125 | +0.6 % | 188 | +0.7 % | -0.1 pp |
+| PEAD_D0 | 124 | +1.6 % | 187 | +1.1 % | +0.5 pp |
+| PEAD_D0C | 124 | +1.1 % | 187 | +1.2 % | -0.1 pp |
+| PEAD_D1 | 124 | +0.6 % | 187 | +0.7 % | -0.2 pp |
 
 ## 7. Slutsats
 
 - **PRE_ALL: UNDERKÄND** (halva A -0.1 % < 0.5 % · halva B -0.9 % < 0.5 % · alpha -0.7 % ≤ 0) · hela perioden -0.6 % medel, median -0.5 %, alpha -0.7 %, träff 46 %, sämsta decil -10.3 %, andel ≤ −10 %: 4 %
 - **PRE_MOM: UNDERKÄND** (halva A +0.2 % < 0.5 % · halva B -0.3 % < 0.5 % · alpha -0.3 % ≤ 0) · hela perioden -0.1 % medel, median -0.1 %, alpha -0.3 %, träff 50 %, sämsta decil -10.2 %, andel ≤ −10 %: 4 %
-- **PEAD_D0: GODKÄND** · hela perioden +1.6 % medel, median -1.4 %, alpha +2.2 %, träff 45 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
-- **PEAD_D0C: GODKÄND** · hela perioden +1.2 % medel, median -1.9 %, alpha +1.2 %, träff 47 %, sämsta decil -6.1 %, andel ≤ −10 %: 0 %
-- **PEAD_D1: UNDERKÄND** (halva B +0.4 % < 0.5 %) · hela perioden +0.6 % medel, median -2.3 %, alpha +0.6 %, träff 42 %, sämsta decil -6.1 %, andel ≤ −10 %: 0 %
+- **PEAD_D0: GODKÄND** · hela perioden +1.6 % medel, median -1.4 %, alpha +2.3 %, träff 44 %, sämsta decil -5.8 %, andel ≤ −10 %: 0 %
+- **PEAD_D0C: GODKÄND** · hela perioden +1.1 % medel, median -1.9 %, alpha +1.2 %, träff 47 %, sämsta decil -6.1 %, andel ≤ −10 %: 0 %
+- **PEAD_D1: UNDERKÄND** (halva B +0.3 % < 0.5 %) · hela perioden +0.6 % medel, median -2.6 %, alpha +0.6 %, träff 42 %, sämsta decil -6.1 %, andel ≤ −10 %: 0 %
 
 **Kravet är satt i förväg** och har fyra led: (1) ≥ 0.5 % medel i halva A, (2) ≥ 0.5 % medel i halva B, (3) positiv alpha över hela perioden, (4) överlever känslighetssvepet i sin egen händelsemängd. Ledet om 0.5 % finns för att ett medelvärde som inte täcker rundturskostnaden inte är en edge – ett rent `> 0`-krav släppte igenom +0,04 % på avrundning i den första körningen.
 

@@ -161,6 +161,14 @@ export async function fetchCalendar(symbol, auth, fetchImpl = globalThis.fetch){
     encodeURIComponent(symbol) + "?modules=calendarEvents&crumb=" + encodeURIComponent(auth.crumb);
   try {
     const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Cookie": auth.cookie, "Accept": "application/json" } });
+    /* 404 = instrumentet HAR ingen calendarEvents-modul. Det gäller ETF:er,
+       index och valutapar – de rapporterar inte, så svaret är korrekt och inte
+       ett fel. Skillnaden spelar roll: indexsleeven (SPY, XACT-OMXS30.ST) ligger
+       i båda böckerna och plockas alltid upp av collectSymbols, så utan den här
+       uppdelningen är `errors` ALDRIG tom och går därmed inte att larma på – ett
+       verkligt fel (401 från crumb-flödet, 500, nätavbrott) skulle drunkna bland
+       två permanenta 404:or. */
+    if (r.status === 404) return { symbol, notApplicable: "instrumentet har inga rapporter (ETF/index/valuta)" };
     if (!r.ok) return { symbol, error: "HTTP " + r.status };
     const parsed = parseCalendarEvents(await r.json(), symbol);
     return parsed || { symbol, error: "inget rapportdatum i svaret" };
@@ -180,10 +188,11 @@ export async function run(fetchImpl = globalThis.fetch){
     return null;
   }
   console.log(`Hämtar rapportdatum för ${symbols.length} symboler…`);
-  const entries = [], errors = {};
+  const entries = [], errors = {}, notApplicable = {};
   for (const s of symbols){
     const r = await fetchCalendar(s, auth, fetchImpl);
-    if (r && r.error) errors[s] = r.error;
+    if (r && r.notApplicable) notApplicable[s] = r.notApplicable;
+    else if (r && r.error) errors[s] = r.error;
     else if (r) entries.push(r);
     await sleep(250);
   }
@@ -197,15 +206,24 @@ export async function run(fetchImpl = globalThis.fetch){
     note: "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet " +
           "ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. " +
           "'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
-    counts: { requested: symbols.length, resolved: entries.length, failed: Object.keys(errors).length,
+    counts: { requested: symbols.length, resolved: entries.length,
+              failed: Object.keys(errors).length,
+              notApplicable: Object.keys(notApplicable).length,
               upcoming: upcoming.length },
     upcoming,
     all: entries.sort((a, b) => String(a.date).localeCompare(String(b.date))),
-    errors
+    // `errors` ska vara TOM i friskt läge – det är vad man larmar på.
+    // Instrument utan rapporter (ETF/index/valuta) ligger separat.
+    errors,
+    notApplicable
   };
   writeFileSync("state/earnings_calendar.json", JSON.stringify(out, null, 2) + "\n");
   console.log(`Skrev state/earnings_calendar.json: ${entries.length}/${symbols.length} lösta, ` +
+              `${Object.keys(notApplicable).length} utan rapporter (ETF/index), ` +
+              `${Object.keys(errors).length} fel, ` +
               `${upcoming.length} rapporterar inom ${DEFAULT_HORIZON_DAYS} handelsdagar.`);
+  if (Object.keys(errors).length)
+    for (const [s2, e2] of Object.entries(errors)) console.log(`  FEL ${s2}: ${e2}`);
   for (const u of upcoming)
     console.log(`  ${u.symbol.padEnd(12)} ${u.date} (${u.tradingDaysAway} hd)${u.isEstimate ? " [gissat]" : ""}`);
   return out;
