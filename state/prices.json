@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-04T21:45:35.853Z",
+  "generatedAt": "2026-08-04T22:20:49.975Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -104,10 +104,10 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 64168.08,
+      "price": 64183.53,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-04T21:45:19.000Z",
+      "marketTime": "2026-08-04T22:20:29.000Z",
       "marketState": null,
       "previousClose": 63460.8984375,
       "dayHigh": 64338.992,
@@ -164,10 +164,10 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1871.41,
+      "price": 1874.24,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-04T21:45:17.000Z",
+      "marketTime": "2026-08-04T22:20:30.000Z",
       "marketState": null,
       "previousClose": 1858.2564697265625,
       "dayHigh": 1878.9331,
@@ -548,14 +548,14 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.5157,
+      "price": 9.5126,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-04T21:00:00.000Z",
+      "marketTime": "2026-08-04T22:20:45.000Z",
       "marketState": null,
       "previousClose": 9.566450119018555,
-      "dayHigh": 9.5733,
-      "dayLow": 9.5105,
+      "dayHigh": 9.5218,
+      "dayLow": 9.5116,
       "source": "Yahoo Finance (chart API)"
     },
     "VOLCAR-B.ST": {
