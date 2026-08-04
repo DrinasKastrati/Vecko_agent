@@ -942,7 +942,7 @@
       out[k] = { role, label: ROLE_LABEL[role], book: book || (prev && prev.book) || null };
     };
     const rowsOf = (p, key) => (p && Array.isArray(p[key])) ? p[key] : [];
-    const tickerOf = r => r && (r.ticker || r.Ticker || r["Yahoo-ticker"] || "");
+    const tickerOf = r => tickerOfRow(r);
 
     for (const [p, book] of [[o.portfolio, "nordic"], [o.portfolioUs, "us"]]){
       for (const h of rowsOf(p, "holdings")) set(tickerOf(h), "innehav", book);
@@ -1036,7 +1036,28 @@
     };
   }
 
+  /* Tickern ur en PORTFÖLJRAD. Raderna är råa tabellrader med de svenska
+     kolumnnamnen som nycklar – `row["Yahoo-ticker"]`, INTE `row.ticker`.
+
+     Funktionen finns för att den fällan redan kostat en tyst bugg (2026-08-04):
+     rutan "Rapporter på väg" byggde sin innehavslista med `h.ticker`, fick fyra
+     `undefined`, och INNEHAV-markeringen kunde därför ALDRIG visas. Inget gick
+     sönder, inget test föll – vyn såg korrekt ut och gjorde ingenting. Felet satt
+     i limmet mellan parser och renderare, alltså precis där enhetstesterna inte
+     når. Använd den här överallt där en portföljrad ska bli en ticker, så att
+     limmet blir testbart i stället för upprepat. */
+  function tickerOfRow(row){
+    const t = row && (row.ticker || row.Ticker || row["Yahoo-ticker"] || "");
+    return String(t || "").trim().toUpperCase();
+  }
+  // Alla tickers ur en portföljs innehav (tomma filtreras bort).
+  function holdingTickers(portfolio){
+    const rows = (portfolio && Array.isArray(portfolio.holdings)) ? portfolio.holdings : [];
+    return rows.map(tickerOfRow).filter(Boolean);
+  }
+
   const API = {
+    tickerOfRow, holdingTickers,
     field, firstNumberPct, stripMd, parseTables, splitSections, parseFilename,
     normDecision, extractNote, parsePortfolio, parseDaily, parseWeekly, parseScout,
     computeTradeStats, buildFeed, buildReturnSeries,

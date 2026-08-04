@@ -55,7 +55,30 @@ slutsats) och spara den som en cachad rapport i git.
       redan: skriv över DEN – skapa ALDRIG en suffixad dubblett.
    f. Flytta tickern från `pending` till `done` i `state/analysis_queue.json` och lägg till
       `analysedAt` + `file`. Radera ALDRIG befintlig `done`-historik.
-4. Committa och pusha alla nya `reports/analysis/…`-filer OCH `state/analysis_queue.json` DIREKT
+   g. **OM OMDÖMET ÄR `[KÖP]` ELLER `[TECKNA]`: skriv en kandidat till
+      `state/scout_candidates.json` (obligatoriskt, sedan 2026-08-04).** Utan det steget är
+      analysen en ÅTERVÄNDSGRÄND – den skrivs, den cachas i dashboarden, och ingen bok ser den
+      någonsin. Det är exakt samma fel som gjorde att scouten kunde flagga Palantir tre dagar i
+      rad inför rapporten 3/8 utan att någon bok kunde agera; aktien gick +27,6 % den 4/8.
+      Att skriva ett köpomdöme som ingen läser är inte beslutsstöd.
+
+      Fyll fälten enligt filens `comment`:
+      - `source`: `"analys"` · `id`: `yymmdd-TICKER` · `status`: alltid `"new"` (du avgör den
+        ALDRIG själv – det gör ansvarig bok i sin punkt 2d)
+      - `book`: `"nordic"` för nordiska tickers (`.ST`/`.OL`/`.CO`/`.HE`), annars `"us"`
+      - `confirmed`: `true` bara när analysen vilar på en INTRÄFFAD katalysator (rapport släppt,
+        order tecknad, besked lämnat). Ett värderingsargument utan färsk utlösare är `false` –
+        då blir kandidaten en bevakningspost, vilket är korrekt och inte en nedgradering.
+      - `price` + `priceAsOf`: samma verifierade kurs som analysen bygger på. Går kursen inte att
+        verifiera skrivs `null` i BÅDA – kandidaten kan då avfärdas men aldrig köpas.
+      - `catalystType` ur enumen · `thesis`: max 300 tecken, kärnan i köpskälet ·
+        `sourceRef`: analysfilens namn · `expiresAt`: 5 handelsdagar från `date`
+
+      Omdömena `[BEHÅLL]`, `[AVVAKTA]` och `[AVSTÅ]` skapar INGEN kandidat – de innehåller inget
+      köpförslag att avgöra. Validera före commit:
+      `node .github/scripts/validate-scout-candidates.mjs`.
+4. Committa och pusha alla nya `reports/analysis/…`-filer, `state/analysis_queue.json` OCH
+   `state/scout_candidates.json` (om steg 3g skapade en kandidat) DIREKT
    till main. Skapa ALDRIG ny branch, pull request eller fork. Misslyckas push (sandlådan saknar
    ofta credentials): lämna filerna korrekt skrivna och notera att Dren publicerar med `push.bat`
    – fastna aldrig i upprepade push-försök.

@@ -83,10 +83,15 @@
       // decision_eval.json bakas medvetet INTE in i dashboard.json: den skrivs av
       // pris-jobbet var 30:e minut (när ett beslut mognar) och skulle tvinga fram en
       // ombyggnad lika ofta – samma skäl som för prices/alerts/decisions.
-      const [prices, queue, priceHistory, alerts, alloc, costs, decisions, decisionEval] = await Promise.all([
+      // scout_candidates.json och earnings_calendar.json bakas INTE heller in:
+      // kandidatfilen ändras varje gång en bok avgör en post, kalendern varje
+      // morgon. Samma skäl som för decision_eval ovan.
+      const [prices, queue, priceHistory, alerts, alloc, costs, decisions, decisionEval,
+             candidates, earningsCal] = await Promise.all([
         j("state/prices.json"), j("state/analysis_queue.json"), j("state/price_history.json"),
         j("state/alerts.json"), j("state/allocation.json"), j("config/kostnader.json"),
-        j("state/decisions.json"), j("state/decision_eval.json")
+        j("state/decisions.json"), j("state/decision_eval.json"),
+        j("state/scout_candidates.json"), j("state/earnings_calendar.json")
       ]);
 
       const S = this.state;
@@ -104,6 +109,7 @@
       S.prices = prices; S.queue = queue; S.priceHistory = priceHistory; S.alerts = alerts;
       S.allocation = alloc; S.costs = costs || this.P.DEFAULT_COSTS; S.decisions = decisions;
       S.decisionEval = decisionEval;
+      S.candidates = candidates; S.earningsCal = earningsCal;
       S.feed = this.P.buildFeed(S.dailies, S.weeklies);
       this._alertsPath = "state/alerts.json";
       this._prebuiltAt = d.generatedAt || null;
@@ -127,6 +133,8 @@
         const costsPath = paths.find(p => /(^|\/)kostnader\.json$/i.test(p));
         const decisionsPath = paths.find(p => /(^|\/)decisions\.json$/i.test(p));
         const decEvalPath = paths.find(p => /(^|\/)decision_eval\.json$/i.test(p));
+        const candPath = paths.find(p => /(^|\/)scout_candidates\.json$/i.test(p));
+        const earnCalPath = paths.find(p => /(^|\/)earnings_calendar\.json$/i.test(p));
         const wlPath = paths.find(p => /(^|\/)watchlist\.txt$/i.test(p));
         const wlUsPath = paths.find(p => /(^|\/)watchlist_us\.txt$/i.test(p));
         const wMetas = metas.filter(m => m.type === "weekly").slice(0, 12);
@@ -134,7 +142,7 @@
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt, decisionEval] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt, decisionEval, candidates, earningsCal] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -152,7 +160,9 @@
           decisionsPath ? this.fetchJSON(this.raw(decisionsPath)).catch(() => null) : Promise.resolve(null),
           wlPath ? this.getMd(wlPath).catch(() => null) : Promise.resolve(null),
           wlUsPath ? this.getMd(wlUsPath).catch(() => null) : Promise.resolve(null),
-          decEvalPath ? this.fetchJSON(this.raw(decEvalPath)).catch(() => null) : Promise.resolve(null)
+          decEvalPath ? this.fetchJSON(this.raw(decEvalPath)).catch(() => null) : Promise.resolve(null),
+          candPath ? this.fetchJSON(this.raw(candPath)).catch(() => null) : Promise.resolve(null),
+          earnCalPath ? this.fetchJSON(this.raw(earnCalPath)).catch(() => null) : Promise.resolve(null)
         ]);
         this.state.prices = prices;
         this.state.queue = queue;
@@ -167,6 +177,8 @@
         this.state.usDailies  = udMetas.map((m, i) => this.P.parseDaily(udMds[i], m));
         this.state.usWeeklies = uwMetas.map((m, i) => this.P.parseWeekly(uwMds[i], m));
         this.state.allocation = alloc;
+        this.state.candidates = candidates;
+        this.state.earningsCal = earningsCal;
         this.state.lessons = lessonsMd ? this.P.parseLessons(lessonsMd) : null;
         this.state.costs = costs || this.P.DEFAULT_COSTS;
         this.state.decisions = decisions;
@@ -310,6 +322,25 @@
       // den frågan backtestet lämnade obesvarad.
       const deEl = this.el("decisionEval");
       if (deEl) deEl.innerHTML = R.renderDecisionEval(S.decisionEval);
+      const candEl = document.getElementById("candidates");
+      if (candEl) candEl.innerHTML = R.renderCandidates(S.candidates);
+      const erEl = document.getElementById("earningsSoon");
+      if (erEl){
+        /* Innehav ur BÅDA böckerna – en rapport i ett innehav är det prompten
+           kallar binär händelse, och det är den enda raden som kräver åtgärd. */
+        /* MÅSTE gå via P.holdingTickers: portföljrader är råa tabellrader med
+           svenska kolumnnamn, så `h.ticker` är undefined och INNEHAV-markeringen
+           hade aldrig visats (tyst bugg, 2026-08-04). */
+        const held = [].concat(this.P.holdingTickers(S.portfolio),
+                               this.P.holdingTickers(S.portfolioUs));
+        erEl.innerHTML = R.renderEarningsSoon(S.earningsCal, held);
+        const blk = document.getElementById("earningsSoonBlock");
+        // Öppna av sig själv bara när ett INNEHAV rapporterar – annars är det brus.
+        if (blk && !blk.dataset.touched){
+          const up = (S.earningsCal && S.earningsCal.upcoming) || [];
+          if (up.some(u => held.includes(u.symbol))) blk.open = true;
+        }
+      }
       this.el("bubblare").innerHTML = R.renderBubblare(S.weeklies[0]);
       this.renderTotalView();
       this.renderUs();

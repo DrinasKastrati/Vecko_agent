@@ -24,6 +24,12 @@ state/search-index.json  -merge -diff
 # decisions.json + price_history.json. Samma resonemang som ovan: den ska byggas
 # om, aldrig handmergas.
 state/decision_eval.json -merge -diff
+# earnings_calendar.json GENERERAS av prices.yml (och kan köras lokalt vid
+# felsökning). Samma läge som decision_eval ovan: två skrivare, en fil, och en
+# auto-merge lägger konfliktmarkörer MITT I JSON:en – vilket tömmer rutan
+# "Rapporter på väg" utan att något går sönder. Vid konflikt: kör om
+# earnings-calendar.mjs och `git add`, handmerga aldrig.
+state/earnings_calendar.json -merge -diff
 
 # Push-notisernas statefiler. push_sent.json är en ren dedupe-lista (skrivs av
 # monitorns timkörning) och push_subs.json en enhetsregistrering (skrivs av

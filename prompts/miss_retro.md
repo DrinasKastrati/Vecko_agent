@@ -48,8 +48,25 @@ att processen var fel.
    OBS: `price_history.json` täcker bara de ~10 bevakade nordiska tickerna och kan därför per
    konstruktion inte hitta en vinnare systemet inte redan tittat på – den är ett komplement till
    `movers.json`, aldrig ett substitut. För USA är nyhetssöket (punkt 1) fortfarande primärt.
+2c. **LÄS `state/scout_candidates.json` – den DYRASTE sortens miss står där.** Filen listar varje
+   kandidat som flaggats av scouten eller en beställd analys, med den NAMNGIVNA spärr som fällde
+   den (`decisionReason`). Skillnaden mot punkt 1–2b är avgörande: de letar efter vinnare systemet
+   aldrig såg, medan den här filen innehåller vinnare systemet SÅG och ändå avstod från. En sådan
+   miss är allvarligare, för den beror på urvalsregeln och inte på täckningen – och den är den enda
+   sorten som går att åtgärda genom att ändra en regel.
+   Gå igenom alla poster med `status: "rejected"` från perioden, hämta kursutvecklingen sedan
+   `date` ur `price_history.json`/`prices.json` och gruppera dem på `decisionReason`.
+   **Leta efter MÖNSTER, inte enskilda fall:** faller samma spärr gång på gång på kandidater som
+   sedan stiger är det spärren som är fel kalibrerad, inte otur. Ett enskilt avvisat namn som gick
+   upp är däremot INGEN miss – det är facit-bias, och kravet i punkt 3 gäller oförändrat.
+   Redovisa i rapporten hur många avvisade kandidater perioden hade och vilka spärrar som stod för
+   flest. Är filen tom eller saknas: skriv det, och notera att bryggan varit outnyttjad.
+   **Poster med `status: "new"` som passerat `expiresAt`** betyder att en bok aldrig tog ställning
+   – det är ett processfel och ska upp som åtgärdspunkt (L-3), inte behandlas som en miss.
 3. En kandidat är en MISS endast om systemet under perioden varken (a) ägde den, (b) hade den
-   som pending/bubblare med aktiv plan, eller (c) lyfte den som scout-case. Diskvalificera
+   som pending/bubblare med aktiv plan, eller (c) lyfte den som scout-case. **Undantag för punkt
+   2c:** en kandidat som fanns i `scout_candidates.json` och AVVISADES räknas som miss trots (c) –
+   att ha sett den och tackat nej är just det retron ska granska. Diskvalificera
    rörelser utan identifierbar katalysator (ren slump/squeeze utan nyhet) – de är brus, inte
    missar.
 4. KURSKRAV: ange rörelsen med verifierad kurs (källa + tidsstämpel, helst price_history.json /

@@ -93,8 +93,24 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   DESSUTOM i `decisions.json` (`KÖP`/`AVVAKTA`) så `decision_eval.mjs` får kontrafaktiskt
   underlag. Två hårda spärrar i `validate-scout-candidates.mjs`: **ingen promotion utan
   verifierad kurs** och **ingen promotion av obekräftad katalysator** (`confirmed: false`).
-  Skrivs av scoutprompten (punkt 7), läses av båda rotationsprompterna (punkt 2d).
-  Validatorn körs i `test.yml` OCH i auto-merge-grinden.
+  Skrivs av scoutprompten (punkt 7) **och av analysarbetaren (`analysprompt.md` punkt 3g) när
+  omdömet är `[KÖP]`/`[TECKNA]`**, läses av båda rotationsprompterna (punkt 2d) och av
+  miss-retron (punkt 2c). Validatorn körs i `test.yml` OCH i auto-merge-grinden.
+  **Analysen var samma återvändsgränd som scouten fram till 2026-08-04:** den skrev ett explicit
+  köpomdöme i klammer som INGEN bok läste. Ett köpomdöme utan mottagare är inte beslutsstöd.
+  Nordiska boken får normalt en TOM lista – scouten täcker bara USA/krypto, och nordisk
+  kandidatgenerering sker direkt ur `news_feed.json` i LÄGE A punkt g0. Nordiska poster uppstår
+  via `source: "analys"`. Leta ingen bugg i en tom lista.
+  **Miss-retron (punkt 2c) läser filen för den DYRASTE sortens miss:** en vinnare systemet SÅG
+  och ändå avstod från. De vanliga missdetektorerna (`movers.json`, nyhetssök) hittar bara sådant
+  systemet aldrig såg. Retron ska leta MÖNSTER i `decisionReason` – faller samma spärr gång på
+  gång på namn som sedan stiger är spärren felkalibrerad. Ett enskilt avvisat namn som gick upp
+  är däremot facit-bias, inte en miss.
+  **I dashboarden:** rutan "Kandidatkö" i Scout-vyn (`VRender.renderCandidates`). Den visar KÖN,
+  inte utfallet – utfallet syns redan på annat håll (promotad → `KÖP` → Hem-vyns "något att
+  göra?", avvisad → `AVVAKTA` → "Avvisade" i beslutsutvärderingen). Det som INTE gick att se
+  förrän nu var en kandidat som ligger och väntar, och det var precis den tystnaden som lät
+  Palantir flaggas tre dagar i rad. En försenad kandidat får en röd kant och en varningsrad.
 - **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
   körs i `prices.yml` på 05:00-cronen. Redigera aldrig för hand.** Löser att watchlistan
   fylldes i EFTERHAND: PLTR saknade rad i `watchlist_us.txt`, fick därför ingen kurs, föll
@@ -107,6 +123,14 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   förväg men får ALDRIG behandlas som "binär händelse inom 2 handelsdagar" – då kunde en
   gissning blockera ett köp, eller värre, släppa igenom ett köp dagen före en riktig rapport.
   Faller hämtningen lämnas filen ORÖRD (en tom kalender läses som "inga rapporter på väg").
+  Märkt `-merge` i `.gitattributes` av samma skäl som `decision_eval.json`: två skrivare (actionen
+  och en lokal felsökningskörning), och en auto-merge lägger konfliktmarkörer mitt i JSON:en.
+  Fältet `errors` ska vara TOM i friskt läge – det är vad man larmar på. Instrument som saknar
+  rapporter (ETF/index/valuta ⇒ HTTP 404) ligger i `notApplicable`. Utan den uppdelningen innehöll
+  `errors` alltid indexsleeven (SPY, XACT-OMXS30.ST) och gick därför inte att larma på.
+  **I dashboarden:** hopfällbara rutan "Rapporter på väg" i Översikt (`renderEarningsSoon`), som
+  fäller ut sig SJÄLV bara när ett INNEHAV rapporterar – det är då det är en binär händelse som
+  kräver ett beslut. Ett `isEstimate`-datum märks "gissat datum" och räknas aldrig som bekräftat.
 - **`state/decisions.json` bruttolist-spärr i watchdogen (2026-08-04).** Regeln "logga hela
   bruttolistan i LÄGE A" fanns redan sedan 2026-08-03 och följdes ändå inte:
   us-veckorapport-260803 avvisade tretton namn i prosa men skrev två rader, så INTC och AMD
@@ -208,6 +232,10 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `assets/vparse.js` som webbappen. Laddningen gick från ~106 nätanrop till ~23, varav 0
   masshämtad markdown. Volatil JSON (prices/alerts/allocation/decisions/kostnader/kön) bakas
   medvetet INTE in – den skrivs var 30:e minut och skulle tvinga fram ombyggnad lika ofta.
+  **Budgeten är nästan slut:** `tests/data.mjs` kräver ≤ 30 hämtningar i den förbyggda vägen och
+  ligger på **29** sedan kandidatkön och rapportkalendern kopplades in 2026-08-04. Nästa
+  direkthämtade fil spränger taket – det är avsiktligt, den ska tvinga fram ett medvetet val
+  mellan att baka in filen i `dashboard.json` och att höja taket. Höj det aldrig reflexmässigt.
   **Fallback finns kvar:** saknas eller fallerar `dashboard.json` går appen tillbaka till att
   läsa filträdet via GitHub-API:t och hämta varje rapport – t.ex. i fönstret mellan att en
   routine pushat och att actionen kört. `tests/data.mjs` bevisar att BÅDA vägarna fungerar.

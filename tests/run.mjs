@@ -1584,6 +1584,109 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("push-sub: samma endpoint ersätts, dubbleras inte", up.subscriptions.length === 1 && up.subscriptions[0].label === "ny");
 }
 
+/* ---- KANDIDATKÖN OCH RAPPORTER PÅ VÄG (UI, 2026-08-04) ------------------
+   Rena renderfunktioner, testas utan DOM. Poängen med kandidatrutan är att
+   göra VÄNTANDE kandidater synliga – utfallet syns redan i andra vyer. */
+{
+  const kand = (over = {}) => Object.assign({
+    id: "260804-PLTR", date: "2026-08-04", ticker: "PLTR", book: "us", source: "scout",
+    catalystType: "earnings", catalystDate: "2026-08-03", confirmed: true,
+    thesis: "Q2 krossade, US commercial +149 %.", sourceRef: "CNBC 2026-08-03",
+    price: 160.37, priceAsOf: "2026-08-04T16:13:25Z", status: "new",
+    expiresAt: "2026-08-11", decidedBy: null, decidedAt: null
+  }, over);
+
+  // Saknad fil och tom lista måste ge OLIKA besked – "filen finns inte" och
+  // "inget flaggat i dag" är helt skilda tillstånd för den som läser.
+  ok("kandidatruta: saknad fil förklarar vad filen är",
+     VR.renderCandidates(null).includes("scout_candidates.json"));
+  ok("kandidatruta: tom lista säger 'inga kandidater'",
+     /Inga kandidater/.test(VR.renderCandidates({ candidates: [] })));
+
+  const h = VR.renderCandidates({ candidates: [kand()] }, "2026-08-05");
+  ok("kandidatruta: visar ticker och tes", h.includes("PLTR") && h.includes("US commercial"));
+  ok("kandidatruta: väntande räknas", h.includes("1 väntar på avgörande"));
+  ok("kandidatruta: ingen försening före expiresAt", !h.includes("FÖRSENAD"));
+
+  /* Den viktigaste raden i hela rutan: en kandidat som passerat sitt datum
+     utan avgörande är ett PROCESSFEL och måste synas som ett. */
+  const sen = VR.renderCandidates({ candidates: [kand()] }, "2026-08-12");
+  ok("kandidatruta: försenad kandidat flaggas", sen.includes("FÖRSENAD") && sen.includes("sv-warn"));
+
+  const utanKurs = VR.renderCandidates({ candidates: [kand({ price: null, priceAsOf: null })] }, "2026-08-05");
+  ok("kandidatruta: saknad kurs märks ut", utanKurs.includes("kurs saknas"));
+  const obekr = VR.renderCandidates({ candidates: [kand({ confirmed: false })] }, "2026-08-05");
+  ok("kandidatruta: obekräftad märks som bevakning", obekr.includes("bevakning"));
+  const avvisad = VR.renderCandidates({ candidates: [kand({ status: "rejected",
+    decidedBy: "r.md", decidedAt: "2026-08-05", decisionReason: "RSI 79 utan exceptionell katalysator" })] }, "2026-08-06");
+  ok("kandidatruta: avvisad visar sin spärr", avvisad.includes("RSI 79") && avvisad.includes("Avvisad"));
+  // Väntande ska ligga överst – det är dem rutan finns för.
+  const ordn = VR.renderCandidates({ candidates: [
+    kand({ id: "260801-AAA", ticker: "AAA", status: "rejected", decidedBy: "r.md", decidedAt: "2026-08-02", decisionReason: "x" }),
+    kand({ id: "260804-BBB", ticker: "BBB" })
+  ] }, "2026-08-05");
+  ok("kandidatruta: väntande sorteras överst", ordn.indexOf("BBB") < ordn.indexOf("AAA"));
+  /* En trasig post får ALDRIG släcka vyn. Filerna skrivs av LLM-routiner, så
+     en null-rad är realistisk – före 2026-08-04 kastade renderaren på den och
+     hela rutan försvann i stället för att visa de läsbara raderna. */
+  ok("kandidatruta: null-post släcker inte vyn",
+     VR.renderCandidates({ candidates: [null, kand()] }, "2026-08-05").includes("PLTR"));
+  ok("kandidatruta: enbart skräp ger tomt läge, inte krasch",
+     /Inga kandidater/.test(VR.renderCandidates({ candidates: [null, 42, "x"] }, "2026-08-05")));
+  ok("kandidatruta: escapar html i tes",
+     !VR.renderCandidates({ candidates: [kand({ thesis: "<img src=x onerror=1>" })] }, "2026-08-05").includes("<img"));
+}
+{
+  const cal = { horizonDays: 10, upcoming: [
+    { symbol: "AMD", date: "2026-08-04", tradingDaysAway: 0, isEstimate: false },
+    { symbol: "NVO", date: "2026-08-05", tradingDaysAway: 1, isEstimate: true },
+    { symbol: "OSSD.ST", date: "2026-08-18", tradingDaysAway: 10, isEstimate: false }
+  ] };
+  ok("rapportrad: saknad kalender förklaras",
+     VR.renderEarningsSoon(null).includes("earnings_calendar.json"));
+  ok("rapportrad: tom lista säger inga rapporter",
+     /Inga rapporter/.test(VR.renderEarningsSoon({ horizonDays: 10, upcoming: [] })));
+  const e = VR.renderEarningsSoon(cal, ["AMD"]);
+  ok("rapportrad: i dag / i morgon i klarspråk", e.includes("i dag") && e.includes("i morgon"));
+  /* INNEHAV-markeringen är hela nyttan: en rapport i ett innehav är det
+     prompten kallar binär händelse och kräver ett explicit beslut. */
+  ok("rapportrad: innehav markeras", e.includes("INNEHAV") && e.includes("er--held"));
+  // Räkna TAGGEN, inte ordet – "INNEHAV" står också i förklaringstexten under
+  // listan, så en ordräkning testar fel sak och ger falskt utslag.
+  ok("rapportrad: bara ägda bolag får taggen",
+     (e.match(/class="er-tag"/g) || []).length === 1);
+  /* Ett GISSAT datum får aldrig läsas som bekräftat – då kunde en gissning
+     blockera ett köp, eller släppa igenom ett köp dagen före en riktig rapport. */
+  ok("rapportrad: gissat datum märks ut", e.includes("gissat datum"));
+  ok("rapportrad: utan innehav ingen markering",
+     !VR.renderEarningsSoon(cal, []).includes('class="er-tag"'));
+  ok("rapportrad: null-post släcker inte vyn",
+     VR.renderEarningsSoon({ upcoming: [null, cal.upcoming[0]] }, []).includes("AMD"));
+  ok("rapportrad: held=null kraschar inte",
+     VR.renderEarningsSoon(cal, null).length > 10);
+
+  /* LIMMET MELLAN PARSER OCH RENDERARE (tyst bugg, 2026-08-04).
+     Portföljrader är RÅA tabellrader med svenska kolumnnamn – `row["Yahoo-ticker"]`,
+     inte `row.ticker`. Rutan byggde först sin innehavslista med `h.ticker`, fick
+     bara `undefined`, och INNEHAV-markeringen kunde ALDRIG visas. Ingenting gick
+     sönder och inget test föll: vyn såg korrekt ut och gjorde ingenting.
+     Enhetstesterna missade det för att de matade renderaren med färdiga strängar –
+     felet satt i limmet. Därför testas nu accessorn mot den VERKLIGA radformen. */
+  const rad = { "Aktie": "Saab", "Yahoo-ticker": "SAAB-B.ST", "Börs": "Nasdaq Stockholm" };
+  ok("ticker ur portföljrad: svenskt kolumnnamn", VP.tickerOfRow(rad) === "SAAB-B.ST");
+  ok("ticker ur portföljrad: gemener normaliseras", VP.tickerOfRow({ ticker: "amzn" }) === "AMZN");
+  ok("ticker ur portföljrad: tom rad ger tom sträng",
+     VP.tickerOfRow(null) === "" && VP.tickerOfRow({}) === "");
+  ok("holdingTickers: plockar alla och filtrerar tomma",
+     VP.holdingTickers({ holdings: [rad, {}, { "Yahoo-ticker": "AMZN" }] }).join() === "SAAB-B.ST,AMZN");
+  ok("holdingTickers: tål saknad portfölj",
+     VP.holdingTickers(null).length === 0 && VP.holdingTickers({}).length === 0);
+  // Änden-till-änden: rad ur portföljen -> markerad i rapportrutan.
+  ok("rapportrad: portföljrad ger INNEHAV-tagg", VR.renderEarningsSoon(
+     { upcoming: [{ symbol: "SAAB-B.ST", date: "2026-08-06", tradingDaysAway: 1 }] },
+     VP.holdingTickers({ holdings: [rad] })).includes('class="er-tag"'));
+}
+
 /* ---- RAPPORTHANDEL: proxy, armar och grindar (2026-08-04) ----------------
    Funktionerna avgör om systemet får köpa på en rapportkatalysator. Ett fel i
    dem syns inte i drift – en felaktigt detekterad "rapportdag" ger bara en

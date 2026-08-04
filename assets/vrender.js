@@ -613,6 +613,92 @@
   // stället VARJE beslut mot efterföljande kurs, inklusive de AVVISADE. De
   // avvisade är hela poängen: går de bättre än de köpta är filtret för strängt.
   // Underlaget växer med ~10–15 rader i veckan i stället för ~1 i månaden.
+  /* ---- KANDIDATKÖN (state/scout_candidates.json) -------------------------
+     Rutan finns för att göra KÖN synlig, inte utfallet. Utfallet syns redan:
+     en promotad kandidat blir ett KÖP i dagsrapporten och dyker upp i Hem-vyns
+     "något att göra?", en avvisad blir en AVVAKTA-rad och hamnar under
+     "Avvisade" i beslutsutvärderingen. Det som INTE gick att se förrän nu är
+     en kandidat som ligger och väntar – och det var precis den tystnaden som
+     lät Palantir flaggas tre dagar i rad utan att någon bok tog ställning.
+     Renderaren är REN och testas utan DOM. */
+  const CAND_STATUS_SV = { "new": "Väntar på avgörande", "promoted": "Köpt",
+                           "rejected": "Avvisad", "expired": "Utgången" };
+  function renderCandidates(db, today){
+    /* Filtrera bort icke-objekt DIREKT. Filen skrivs av en LLM-routine, så en
+       trasig eller null-post är ett realistiskt läge – och utan det här ledet
+       kastar renderaren och SLÄCKER HELA VYN i stället för att visa de rader
+       som faktiskt går att läsa. Validatorn fångar sådant i CI, men appen
+       renderar det som ligger på main just nu. */
+    const list = (db && Array.isArray(db.candidates))
+      ? db.candidates.filter(c => c && typeof c === "object") : null;
+    if (!list)
+      return `<div class="empty">Ingen kandidatkö – <code>state/scout_candidates.json</code> skrivs av scouten och av beställda analyser, och avgörs av rotationerna.</div>`;
+    if (!list.length)
+      return `<div class="empty">Inga kandidater just nu. Scouten och analyserna lägger in nya här; rotationerna avgör dem samma dag.</div>`;
+    const now = today || new Date().toISOString().slice(0, 10);
+    // Väntande först (det är dem rutan finns för), sedan senast avgjorda.
+    const rank = c => (c && c.status === "new") ? 0 : 1;
+    list.sort((a, b) => rank(a) - rank(b) ||
+      String((b && b.decidedAt) || (b && b.date) || "").localeCompare(String((a && a.decidedAt) || (a && a.date) || "")));
+    const waiting = list.filter(c => c && c.status === "new");
+    // En väntande kandidat som passerat expiresAt = ingen bok tog ställning.
+    const stale = waiting.filter(c => c.expiresAt && c.expiresAt < now);
+    const rows = list.slice(0, 20).map(c => {
+      const st = CAND_STATUS_SV[c.status] || String(c.status || "");
+      const isStale = c.status === "new" && c.expiresAt && c.expiresAt < now;
+      const cls = c.status === "promoted" ? "kop" : c.status === "rejected" ? "avvakta"
+                : isStale ? "salj" : "behall";
+      const why = c.decisionReason ? ` <span class="cand-why">${esc(truncate(c.decisionReason, 140))}</span>` : "";
+      const conf = c.confirmed === false
+        ? ` <span class="badge badge--rumor" title="Obekräftad katalysator – kan aldrig bli ett köp">bevakning</span>` : "";
+      const px = (typeof c.price === "number")
+        ? ` <span class="cand-px">${esc(String(c.price))}</span>`
+        : ` <span class="cand-px cand-px--none" title="Kurs kunde inte verifieras – kandidaten kan avfärdas men aldrig köpas">kurs saknas</span>`;
+      return `<li class="cand cand--${cls}">
+        <div class="cand-top">${tickerPill(c.ticker)}<span class="book-badge book-badge--${c.book === "us" ? 1 : 0}">${c.book === "us" ? "US" : "Nordisk"}</span>${conf}${px}
+          <span class="cand-st">${esc(st)}${isStale ? " – FÖRSENAD" : ""}</span></div>
+        <div class="cand-th">${esc(truncate(c.thesis || "", 180))}</div>
+        <div class="cand-meta">flaggad ${esc(c.date || "?")} av ${esc(c.source || "?")}${c.expiresAt ? ` · gäller t.o.m. ${esc(c.expiresAt)}` : ""}${why}</div>
+      </li>`;
+    }).join("");
+    const warn = stale.length
+      ? `<div class="sv-warn">${stale.length} kandidat(er) har passerat sitt sista giltighetsdatum utan att någon bok tagit ställning. Rotationsprompternas punkt 2d kräver ett avgörande per körning – det här är ett processfel, inte ett marknadsläge.</div>`
+      : "";
+    return `${warn}<div class="cand-sum">${waiting.length} väntar på avgörande · ${list.length} totalt</div>
+      <ul class="cand-list">${rows}</ul>
+      <p class="stat-note">En kandidat måste avgöras av ansvarig bok samma dag: avvisad med namngiven spärr, eller köpt. Avvisade loggas som <code>AVVAKTA</code> och mäts i "Tillför urvalet något?" under Avkastning. En kandidat utan verifierad kurs kan aldrig bli ett köp.</p>`;
+  }
+
+  /* ---- RAPPORTER PÅ VÄG (state/earnings_calendar.json) -------------------
+     Direkt handlingsbart: en rapport i ett INNEHAV är det prompten kallar
+     "binär händelse inom 2 handelsdagar" och kan tvinga fram ett beslut före
+     eventet. `isEstimate` måste märkas – Yahoo gissar då datumet ur förra
+     årets kadens, och en gissning får aldrig läsas som ett bekräftat datum. */
+  function renderEarningsSoon(cal, heldTickers){
+    // Samma skäl som i renderCandidates: en trasig post får aldrig släcka vyn.
+    const up = (cal && Array.isArray(cal.upcoming))
+      ? cal.upcoming.filter(u => u && typeof u === "object") : null;
+    if (!up)
+      return `<div class="empty">Ingen rapportkalender – <code>state/earnings_calendar.json</code> hämtas av pris-jobbet varje morgon.</div>`;
+    if (!up.length)
+      return `<div class="empty">Inga rapporter inom ${esc(String((cal && cal.horizonDays) || 10))} handelsdagar bland bevakade bolag.</div>`;
+    const held = new Set((heldTickers || []).filter(Boolean));
+    const rows = up.slice(0, 12).map(u => {
+      const own = held.has(u.symbol);
+      const när = u.tradingDaysAway === 0 ? "i dag"
+                : u.tradingDaysAway === 1 ? "i morgon"
+                : `om ${u.tradingDaysAway} handelsdagar`;
+      return `<li class="er${own ? " er--held" : ""}">
+        ${tickerPill(u.symbol)}<span class="er-when">${esc(när)}</span>
+        <span class="er-date">${esc(u.date || "")}</span>
+        ${own ? `<span class="er-tag" title="Rapporten är en binär händelse i ett innehav">INNEHAV</span>` : ""}
+        ${u.isEstimate ? `<span class="er-est" title="Yahoo gissar datumet ur förra årets kadens – inte bekräftat av bolaget">gissat datum</span>` : ""}
+      </li>`;
+    }).join("");
+    return `<ul class="er-list">${rows}</ul>
+      <p class="stat-note">Bolag markerade <b>INNEHAV</b> rapporterar medan boken äger dem – prompten kräver att positionen då motiveras explicit eller säljs i förväg. Ett <b>gissat datum</b> räknas aldrig som bekräftad binär händelse.</p>`;
+  }
+
   const ACTION_SV = { "KÖP": "Köpta", "SÄLJ": "Sålda", "BEHÅLL": "Behållna", "AVVAKTA": "Avvisade" };
   function renderDecisionEval(ev){
     if (!ev || !ev.counts)
@@ -1024,7 +1110,7 @@
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,
-    renderDecisionEval };
+    renderDecisionEval, renderCandidates, renderEarningsSoon };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   else root.VRender = API;
 })(typeof window!=="undefined"?window:this);

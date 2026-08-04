@@ -101,6 +101,17 @@ ok("förbyggd: scout parsad", S.scouts.length > 0);
 ok("förbyggd: lärdomar parsade", !!S.lessons);
 ok("förbyggd: kurser hämtade live", !!S.prices);
 ok("förbyggd: nyhetsflödet byggt", !!S.feed);
+/* Kandidatkön och rapportkalendern hämtas DIREKT (inte ur dashboard.json) och
+   måste därför fungera i BÅDA laddningsvägarna. Det är hela poängen med den här
+   filen: fallback-vägen används i fönstret mellan att en routine pushat och att
+   dashboard.yml kört, och en fil som bara kopplats i den ena vägen blir tom
+   precis då utan att något går sönder. */
+ok("förbyggd: kandidatkön hämtad", A.req.raw.includes("state/scout_candidates.json"));
+ok("förbyggd: rapportkalendern hämtad", A.req.raw.includes("state/earnings_calendar.json"));
+ok("förbyggd: kandidatrutan renderad",
+   A.window.document.getElementById("candidates").innerHTML.length > 40);
+ok("förbyggd: rapportrutan renderad",
+   A.window.document.getElementById("earningsSoon").innerHTML.length > 40);
 const dHem = A.window.document.getElementById("hemMain").innerHTML;
 ok("förbyggd: Hem-vyn renderad med innehåll", dHem.length > 500);
 
@@ -132,6 +143,10 @@ ok("fallback: markdown hämtades per fil", B.req.md > 10);
 ok("fallback: portföljen parsad ändå", !!B.dash.state.portfolio && B.dash.state.portfolio.holdings.length >= 0);
 ok("fallback: Hem-vyn renderad ändå", B.window.document.getElementById("hemMain").innerHTML.length > 500);
 ok(`fallback: kostar väsentligt fler anrop (${B.req.total} mot ${A.req.total})`, B.req.total > A.req.total * 3);
+ok("fallback: kandidatrutan renderad ändå",
+   B.window.document.getElementById("candidates").innerHTML.length > 40);
+ok("fallback: rapportrutan renderad ändå",
+   B.window.document.getElementById("earningsSoon").innerHTML.length > 40);
 
 // sökningen faller också tillbaka
 const C = await boot(["state/dashboard.json", "state/search-index.json"]);

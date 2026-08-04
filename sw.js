@@ -14,7 +14,12 @@
    Cachen töms inte automatiskt på gamla nycklar – CACHE-namnet nedan bumpas
    manuellt om formatet på det som cachas ändras.
    ========================================================================== */
-const CACHE = "vecko-agent-v3";
+// v4 (2026-08-04): index.html fick två nya behållare – "candidates" (kandidatkön
+// i Scout-vyn) och "earningsSoon" (rapporter på väg i Översikt). app.js renderar
+// till dem, så ett cachat skal från v3 saknar dem. Strategin är nät-först och
+// renderingen är null-säkrad, så följden hade blivit tysta tomma rutor snarare än
+// ett fel – men just det är skälet att bumpa: format på det som cachas ändrades.
+const CACHE = "vecko-agent-v4";
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */

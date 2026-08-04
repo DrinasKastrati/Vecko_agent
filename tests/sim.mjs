@@ -216,6 +216,23 @@ ok("kurser: px-grid med tickers", txt("prices").includes("px-item"));
 ok("nyheter: feed renderad", txt("feed").includes("feed"));
 ok("scout: senaste rapporten", txt("scoutBody").length > 100);
 
+/* Kandidatkön och rapportkalendern (2026-08-04). Båda hämtas DIREKT som
+   decisions.json – de bakas inte in i dashboard.json, eftersom kandidatfilen
+   ändras varje gång en bok avgör en post och kalendern varje morgon. Proven
+   nedan är integrationsprov: att renderfunktionerna fungerar visas i
+   tests/run.mjs, det här visar att appen faktiskt HÄMTAR och MONTERAR dem. */
+ok("kandidatkön monterad i scout-vyn", txt("candidates").length > 40);
+ok("kandidatkön säger något begripligt när den är tom",
+   /Inga kandidater|väntar på avgörande|scout_candidates\.json/.test(txt("candidates")));
+ok("rapportkalendern monterad i översikten", txt("earningsSoon").length > 40);
+{
+  // Kalendern finns i repot – rutan ska visa rapporter eller ett tydligt tomt läge,
+  // aldrig en tom sträng (det senare ser ut som en trasig vy).
+  const er = txt("earningsSoon");
+  ok("rapportkalendern visar rader eller tomt läge",
+     /er-list|Inga rapporter|earnings_calendar\.json/.test(er));
+}
+
 // Navigering
 dash.showView("kurser");
 ok("navigering: kurser aktiveras", doc.querySelector('.view[data-view="kurser"]').classList.contains("active"));
