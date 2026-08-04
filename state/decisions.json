@@ -343,6 +343,89 @@
    "rsi": null,
    "reason": "Sleeven lamnas orord i LAGE B: inget kop eller salj kraver omviktning. Ingen stop, inget mal. Filtreras bort ur urvalsstatistiken.",
    "lessonIds": []
+  },
+  {
+   "date": "2026-08-04",
+   "book": "us",
+   "mode": "B",
+   "ticker": "AMZN",
+   "action": "BEHÅLL",
+   "price": 284.02,
+   "currency": "USD",
+   "weight": 0.125,
+   "entry": 271.58,
+   "stop": 256.5,
+   "target": 310,
+   "rr": 2.5,
+   "catalystType": "earnings",
+   "sector": "E-handel/moln",
+   "rsi": null,
+   "horizonDays": 25,
+   "reason": "LAGE B: +4,58 pct, varken stop 256,50 eller mal 310 nadd (dagslagsta 278,00). Bezos 10b5-1-forsaljning ar mekanisk, ej punkterad tes. Stop oforandrad.",
+   "lessonIds": [
+    "L-3"
+   ]
+  },
+  {
+   "date": "2026-08-04",
+   "book": "us",
+   "mode": "B",
+   "ticker": "SPY",
+   "action": "BEHÅLL",
+   "price": 757.67,
+   "currency": "USD",
+   "weight": 0.875,
+   "entry": 747.03,
+   "stop": null,
+   "target": null,
+   "rr": null,
+   "catalystType": "index",
+   "sector": "Indexsleeve",
+   "rsi": null,
+   "reason": "Sleeven lamnas orord i LAGE B: inget kop eller salj kraver omviktning. Ingen stop, inget mal. Filtreras bort ur urvalsstatistiken.",
+   "lessonIds": []
+  },
+  {
+   "date": "2026-08-04",
+   "book": "us",
+   "mode": "B",
+   "ticker": "MSFT",
+   "action": "AVVAKTA",
+   "price": 487.65,
+   "currency": "USD",
+   "weight": 0,
+   "entry": null,
+   "stop": null,
+   "target": null,
+   "rr": null,
+   "catalystType": "earnings",
+   "sector": "Mjukvara/moln",
+   "rsi": null,
+   "reason": "Villkorad bubblarplan <= 445,00 EJ TRIGGAD: kurs 487,65 (dagslagsta 475,00), 9,6 pct over villkoret efter +4,93 pct 3/8. Planen aktiv t.o.m. 10/8.",
+   "lessonIds": [
+    "L-2"
+   ]
+  },
+  {
+   "date": "2026-08-04",
+   "book": "us",
+   "mode": "B",
+   "ticker": "JPM",
+   "action": "AVVAKTA",
+   "price": 352.64,
+   "currency": "USD",
+   "weight": 0,
+   "entry": null,
+   "stop": null,
+   "target": null,
+   "rr": null,
+   "catalystType": "other",
+   "sector": "Bank/finans",
+   "rsi": null,
+   "reason": "Villkorad bubblarplan <= 340,00 EJ TRIGGAD: kurs 352,64 (dagslagsta 350,84), 3,7 pct over villkoret. Ingen aterkopsjakt uppat. Planen aktiv t.o.m. 10/8.",
+   "lessonIds": [
+    "L-2"
+   ]
   }
  ]
 }
