@@ -304,6 +304,45 @@
    "lessonIds": [
     "L-2"
    ]
+  },
+  {
+   "date": "2026-08-04",
+   "book": "nordic",
+   "mode": "B",
+   "ticker": "SAAB-B.ST",
+   "action": "BEHÅLL",
+   "price": 615.1,
+   "currency": "SEK",
+   "weight": 0.35,
+   "entry": 585.0,
+   "stop": 585.0,
+   "target": 635.0,
+   "rr": 2.0,
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
+   "rsi": 63.8,
+   "horizonDays": 30,
+   "reason": "LAGE B: +5,15 pct, varken stop eller mal 635 nadd (dayHigh 619,6), tesen intakt. Stop hojd 560 -> 585 (entry) enligt punkt 6 nar +5 pct passerades.",
+   "lessonIds": []
+  },
+  {
+   "date": "2026-08-04",
+   "book": "nordic",
+   "mode": "B",
+   "ticker": "XACT-OMXS30.ST",
+   "action": "BEHÅLL",
+   "price": 488.6,
+   "currency": "SEK",
+   "weight": 0.65,
+   "entry": 486.1,
+   "stop": null,
+   "target": null,
+   "rr": null,
+   "catalystType": "index",
+   "sector": "Indexsleeve",
+   "rsi": null,
+   "reason": "Sleeven lamnas orord i LAGE B: inget kop eller salj kraver omviktning. Ingen stop, inget mal. Filtreras bort ur urvalsstatistiken.",
+   "lessonIds": []
   }
  ]
 }
