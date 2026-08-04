@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-04T20:44:17.139Z",
+  "generatedAt": "2026-08-04T21:45:35.853Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -104,13 +104,13 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 64358.56,
+      "price": 64168.08,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-04T20:43:57.000Z",
+      "marketTime": "2026-08-04T21:45:19.000Z",
       "marketState": null,
       "previousClose": 63460.8984375,
-      "dayHigh": 64331.223,
+      "dayHigh": 64338.992,
       "dayLow": 63292.66,
       "source": "Yahoo Finance (chart API)"
     },
@@ -164,10 +164,10 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1878.14,
+      "price": 1871.41,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-04T20:43:57.000Z",
+      "marketTime": "2026-08-04T21:45:17.000Z",
       "marketState": null,
       "previousClose": 1858.2564697265625,
       "dayHigh": 1878.9331,
@@ -548,14 +548,14 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.5195,
+      "price": 9.5157,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-04T20:44:12.000Z",
+      "marketTime": "2026-08-04T21:00:00.000Z",
       "marketState": null,
       "previousClose": 9.566450119018555,
       "dayHigh": 9.5733,
-      "dayLow": 9.5161,
+      "dayLow": 9.5105,
       "source": "Yahoo Finance (chart API)"
     },
     "VOLCAR-B.ST": {
@@ -623,7 +623,7 @@
       "price": 26584.992,
       "currency": "USD",
       "exchange": "Nasdaq GIDS",
-      "marketTime": "2026-08-04T20:44:12.000Z",
+      "marketTime": "2026-08-04T21:15:59.000Z",
       "marketState": null,
       "previousClose": 25913.900390625,
       "dayHigh": 26679.91,
