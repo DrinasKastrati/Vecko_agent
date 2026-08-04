@@ -34,6 +34,8 @@
 <h1>Systemguide</h1>
 <p class="lead">Hur Vecko_agent fattar sina beslut, hur de mäts, och hur mycket de faktiskt är
 värda. Skriven för dig som vill förstå maskineriet – inte bara läsa av det.</p>
+<p class="meta"><b>Uppdaterad 2026-08-05</b> med kandidatkön (hur en flaggad idé når en bok),
+rapportkalendern, promptarkitekturen och mätningen av rapporthandel.</p>
 <p class="meta">Vill du bara komma igång och använda dashboarden: läs <b>Kom-igang.html</b>.
 Den här filen förutsätter att du redan vet vad entry, stopp och mål är.<br/>
 Driftfrågor – push, tester, backtest, felsökning – ligger i <code>MANUAL.md</code>.</p>
@@ -42,7 +44,9 @@ Driftfrågor – push, tester, backtest, felsökning – ligger i <code>MANUAL.m
 <ol>
   <li>Systemet i helhet</li>
   <li>Dygnet och veckan</li>
+  <li>Hur routinerna styrs – prompterna</li>
   <li>Hur ett case väljs ut</li>
+  <li>Från flaggad idé till beslut</li>
   <li>Positionsstorlek och indexdelen</li>
   <li>Nivåerna: stopp, mål, kostnadströskel</li>
   <li>Katalysatortypen styr planen</li>
@@ -57,8 +61,8 @@ Driftfrågor – push, tester, backtest, felsökning – ligger i <code>MANUAL.m
 
 <section>
 <h2>1. Systemet i helhet</h2>
-<p>Vecko_agent består av nio delar. Fem av dem är <b>AI-körningar</b> som resonerar och skriver
-text. Fyra är <b>ren aritmetik</b> utan språkmodell – de kostar ingenting att köra och kan
+<p>Vecko_agent består av tio delar. Fem av dem är <b>AI-körningar</b> som resonerar och skriver
+text. Fem är <b>ren aritmetik</b> utan språkmodell – de kostar ingenting att köra och kan
 därför köras ofta.</p>
 
 <table>
@@ -77,6 +81,8 @@ processregler</td></tr>
 <tr><td>Nyhetsingestionen</td><td>aritmetik</td><td>Läser pressreleaseflöden varannan timme</td></tr>
 <tr><td>Rörelsedetektorn</td><td>aritmetik</td><td>Hittar veckans stora rörelser i ~110 nordiska
 bolag – underlaget till retron</td></tr>
+<tr><td>Rapportkalendern</td><td>aritmetik</td><td>Hämtar kommande rapportdatum så att bolag som
+snart rapporterar får en verifierad kurs <em>i förväg</em></td></tr>
 </table>
 
 <p>Uppdelningen är inte kosmetisk. De aritmetiska delarna kan köras varje timme utan kostnad och
@@ -84,18 +90,24 @@ utgör systemets <em>sinnen</em>; AI-delarna körs få gånger per dag och utgö
 Monitorn ersätter aldrig rotationens bedömning – den larmar bara att en nivå korsats.</p>
 
 <h3>Hur informationen rör sig</h3>
-<div class="flow">nyhetsflöden ──┐
-kursdata     ──┼──▶  rotation (AI)  ──▶  rapport + portfölj  ──┐
-lärdomar     ──┘            │                                  │
-                            ▼                                  ▼
-                     beslutslogg                          dashboard
-                            │                                  ▲
-                            ▼                                  │
-rörelsedetektor ──▶  miss-retro (AI) ──▶ lärdomar ─────────────┘
-                                              │
-                                              └──▶ tillbaka in i nästa rotation</div>
-<p>Kretsen är sluten: det systemet lär sig på lördagen påverkar måndagens urval. Lärdomarna
-lever i en egen fil som <em>endast</em> retron får skriva i.</p>
+<div class="flow">  IDÉER                        BESLUT                        REDOVISNING
+  ─────                        ──────                        ───────────
+
+scout (AI)      ──┐
+analys (AI)     ──┼──▶  kandidatkö  ──┐
+rapportkalender ──┘                   │
+                                      ├──▶  rotation (AI)  ──▶  rapport
+nyhetsflöden    ──┐                   │            │            + portfölj  ──▶  dashboard
+kursdata        ──┼───────────────────┘            │                              ▲
+lärdomar        ──┘                                ▼                              │
+                                             beslutslogg  ──▶  mätning av urvalet ┘
+                                                   │
+rörelsedetektor ──▶  miss-retro (AI)  ──▶  lärdomar ┘  ──▶  tillbaka in i nästa rotation</div>
+<p>Kretsen är sluten på två sätt. <b>Lärandet:</b> det systemet lär sig på lördagen påverkar
+måndagens urval – lärdomarna lever i en egen fil som <em>endast</em> retron får skriva i.
+<b>Idéerna:</b> allt som flaggas passerar kandidatkön, och varje post där måste få ett
+avgörande. Fram till augusti 2026 saknades det andra ledet: scouten kunde flagga ett case
+som ingen bok läste. Se avsnitt 5.</p>
 </section>
 
 <section>
@@ -125,7 +137,65 @@ träffats, har någon tes punkterats, har en väntande order triggat.</p>
 </section>
 
 <section>
-<h2>3. Hur ett case väljs ut</h2>
+<h2>3. Hur routinerna styrs – prompterna</h2>
+<p>Varje AI-del är en schemalagd Claude-körning som drivs av en <b>promptfil i repot</b>. Prompten
+är inte en instruktion i ett textfält någonstans – den är en versionshanterad fil, och det är
+avsiktligt.</p>
+
+<h3>Varför prompten ligger i repot</h3>
+<p>Routinerna pekar på en femradig <em>laddare</em> som hämtar senaste versionen av repot och läser
+rätt promptfil. Tidigare klistrades hela prompttexten in i schemaläggaren. Följden var att varje
+routine frös vid inklistringens version: en förbättring i repot slog aldrig igenom, och roboten
+kunde köra flera veckor gammal logik utan att någon märkte det. Med laddaren gäller den prompt som
+faktiskt ligger i repot vid körningstillfället.</p>
+
+<table>
+<tr><th>Promptfil</th><th>Styr</th></tr>
+<tr><td><code>dagligprompt.md</code></td><td>Nordiska boken. Enda ingången – måndag ger LÄGE A,
+övriga dagar LÄGE B.</td></tr>
+<tr><td><code>us_dagligprompt.md</code></td><td>Amerikanska boken, samma tvålägesstruktur, egen
+valuta och egna kostnader.</td></tr>
+<tr><td><code>scoutprompt.md</code></td><td>Daglig marknadsscout för USA och krypto. Genererar
+idéer, fattar inga beslut.</td></tr>
+<tr><td><code>allokering.md</code></td><td>Veckovis fördelning av kapital mellan böckerna.</td></tr>
+<tr><td><code>miss_retro.md</code></td><td>Lördagens post-mortem. Skriver processregler.</td></tr>
+<tr><td><code>analysprompt.md</code></td><td><b>Arbetsgången</b> för en beställd aktieanalys: kön,
+kursverifiering, filnamn, commit.</td></tr>
+<tr><td><code>aktieanalys_prompt.md</code></td><td><b>Innehållet</b> i analysen: de fem avsnitten,
+riskerna, omdömet i klammer.</td></tr>
+</table>
+
+<div class="box">
+<b>Två filer för analysen – inte en dubblett</b>
+Arbetsgång och innehåll är skilda saker. Byter du analysens <em>form</em> ska det ske i
+<code>aktieanalys_prompt.md</code>; ändrar du <em>hur kön betas av</em> hör det hemma i
+<code>analysprompt.md</code>. Analysprompten har dessutom tillägg per situation – olönsamt bolag
+(kassa, burn rate, runway), börsintroduktion (lock-up, free float), utdelningsbolag (täcks
+utdelningen av kassaflödet). Ett biotekniksbolag utan runway-avsnitt är en ofullständig analys.
+</div>
+
+<h3>Vad en prompt aldrig får göra</h3>
+<p>Vissa regler ligger fast och får inte mjukas upp av någon prompt, och inte heller av en lärdom
+från retron:</p>
+<ul>
+<li><b>Kursverifieringen.</b> Varje kurs som ligger till grund för ett beslut måste ha källa och
+tidsstämpel. Saknas den skrivs «KURS EJ VERIFIERAD» och inget kursbaserat beslut fattas.</li>
+<li><b>Stoppdisciplinen.</b> Ett stopp får flyttas upp, aldrig ned.</li>
+<li><b>Riskreglerna.</b> Positionsantal och vikter är inte förhandlingsbara i en enskild körning.</li>
+</ul>
+<p>Skälet är enkelt: en förlustsvit frestar systemet att skriva bort sina egna spärrar, och en
+språkmodell som får ändra sina begränsningar kommer förr eller senare att göra det med en
+välformulerad motivering.</p>
+
+<h3>Mallarna är parsningskontrakt</h3>
+<p>Rapporterna följer strikta mallar. De är inte stilguider – dashboarden läser rubrikerna och
+tabellerna maskinellt, så en ändrad rubriknivå kan tömma en hel vy utan att något ser trasigt ut.
+Undantaget är aktieanalyserna: dem renderar dashboarden som fri text och hittar enbart på
+filnamnet, vilket är varför deras form får styras av promptfilen i stället.</p>
+</section>
+
+<section>
+<h2>4. Hur ett case väljs ut</h2>
 <p>På måndagar byggs en bruttolista. Minst fem kandidater <em>måste</em> komma ur nyhetsflödet
 innan roboten får skanna ur eget minne – syftet är att listan ska vara datadriven, inte
 begränsad till bolag modellen råkar minnas. Förra veckans bubblare ska också in i listan, med
@@ -144,7 +214,7 @@ redovisat utfall.</p>
 <p>Hårda krav utöver poängen:</p>
 <ul>
   <li>Risk/reward minst <b>2:1</b> – målet måste ligga minst dubbelt så långt bort som stoppet.</li>
-  <li>Målet måste vara <b>nåbart</b> (avsnitt 5).</li>
+  <li>Målet måste vara <b>nåbart</b> (avsnitt 7).</li>
   <li>Högst <b>2 av 4</b> valda case får vara ryktesdrivna.</li>
   <li>Inte fyra bolag med samma riskprofil – fyra positioner i samma sektor är i praktiken en position.</li>
 </ul>
@@ -166,7 +236,7 @@ kapitalet står kvar i marknaden – regeln stänger av <em>urvalet</em>, inte e
   <li>Regeln gäller <b>enbart nyöppning</b>. Befintliga innehav sköts av sina stopp och mål som
   vanligt, och regimen får aldrig användas som skäl att strunta i ett stopp.</li>
 </ul>
-<p>Underlaget står i avsnitt 9. Kort: filtret är den enda regeln i hela backtestmaterialet som slår
+<p>Underlaget står i avsnitt 11. Kort: filtret är den enda regeln i hela backtestmaterialet som slår
 dagens uppsättning i fyra av fyra halvor och marknader, och det ungefär halverar max drawdown.
 Men det får <em>inte</em> skelettet att slå index – det gör det mindre dåligt.</p>
 
@@ -177,11 +247,98 @@ indexdelen. Det är en viktig egenskap: systemet har ingen kvot att uppfylla.
 </div>
 <p class="meta">Vikterna 35/30/15/20 är i dagsläget satta på omdöme, inte kalibrerade mot data.
 Beslutsloggen samlar underlag för att kunna räkna om dem – det kräver minst 15 stängda affärer,
-och där är systemet ännu inte. Se avsnitt 12.</p>
+och där är systemet ännu inte. Se avsnitt 14.</p>
 </section>
 
 <section>
-<h2>4. Positionsstorlek och indexdelen</h2>
+<h2>5. Från flaggad idé till beslut</h2>
+<p>Ett system kan hitta rätt case och ändå inte tjäna något på det, om fyndet aldrig når fram till
+den del som får handla. Precis det hände i augusti 2026, och kandidatkön är svaret på det.</p>
+
+<div class="box box--warn">
+<b>Felet som byggde funktionen</b>
+Scouten flaggade Palantirs kvartalsrapport tre dagar i rad inför att den släpptes. Rapporten
+krossade förväntningarna och aktien steg <span class="pos">+27,6 %</span> dagen efter. Boken
+kunde varken se, avfärda eller köpa kandidaten – scoutens rapport var löptext som ingen bok
+läste, och det fanns ingen kanal mellan dem. Ingenting gick sönder, ingen varning utlöstes.
+Idén fanns; vägen fanns inte.
+</div>
+
+<h3>Kön som kanal</h3>
+<p>Allt som flaggas skrivs numera som en <b>strukturerad kandidat</b> i en egen fil. Tre källor
+skriver dit: scouten, en beställd aktieanalys vars omdöme blev <span class="num">[KÖP]</span>,
+och intradag-monitorn. Varje kandidat bär ticker, bok, katalysator, tes, källa och – när den går
+att verifiera – kurs med tidsstämpel.</p>
+
+<div class="flow">scout / analys / monitor
+          │
+          ▼
+   kandidat (status: NY)
+          │
+          ▼
+   nästa rotation MÅSTE avgöra den
+          │
+    ┌─────┴──────┐
+    ▼            ▼
+ AVVISAD       KÖPT
+ (namngiven    (alla grindar
+  spärr)        håller)
+    │            │
+    └─────┬──────┘
+          ▼
+   loggas i beslutsloggen och mäts</div>
+
+<h3>Regeln som bär hela konstruktionen</h3>
+<div class="box box--ok">
+<b>Varje kandidat måste avgöras – tystnad är inte ett alternativ</b>
+En kandidat med status NY ska vid nästa körning antingen avvisas med en <em>namngiven</em> spärr
+eller köpas. Att låta den ligga kvar tills den går ut är precis den tystnad som gjorde
+Palantir-missen osynlig. En kandidat som passerar sitt sista giltighetsdatum utan avgörande
+larmar därför automatiskt, och märks med röd kant i dashboarden.
+</div>
+
+<h3>De sex spärrarna, i ordning</h3>
+<p>Boken prövar varje kandidat i fast ordning och stannar vid första spärren som faller. Ordningen
+är vald så att de billigaste kontrollerna kommer först.</p>
+<table>
+<tr><th>#</th><th>Spärr</th><th>Varför</th></tr>
+<tr><td>1</td><td>Obekräftad katalysator</td><td>Ett väntat event är ingen katalysator. Att köpa
+inför en rapport är mätt och underkänt – se avsnittet om rapporthandel.</td></tr>
+<tr><td>2</td><td>Kurs går inte att verifiera</td><td>Kravet är oförändrat. Kandidaten får
+avfärdas, aldrig köpas.</td></tr>
+<tr><td>3</td><td>Marknadsregimen är av</td><td>Ligger index under sitt 200-dagarssnitt öppnas inga
+nya positioner alls.</td></tr>
+<tr><td>4</td><td>Binär händelse inom två handelsdagar</td><td>Rapport eller besked precis runt
+hörnet gör utfallet till ett myntkast.</td></tr>
+<tr><td>5</td><td>Full bok</td><td>Fyra platser, inga fler.</td></tr>
+<tr><td>6</td><td>De fem vanliga grindarna</td><td>Samma krav som allt annat: kurs, färsk
+katalysator, RSI-tak, målavstånd, förhållande mellan risk och vinst.</td></tr>
+</table>
+
+<p><b>Högst en kandidat köps per körning.</b> Håller flera vinner den med bäst förhållande mellan
+risk och vinst; övriga avvisas med just det som skäl. De raderna är inte bortkastade – de blir
+mätunderlag.</p>
+
+<h3>Varför de avvisade är värdefulla</h3>
+<p>Varje avgörande loggas, både köp och avslag. De avvisade kandidaterna utgör det
+<b>kontrafaktiska underlaget</b>: går de systematiskt bättre än de köpta är urvalsfiltret för
+strängt, och det går inte att upptäcka på något annat sätt. Lördagens retro läser samma fil och
+letar efter <em>mönster</em> – faller samma spärr gång på gång på namn som sedan stiger är spärren
+felkalibrerad. Ett enskilt avvisat namn som råkade gå upp är däremot inget bevis alls.</p>
+
+<h3>Rapportkalendern – att hinna före</h3>
+<p>En kandidat utan verifierad kurs faller på spärr 2. Det lät oskyldigt tills det visade sig att
+bevakningslistan fylldes på <em>i efterhand</em>: Palantir saknade rad i listan, fick därför ingen
+kurs, kunde inte utvärderas – och lades till dagen efter att aktien gått upp. Numera hämtas
+kommande rapportdatum automatiskt, och varje bolag som rapporterar inom tio handelsdagar
+kursbevakas i förväg. Posterna faller ur av sig själva när datumet passerat.</p>
+<p>I Översikt finns rutan <b>Rapporter på väg</b>, som fäller ut sig själv när ett bolag du
+<em>äger</em> ska rapportera – då är det en binär händelse som kräver ett uttryckligt beslut.
+Datum som leverantören bara gissat fram märks «gissat datum» och räknas aldrig som bekräftade.</p>
+</section>
+
+<section>
+<h2>6. Positionsstorlek och indexdelen</h2>
 <p>Modellen är <b>fyra positioner à ungefär 25 %</b>, med spann 15–35 % beroende på hur starkt
 caset är. Jämna poäng ger 25 % var; ett tydligt starkare case kan få upp till 35 %. Varje
 avvikelse från 25 % måste motiveras skriftligt.</p>
@@ -215,7 +372,7 @@ urvalsstatistiken – annars hade den spätt ut siffrorna.</p>
 </section>
 
 <section>
-<h2>5. Nivåerna: stopp, mål, kostnadströskel</h2>
+<h2>7. Nivåerna: stopp, mål, kostnadströskel</h2>
 
 <h3>Stoppbredd: ett band, inte en kalibrering</h3>
 <p>Här stod tidigare att <b>−3 % stopp / +6 % mål</b> var bäst i varje körning. Det påståendet
@@ -256,7 +413,7 @@ för optimistiskt, vilket är den vanligaste tysta felkällan i den här sortens
 </section>
 
 <section>
-<h2>6. Katalysatortypen styr planen</h2>
+<h2>8. Katalysatortypen styr planen</h2>
 <p>Olika katalysatorer rör sig i olika takt. En rapportreaktion driver kursen i veckor; ett
 obekräftat uppköpsrykte dör tyst inom dagar. Därför sätts horisont, mål och stopp efter
 katalysatorns <em>typ</em>, inte efter magkänsla.</p>
@@ -279,7 +436,7 @@ de liggande och binder kapital.</p>
 </section>
 
 <section>
-<h2>7. Varför BEHÅLL är standardvalet</h2>
+<h2>9. Varför BEHÅLL är standardvalet</h2>
 <p>Det här är den enskilt viktigaste regeln i systemet, och den kommer direkt ur mätdata.</p>
 <p>Veckorotation av fyra positioner ger ungefär <b>200 affärer per år</b>. Med den takten är
 nettoresultatet negativt i så gott som varje parameterkombination <em>enbart</em> av
@@ -305,7 +462,7 @@ blev stående. Undantag görs vid gap över 3 % eller när en binär händelse l
 </section>
 
 <section>
-<h2>8. Hur resultatet mäts</h2>
+<h2>10. Hur resultatet mäts</h2>
 <p>Avkastning-vyn visar fyra lager, och skillnaden mellan dem är viktig.</p>
 
 <table>
@@ -372,7 +529,7 @@ hämtas av pris-actionen blir <em>omätbar för alltid</em> – därför listar 
 </section>
 
 <section>
-<h2>9. Vad backtestet faktiskt visade</h2>
+<h2>11. Vad backtestet faktiskt visade</h2>
 <p>Det här avsnittet är det viktigaste i hela guiden, och det säger obekväma saker.</p>
 
 <p>Det <em>mekaniska skelettet</em> – alltså ramverket utan AI-omdöme, med momentum som
@@ -435,7 +592,7 @@ skillnaden är att ramverket inte längre motarbetar det.
   sjunker till 65–69 %. Jämfört med <em>dagens uppsättning</em> vinner regeln i <b>fyra av fyra</b>
   halvor och marknader (nordiskt +4,4 % mot −27,2 % och −5,5 % mot −7,4 %; amerikanskt +18,2 % mot
   +7,5 % och +34,6 % mot +21,0 %). Inget annat i materialet replikerar så. <b>Regeln är därför
-  aktiv sedan 3 augusti 2026</b>, som hård spärr i båda böckerna – se avsnitt 3.</li>
+  aktiv sedan 3 augusti 2026</b>, som hård spärr i båda böckerna – se avsnitt 4.</li>
   <li><b>Långt momentumfönster slår kort</b> i den nordiska boken. I USA är bilden mer blandad,
   men det bästa enskilda utfallet i hela rapporten är ett 60-dagars fönster med de senaste 20
   dagarna bortskippade: <b>+110,3 %</b>.</li>
@@ -481,10 +638,67 @@ bredden ökar.</p>
 <p>Att detta står i systemets egen dokumentation är avsiktligt. Ett beslutsstöd som bara
 redovisar sina träffar är inte ett beslutsstöd – och ett som inte reviderar sina egna
 slutsatser när mätningen visar sig fel är sämre än inget alls.</p>
+
+<h3>Ska man köpa inför en rapport?</h3>
+<p>Frågan kom ur Palantir-missen: rapporten var känd i förväg, utfallet blev starkt, aktien steg
+<span class="pos">+27,6 %</span>. Borde systemet ha köpt <em>före</em> rapporten? Det går inte att
+avgöra genom att titta på ett fall – det är att välja ut vinnaren i efterhand. Så det mättes.</p>
+
+<p>Fyra strategier prövades över varje rapporthändelse i båda marknaderna, över både fem och tio
+år:</p>
+<table>
+<tr><th>Strategi</th><th>Vad den gör</th></tr>
+<tr><td>Köp före</td><td>Köp dagen innan reaktionen, sälj efter den. Ingen gissning om riktning.</td></tr>
+<tr><td>Köp före, i uppgång</td><td>Samma, men bara när aktien trendar upp in i rapporten – alltså
+hypotesen «det gick att läsa av i förväg».</td></tr>
+<tr><td>Köp efter, samma dag</td><td>Köp först när överraskningen är bekräftad och kursen reagerat
+uppåt.</td></tr>
+<tr><td>Köp efter, nästa dag</td><td>Samma, men med ett dygns fördröjning – det systemet realistiskt
+hinner med.</td></tr>
+</table>
+
+<div class="box box--warn">
+<b>Att köpa inför rapporten underkändes i samtliga fyra körningar</b>
+Båda «köp före»-varianterna föll i både Norden och USA, över både fem och tio år. I den nordiska
+boken är avkastningen efter marknadens egen uppgång <span class="neg">negativ i båda halvorna av
+perioden</span>. Att aktien trendar uppåt in i rapporten hjälper inte – det är precis vad den andra
+varianten mäter.
+</div>
+
+<p>Skälet är inte att rapporter saknar betydelse, utan att förväntan redan ligger i priset. Samma
+rapportfönster som gav Palantir +27,6 % gav Meta <span class="neg">−17,8 %</span> och Apple
+<span class="neg">−7,4 %</span> – det sistnämnda på en rapport som <em>slog</em> förväntningarna.
+Och i systemets egen historik finns Intel, som steg 13 % direkt efter sin rapport och stängde
+<span class="neg">−7,9 %</span> dagen därpå.</p>
+
+<h3>Vad det betyder för hävstång</h3>
+<p>Fördelningen avgör saken tydligare än medelvärdet. Bland «köp före»-affärerna slutar
+<b>4–6 % sämre än −10 %</b>, och de tio värsta procenten landar kring <span class="neg">−10 till
+−12 %</span>. Att belåna en strategi med den vänstersvansen är att förstora exakt den del som
+skadar mest. Till jämförelse kapar stoppen svansen i «köp efter»-varianterna, där bara 0–2 % av
+affärerna hamnar under −10 %.</p>
+
+<h3>Och «köp efter»?</h3>
+<p>Den mätte genomgående bättre – positivt medelvärde i alla fyra körningarna och en betydligt
+smalare förlustsvans. Men den klarade <em>inte</em> kravet i båda marknaderna vid samma tidsperiod:
+godkänd i USA på fem år och i Norden på tio, underkänd i de två andra. Därför blev den
+<b>ingen egen köpregel</b>. En bekräftad rapportöverraskning är en helt vanlig kandidat som får
+passera samma sex spärrar som allt annat.</p>
+
+<div class="box">
+<b>Två mätfel som upptäcktes under vägen – och som gäller allt eventtestande</b>
+<b>1. Urvalet kan smyga in facit.</b> Definieras «rapportdag» av hur stort kurshoppet blev, får
+«köp före»-strategin tillgodoräkna sig kunskap den omöjligt kan ha vid köptillfället. Effekten var
+inte teoretisk: bara genom att skärpa den definitionen såg strategin tio gånger bättre ut utan att
+ha ändrats. Numera mäts de två familjerna på olika, rättvisa händelsemängder.
+<b>2. Ett krav på «bättre än noll» är inget krav.</b> En variant passerade på +0,04 % – ett
+medelvärde som inte ens täcker courtaget. Ribban är nu att strategin ska ge minst en halv procent
+per affär i <em>båda</em> halvorna av perioden, plus slå marknaden.
+</div>
 </section>
 
 <section>
-<h2>10. Hur systemet lär sig</h2>
+<h2>12. Hur systemet lär sig</h2>
 <p>Varje lördag körs en <em>miss-retro</em>: en granskning av vinnare som ingen del av systemet
 fångade. Den arbetar i fyra steg.</p>
 
@@ -515,7 +729,7 @@ bara regler.</p>
 </section>
 
 <section>
-<h2>11. Data, färskhet och spärrar</h2>
+<h2>13. Data, färskhet och spärrar</h2>
 
 <h3>Kursverifiering</h3>
 <p>Robotens egen körmiljö är nätspärrad mot kurssajter. Kurser hämtas därför av en separat
@@ -535,6 +749,17 @@ presenterades som en dagsrörelse. Felet upptäcktes, men den första verifierin
 fil skriven <em>före</em> rättelsen – och det gamla felvärdet såg rimligt ut. Numera vägrar både
 rapporterna och dashboarden räkna en dagsrörelse ur en fil som saknar stämpeln.</p>
 
+<h3>Rapportkalendern och bevakningslistan</h3>
+<p>Bevakningslistan fylldes tidigare på i efterhand, av en människa som läst en rapport. Det gjorde
+att ett bevakat bolag kunde sakna kurs exakt den dag det behövdes. Numera hämtas kommande
+rapportdatum automatiskt och varje bolag som rapporterar inom tio handelsdagar kursbevakas i
+förväg. Kalendern skiljer på <b>fel</b> och <b>gäller inte</b>: indexfonder och valutapar har inga
+rapporter, och de ligger i en egen lista så att fellistan är tom när allt fungerar – annars går den
+inte att larma på.</p>
+<p>Ett rapportdatum som leverantören bara <em>gissat</em> fram ur förra årets mönster märks som
+gissat. Det duger för att säkra en kurs i förväg, men aldrig för att blockera ett köp som «binär
+händelse» – en gissning får inte stoppa ett beslut.</p>
+
 <h3>Förbyggd data</h3>
 <p>Dashboarden läser en färdigparsad datafil i stället för att hämta och tolka varje rapport i
 webbläsaren. Det tog laddningen från cirka 106 nätanrop till 23. Saknas eller är filen trasig
@@ -549,18 +774,24 @@ tyst felparsning.</p>
 </section>
 
 <section>
-<h2>12. Kända begränsningar</h2>
+<h2>14. Kända begränsningar</h2>
 <p>Läs det här innan du drar slutsatser av siffrorna.</p>
 
 <table>
 <tr><th>Begränsning</th><th>Innebörd</th></tr>
+<tr><td><b>Rapporthandel är inte en genväg</b></td><td>Att köpa inför en rapport är mätt och
+underkänt i båda marknaderna. Att köpa efter en bekräftad överraskning mätte bättre men var inte
+stabilt nog att bli en egen regel. Förvänta dig ingen extra avkastning från rapportsäsongen.</td></tr>
+<tr><td><b>Kandidatkön är ung</b></td><td>Kedjan från flaggad idé till avgörande togs i drift i
+augusti 2026. Att den fungerar mekaniskt är verifierat; att den ger bättre urval är ännu inte
+mätt.</td></tr>
 <tr><td><b>Statistiken är ännu brus</b></td><td>Antalet stängda affärer är encifrigt. Alla
 nyckeltal i Avkastning-vyn – träffsäkerhet, profit factor, alpha – bygger på för få
 observationer för att betyda något. De visas för att bygga vanan att titta, inte för att
 dra slutsatser.</td></tr>
 <tr><td><b>Poängvikterna är inte kalibrerade</b></td><td>35/30/15/20 är satta på omdöme.
 Kalibrering kräver minst 15 stängda affärer i beslutsloggen.</td></tr>
-<tr><td><b>Ramverket är negativt netto</b></td><td>Se avsnitt 9. Hela edgen måste komma ur
+<tr><td><b>Ramverket är negativt netto</b></td><td>Se avsnitt 11. Hela edgen måste komma ur
 AI-urvalet, och det är ännu obevisat.</td></tr>
 <tr><td><b>Valutaeffekt saknas</b></td><td>Det sammanvägda talet över båda böckerna är exklusive
 kronans rörelse mot dollarn.</td></tr>
