@@ -14,7 +14,15 @@ concurrency:
 
 jobs:
   queue:
-    if: ${{ github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'analys:') }}
+    # ÄGARKONTROLLEN MÅSTE VARA EN LISTA, INTE `== github.repository_owner`.
+    # Repot ägs av DrinasKastrati, men telefonen är inloggad som Drinas-k (samma
+    # person). Med enkonto-grinden hoppade jobbet TYST över varje analys beställd
+    # från telefonen: körningen blev `completed/skipped`, vilket ser GRÖNT ut i
+    # Actions-listan och inte lämnar ett enda felmeddelande – beställningen bara
+    # försvann. Exakt det felet kostade hela push-aktiveringen 2026-08-03 i
+    # push_subscribe.yml; den här filen hade kvar buggen till 2026-08-04.
+    # Lägg till nya konton HÄR, inte genom att ta bort kontrollen.
+    if: ${{ contains(fromJSON('["DrinasKastrati","Drinas-k"]'), github.event.issue.user.login) && startsWith(github.event.issue.title, 'analys:') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

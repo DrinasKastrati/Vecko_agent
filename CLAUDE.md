@@ -81,6 +81,38 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   uttalande under `minN` (8) mätpunkter – fältet skriver `insufficient` + hur många rader som fattas.
   Skriptet skriver bara vid FAKTISK ändring (`generatedAt` jämförs inte), annars gav det ~48 tomma
   commits per dygn.
+- **`state/scout_candidates.json` – BRYGGAN SCOUT → BÖCKERNA (ny 2026-08-04).** Scouten
+  producerade prosa som ingen bok läste: Palantir flaggades i rapport-260801, -260802 och
+  -260803 inför sin rapport 3/8 AMC, boken kunde varken se, avfärda eller köpa kandidaten,
+  och aktien gick **+27,6 %** den 4/8. Fyndet fanns – kanalen fanns inte. Filen ÄR kanalen.
+  **Regeln som inte får luckras upp:** varje kandidat med `status: "new"` MÅSTE få ett
+  avgörande av ansvarig bok vid nästa körning – `rejected` med NAMNGIVEN spärr i
+  `decisionReason`, eller `promoted`. Att låta en ligga kvar tills den expirerar är exakt
+  den tystnad filen byggdes för att omöjliggöra; watchdogen larmar på den, för ingenting
+  annat gör det (inget går sönder, rapporten ser normal ut). Varje avgörande loggas
+  DESSUTOM i `decisions.json` (`KÖP`/`AVVAKTA`) så `decision_eval.mjs` får kontrafaktiskt
+  underlag. Två hårda spärrar i `validate-scout-candidates.mjs`: **ingen promotion utan
+  verifierad kurs** och **ingen promotion av obekräftad katalysator** (`confirmed: false`).
+  Skrivs av scoutprompten (punkt 7), läses av båda rotationsprompterna (punkt 2d).
+  Validatorn körs i `test.yml` OCH i auto-merge-grinden.
+- **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
+  körs i `prices.yml` på 05:00-cronen. Redigera aldrig för hand.** Löser att watchlistan
+  fylldes i EFTERHAND: PLTR saknade rad i `watchlist_us.txt`, fick därför ingen kurs, föll
+  på grind 1 (verifierbar kurs) och kunde inte utvärderas – och lades till dagen efter
+  rörelsen. `fetch-prices.mjs` läser fältet `upcoming` och prisbevakar varje symbol som
+  rapporterar inom 10 handelsdagar; posterna faller ur av sig själva när datumet passerat,
+  så listan behöver ingen hygien. **Yahoo kräver cookie + crumb** (fc.yahoo.com → getcrumb →
+  quoteSummary); utan dem 401 "Invalid Crumb". **Fälla: `isEstimate: true` betyder att Yahoo
+  GISSAT datumet ur förra årets kadens.** Ett gissat datum duger för att säkra en kurs i
+  förväg men får ALDRIG behandlas som "binär händelse inom 2 handelsdagar" – då kunde en
+  gissning blockera ett köp, eller värre, släppa igenom ett köp dagen före en riktig rapport.
+  Faller hämtningen lämnas filen ORÖRD (en tom kalender läses som "inga rapporter på väg").
+- **`state/decisions.json` bruttolist-spärr i watchdogen (2026-08-04).** Regeln "logga hela
+  bruttolistan i LÄGE A" fanns redan sedan 2026-08-03 och följdes ändå inte:
+  us-veckorapport-260803 avvisade tretton namn i prosa men skrev två rader, så INTC och AMD
+  finns noll gånger i loggen. En mening till i prompten hade inte hjälpt – regeln fanns.
+  `checkGrossList` larmar därför när en måndagskörning ger < 6 rader för en bok. Tröskeln är
+  medvetet låg (prompten kräver 10–15 kandidater) så den bara fångar det uppenbara fallet.
 - `state/decisions.json` – append-only, valideras i CI av `validate-decisions.mjs`.
   **HELA bruttolistan loggas i LÄGE A sedan 2026-08-03**, inte bara de valda: varje kandidat som föll
   bort får en `AVVAKTA`-rad med den namngivna spärren i `reason`. Rotationen 2026-08-03 hade 16
@@ -388,6 +420,20 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   mappnamnet på disk). Node v24 på plats. Auto-push-tasken är registrerad men AVSTÄNGD sedan
   2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
+- ✅ **BYGGT 2026-08-04 – "scouten flaggar men inget händer" är åtgärdat.** Kedjan var bruten
+  på tre ställen samtidigt, alla TYSTA: (1) watchlistan fylldes i efterhand ⇒ ingen kurs på
+  eventdagen ⇒ grind 1 föll; (2) scoutens fynd fanns bara i prosa ⇒ ingen bok såg dem;
+  (3) LÄGE B saknade köpväg för en färsk bekräftad katalysator ⇒ fem handelsdagars latens
+  till måndagens rotation. Nu: `earnings-calendar.mjs` prisbevakar rapportbolag 10
+  handelsdagar i FÖRVÄG · `state/scout_candidates.json` + validator är kanalen · köpväg **(d)**
+  finns i BÅDA rotationsprompterna (punkt 2d) med sex spärrar i ordning (obekräftad → kurs
+  saknas → regim av → binär händelse ≤ 2 dagar → full bok → de fem grindarna), högst EN
+  promotion per körning · varje avgörande loggas i `decisions.json`. Tre watchdog-kontroller
+  (`checkGrossList`, `checkScoutCandidates`, `checkEarningsCalendar`) gör de återstående
+  tysta felen hörbara. 30 nya tester i `tests/run.mjs` (493 totalt).
+  **Kvar att se i skarp drift:** första scout-körningen som skriver kandidater (07:47) och
+  första rotationen som avgör dem – kontrollera att `state/scout_candidates.json` växer och
+  att inga poster står kvar som `new` efter `expiresAt`.
 - **KVAR (uppdaterad 2026-08-03 19:20) – i prioritetsordning:**
   0. **PUSH-NOTISER: verifierade i skarp körning 2026-08-03 22:03 UTC.** En testnotis krypterades,
      accepterades av FCM och nådde telefonen (Android 10). Nyckelparet är genererat (publik i
@@ -525,10 +571,29 @@ ta bort skyddet.
   issue-driven Action som grindar på `github.event.issue.user.login == github.repository_owner`
   hoppar därför tyst över allt som skickas in FRÅN TELEFONEN: körningen blir `completed/skipped`,
   vilket ser GRÖNT ut i Actions-listan och inte lämnar ett enda felmeddelande. Symptomet var att
-  `state/push_subs.json` aldrig dök upp. `push_subscribe.yml` grindar sedan dess på en LISTA
-  (`contains(fromJSON('["DrinasKastrati","Drinas-k"]'), …)`). **`analys_queue.yml` har KVAR den
-  gamla enkonto-grinden** – en analys beställd från telefonen försvinner alltså spårlöst på exakt
-  samma sätt. Fixa den när någon rör den filen.
+  `state/push_subs.json` aldrig dök upp. **Både `push_subscribe.yml` och `analys_queue.yml`
+  grindar sedan dess på en LISTA** (`contains(fromJSON('["DrinasKastrati","Drinas-k"]'), …)`) –
+  analys_queue åtgärdades 2026-08-04. Lägg till nya konton i listan; ta aldrig bort kontrollen.
+- **KÖP ALDRIG INFÖR EN RAPPORT – mätt och underkänt 2026-08-04.**
+  `.github/scripts/backtest-earnings.mjs` mäter fyra armar per rapporthändelse över fyra
+  körningar (us/nordic × 5y/10y), rapporter i `reports/backtest/earnings-260804-*.md`.
+  **PRE_ALL och PRE_MOM (köp dagen före reaktionen, utan resp. med momentumfilter) blev
+  UNDERKÄNDA i SAMTLIGA FYRA** – negativ alpha i nordiska boken i båda halvorna, och 4–6 %
+  av affärerna sämre än −10 %. Att aktien trendar upp in i rapporten hjälper inte; det är
+  precis vad PRE_MOM mäter. Post-earnings drift (PEAD) mätte bättre men klarade inte kravet
+  i båda marknaderna vid samma period (godkänd us-5y + nordic-10y, underkänd us-10y +
+  nordic-5y) och är därför **ingen egen köpregel** – en bekräftad rapportöverraskning är en
+  vanlig kandidat som ska passera samma fem grindar som allt annat.
+  **Två mätfällor som filen dokumenterar och som gäller allt eventtestande här:**
+  (1) *Look-ahead via händelseurvalet* – betingas mängden på gapets STORLEK får PRE-armen
+  credit för att veta hur stor rörelsen blev innan den köper; höjd tröskel 4 % → 6 % lyfte
+  PRE_ALL från +0,1 % till +1,3 % utan att strategin ändrats. Därför två mängder: `SET_GAP`
+  (gapvillkor, BARA för PEAD som köper efter observationen) och `SET_VOL` (riktningsblind,
+  BARA för PRE). (2) *Materialitetskravet* – ett rent `> 0`-krav släppte igenom +0,04 % på
+  avrundning; godkännande kräver ≥ 0,5 % medel i BÅDA halvorna plus positiv alpha.
+  Historiska rapportdatum finns inte i Yahoo (`events=earnings` ger null, `earningsHistory`
+  räcker fyra kvartal) → rapportdagar detekteras ur pris + volym, vilket är en PROXY.
+  Ändra ingen av dessa regler utan att köra om båda marknaderna på 10y.
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
 - **Sänk inte verifieringskravet** för kurser – lösningen är pålitliga priser (prices.json), inte
   att ta bort skyddet.

@@ -74,6 +74,15 @@ jobs:
               FAIL=1
               continue
             fi
+            # Bryggan scout -> bok. Utan den har kontrollen kan en routine skriva
+            # en kandidat med uppfunnet enum-varde eller promota en utan verifierad
+            # kurs, och bada nar main utan att nagot sager ifran.
+            if ! node .github/scripts/validate-scout-candidates.mjs; then
+              echo "::error::validate-scout-candidates.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
             if ! node tests/run.mjs; then
               echo "::error::tests/run.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
               git reset --hard origin/main

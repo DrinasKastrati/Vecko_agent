@@ -82,6 +82,29 @@ export function collectTickers(){
   return [...tickers].sort();
 }
 
+/* Symboler som RAPPORTERAR SNART, ur state/earnings_calendar.json.
+
+   Varför de måste med: fram till 2026-08-04 fylldes watchlistan i efterhand, av
+   en människa som läst en rapport. Palantir flaggades av scouten tre dagar i rad
+   inför sin rapport 3/8, saknade rad i watchlisten, fick därför ingen kurs i
+   prices.json, föll på grind 1 (verifierbar kurs) och kunde inte utvärderas –
+   och lades till DAGEN EFTER att aktien gått +27,6 %. Kalendern gör tillägget
+   automatiskt och i FÖRVÄG.
+
+   Posterna faller ur av sig själv när rapportdatumet passerat (kalendern skriver
+   bara `upcoming`), så listan växer inte obegränsat. Saknas eller är filen
+   trasig returneras en tom lista – kursbevakningen ska aldrig falla för att
+   kalendern gjort det. */
+export function collectEarningsTickers(readFile = readFirst){
+  const raw = readFile(["state/earnings_calendar.json"]);
+  if (!raw) return [];
+  try {
+    const j = JSON.parse(raw);
+    const up = Array.isArray(j.upcoming) ? j.upcoming : [];
+    return up.map(u => u && u.symbol).filter(s => typeof s === "string" && s).sort();
+  } catch { return []; }
+}
+
 // ---- USA + krypto (scout-routinen) ------------------------------------
 export function newestScout(){
   const dirs = ["reports/scout", "."];
@@ -277,7 +300,8 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
 
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch){
-  const tickers = [...new Set([...collectTickers(), ...collectUsTickers()])].sort();
+  const tickers = [...new Set([...collectTickers(), ...collectUsTickers(),
+                               ...collectEarningsTickers()])].sort();
   const quotes = {};
   let okCount = 0;
   for (const t of tickers){

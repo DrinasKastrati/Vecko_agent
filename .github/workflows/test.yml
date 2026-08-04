@@ -38,6 +38,8 @@ jobs:
           else
             node .github/scripts/validate-decisions.mjs
           fi
+      - name: Validera scout-kandidaterna (schema + kursverifieringskrav)
+        run: node .github/scripts/validate-scout-candidates.mjs
       - name: Syntaxkontrollera alla JS-moduler
         run: |
           node --check assets/vparse.js
@@ -54,3 +56,6 @@ jobs:
           node --check .github/scripts/fetch-news.mjs
           node --check .github/scripts/backtest.mjs
           node --check .github/scripts/validate-decisions.mjs
+          node --check .github/scripts/validate-scout-candidates.mjs
+          node --check .github/scripts/backtest-earnings.mjs
+          node --check .github/scripts/earnings-calendar.mjs

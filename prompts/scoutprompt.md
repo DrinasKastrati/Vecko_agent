@@ -102,6 +102,38 @@ och rapportflöde samt trovärdiga marknadsrykten.
    och geopolitik. TVINGA ALDRIG fram case – hittas inga tillräckligt starka case eller
    trovärdiga rykten, skriv i stället HÄR varför marknaden är avvaktande just nu.
 
+7. **SKRIV KANDIDATERNA TILL `state/scout_candidates.json` (obligatoriskt, sedan 2026-08-04).**
+   Rapporten är prosa som ingen bok läser. Fram till nu var det hela felet: Palantir
+   flaggades i rapport-260801, -260802 och -260803 inför sin rapport 3/8 AMC, och boken
+   kunde varken se, avfärda eller köpa kandidaten. Aktien gick +27,6 % den 4/8. Den här
+   filen är kanalen – utan en rad här händer ingenting med ditt fynd.
+
+   Lägg till EN post per case du redovisat i punkt 5, plus varje bolag som har en
+   BEKRÄFTAD katalysator du bedömer som handlingsbar även om den inte blev ett fullt case.
+   Fälten står i filens `comment`. Det som oftast blir fel:
+   - `confirmed`: **true endast för ett INTRÄFFAT utfall** (rapport släppt, kontrakt
+     undertecknat, besked lämnat). Ett väntat event – "PLTR rapporterar i kväll" – är
+     `false`. Ett rykte är alltid `false`.
+   - `price` + `priceAsOf`: ur `state/prices.json`. Saknas kursen skriv `null` i BÅDA.
+     Det sänker inget krav; det dokumenterar att ingen kursbaserad bedömning gjordes.
+     En kandidat utan kurs kan avfärdas men aldrig köpas.
+   - `book`: vilken bok som äger namnet (`us` för dina case; nordiska namn hör inte hemma
+     i scouten).
+   - `expiresAt`: 5 handelsdagar från `date`.
+   - `status`: alltid `"new"` när du skapar posten. Du avgör den ALDRIG själv – det gör
+     ansvarig bok.
+
+   Validera före commit: `node .github/scripts/validate-scout-candidates.mjs`. Samma
+   kontroll körs i CI och i auto-merge-grinden; faller den når rapporten inte main.
+
+8. **KÖP ALDRIG INFÖR EN RAPPORT – och föreslå det aldrig.** Mätt 2026-08-04 i
+   `reports/backtest/earnings-260804-*.md` över fyra körningar (us/nordic × 5y/10y):
+   armarna PRE_ALL och PRE_MOM (köp dagen före rapporten, med respektive utan
+   momentumfilter) blev **UNDERKÄNDA i samtliga fyra**, med negativ alpha i nordiska
+   boken och 4–6 % av affärerna sämre än −10 %. Att aktien trendar upp in i rapporten
+   hjälper inte – det är vad PRE_MOM mäter. Ett väntat rapportdatum är därför en
+   BEVAKNINGSPOST (`confirmed: false`), aldrig ett köpförslag.
+
 ## RAPPORTKRAV
 1. Följ EXAKT sektionsstrukturen (rubrikerna) i `templates/scout_case.md`.
 1b. Tickers skrivs ALLTID i Yahoo-format (`NVDA`, `BTC-USD`, `^GSPC`; klassaktier med bindestreck, t.ex. `BRK-B`) – aldrig med mellanslag. Pris-hämtaren läser tickers ur rapporterna.

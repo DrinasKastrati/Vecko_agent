@@ -11,6 +11,7 @@
    öppnar issues (med dedupe mot redan öppna).
    ============================================================ */
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { staleCandidates } from "./validate-scout-candidates.mjs";
 
 // Senaste rapportdatum (yymmdd) bland filnamn med givet prefix, eller null.
 export function latestReportDate(files, prefix){
@@ -143,6 +144,85 @@ export function checkStale(opts){
   return problems;
 }
 
+/* Rader per bok för ett givet datum i decisions.json. Används av
+   bruttolist-spärren nedan. */
+export function decisionRowsOn(db, isoDate, book){
+  const rows = (db && db.decisions) || [];
+  return rows.filter(r => r && r.date === isoDate && (!book || r.book === book));
+}
+
+/* BRUTTOLIST-SPÄRREN (2026-08-04).
+
+   Regeln "logga HELA bruttolistan i LÄGE A" har stått i båda rotationsprompterna
+   sedan 2026-08-03 och följdes ändå inte: us-veckorapport-260803 avvisade
+   tretton namn i prosa (AAPL/META/COIN/HCA/NOC/MS/INTC/TSLA/MU/AMD/TSM/AVGO/NVDA)
+   men skrev bara två AVVAKTA-rader. INTC och AMD finns därför noll gånger i
+   decisions.json, och `decision_eval.mjs` kan inte mäta om urvalsfiltret var för
+   strängt – vilket är precis vad filen finns till för.
+
+   En mening till i prompten hade inte hjälpt; regeln fanns redan. Det här är
+   tripwiren i stället: en LÄGE A-körning (måndag) som producerar färre än
+   `minRows` rader för en bok har nästan säkert loggat de valda och struntat i de
+   avvisade. Tröskeln är medvetet LÅG – prompten kräver 10–15 kandidater, så 6
+   flaggar bara det uppenbara fallet och ger inga falsklarm på en vecka med få
+   kandidater. */
+export function checkGrossList(opts){
+  const { isoDate, isMonday, decisionsDb, minRows = 6 } = opts || {};
+  const problems = [];
+  if (!isMonday || !isoDate || !decisionsDb) return problems;
+  for (const book of ["nordic", "us"]){
+    const rows = decisionRowsOn(decisionsDb, isoDate, book);
+    // Ingen rad alls = boken kördes förmodligen inte; det fångas av "decisions"-
+    // kontrollen ovan och ska inte dubbelrapporteras här.
+    if (!rows.length) continue;
+    if (rows.length < minRows)
+      problems.push({ key: "grosslist-" + book, title:
+        `Watchdog: ${book}-boken loggade bara ${rows.length} beslut i veckorotationen`,
+        body: "LÄGE A ska logga HELA bruttolistan (10–15 kandidater), inte bara de valda – varje " +
+          "bortfallen kandidat som en `AVVAKTA`-rad med den namngivna spärren i `reason`. " +
+          `Bara ${rows.length} rad(er) för ${isoDate} i \`state/decisions.json\`. De avvisade är det ` +
+          "KONTRAFAKTISKA underlaget i `state/decision_eval.json`: utan dem går det inte att mäta " +
+          "om urvalsfiltret är för strängt. Det här hände 2026-08-03 (13 avvisade i prosa, 2 rader)." });
+  }
+  return problems;
+}
+
+/* SCOUT-KANDIDATER SOM ALDRIG FICK ETT AVGÖRANDE.
+   Detta är samma tystnad som gjorde att Palantir kunde flaggas tre dagar i rad
+   utan att någon bok tog ställning. Kandidatfilen gör den mätbar. */
+export function checkScoutCandidates(opts){
+  const { candidatesDb, today, staleFn } = opts || {};
+  const problems = [];
+  if (!candidatesDb) return problems;
+  const stale = staleFn ? staleFn(candidatesDb, today) : [];
+  if (stale.length)
+    problems.push({ key: "scout-candidates", title:
+      `Watchdog: ${stale.length} scout-kandidat(er) gick ut utan avgörande`,
+      body: "Följande kandidater i `state/scout_candidates.json` passerade `expiresAt` med " +
+        "status `new` – ingen bok avfärdade eller köpte dem:\n\n" +
+        stale.map(c => `- **${c.id}** (${c.book}, flaggad ${c.date}, gick ut ${c.expiresAt}): ${c.thesis || ""}`).join("\n") +
+        "\n\nRotationsprompternas punkt 2d kräver ett avgörande per kandidat och körning. " +
+        "En kandidat som tystnar är exakt buggen filen byggdes för att göra omöjlig." });
+  return problems;
+}
+
+/* RAPPORTKALENDERN. Faller den slutar watchlisten fyllas på i förväg, och en
+   bevakad rapport hamnar återigen utan verifierad kurs på dagen den infaller –
+   utan att något går sönder. Samma tysta felsort som regimfiltret. */
+export function checkEarningsCalendar(opts){
+  const { now, generatedAt, maxAgeHours = 30 } = opts || {};
+  const problems = [];
+  if (!generatedAt) return problems;          // bakåtkompatibelt: saknas fältet, var tyst
+  const age = (new Date(now) - Date.parse(generatedAt)) / 3600e3;
+  if (isFinite(age) && age > maxAgeHours)
+    problems.push({ key: "earnings-calendar", title: "Watchdog: rapportkalendern är inaktuell",
+      body: "`state/earnings_calendar.json` är " + Math.round(age) + " timmar gammal (gräns " +
+        maxAgeHours + " h). Den hämtas av `prices.yml` på 05:00-cronen. Fylls den inte på " +
+        "saknar bevakade bolag verifierad kurs på sin rapportdag – det var så PLTR missades " +
+        "2026-08-03. Kontrollera om Yahoo-crumbflödet svarar (401 = cookie/crumb-steget föll)." });
+  return problems;
+}
+
 // Senaste datum i decisions.json som yymmdd, eller null.
 export function latestDecisionYmd(db){
   const rows = (db && db.decisions) || [];
@@ -172,8 +252,15 @@ function main(){
     const s = (ph && ph.series) || {};
     regimeSeries = { "^OMX": (s["^OMX"] || []).length, "^GSPC": (s["^GSPC"] || []).length };
   } catch {}
-  let decisions = null;
-  try { decisions = latestDecisionYmd(JSON.parse(readFileSync("state/decisions.json", "utf8"))); } catch {}
+  let decisions = null, decisionsDb = null;
+  try {
+    decisionsDb = JSON.parse(readFileSync("state/decisions.json", "utf8"));
+    decisions = latestDecisionYmd(decisionsDb);
+  } catch {}
+  let candidatesDb = null;
+  try { candidatesDb = JSON.parse(readFileSync("state/scout_candidates.json", "utf8")); } catch {}
+  let earningsCalAt = null;
+  try { earningsCalAt = JSON.parse(readFileSync("state/earnings_calendar.json", "utf8")).generatedAt || null; } catch {}
   let moversAt = null;
   try { moversAt = JSON.parse(readFileSync("state/movers.json", "utf8")).generatedAt || null; } catch {}
   let alertsAt = null;
@@ -182,8 +269,9 @@ function main(){
     alertsAt = a.checkedAt || null;   // generatedAt duger INTE – se checkStale
   } catch {}
   const ls = d => { try { return readdirSync(d); } catch { return []; } };
+  const now = new Date();
   const problems = checkStale({
-    now: new Date(),
+    now,
     pricesGeneratedAt: gen,
     latestDaily: latestReportDate(ls("reports/daily"), "daglig"),
     latestWeekly: latestReportDate(ls("reports/weekly"), "veckorapport"),
@@ -195,6 +283,16 @@ function main(){
     newsWindow,
     regimeSeries
   });
+
+  const todayIso = now.toISOString().slice(0, 10);
+  problems.push(...checkGrossList({
+    isoDate: todayIso, isMonday: now.getUTCDay() === 1, decisionsDb
+  }));
+  problems.push(...checkScoutCandidates({
+    candidatesDb, today: todayIso, staleFn: staleCandidates
+  }));
+  problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
+
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");
 }

@@ -1572,5 +1572,187 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("push-sub: samma endpoint ersätts, dubbleras inte", up.subscriptions.length === 1 && up.subscriptions[0].label === "ny");
 }
 
+/* ---- RAPPORTHANDEL: proxy, armar och grindar (2026-08-04) ----------------
+   Funktionerna avgör om systemet får köpa på en rapportkatalysator. Ett fel i
+   dem syns inte i drift – en felaktigt detekterad "rapportdag" ger bara en
+   kandidat som ser rimlig ut. Därför testas kanterna, inte lyckofallet. */
+{
+  const BE = await mod(".github/scripts/backtest-earnings.mjs");
+  // Syntetisk serie: platt på 100, sedan ett gap upp till 110 dag 30 med volymspik.
+  const mk = n => Array.from({ length: n }, (_, i) => ({
+    d: "2026-01-" + String(i + 1).padStart(2, "0"), o: 100, h: 101, l: 99, c: 100, v: 1000 }));
+  const c = mk(60);
+  c[30] = { d: c[30].d, o: 110, h: 112, l: 109, c: 111, v: 5000 };
+  const evs = BE.detectEventDays(c, { gapMin: 0.04, volMin: 1.5, minSpacing: 40 });
+  ok("earnings: gap + volymspik detekteras", evs.length === 1 && evs[0].i === 30);
+  ok("earnings: gapPct räknas mot föregående stängning", Math.abs(evs[0].gapPct - 0.10) < 1e-9);
+
+  // Volymvillkoret måste bita: samma gap utan spik är ingen rapportdag.
+  const c2 = c.map(x => Object.assign({}, x));
+  c2[30] = Object.assign({}, c2[30], { v: 1000 });
+  ok("earnings: gap utan volymspik avvisas", BE.detectEventDays(c2, { gapMin: 0.04, volMin: 1.5 }).length === 0);
+
+  // Saknad volymdata (index) får aldrig slinka igenom på enbart gap.
+  const c3 = c.map(x => Object.assign({}, x, { v: null }));
+  ok("earnings: utan volymdata detekteras ingenting", BE.detectEventDays(c3, { gapMin: 0.04, volMin: 1.5 }).length === 0);
+
+  // gapMin 0 = riktningsblind mängd (PRE-armarnas mängd, utan look-ahead).
+  ok("earnings: gapMin 0 detekterar på enbart volym",
+     BE.detectEventDays(c, { gapMin: 0, volMin: 1.5, minSpacing: 40 }).length === 1);
+
+  // minSpacing ska hålla kvartalstakt – två spikar nära varandra ger EN händelse.
+  const c4 = mk(60);
+  c4[30] = { d: c4[30].d, o: 110, h: 112, l: 109, c: 111, v: 5000 };
+  c4[35] = { d: c4[35].d, o: 122, h: 124, l: 120, c: 123, v: 5000 };
+  ok("earnings: minSpacing dedupear kvartalstakt",
+     BE.detectEventDays(c4, { gapMin: 0.04, volMin: 1.5, minSpacing: 40 }).length === 1);
+
+  // PRE: köp stängning dagen före, sälj stängning på reaktionsdagen.
+  const pre = BE.preEarningsTrade(c, evs[0], 0.25);
+  ok("earnings: PRE räknar c[i-1] -> c[i] netto",
+     Math.abs(pre.grossPct - 11) < 1e-9 && Math.abs(pre.retPct - 10.75) < 1e-9);
+
+  // PEAD tar bara BEKRÄFTAT POSITIVA gap – ett negativt gap får aldrig bli ett köp.
+  const negEv = { i: 30, d: c[30].d, gapPct: -0.08 };
+  ok("earnings: PEAD avvisar negativt gap",
+     BE.peadTrade(c, negEv, { offset: 1 }) === null && BE.peadTradeAtClose(c, negEv) === null);
+
+  /* PEAD_D0C får INTE pröva stop/mål på entry-dagens egen high/low – den dagen
+     har redan inträffat när vi köper på stängningen. Serien nedan har ett djupt
+     dagslägsta PÅ reaktionsdagen och lugna dagar efter: en korrekt implementation
+     stoppas inte ut, en look-ahead-buggig gör det. */
+  const c5 = mk(60);
+  c5[30] = { d: c5[30].d, o: 110, h: 112, l: 50, c: 111, v: 5000 };
+  for (let i = 31; i < 60; i++) c5[i] = { d: c5[i].d, o: 111, h: 112, l: 110, c: 111, v: 1000 };
+  const d0c = BE.peadTradeAtClose(c5, { i: 30, d: c5[30].d, gapPct: 0.10 },
+                                  { stopPct: 0.055, targetPct: 0.16, holdDays: 20 });
+  ok("earnings: PEAD_D0C prövar inte entry-dagens egen low (look-ahead)", d0c.reason === "horisont");
+
+  // summarize: under minN uttalar sig inte, precis som decision_eval.
+  const sFew = BE.summarize(Array.from({ length: 5 }, () => ({ retPct: 1, days: 1 })), 20);
+  ok("earnings: under minN säger summarize 'insufficient'", sFew.insufficient === true && sFew.missing === 15);
+  /* Vänstersvansen är det som avgör hävstångsfrågan. 20 affärer ⇒ decilen är de
+     2 sämsta: här −20 och −12, alltså medel −16. Andelen ≤ −10 % blir 2/20 = 10 %. */
+  const sMany = BE.summarize(Array.from({ length: 20 }, (_, i) =>
+    ({ retPct: i === 0 ? -20 : i === 1 ? -12 : 1, days: 1, alphaPct: 0.5 })), 20);
+  ok("earnings: vänstersvansen redovisas för hävstångsfrågan",
+     sMany.shareBelowMinus10 === 10 && sMany.worstDecileMeanPct === -16);
+
+  // Regimgrinden: saknas underlag ska den vara AV (strängare vid osäkerhet).
+  const bench = Array.from({ length: 10 }, (_, i) => ({ d: "2026-01-1" + i, c: 100 }));
+  ok("earnings: regimgrind utan MA-underlag är AV", BE.makeRegimeGate(bench, 200)("2026-01-15") === false);
+  ok("earnings: utan regimMa släpps allt igenom", BE.makeRegimeGate(bench, 0)("2026-01-15") === true);
+}
+
+/* ---- RAPPORTKALENDER (2026-08-04) --------------------------------------- */
+{
+  const EC = await mod(".github/scripts/earnings-calendar.mjs");
+  const j = { quoteSummary: { result: [{ calendarEvents: { earnings: {
+    earningsDate: [{ raw: 1793649600, fmt: "2026-11-02" }],
+    isEarningsDateEstimate: true,
+    earningsAverage: { raw: 0.41 }, revenueAverage: { raw: 2171235880 } } } }] } };
+  const parsed = EC.parseCalendarEvents(j, "PLTR");
+  ok("kalender: datum och konsensus plockas ut",
+     parsed.date === "2026-11-02" && parsed.epsConsensus === 0.41);
+  /* isEstimate MÅSTE överleva parsningen. Ett gissat datum duger för att säkra en
+     kurs i förväg men får aldrig behandlas som en bekräftad binär händelse. */
+  ok("kalender: isEstimate bevaras", parsed.isEstimate === true);
+  ok("kalender: saknad modul ger null", EC.parseCalendarEvents({ quoteSummary: { result: [{}] } }, "X") === null);
+
+  ok("kalender: handelsdagar hoppar över helgen",
+     EC.tradingDaysBetween("2026-08-04", "2026-08-11") === 5);
+  const up = EC.upcomingWithin([
+    { symbol: "A", date: "2026-08-05" }, { symbol: "B", date: "2026-09-30" },
+    { symbol: "C", date: "2026-07-01" }
+  ], "2026-08-04", 10);
+  ok("kalender: bara rapporter inom fönstret, passerade faller ur",
+     up.length === 1 && up[0].symbol === "A" && up[0].tradingDaysAway === 1);
+
+  // Pris-hämtaren måste tåla att kalendern saknas eller är trasig.
+  ok("kalender: fetch-prices tål saknad fil", FP.collectEarningsTickers(() => "").length === 0);
+  ok("kalender: fetch-prices tål trasig JSON", FP.collectEarningsTickers(() => "{trasig").length === 0);
+  ok("kalender: fetch-prices plockar upcoming",
+     FP.collectEarningsTickers(() => JSON.stringify({ upcoming: [{ symbol: "AMD" }, { symbol: "NVO" }] })).join() === "AMD,NVO");
+}
+
+/* ---- SCOUT -> BOK-BRYGGAN (2026-08-04) ----------------------------------
+   Reglerna som INTE får luckras upp: ingen promotion utan verifierad kurs,
+   ingen promotion av en obekräftad katalysator, inget avgörande utan skäl. */
+{
+  const SC = await mod(".github/scripts/validate-scout-candidates.mjs");
+  const base = {
+    id: "260804-PLTR", date: "2026-08-04", ticker: "PLTR", book: "us", source: "scout",
+    catalystType: "earnings", catalystDate: "2026-08-03", confirmed: true,
+    thesis: "Q2 krossade, US commercial +149 %.", sourceRef: "CNBC 2026-08-03",
+    price: 160.37, priceAsOf: "2026-08-04T16:13:25Z", status: "new",
+    expiresAt: "2026-08-11", decidedBy: null, decidedAt: null
+  };
+  ok("kandidat: giltig post accepteras", SC.validateCandidate(base, 0).length === 0);
+
+  const bad = over => SC.validateCandidate(Object.assign({}, base, over), 0).length > 0;
+  ok("kandidat: uppfunnet catalystType avvisas", bad({ catalystType: "hype" }));
+  ok("kandidat: okänd status avvisas", bad({ status: "kanske" }));
+  ok("kandidat: kurs utan tidsstämpel är inte verifierad", bad({ priceAsOf: null }));
+  ok("kandidat: 'new' får inte ha decidedBy", bad({ decidedBy: "rapport.md" }));
+  ok("kandidat: avgörande utan skäl avvisas",
+     bad({ status: "rejected", decidedBy: "r.md", decidedAt: "2026-08-05" }));
+
+  // De två hårda spärrarna.
+  ok("kandidat: promotion utan verifierad kurs avvisas",
+     bad({ status: "promoted", price: null, priceAsOf: null, decidedBy: "r.md",
+           decidedAt: "2026-08-05", decisionReason: "alla grindar håller" }));
+  ok("kandidat: promotion av obekräftad katalysator avvisas",
+     bad({ status: "promoted", confirmed: false, decidedBy: "r.md",
+           decidedAt: "2026-08-05", decisionReason: "alla grindar håller" }));
+  ok("kandidat: korrekt promotion accepteras",
+     SC.validateCandidate(Object.assign({}, base, { status: "promoted", decidedBy: "r.md",
+       decidedAt: "2026-08-05", decisionReason: "alla fem grindar håller, R/R 2,4" }), 0).length === 0);
+
+  ok("kandidat: dubblett-id fångas",
+     SC.validateFile({ candidates: [base, Object.assign({}, base)] }).some(e => /dubblett/.test(e)));
+
+  /* Tystnadskontrollen – kärnan i hela bygget. En kandidat som passerat
+     expiresAt med status 'new' betyder att en bok fick ett flaggat case och
+     aldrig tog ställning. Det är buggen som lät Palantir flaggas tre dagar i
+     rad utan att något hände. */
+  const db = { candidates: [base] };
+  ok("kandidat: 'new' före expiresAt är inte stale", SC.staleCandidates(db, "2026-08-05").length === 0);
+  ok("kandidat: 'new' efter expiresAt larmar", SC.staleCandidates(db, "2026-08-12").length === 1);
+  ok("kandidat: avgjord kandidat larmar aldrig",
+     SC.staleCandidates({ candidates: [Object.assign({}, base, { status: "rejected", decidedBy: "r.md",
+       decidedAt: "2026-08-05", decisionReason: "RSI 79" })] }, "2026-08-12").length === 0);
+}
+
+/* ---- WATCHDOG: bruttolistan och kandidattystnaden ------------------------ */
+{
+  const WD = await mod(".github/scripts/watchdog.mjs");
+  const row = (t, book) => ({ date: "2026-08-03", book, ticker: t, action: "AVVAKTA" });
+  // Exakt fallet från 2026-08-03: US-boken loggade 2 rader av 16 kandidater.
+  const thin = { decisions: [row("MSFT", "us"), row("JPM", "us")] };
+  const pThin = WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: thin });
+  ok("watchdog: tunn bruttolista i LÄGE A larmar",
+     pThin.length === 1 && pThin[0].key === "grosslist-us");
+  const full = { decisions: Array.from({ length: 8 }, (_, i) => row("T" + i, "us")) };
+  ok("watchdog: full bruttolista larmar inte",
+     WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: full }).length === 0);
+  ok("watchdog: bruttolistan prövas bara i LÄGE A (måndag)",
+     WD.checkGrossList({ isoDate: "2026-08-03", isMonday: false, decisionsDb: thin }).length === 0);
+  ok("watchdog: bok utan rader dubbelrapporteras inte",
+     WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: { decisions: [] } }).length === 0);
+
+  ok("watchdog: utgången kandidat larmar",
+     WD.checkScoutCandidates({ candidatesDb: { candidates: [{ id: "260801-PLTR", book: "us",
+       date: "2026-08-01", expiresAt: "2026-08-08", status: "new", thesis: "t" }] },
+       today: "2026-08-12",
+       staleFn: (d, t) => d.candidates.filter(x => x.status === "new" && x.expiresAt < t) }).length === 1);
+
+  ok("watchdog: stale kalender larmar",
+     WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: "2026-08-01T05:00:00Z" }).length === 1);
+  ok("watchdog: färsk kalender larmar inte",
+     WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: "2026-08-04T05:00:00Z" }).length === 0);
+  ok("watchdog: saknat fält är bakåtkompatibelt tyst",
+     WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: null }).length === 0);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

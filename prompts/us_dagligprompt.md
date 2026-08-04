@@ -348,6 +348,51 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    stop/mål manuellt mot verifierad kurs, och skriv upp defekten som åtgärdspunkt till Dren
    enligt L-3 (fil + fält + omfång). Extra viktigt i US-boken: monitorn är det enda som bevakar
    nivåerna mellan 15:00-körningen och nästa dags rapport.
+2d. SCOUT-KANDIDATER (`state/scout_candidates.json`) – **varje post med `status: "new"` och
+   `book: "us"` SKA få ett avgörande i DENNA körning. Ingen får lämnas kvar.** Det är hela
+   poängen med filen: fram till 2026-08-04 flaggade scouten case som boken aldrig såg
+   (Palantir 1–3 aug, +27,6 % den 4/8), och tystnaden var osynlig eftersom ingenting gick
+   sönder. Watchdogen larmar numera på en kandidat som passerat `expiresAt` som `new`.
+
+   För varje kandidat, i denna ordning:
+
+   a) **Är `confirmed: false`?** → `status: "rejected"`, `decisionReason`
+      "obekräftad katalysator – bevakas". Köp inför ett väntat event är UNDERKÄNT i
+      backtestet (se punkt 2e). Ligger ett bekräftat utfall senare i veckan skapar scouten
+      en ny kandidat då; förläng aldrig den gamla.
+   b) **Saknas verifierad kurs (`price: null`)?** → `status: "rejected"`, `decisionReason`
+      "kurs ej verifierbar". Kravet är oförändrat och sänks aldrig.
+   c) **Regimfiltret av** (S&P 500 under MA200 ur `state/price_history.json`)? → `rejected`,
+      "regimen av – inga nya positioner".
+   d) **Binär händelse inom 2 handelsdagar** enligt `state/earnings_calendar.json` (fältet
+      `isEstimate: true` betyder att Yahoo GISSAT datumet och räknas INTE som bekräftad
+      binär händelse)? → `rejected`, "binär händelse inom 2 handelsdagar".
+   e) **Full bok (4 innehav) eller ingen ledig kapacitet?** → `rejected`, "ingen ledig plats".
+   f) Annars: pröva mot veckorotationens FEM GRINDAR (verifierbar kurs · katalysator senaste
+      5 handelsdagarna · RSI ≤ 75 eller exceptionell katalysator · målavstånd ≥ 8 % och ≤
+      nåbarhetstaket · R/R ≥ 2:1). Faller den på en grind → `rejected` med den NAMNGIVNA
+      grinden i `decisionReason`. Håller alla → `status: "promoted"`, köp enligt punkt 4,
+      kapitalet ur sleeven.
+
+   **Högst EN kandidat får promotas per körning.** Håller flera, ta den med högst R/R och
+   avfärda resten med "lägre R/R än promotad kandidat samma dag" – de raderna är fortfarande
+   värdefulla, för `decision_eval.mjs` mäter dem som kontrafaktiskt underlag.
+
+   Sätt `decidedBy` till dagens rapportfil och `decidedAt` till dagens datum. **Varje
+   avgörande loggas DESSUTOM som en rad i `state/decisions.json`** – `KÖP` vid promoted,
+   `AVVAKTA` vid rejected, med samma spärr i `reason`. Validera före commit:
+   `node .github/scripts/validate-scout-candidates.mjs`.
+
+2e. **KÖP ALDRIG INFÖR EN RAPPORT.** Mätt 2026-08-04 i `reports/backtest/earnings-260804-*.md`
+   över fyra körningar (us/nordic × 5y/10y): PRE_ALL och PRE_MOM – köp dagen före
+   rapportreaktionen, utan respektive med momentumfilter – blev **UNDERKÄNDA i samtliga
+   fyra**, med negativ alpha i nordiska boken och 4–6 % av affärerna sämre än −10 %.
+   Post-earnings drift (PEAD) mätte bättre men klarade inte kravet i båda marknaderna vid
+   samma period (godkänd i us-5y och nordic-10y, underkänd i us-10y och nordic-5y) och är
+   därför **ingen egen köpregel** – en bekräftad rapportöverraskning är en vanlig kandidat
+   som ska passera samma fem grindar som allt annat. Ändra inte detta utan att köra om
+   `node .github/scripts/backtest-earnings.mjs us 10y` och `… nordic 10y`.
+
 3. Sök nyheter senaste 24h om bolaget, sektorn och närmaste konkurrenter (samma källkrav som läge A),
    samt makrohändelser som påverkar caset. Inkludera after-hours-rapporter och pre-market-noteringar.
 4. Fatta EXAKT ETT beslut per innehav:
@@ -356,11 +401,12 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    - BEHÅLL om: tesen intakt och kursen inom plan. Ange om läget stärkts/försvagats sedan igår. Har
      innehavet en BINÄR händelse (earnings, FDA-besked, dom) inom 2 handelsdagar: motivera EXPLICIT
      varför positionen hålls genom eventet, eller sälj i förväg.
-   - KÖP endast i tre fall: (a) ersättningsköp från senaste us-veckorapportens bubblarlista om en
+   - KÖP endast i fyra fall: (a) ersättningsköp från senaste us-veckorapportens bubblarlista om en
      position sålts i förtid och bubblaren nu uppfyller ALLA krav (katalysator + teknik + likviditet
-     + 2:1), (b) ett entry-villkor från veckorapporten som nu triggats, eller (c) en villkorad
+     + 2:1), (b) ett entry-villkor från veckorapporten som nu triggats, (c) en villkorad
      BUBBLAR-plan i Pending som TRIGGATS mot verifierad kurs OCH ledig kapacitet finns (< 4
-     innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering.
+     innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering,
+     eller **(d) en SCOUT-KANDIDAT med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**.
      Kapitalet tas ur indexsleeven; minska sleeven med motsvarande vikt.
    - TIDSSTOPP: har innehavet en `catalystType` med tidsstopp (`ma_rumor`, `insider`, `index`) och
      horisonten passerats utan bekräftad tes – SÄLJ och flytta kapitalet till indexsleeven.
