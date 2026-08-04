@@ -89,7 +89,19 @@ ok("renderSimple: BEHÅLL skapar ingen uppgift men syns i loggen", (() => {
   return h.includes(">Nej.<") && h.includes("behöll</b> Volvo B");
 })());
 ok("renderSimple: avvakta förklaras i klartext", VR.renderSimple({
-  actions: [{ decision: "AVVAKTA", name: "SKF B" }] }).includes("kursen inte gick att bekräfta"));
+  actions: [{ decision: "AVVAKTA", name: "SKF B", why: "kursen inte gick att bekräfta" }] })
+    .includes("kursen inte gick att bekräfta"));
+/* AVVAKTA får sex olika orsaker sedan köpväg (d) (2026-08-04). Vyn ska visa den
+   VERKLIGA motiveringen, och när den saknas inte påstå någon alls – den gamla
+   hårdkodade meningen ("eftersom kursen inte gick att bekräfta") var fel i de
+   flesta nya fall. */
+ok("hem/enkel: AVVAKTA visar sin faktiska orsak", VR.renderSimple({
+  actions: [{ decision: "AVVAKTA", name: "AMD", why: "binär händelse inom 2 handelsdagar" }] })
+    .includes("binär händelse inom 2 handelsdagar"));
+ok("hem/enkel: AVVAKTA utan motivering påstår ingen orsak", (() => {
+  const h = VR.renderSimple({ actions: [{ decision: "AVVAKTA", name: "AMD" }] });
+  return h.includes("avstod från att agera") && !h.includes("kursen inte gick att bekräfta");
+})());
 ok("renderSimple: indexdelen förklaras", VR.renderSimple({ books: [{ label: "N", holdings: [
   { name: "XACT OMXS30", ticker: "XACT-OMXS30.ST", isSleeve: true }] }] }).includes("indexfond"));
 ok("renderSimple: tomt innehav", VR.renderSimple({ books: [{ label: "N", holdings: [] }] }).includes("äger inget"));

@@ -987,7 +987,16 @@
     const happened = acts.length
       ? `<ul class="sv-log">${acts.map(a =>
           `<li>Roboten <b>${esc(SIMPLE_VERB[a.decision] || String(a.decision || "").toLowerCase())}</b> ${esc(plainName(a))}${
-            a.decision === "AVVAKTA" ? " eftersom kursen inte gick att bekräfta" : ""}.</li>`).join("")}</ul>`
+            a.decision === "AVVAKTA"
+              /* AVVAKTA hade FÖRR bara en möjlig orsak, och därför stod den
+                 hårdkodad här. Sedan köpväg (d) infördes 2026-08-04 avvisas en
+                 kandidat av sex olika skäl (obekräftad katalysator · kurs ej
+                 verifierbar · regimen av · binär händelse inom 2 handelsdagar ·
+                 full bok · fallen grind), så den gamla meningen påstod fel
+                 orsak i de flesta fall. Motiveringen finns i modellen – använd
+                 den, och påstå ingenting alls när den saknas. */
+              ? (a.why ? ` – ${truncate(a.why, 120)}` : " och avstod från att agera")
+              : ""}.</li>`).join("")}</ul>`
       : `<p class="sv-empty">Inga beslut fattade i dag.</p>`;
     const today = `<div class="sv-card">
       <h3>Vad hände i dag${m.dateLabel ? ` <span class="sv-date">${esc(m.dateLabel)}</span>` : ""}</h3>
