@@ -220,10 +220,14 @@ Förväntat: 5 FAIL, `TypeError: WD.checkStalePricedBubblare is not a function`.
 export function checkStalePricedBubblare(opts){
   const { weeklyMd, weeklyDate, quotes, decisionsDb, book } = opts || {};
   const problems = [];
-  if (!weeklyDate || !quotes) return problems;
+  // decisionsDb MÅSTE vaktas separat: utan den vakten blir "vi vet inte om ett
+  // beslut fattats" (filen oläsbar eller trasig – ett dokumenterat felläge, se
+  // main():s bara try/catch) samma sak som "inget beslut fattades", och varje
+  // prissatt bubblare i boken larmar falskt. `checkGrossList` gör redan rätt.
+  if (!weeklyDate || !quotes || !decisionsDb) return problems;
   const tickers = bubblareFromWeekly(weeklyMd);
   if (!tickers.length) return problems;
-  const rows = (decisionsDb && decisionsDb.decisions) || [];
+  const rows = decisionsDb.decisions || [];
   const decided = new Set(rows
     .filter(r => r && typeof r.date === "string" && r.date > weeklyDate)
     .map(r => r.ticker));
