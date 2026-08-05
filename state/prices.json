@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T21:45:25.342Z",
+  "generatedAt": "2026-08-05T21:56:19.953Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -116,10 +116,10 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 64644.59,
+      "price": 64672.87,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-05T21:45:09.000Z",
+      "marketTime": "2026-08-05T21:56:00.000Z",
       "marketState": null,
       "previousClose": 64055.953125,
       "dayHigh": 64935.336,
@@ -176,10 +176,10 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1906.73,
+      "price": 1907.83,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-05T21:45:06.000Z",
+      "marketTime": "2026-08-05T21:56:01.000Z",
       "marketState": null,
       "previousClose": 1868.3858642578125,
       "dayHigh": 1921.8596,

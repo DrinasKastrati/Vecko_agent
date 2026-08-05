@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T07:36:14.410Z",
+  "generatedAt": "2026-08-05T21:56:00.563Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -20,17 +20,7 @@
       "epsConsensus": 4.70467,
       "epsLow": 4.49,
       "epsHigh": 5.094,
-      "revenueConsensus": 71959273970
-    },
-    {
-      "tradingDaysAway": 0,
-      "symbol": "RIOT",
-      "date": "2026-08-05",
-      "isEstimate": true,
-      "epsConsensus": -0.31678,
-      "epsLow": -0.33,
-      "epsHigh": -0.30034,
-      "revenueConsensus": 152878700
+      "revenueConsensus": 71946199740
     },
     {
       "tradingDaysAway": 1,
@@ -41,6 +31,16 @@
       "epsLow": -0.58,
       "epsHigh": -0.29,
       "revenueConsensus": 209616650
+    },
+    {
+      "tradingDaysAway": 2,
+      "symbol": "RIOT",
+      "date": "2026-08-07",
+      "isEstimate": true,
+      "epsConsensus": -0.31678,
+      "epsLow": -0.33,
+      "epsHigh": -0.30034,
+      "revenueConsensus": 152878700
     },
     {
       "tradingDaysAway": 9,
@@ -73,40 +73,13 @@
       "revenueConsensus": 1975597220
     },
     {
-      "symbol": "AMD",
-      "date": "2026-08-04",
-      "isEstimate": false,
-      "epsConsensus": 1.85947,
-      "epsLow": 1.65,
-      "epsHigh": 2.27,
-      "revenueConsensus": 12513776650
-    },
-    {
-      "symbol": "ANET",
-      "date": "2026-08-04",
-      "isEstimate": false,
-      "epsConsensus": 0.92409,
-      "epsLow": 0.87,
-      "epsHigh": 1.08,
-      "revenueConsensus": 2972325270
-    },
-    {
       "symbol": "NVO",
       "date": "2026-08-05",
       "isEstimate": false,
       "epsConsensus": 4.70467,
       "epsLow": 4.49,
       "epsHigh": 5.094,
-      "revenueConsensus": 71959273970
-    },
-    {
-      "symbol": "RIOT",
-      "date": "2026-08-05",
-      "isEstimate": true,
-      "epsConsensus": -0.31678,
-      "epsLow": -0.33,
-      "epsHigh": -0.30034,
-      "revenueConsensus": 152878700
+      "revenueConsensus": 71946199740
     },
     {
       "symbol": "MARA",
@@ -116,6 +89,15 @@
       "epsLow": -0.58,
       "epsHigh": -0.29,
       "revenueConsensus": 209616650
+    },
+    {
+      "symbol": "RIOT",
+      "date": "2026-08-07",
+      "isEstimate": true,
+      "epsConsensus": -0.31678,
+      "epsLow": -0.33,
+      "epsHigh": -0.30034,
+      "revenueConsensus": 152878700
     },
     {
       "symbol": "OSSD.ST",
@@ -337,10 +319,28 @@
       "symbol": "PLTR",
       "date": "2026-11-02",
       "isEstimate": true,
-      "epsConsensus": 0.41235,
+      "epsConsensus": 0.40782,
       "epsLow": 0.38,
-      "epsHigh": 0.48,
-      "revenueConsensus": 2176935820
+      "epsHigh": 0.44,
+      "revenueConsensus": 2171235880
+    },
+    {
+      "symbol": "AMD",
+      "date": "2026-11-03",
+      "isEstimate": true,
+      "epsConsensus": 1.85947,
+      "epsLow": 1.65,
+      "epsHigh": 2.27,
+      "revenueConsensus": 12513776650
+    },
+    {
+      "symbol": "ANET",
+      "date": "2026-11-03",
+      "isEstimate": true,
+      "epsConsensus": 0.88559,
+      "epsLow": 0.87,
+      "epsHigh": 0.92098,
+      "revenueConsensus": 2831187800
     }
   ],
   "errors": {},
