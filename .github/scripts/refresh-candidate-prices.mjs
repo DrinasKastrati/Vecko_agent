@@ -32,7 +32,15 @@ export function postCatalystQuote(quote, catalystDate){
     const d = quote.extendedTime.slice(0, 10);
     const later = d > catalystDate;
     const postSameDay = d === catalystDate && quote.extendedSession === "post";
-    if (later || postSameDay)
+    // Sessionsklassificeraren i fetch-prices.mjs känner bara till DAGENS
+    // reguljära fönster, så en punkt från FÖREGÅENDE session (t.ex. hela
+    // gårdagens reguljära handel för en .ST-symbol utan pre/post) hamnar
+    // också utanför det fönstret och märks "pre" – trots att den är äldre
+    // än dagens reguljära kurs. Utan den här jämförelsen rankas en sådan
+    // förlegad punkt högre än en färskare reguljär kurs bara av regelordning.
+    const fresherThanRegular = !(typeof quote.marketTime === "string") ||
+      quote.extendedTime > quote.marketTime;
+    if ((later || postSameDay) && fresherThanRegular)
       return { price: quote.extendedPrice, at: quote.extendedTime,
                session: quote.extendedSession === "post" ? "post" : "pre" };
   }

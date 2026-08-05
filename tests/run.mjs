@@ -2116,10 +2116,15 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
     extendedPrice: 207.1, extendedTime: "2026-08-05T12:58:00.000Z", extendedSession: "pre" };
   const r3 = RC.postCatalystQuote(preNext, "2026-08-04");
   ok("förbörs DAGEN EFTER kvalificerar", r3 && r3.price === 207.1 && r3.session === "pre");
-  ok("utökad kurs går före reguljär när båda kvalificerar",
+  ok("utökad kurs går före reguljär när båda kvalificerar OCH utökad är färskast",
      RC.postCatalystQuote(Object.assign({}, nextDay, {
-       extendedPrice: 207.1, extendedTime: "2026-08-05T12:58:00.000Z", extendedSession: "pre"
+       extendedPrice: 207.1, extendedTime: "2026-08-05T18:00:00.000Z", extendedSession: "post"
      }), "2026-08-04").price === 207.1);
+  const staleExtended = RC.postCatalystQuote(Object.assign({}, nextDay, {
+    extendedPrice: 207.1, extendedTime: "2026-08-05T12:58:00.000Z", extendedSession: "pre"
+  }), "2026-08-04");
+  ok("förlegad utökad kurs (äldre än reguljär) ger reguljär kurs, inte utökad",
+     staleExtended && staleExtended.price === nextDay.price && staleExtended.session === "regular");
   ok("kurs <= 0 kvalificerar inte (validatorn kräver > 0)",
      RC.postCatalystQuote({ price: 0, marketTime: "2026-08-05T15:00:00.000Z" }, "2026-08-04") === null);
 

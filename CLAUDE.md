@@ -120,7 +120,7 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   en pre-event-kurs på en post-event-katalysator. Regeln uttrycks med datum + sessionsetikett,
   ALDRIG med klockslag: Stockholm stänger 15:30 UTC, New York 20:00 UTC, och sommartid flyttar
   båda. Kandidatfilen är sedan samma datum också TICKERKÄLLA för `fetch-prices.mjs`
-  (`collectCandidateTickers`), vilket ersätter handpåläggningen i `config/watchlist.txt`.
+  (`collectCandidateTickers`), vilket ersätter handpåläggningen i `config/watchlist_us.txt`.
   En kandidat med `priceSession` `"pre"`/`"post"` får BEDÖMAS men aldrig direktköpas –
   köpet läggs som villkorad Pending-plan med entry mot reguljär session.
 - **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
