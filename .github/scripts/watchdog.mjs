@@ -240,6 +240,41 @@ export function bubblareFromWeekly(md){
   return [...new Set(out)];
 }
 
+/* PRISSATT BUBBLARE SOM ALDRIG FICK ETT AVGÖRANDE.
+
+   Veckorotationen 2026-08-03 kunde inte ge tre bubblare en villkorad plan
+   eftersom prices.json saknade deras kurser. Kurserna kom 4–5/8. Utan en
+   kontroll ligger idén död till nästa måndag utan att något syns: inget går
+   sönder, rapporten ser normal ut, bubblaren bara tystnar.
+
+   Bakåtkompatibel och fail-silent: saknas rapporttext, kurser eller
+   bubblarlista returneras inga problem. */
+export function checkStalePricedBubblare(opts){
+  const { weeklyMd, weeklyDate, quotes, decisionsDb, book } = opts || {};
+  const problems = [];
+  if (!weeklyDate || !quotes) return problems;
+  const tickers = bubblareFromWeekly(weeklyMd);
+  if (!tickers.length) return problems;
+  const rows = (decisionsDb && decisionsDb.decisions) || [];
+  const decided = new Set(rows
+    .filter(r => r && typeof r.date === "string" && r.date > weeklyDate)
+    .map(r => r.ticker));
+  const stuck = tickers.filter(t => {
+    const q = quotes[t];
+    return q && !q.error && q.price != null && !decided.has(t);
+  });
+  if (stuck.length)
+    problems.push({ key: "bubblare-price", title:
+      `Watchdog: ${stuck.length} prissatt(a) bubblare utan avgörande (${book || "?"})`,
+      body: "Följande bubblare ur veckorapporten " + weeklyDate + " har nu verifierad kurs i " +
+        "`state/prices.json`, men ingen körning har tagit ställning till dem sedan dess:\n\n" +
+        stuck.map(t => `- **${t}** (${quotes[t].price}, ${quotes[t].marketTime || "utan tidsstämpel"})`).join("\n") +
+        "\n\nEn bubblare som bara stoppades av att kursen saknades ska få en villkorad plan i " +
+        "LÄGE B så snart kursen finns. Ligger den kvar utan avgörande är den död till nästa " +
+        "veckorotation utan att något syns." });
+  return problems;
+}
+
 /* KANDIDAT UTAN KURS TROTS ATT EN POST-EVENT-KURS FINNS.
 
    Fyller `refresh-candidate-prices.mjs` inte i kursen avvisas kandidaten på
@@ -341,6 +376,14 @@ function main(){
     alertsAt = a.checkedAt || null;   // generatedAt duger INTE – se checkStale
   } catch {}
   const ls = d => { try { return readdirSync(d); } catch { return []; } };
+  const readLatest = (dir, re) => {
+    const files = ls(dir).filter(f => re.test(f)).sort();
+    if (!files.length) return { md: null, date: null };
+    const f = files[files.length - 1];
+    const m = f.match(/(\d{2})(\d{2})(\d{2})\.md$/);
+    const date = m ? `20${m[1]}-${m[2]}-${m[3]}` : null;
+    try { return { md: readFileSync(dir + "/" + f, "utf8"), date }; } catch { return { md: null, date }; }
+  };
   const now = new Date();
   const problems = checkStale({
     now,
@@ -365,6 +408,13 @@ function main(){
   }));
   problems.push(...checkCandidatePrice({ candidatesDb, quotes: priceQuotes }));
   problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
+
+  const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);
+  const wkUs     = readLatest("reports/us_weekly", /^us-veckorapport-\d{6}\.md$/);
+  problems.push(...checkStalePricedBubblare({ weeklyMd: wkNordic.md, weeklyDate: wkNordic.date,
+    quotes: priceQuotes, decisionsDb, book: "nordic" }));
+  problems.push(...checkStalePricedBubblare({ weeklyMd: wkUs.md, weeklyDate: wkUs.date,
+    quotes: priceQuotes, decisionsDb, book: "us" }));
 
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");

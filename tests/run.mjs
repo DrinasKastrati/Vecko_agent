@@ -2067,6 +2067,41 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
        WD.bubblareFromWeekly("## Bubblare\n- **AAPL** – inte numrerad").length === 0);
   }
 
+  // ---- watchdog: prissatt bubblare utan avgörande ----
+  {
+    const md = [
+      "## Bubblare",
+      "1. **ASSA ABLOY (ASSA-B.ST)** – KURS EJ VERIFIERAD.",
+      "2. **Betsson (BETS-B.ST)** – KURS EJ VERIFIERAD."
+    ].join("\n");
+    const quotes = {
+      "ASSA-B.ST": { price: 365.3, marketTime: "2026-08-05T09:29:54.000Z" },
+      "BETS-B.ST": { price: 92.15, marketTime: "2026-08-05T09:30:07.000Z" }
+    };
+    const base = { weeklyMd: md, weeklyDate: "2026-08-03", quotes, book: "nordic" };
+
+    ok("watchdog larmar på prissatt bubblare utan avgörande",
+       WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [] } }))
+         .some(p => p.key === "bubblare-price"));
+    ok("watchdog tiger när bubblaren fått ett avgörande efter veckorapporten",
+       WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [
+         { date: "2026-08-05", ticker: "ASSA-B.ST", action: "AVVAKTA" },
+         { date: "2026-08-05", ticker: "BETS-B.ST", action: "AVVAKTA" }
+       ] } })).length === 0);
+    ok("watchdog räknar INTE ett avgörande från före veckorapporten",
+       WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [
+         { date: "2026-08-01", ticker: "ASSA-B.ST", action: "AVVAKTA" },
+         { date: "2026-08-01", ticker: "BETS-B.ST", action: "AVVAKTA" }
+       ] } })).some(p => p.key === "bubblare-price"));
+    ok("watchdog tiger för bubblare utan verifierad kurs",
+       WD.checkStalePricedBubblare(Object.assign({}, base, {
+         quotes: { "ASSA-B.ST": { error: "kunde inte hämtas" }, "BETS-B.ST": { price: null } },
+         decisionsDb: { decisions: [] } })).length === 0);
+    ok("watchdog tiger utan indata",
+       WD.checkStalePricedBubblare({ weeklyMd: md, weeklyDate: "2026-08-03",
+         quotes: null, decisionsDb: null }).length === 0);
+  }
+
   // ---- watchdog: kandidat utan kurs trots att post-event-kurs finns ----
   {
     const cands = { candidates: [
