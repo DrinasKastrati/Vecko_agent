@@ -207,6 +207,39 @@ export function checkScoutCandidates(opts){
   return problems;
 }
 
+/* Bubblarlistan ur en veckorapport, som tickers.
+
+   KLIPPET VID "Förra veckans bubblare" ÄR INTE KOSMETIK. Utan det plockas de
+   STRUKNA bubblarna upp ur uppföljningsstycket: veckorapport-260803 gav åtta
+   tickers i stället för fem, och HNSA.ST, BOOZT.ST och SCA-B.ST var alla
+   strukna. Watchdogen hade larmat på idéer rotationen medvetet dödat.
+
+   Böckerna skriver tickern olika – nordiskt "**ASSA ABLOY (ASSA-B.ST)**",
+   amerikanskt "**MSFT**" – så båda formerna måste hanteras. En extraktor som
+   bara klarar den ena hittar NOLL i den andra boken, tyst.
+
+   Fail-silent: markdown-parsning är bräcklig, och en watchdog som kraschar på
+   en formulering är värre än ingen watchdog. */
+export function bubblareFromWeekly(md){
+  if (typeof md !== "string" || !md) return [];
+  const after = md.split(/^## Bubblare/m)[1];
+  if (!after) return [];
+  let sec = after.split(/^## /m)[0];
+  sec = sec.split(/\*\*F[oö]rra veckans bubblare/)[0];
+  const out = [];
+  for (const line of sec.split("\n")){
+    const t = line.trim();
+    if (!/^\d+\.\s/.test(t)) continue;
+    const bold = t.match(/\*\*([^*]+)\*\*/);
+    if (!bold) continue;
+    const label = bold[1].trim();
+    const paren = label.match(/\(\s*([A-Za-z0-9][A-Za-z0-9.\-]{0,13})\s*\)/);
+    if (paren && /\.(ST|OL|CO|HE)$/i.test(paren[1])){ out.push(paren[1].toUpperCase()); continue; }
+    if (/^[A-Z]{1,6}$/.test(label)) out.push(label);
+  }
+  return [...new Set(out)];
+}
+
 /* KANDIDAT UTAN KURS TROTS ATT EN POST-EVENT-KURS FINNS.
 
    Fyller `refresh-candidate-prices.mjs` inte i kursen avvisas kandidaten på

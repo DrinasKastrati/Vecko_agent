@@ -2026,6 +2026,44 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
        today: "2026-08-12",
        staleFn: (d, t) => d.candidates.filter(x => x.status === "new" && x.expiresAt < t) }).length === 1);
 
+  // ---- bubblareFromWeekly: läs bubblarlistan ur en veckorapport ----
+  {
+    const nordic = [
+      "## Bubblare (watchlist inför nästa vecka)",
+      "1. **ASSA ABLOY (ASSA-B.ST)** – förvärv av Gunnebo Entrance Control. KURS EJ VERIFIERAD.",
+      "2. **Betsson (BETS-B.ST)** – förvärvet slutfört.",
+      "3. **Kongsberg (KOG.OL)** – 296,20 NOK. Rankad under på sektorkoncentration.",
+      "",
+      "**Förra veckans bubblare:** **HNSA.ST** – STRUKEN. **BOOZT.ST** – STRUKEN.",
+      "",
+      "## Veckans radar",
+      "1. **SCA-B.ST** – ska inte plockas upp, fel sektion."
+    ].join("\n");
+    const n = WD.bubblareFromWeekly(nordic);
+    ok("bubblare: nordisk form (ticker i parentes)",
+       n.includes("ASSA-B.ST") && n.includes("BETS-B.ST") && n.includes("KOG.OL"));
+    ok("bubblare: STRUKNA i 'Förra veckans bubblare' plockas INTE upp",
+       !n.includes("HNSA.ST") && !n.includes("BOOZT.ST"));
+    ok("bubblare: nästa ## avslutar sektionen", !n.includes("SCA-B.ST"));
+    ok("bubblare: exakt tre ur nordiska listan", n.length === 3);
+
+    const us = [
+      "## Bubblare (watchlist inför nästa vecka)",
+      "1. **MSFT** – näst högsta totalpoäng.",
+      "2. **JPM** – rotationen till finans är intakt.",
+      "",
+      "**Förra veckans bubblare:** **HCA** – STRUKEN."
+    ].join("\n");
+    const u = WD.bubblareFromWeekly(us);
+    ok("bubblare: amerikansk form (naken symbol)", u.includes("MSFT") && u.includes("JPM"));
+    ok("bubblare: struken US-bubblare plockas inte upp", !u.includes("HCA"));
+
+    ok("bubblare: saknad sektion ger tom lista", WD.bubblareFromWeekly("# rapport\ningen sektion").length === 0);
+    ok("bubblare: icke-sträng ger tom lista", WD.bubblareFromWeekly(null).length === 0);
+    ok("bubblare: rader utan numrering ignoreras",
+       WD.bubblareFromWeekly("## Bubblare\n- **AAPL** – inte numrerad").length === 0);
+  }
+
   // ---- watchdog: kandidat utan kurs trots att post-event-kurs finns ----
   {
     const cands = { candidates: [
