@@ -21,7 +21,8 @@
 - **Datum jämförs som strängar** i ISO-format (`"2026-08-05" > "2026-08-04"`). Ingen `Date`-aritmetik för dygnsgränser, ingen tidszonskonvertering.
 - **Kör aldrig `fetch-prices.mjs` lokalt** medan actionen kör — `pull --rebase` fastnar i konflikt.
 - Testkommando genomgående: `node tests/run.mjs`. Antal tester som passerar i utgångsläget: **544**.
-- Commit-meddelanden på svenska, i imperativ, utan `Co-Authored-By` (repots egen stil för scriptändringar).
+- Commit-meddelanden på svenska, i imperativ. Avsluta varje commit med raden
+  `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` (separerad med en tom rad).
 
 ## Filstruktur
 

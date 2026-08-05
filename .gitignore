@@ -29,3 +29,9 @@ auto_push.log
 watchdog.json
 alerts_new.json
 digest.json
+
+# Arbetsyta för subagent-driven utveckling (ledger, uppgiftsbrief, rapporter,
+# granskningspaket). Ren scratch – git-historiken är det som räknas när arbetet
+# är klart. MÅSTE vara ignorerad: `push.bat` kör `git add -A`, så en oignorerad
+# arbetsyta hade committats vid nästa push, precis som strökfilerna ovan.
+.superpowers/
