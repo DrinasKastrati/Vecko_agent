@@ -1895,6 +1895,33 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      FP.parseExtended({ chart: { result: [{ meta: { currentTradingPeriod: { regular: { start: regStart, end: regEnd } } } }] } }) === null);
 }
 
+// ---- fetchExtended: nätlagret, med injicerad fetch ----
+{
+  const regStart = Math.floor(Date.parse("2026-08-05T13:30:00Z") / 1000);
+  const regEnd   = Math.floor(Date.parse("2026-08-05T20:00:00Z") / 1000);
+  const preT     = Math.floor(Date.parse("2026-08-05T12:58:00Z") / 1000);
+  const body = { chart: { result: [{
+    meta: { currentTradingPeriod: { regular: { start: regStart, end: regEnd } } },
+    timestamp: [preT], indicators: { quote: [{ close: [471.02] }] }
+  }] } };
+
+  let seenUrl = null;
+  const okFetch = async url => { seenUrl = url; return { ok: true, json: async () => body }; };
+  const ext = await FP.fetchExtended("AMD", okFetch);
+  ok("fetchExtended returnerar utökad kurs", ext && ext.extendedPrice === 471.02);
+  ok("fetchExtended begär 1m med includePrePost",
+     /interval=1m/.test(seenUrl) && /includePrePost=true/.test(seenUrl));
+
+  ok("fetchExtended ger null vid HTTP-fel",
+     await FP.fetchExtended("AMD", async () => ({ ok: false })) === null);
+  ok("fetchExtended ger null när fetch kastar",
+     await FP.fetchExtended("AMD", async () => { throw new Error("nät"); }) === null);
+  ok("fetchExtended ger null när svaret saknar utökad punkt",
+     await FP.fetchExtended("AMD", async () => ({ ok: true, json: async () => ({
+       chart: { result: [{ meta: { currentTradingPeriod: { regular: { start: regStart, end: regEnd } } },
+       timestamp: [], indicators: { quote: [{ close: [] }] } }] } }) })) === null);
+}
+
 /* ---- SCOUT -> BOK-BRYGGAN (2026-08-04) ----------------------------------
    Reglerna som INTE får luckras upp: ingen promotion utan verifierad kurs,
    ingen promotion av en obekräftad katalysator, inget avgörande utan skäl. */

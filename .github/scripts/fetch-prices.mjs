@@ -52,6 +52,14 @@ export function readFirst(paths){
   return "";
 }
 
+// Parsad JSON ur första filen som finns. null vid saknad eller trasig fil –
+// en hjälpfil får aldrig fälla kursbevakningen.
+export function readJsonFirst(paths){
+  const raw = readFirst(paths);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
 export function newestWeekly(){
   const dirs = ["reports/weekly", "."];
   let best = null;
@@ -359,17 +367,47 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
   return { symbol: sym, error: "kunde inte hämtas (alla källor gav fel)" };
 }
 
+/* Extra anrop för förbörs-/efterbörskurs. Faller det ska den vanliga
+   noteringen INTE påverkas – därför null i stället för kastat fel, och därför
+   ingen stooq-reserv: stooq har ingen utökad session att ge. */
+export async function fetchExtended(sym, fetchImpl = globalThis.fetch){
+  const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
+  for (const host of hosts){
+    const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}` +
+                `?range=2d&interval=1m&includePrePost=true`;
+    try {
+      const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9" } });
+      if (!r.ok) continue;
+      const ext = parseExtended(await r.json());
+      if (ext) return ext;
+    } catch { /* prova nästa host */ }
+  }
+  return null;
+}
+
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch){
   const tickers = [...new Set([...collectTickers(), ...collectUsTickers(),
                                ...collectEarningsTickers()])].sort();
+  // Utökad session hämtas bara för symboler med en rapport inom räckhåll.
+  const today = new Date().toISOString().slice(0, 10);
+  const scope = new Set(extendedScope(
+    readJsonFirst(["state/earnings_calendar.json"]),
+    readJsonFirst(["state/scout_candidates.json"]),
+    today));
   const quotes = {};
-  let okCount = 0;
+  let okCount = 0, extCount = 0;
   for (const t of tickers){
     const q = await fetchQuote(t, fetchImpl);
     quotes[t] = q;
     if (!q.error) okCount++;
     await sleep(250); // var snäll mot API:t
+    if (!q.error && scope.has(t)){
+      const ext = await fetchExtended(t, fetchImpl);
+      if (ext){ Object.assign(q, ext); extCount++; }
+      await sleep(250);
+    }
   }
   const out = {
     generatedAt: new Date().toISOString(),
@@ -388,12 +426,14 @@ export async function run(fetchImpl = globalThis.fetch){
           "~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
     tickerCount: tickers.length,
     okCount,
+    extendedCount: extCount,
     quotes
   };
   mkdirSync("state", { recursive: true });
   writeFileSync("state/prices.json", JSON.stringify(out, null, 2) + "\n");
   updatePriceHistory(quotes);
-  console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade.`);
+  console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade, ` +
+              `${extCount} med utökad session.`);
   return out;
 }
 
