@@ -2066,5 +2066,68 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      await EC.getCrumb(async () => ({ headers: hdr([]) })) === null);
 }
 
+// ---- refresh-candidate-prices: kandidatkurs ur post-event-kurs ----
+{
+  const RC = await mod(".github/scripts/refresh-candidate-prices.mjs");
+
+  // ANET-fallet: enda kursen är den reguljära stängningen PÅ rapportdagen (AMC)
+  const preEvent = { price: 190.51, marketTime: "2026-08-04T20:00:03.000Z" };
+  ok("pre-event-kurs kvalificerar INTE (ANET/AMD-regressionen)",
+     RC.postCatalystQuote(preEvent, "2026-08-04") === null);
+
+  const nextDay = { price: 205.0, marketTime: "2026-08-05T15:23:00.000Z" };
+  const r1 = RC.postCatalystQuote(nextDay, "2026-08-04");
+  ok("reguljär kurs dagen efter kvalificerar", r1 && r1.price === 205.0 && r1.session === "regular");
+
+  const postSame = { price: 190.51, marketTime: "2026-08-04T20:00:03.000Z",
+    extendedPrice: 209.4, extendedTime: "2026-08-04T20:31:00.000Z", extendedSession: "post" };
+  const r2 = RC.postCatalystQuote(postSame, "2026-08-04");
+  ok("efterbörs SAMMA dag kvalificerar", r2 && r2.price === 209.4 && r2.session === "post");
+
+  const preSame = { price: 190.51, marketTime: "2026-08-04T20:00:03.000Z",
+    extendedPrice: 188.0, extendedTime: "2026-08-04T12:00:00.000Z", extendedSession: "pre" };
+  ok("förbörs SAMMA dag kvalificerar INTE (före stängning)",
+     RC.postCatalystQuote(preSame, "2026-08-04") === null);
+
+  const preNext = { price: 190.51, marketTime: "2026-08-04T20:00:03.000Z",
+    extendedPrice: 207.1, extendedTime: "2026-08-05T12:58:00.000Z", extendedSession: "pre" };
+  const r3 = RC.postCatalystQuote(preNext, "2026-08-04");
+  ok("förbörs DAGEN EFTER kvalificerar", r3 && r3.price === 207.1 && r3.session === "pre");
+  ok("utökad kurs går före reguljär när båda kvalificerar",
+     RC.postCatalystQuote(Object.assign({}, nextDay, {
+       extendedPrice: 207.1, extendedTime: "2026-08-05T12:58:00.000Z", extendedSession: "pre"
+     }), "2026-08-04").price === 207.1);
+  ok("kurs <= 0 kvalificerar inte (validatorn kräver > 0)",
+     RC.postCatalystQuote({ price: 0, marketTime: "2026-08-05T15:00:00.000Z" }, "2026-08-04") === null);
+
+  // refreshCandidates
+  const mkDb = () => ({ candidates: [
+    { id: "260805-ANET", ticker: "ANET", status: "new", catalystDate: "2026-08-04", price: null, priceAsOf: null },
+    { id: "260805-AVGO", ticker: "AVGO", status: "new", catalystDate: "2026-08-04", price: 418.16, priceAsOf: "x" },
+    { id: "260805-OLD",  ticker: "OLD",  status: "rejected", catalystDate: "2026-08-04", price: null, priceAsOf: null }
+  ] });
+  const quotes = { ANET: nextDay, AVGO: nextDay, OLD: nextDay };
+
+  const res = RC.refreshCandidates(mkDb(), quotes);
+  ok("refresh fyller kandidat utan kurs", res.db.candidates[0].price === 205.0);
+  ok("refresh sätter priceAsOf", res.db.candidates[0].priceAsOf === "2026-08-05T15:23:00.000Z");
+  ok("refresh sätter priceSession", res.db.candidates[0].priceSession === "regular");
+  ok("refresh rör aldrig kandidat som redan har kurs", res.db.candidates[1].price === 418.16);
+  ok("refresh rör aldrig avgjord kandidat", res.db.candidates[2].price === null);
+  ok("refresh rapporterar ändring", res.changed === true && res.filled.length === 1);
+
+  ok("refresh utan kvalificerad kurs ändrar ingenting",
+     RC.refreshCandidates(mkDb(), { ANET: preEvent, AVGO: preEvent, OLD: preEvent }).changed === false);
+  ok("refresh tål saknad notering",
+     RC.refreshCandidates(mkDb(), {}).changed === false);
+  ok("refresh tål tom databas",
+     RC.refreshCandidates(null, quotes).changed === false);
+
+  // resultatet måste passera kandidatvalidatorn
+  const filled = res.db.candidates[0];
+  ok("ifylld kandidat har kurs > 0 och tidsstämpel",
+     filled.price > 0 && typeof filled.priceAsOf === "string" && filled.priceAsOf.length > 0);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
