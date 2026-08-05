@@ -30,6 +30,11 @@ state/decision_eval.json -merge -diff
 # "Rapporter på väg" utan att något går sönder. Vid konflikt: kör om
 # earnings-calendar.mjs och `git add`, handmerga aldrig.
 state/earnings_calendar.json -merge -diff
+# scout_candidates.json GENERERAS av scoutprompten OCH uppdateras av prices.yml
+# (refresh-candidate-prices.mjs). Två skrivare, samma konflikt-scenaro: en
+# auto-merge lägger konfliktmarkörer mitt i JSON:en. Vid konflikt: kör om
+# refresh-candidate-prices.mjs och `git add`, handmerga aldrig.
+state/scout_candidates.json -merge
 
 # Push-notisernas statefiler. push_sent.json är en ren dedupe-lista (skrivs av
 # monitorns timkörning) och push_subs.json en enhetsregistrering (skrivs av
