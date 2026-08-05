@@ -105,6 +105,36 @@ export function collectEarningsTickers(readFile = readFirst){
   } catch { return []; }
 }
 
+/* Symboler som ska få ett EXTRA anrop med förbörs-/efterbörsdata.
+
+   Varför mängden är smal: det extra anropet är `interval=1m` och ger ~1400
+   punkter per symbol. Att göra det för alla ~54 symboler var 30:e minut är
+   onödig last mot ett API som redan svarar 403 när det tycker att det är för
+   mycket. Varje MÄTT miss (PLTR 2026-08-04, ANET och AMD 2026-08-05) är en
+   rapporthändelse, så mängden begränsas till dem.
+
+   `isEstimate: true` räknas MED här. CLAUDE.md drar gränsen så: ett gissat
+   datum duger för att säkra en kurs i förväg, men aldrig som bekräftad binär
+   händelse. Den här funktionen avgör bara HÄMTNING – aldrig ett beslut. */
+export function extendedScope(calendar, candidates, today){
+  const out = new Set();
+  const up = (calendar && Array.isArray(calendar.upcoming)) ? calendar.upcoming : [];
+  for (const u of up){
+    if (!u || typeof u.symbol !== "string" || !u.symbol) continue;
+    if (typeof u.tradingDaysAway !== "number") continue;
+    if (u.tradingDaysAway < 0 || u.tradingDaysAway > 2) continue;
+    out.add(u.symbol);
+  }
+  const cs = (candidates && Array.isArray(candidates.candidates)) ? candidates.candidates : [];
+  for (const c of cs){
+    if (!c || c.status !== "new" || c.confirmed !== true) continue;
+    if (typeof c.ticker !== "string" || !c.ticker) continue;
+    if (today && c.expiresAt && String(c.expiresAt) < today) continue;
+    out.add(c.ticker);
+  }
+  return [...out].sort();
+}
+
 // ---- USA + krypto (scout-routinen) ------------------------------------
 export function newestScout(){
   const dirs = ["reports/scout", "."];

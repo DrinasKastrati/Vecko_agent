@@ -1830,6 +1830,35 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      FP.collectEarningsTickers(() => JSON.stringify({ upcoming: [{ symbol: "AMD" }, { symbol: "NVO" }] })).join() === "AMD,NVO");
 }
 
+// ---- extendedScope: vilka symboler får ett extra 1m-anrop ----
+{
+  const cal = { upcoming: [
+    { symbol: "NVO",  tradingDaysAway: 0, isEstimate: false },
+    { symbol: "RIOT", tradingDaysAway: 0, isEstimate: true  },
+    { symbol: "MARA", tradingDaysAway: 2, isEstimate: false },
+    { symbol: "OSSD.ST", tradingDaysAway: 9, isEstimate: false }
+  ] };
+  const cands = { candidates: [
+    { ticker: "ANET", status: "new",      confirmed: true,  expiresAt: "2026-08-12" },
+    { ticker: "AVGO", status: "new",      confirmed: false, expiresAt: "2026-08-12" },
+    { ticker: "OLD",  status: "new",      confirmed: true,  expiresAt: "2026-08-01" },
+    { ticker: "DONE", status: "rejected", confirmed: true,  expiresAt: "2026-08-12" }
+  ] };
+  const s = FP.extendedScope(cal, cands, "2026-08-05");
+  ok("extendedScope tar med rapport inom 2 handelsdagar", s.includes("NVO") && s.includes("MARA"));
+  ok("extendedScope tar med isEstimate (hämtning, inte beslut)", s.includes("RIOT"));
+  ok("extendedScope utesluter rapport längre bort än 2 dagar", !s.includes("OSSD.ST"));
+  ok("extendedScope tar med bekräftad öppen kandidat", s.includes("ANET"));
+  ok("extendedScope utesluter obekräftad kandidat", !s.includes("AVGO"));
+  ok("extendedScope utesluter utgången kandidat", !s.includes("OLD"));
+  ok("extendedScope utesluter avgjord kandidat", !s.includes("DONE"));
+  ok("extendedScope är sorterad och unik",
+     JSON.stringify(s) === JSON.stringify([...new Set(s)].sort()));
+  ok("extendedScope tål null-indata", FP.extendedScope(null, null, "2026-08-05").length === 0);
+  ok("extendedScope tål trasiga poster",
+     FP.extendedScope({ upcoming: [null, {}, { symbol: "" }] }, { candidates: [null, {}] }, "2026-08-05").length === 0);
+}
+
 /* ---- SCOUT -> BOK-BRYGGAN (2026-08-04) ----------------------------------
    Reglerna som INTE får luckras upp: ingen promotion utan verifierad kurs,
    ingen promotion av en obekräftad katalysator, inget avgörande utan skäl. */
