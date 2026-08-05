@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-04T13:59:41.365Z",
+ "generatedAt": "2026-08-05T07:36:32.708Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 17,
-  "measurable": 17,
+  "decisions": 18,
+  "measurable": 18,
   "missing": 0,
-  "pending": 14
+  "pending": 15
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -473,6 +473,16 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Bank/finans",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "SAAB-B.ST",
+   "book": "nordic",
+   "action": "SÄLJ",
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
    "reconstructed": false,
    "fwd": {}
   }
