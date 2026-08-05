@@ -1242,8 +1242,15 @@
       const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
       const trades = this.P.buildTradeSeries(this.state.portfolio.history, this.P.costFor("nordic", this.state.costs));
       const benches = [];
-      const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX");
-      const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC");
+      /* Benchmarken klipps till strategins EGEN startpunkt. Utan det normaliseras
+         den mot första punkten i price_history.json, som sedan backfillen
+         2026-08-03 ligger ett år bakåt (MA200-regimfiltret kräver 200 stängningar).
+         Följden var att diagrammet jämförde ett år index med fyra veckor strategi:
+         OMXS30 +29,8 % mot strategins +3,2 %, medan facit över samma period var
+         +3,0 % mot +3,2 %. Klipp aldrig bort det här argumentet. */
+      const stratFrom = /^\d{4}-\d{2}-\d{2}$/.test((strat[0] && strat[0].date) || "") ? strat[0].date : undefined;
+      const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX", stratFrom);
+      const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC", stratFrom);
       if (omx) benches.push({ label: "OMXS30", color: "#3B82F6", pts: omx });
       if (spx) benches.push({ label: "S&P 500", color: "#8B5CF6", pts: spx });
 
@@ -1257,7 +1264,9 @@
       const allZero = strat.every(p => p.value === 0);
       this.el("chartNote").textContent =
         (allZero ? "Baslinje – inga stängda positioner ännu (0 %). " : "") +
-        (benches.length ? "Benchmark normaliseras till 0 % vid historikens start." :
+        (benches.length ? "Benchmark mäts över samma period som strategin och normaliseras till 0 % vid strategins start" +
+            (stratFrom ? " (" + stratFrom + ")." : ".") +
+            " Strategikurvan avser den NORDISKA boken; S&P 500 ligger med som marknadskontext, inte som dess jämförelseindex." :
           "Benchmark-overlay (OMXS30/S&P) visas när price_history.json fått minst 2 dagars indexdata.");
       const ctx = canvas.getContext("2d");
       const grd = ctx.createLinearGradient(0, 0, 0, 240);

@@ -381,9 +381,22 @@
   // ---- benchmark-serie ur price_history.json (overlay i Avkastning) -----
   // history.series["^OMX"] = [["2026-07-10", 2650.1], ...] -> %-utveckling från
   // seriens första punkt. null om det inte finns minst 2 punkter.
-  function buildBenchmarkSeries(history, sym){
-    const arr = history && history.series && history.series[sym];
-    if (!Array.isArray(arr) || arr.length < 2) return null;
+  //
+  // `fromDate` (valfritt, "YYYY-MM-DD") klipper bort punkter FÖRE datumet och
+  // normaliserar mot den första som blir kvar. Utelämnat = gammalt beteende.
+  // ANLEDNINGEN: baslinjen låg i första punkten i hela price_history.json, vilket
+  // var ofarligt så länge filen bara var några dagar gammal (taket var 60 punkter
+  // när funktionen skrevs 2026-07-11). Backfillen 2026-08-03 seedade ett år bakåt
+  // för MA200-regimfiltret, och då började overlayen mäta ETT ÅR index mot FYRA
+  // VECKOR strategi i samma diagram – OMXS30 ritades som +29,8 % mot strategins
+  // +3,2 %, fast facit över strategins EGEN period var +3,0 % mot +3,2 %.
+  // Diagrammet vände alltså på slutsatsen. Året med historik kan inte kortas
+  // (regimfiltret kräver 200 stängningar), så klippningen hör hemma här.
+  function buildBenchmarkSeries(history, sym, fromDate){
+    const raw = history && history.series && history.series[sym];
+    if (!Array.isArray(raw)) return null;
+    const arr = fromDate ? raw.filter(p => p && String(p[0]) >= fromDate) : raw;
+    if (arr.length < 2) return null;
     const base = Number(arr[0] && arr[0][1]);
     if (!base || isNaN(base)) return null;
     return arr

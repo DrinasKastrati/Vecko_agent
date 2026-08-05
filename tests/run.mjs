@@ -395,6 +395,25 @@ const bh = VP.buildBenchmarkSeries({ series: { "^OMX": [["2026-07-01", 100], ["2
 ok("benchmarkSeries pct", bh && bh.length === 2 && bh[0].value === 0 && bh[1].value === 3);
 ok("benchmarkSeries null", VP.buildBenchmarkSeries(null, "^OMX") === null);
 ok("benchmarkSeries <2pts", VP.buildBenchmarkSeries({ series: { "^OMX": [["2026-07-01", 100]] } }, "^OMX") === null);
+
+/* `fromDate` finns för att benchmarken annars normaliseras mot första punkten i
+   HELA price_history.json. Efter backfillen 2026-08-03 (ett år bakåt) mätte
+   overlayen ett år index mot fyra veckor strategi i samma diagram: OMXS30 visades
+   som +29,8 % mot strategins +3,2 %, medan sanningen över strategins EGEN period
+   var +3,0 % mot +3,2 %. Grafen vände alltså på slutsatsen. */
+const bhHist = { series: { "^OMX": [["2026-06-01", 50], ["2026-07-01", 100], ["2026-07-02", 103]] } };
+const bhClip = VP.buildBenchmarkSeries(bhHist, "^OMX", "2026-07-01");
+ok("benchmarkSeries fromDate klipper äldre punkter", bhClip && bhClip.length === 2);
+ok("benchmarkSeries fromDate normaliserar vid startdatumet",
+  bhClip && bhClip[0].value === 0 && bhClip[1].value === 3);
+ok("benchmarkSeries fromDate före historikens start ger hela serien",
+  (VP.buildBenchmarkSeries(bhHist, "^OMX", "2026-01-01") || []).length === 3);
+ok("benchmarkSeries fromDate som lämnar <2 punkter ger null",
+  VP.buildBenchmarkSeries(bhHist, "^OMX", "2026-07-02") === null);
+ok("benchmarkSeries utan fromDate är oförändrad",
+  (VP.buildBenchmarkSeries(bhHist, "^OMX") || [])[0].value === 0 &&
+  VP.buildBenchmarkSeries(bhHist, "^OMX").length === 3);
+
 ok("seriesOnLabels carry", JSON.stringify(VP.seriesOnLabels(["a","b","c"], [{ date:"a", value:1 }, { date:"c", value:2 }])) === "[1,1,2]");
 ok("seriesOnLabels leading null", VP.seriesOnLabels(["a","b"], [{ date:"b", value:5 }])[0] === null);
 ok("numFrom", VP.numFrom("299,50 NOK") === 299.5 && VP.numFrom("–") === null);

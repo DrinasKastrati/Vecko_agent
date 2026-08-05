@@ -240,6 +240,42 @@ kapitalet står kvar i marknaden – regeln stänger av <em>urvalet</em>, inte e
 dagens uppsättning i fyra av fyra halvor och marknader, och det ungefär halverar max drawdown.
 Men det får <em>inte</em> skelettet att slå index – det gör det mindre dåligt.</p>
 
+<h3>Vad filtret kostar – och varför det ändå är på</h3>
+<p>Filtret är en <b>försäkring, inte en avkastningskälla</b>. Som varje försäkring har den en
+premie, och den syns tydligast när man delar mätperioden i en svag och en stark halva:</p>
+<table>
+<tr><th>Nordiska boken</th><th>Svag halva<br/><span class="meta">index −0,4 %</span></th>
+<th>Stark halva<br/><span class="meta">index +38,2 %</span></th><th>Max&nbsp;DD</th><th>Investerad</th></tr>
+<tr><td>Utan filter (dåvarande uppsättning)</td><td class="neg">−27,2 %</td><td class="neg">−7,4 %</td>
+<td class="neg">−41,4 %</td><td>83 %</td></tr>
+<tr><td>Med filter (MA200)</td><td class="pos">+4,4 %</td><td class="neg">−5,5 %</td>
+<td>−27,0 %</td><td>65 %</td></tr>
+</table>
+<p>Läs tabellen åt två håll. <b>Mot den gamla uppsättningen</b> är filtret bättre i båda halvorna –
+det var därför det slogs på. <b>Mot index</b> är den starka halvan brutal: marknaden gav +38,2 %,
+boken gav −5,5 %. Men notera att uppsättningen <em>utan</em> filter gav −7,4 % i samma halva.
+Filtret är alltså inte orsaken till att boken förlorar mot index i en stark marknad – det gör
+skelettet på egen hand. Filtret kostar knappt två procentenheter där, och betalar tillbaka
+trettio i den svaga halvan.</p>
+
+<div class="box box--warn">
+<b>Tre verkliga begränsningar med regeln</b>
+<b>1. Den är eftersläpande av konstruktion.</b> Ett 200-dagarssnitt bryts först efter att fallet
+skett, och återtas först efter att återhämtningen börjat. Sämsta tänkbara marknad är en V-formad
+botten: boken kliver ur nära lägsta och tillbaka in efter de skarpaste uppgångsdagarna.
+<b>2. Exponeringen sjunker till ~65 %.</b> Under en lång uppgång är det en strukturell broms som
+inget urval kan kompensera för.
+<b>3. Underlaget är litet.</b> Två marknader, två halvor – åtta celler totalt. Nordiskt är MA100
+faktiskt bättre på avkastning; MA200 valdes för båda böckerna eftersom olika fönster per marknad
+är precis den sortens trimning som out-of-sample-testet visat är brus. Det är ett medvetet val
+mot överanpassning, inte ett bevis för att 200 är rätt tal.
+</div>
+
+<p class="meta">Och en fjärde, som gäller implementationen snarare än regeln: faller indexserien ur
+kurshämtningen kan medelvärdet inte beräknas, regimen läses som <em>av</em>, och hela boken slutar
+öppna positioner – utan att något ser trasigt ut. Det är därför en separat vakthund larmar när
+indexserien har färre än 200 stängningar.</p>
+
 <div class="box box--ok">
 <b>Case tvingas aldrig fram</b>
 Räcker inte fyra kandidater till godkänt fylls bara de platser som håller. Resten går till
@@ -779,6 +815,11 @@ tyst felparsning.</p>
 
 <table>
 <tr><th>Begränsning</th><th>Innebörd</th></tr>
+<tr><td><b>Regimfiltret kapar uppsidan</b></td><td>Spärren håller kapitalet i indexdelen när index
+ligger under sitt 200-dagarssnitt, vilket sänker exponeringen till ~65 %. Den är eftersläpande av
+konstruktion: boken kliver ur efter fallet och tillbaka in efter att återhämtningen börjat, så en
+V-formad botten är sämsta tänkbara marknad. Filtret är en försäkring mot djupa nedgångar – det
+halverar max drawdown – inte en avkastningskälla. Se avsnitt 4.</td></tr>
 <tr><td><b>Rapporthandel är inte en genväg</b></td><td>Att köpa inför en rapport är mätt och
 underkänt i båda marknaderna. Att köpa efter en bekräftad överraskning mätte bättre men var inte
 stabilt nog att bli en egen regel. Förvänta dig ingen extra avkastning från rapportsäsongen.</td></tr>
