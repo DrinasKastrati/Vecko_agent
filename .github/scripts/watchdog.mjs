@@ -12,6 +12,7 @@
    ============================================================ */
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { staleCandidates } from "./validate-scout-candidates.mjs";
+import { postCatalystQuote } from "./refresh-candidate-prices.mjs";
 
 // Senaste rapportdatum (yymmdd) bland filnamn med givet prefix, eller null.
 export function latestReportDate(files, prefix){
@@ -206,6 +207,33 @@ export function checkScoutCandidates(opts){
   return problems;
 }
 
+/* KANDIDAT UTAN KURS TROTS ATT EN POST-EVENT-KURS FINNS.
+
+   Fyller `refresh-candidate-prices.mjs` inte i kursen avvisas kandidaten på
+   "kurs ej verifierbar" vid nästa rotation – rapporten ser normal ut, ingenting
+   går sönder, och en bekräftad katalysator tystnar. Det är samma tysta felsort
+   som regimfiltret och rapportkalendern redan bevakas för.
+
+   Bakåtkompatibel: saknas kandidatfil eller noteringar är kontrollen tyst. */
+export function checkCandidatePrice(opts){
+  const { candidatesDb, quotes } = opts || {};
+  const problems = [];
+  const cs = (candidatesDb && Array.isArray(candidatesDb.candidates)) ? candidatesDb.candidates : [];
+  if (!cs.length || !quotes) return problems;
+  const stuck = cs.filter(c => c && c.status === "new" && c.price == null &&
+                               postCatalystQuote(quotes[c.ticker], c.catalystDate));
+  if (stuck.length)
+    problems.push({ key: "candidate-price", title:
+      `Watchdog: ${stuck.length} kandidat(er) saknar kurs trots att en post-event-kurs finns`,
+      body: "Följande kandidater i `state/scout_candidates.json` har `price: null` medan " +
+        "`state/prices.json` bär en kurs som ligger EFTER deras katalysator:\n\n" +
+        stuck.map(c => `- **${c.id}** (${c.book}, katalysator ${c.catalystDate})`).join("\n") +
+        "\n\nDet betyder att steget \"Fyll kandidatkurser ur post-event-kurs\" i `prices.yml` " +
+        "inte kört eller inte fungerat. Utan kursen avvisas kandidaten på \"kurs ej " +
+        "verifierbar\" vid nästa rotation, trots att kursen finns." });
+  return problems;
+}
+
 /* RAPPORTKALENDERN. Faller den slutar watchlisten fyllas på i förväg, och en
    bevakad rapport hamnar återigen utan verifierad kurs på dagen den infaller –
    utan att något går sönder. Samma tysta felsort som regimfiltret. */
@@ -268,6 +296,8 @@ function main(){
   } catch {}
   let candidatesDb = null;
   try { candidatesDb = JSON.parse(readFileSync("state/scout_candidates.json", "utf8")); } catch {}
+  let priceQuotes = null;
+  try { priceQuotes = JSON.parse(readFileSync("state/prices.json", "utf8")).quotes || null; } catch {}
   let earningsCalAt = null;
   try { earningsCalAt = JSON.parse(readFileSync("state/earnings_calendar.json", "utf8")).generatedAt || null; } catch {}
   let moversAt = null;
@@ -300,6 +330,7 @@ function main(){
   problems.push(...checkScoutCandidates({
     candidatesDb, today: todayIso, staleFn: staleCandidates
   }));
+  problems.push(...checkCandidatePrice({ candidatesDb, quotes: priceQuotes }));
   problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
 
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");

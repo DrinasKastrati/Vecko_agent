@@ -2026,6 +2026,29 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
        today: "2026-08-12",
        staleFn: (d, t) => d.candidates.filter(x => x.status === "new" && x.expiresAt < t) }).length === 1);
 
+  // ---- watchdog: kandidat utan kurs trots att post-event-kurs finns ----
+  {
+    const cands = { candidates: [
+      { id: "260805-ANET", ticker: "ANET", book: "us", status: "new",
+        catalystDate: "2026-08-04", price: null, thesis: "Q2 AMC" }
+    ] };
+    const withPost = { ANET: { price: 205.0, marketTime: "2026-08-05T15:23:00.000Z" } };
+    const preOnly  = { ANET: { price: 190.51, marketTime: "2026-08-04T20:00:03.000Z" } };
+
+    ok("watchdog larmar när post-event-kurs finns men kandidaten står på null",
+       WD.checkCandidatePrice({ candidatesDb: cands, quotes: withPost })
+         .some(p => p.key === "candidate-price"));
+    ok("watchdog tiger när bara pre-event-kurs finns",
+       WD.checkCandidatePrice({ candidatesDb: cands, quotes: preOnly }).length === 0);
+    ok("watchdog tiger utan kandidatfil",
+       WD.checkCandidatePrice({ candidatesDb: null, quotes: withPost }).length === 0);
+    ok("watchdog tiger utan noteringar",
+       WD.checkCandidatePrice({ candidatesDb: cands, quotes: null }).length === 0);
+    ok("watchdog tiger för kandidat som redan har kurs",
+       WD.checkCandidatePrice({ candidatesDb: { candidates: [Object.assign({},
+         cands.candidates[0], { price: 205.0 })] }, quotes: withPost }).length === 0);
+  }
+
   ok("watchdog: stale kalender larmar",
      WD.checkEarningsCalendar({ now: new Date("2026-08-04T12:00:00Z"), generatedAt: "2026-08-01T05:00:00Z" }).length === 1);
   ok("watchdog: färsk kalender larmar inte",
