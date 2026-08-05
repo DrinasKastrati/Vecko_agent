@@ -309,8 +309,12 @@ I punkt 4 i LÄGE B, direkt efter listan "KÖP endast i fyra fall", lägg ett eg
      behöver; (5) regimfiltret är PÅ; (6) boken har ledig plats och taket på TVÅ villkorade planer
      spräcks inte. Högst EN sådan plan per körning. Planen läggs enligt punkt 4b i LÄGE A, med
      fullständiga nivåer och entry-villkor mot verifierad kurs, och avförs som vanligt om den inte
-     triggat inom 5 handelsdagar. Faller bubblaren på något av villkoren: logga en `AVVAKTA`-rad i
-     `state/decisions.json` med den NAMNGIVNA spärren. Detta är en SPÄRRAD väg, inte en uppmjukning
+     triggat inom 5 handelsdagar. **Logga avgörandet i `state/decisions.json` OAVSETT utfall:** en
+     rad när planen läggs, och en `AVVAKTA`-rad med den NAMNGIVNA spärren när bubblaren faller på
+     något av villkoren. Båda behövs — `watchdog.mjs:checkStalePricedBubblare` tystnar bara när det
+     finns en rad daterad efter veckorapporten, så en plan som läggs utan att loggas ger falsklarm
+     resten av veckan. Regeln prövas EN gång per körning, oberoende av innehavsslingan i punkt 4.
+     Detta är en SPÄRRAD väg, inte en uppmjukning
      – kursverifieringskravet, grindarna och taket gäller oförändrat.
 ```
 
