@@ -78,7 +78,13 @@ if (invokedDirectly){
   // Skriv BARA vid faktisk ändring: prices.yml kör var 30:e minut, och en
   // ovillkorlig skrivning gav decision_eval.mjs ~48 tomma commits per dygn.
   if (res.changed){
-    writeFileSync(DB, JSON.stringify(res.db, null, 1) + "\n");
+    // 2 blanksteg, inte 1: filen har TVÅ skrivare (det här skriptet OCH
+    // scout-/rotationspromptarna som skriver om hela filen varje morgon,
+    // med 2-blankstegs indrag). decision_eval.mjs kommer undan med 1 blanksteg
+    // bara för att den filen är -diff-märkt i .gitattributes; den här är det inte,
+    // så ett avvikande indrag hade gett en fullständig fildiff varje gång endera
+    // sidan skriver, i evighet.
+    writeFileSync(DB, JSON.stringify(res.db, null, 2) + "\n");
     console.log(`Fyllde kurs på ${res.filled.length} kandidat(er): ${res.filled.join(", ")}`);
   } else {
     console.log("Inga kandidater fick ny kurs – skriver inte (undviker tom commit).");
