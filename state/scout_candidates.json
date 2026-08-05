@@ -16,10 +16,11 @@
       "sourceRef": "Benzinga 2026-08-04",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-12",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-260805.md",
+      "decidedAt": "2026-08-05",
+      "decisionReason": "kurs ej verifierbar – enda verifierade kursen 190,51 USD (2026-08-04T20:00:03Z) är reguljär stängning FÖRE rapporten 4/8 AMC; post-katalysatorkurs saknas"
     },
     {
       "id": "260805-AMD",
@@ -34,10 +35,11 @@
       "sourceRef": "CNBC/Benzinga 2026-08-04",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-12",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-260805.md",
+      "decidedAt": "2026-08-05",
+      "decisionReason": "kurs ej verifierbar – prices.json 518,58 USD (2026-08-04T20:00:01Z) är FÖRE rapporten 4/8 AMC; post-reaktionskurs (-8,8 % AH) finns bara i nyhetskälla"
     },
     {
       "id": "260805-AVGO",
@@ -52,10 +54,11 @@
       "sourceRef": "Yahoo Finance/Barchart 2026-08-04",
       "price": 418.16,
       "priceAsOf": "2026-08-04T20:00:01.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-12",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-260805.md",
+      "decidedAt": "2026-08-05",
+      "decisionReason": "obekräftad katalysator – bevakas: confirmed=false, tema/momentum (+6,61 % 4/8) utan enskilt bekräftat event. Spärr (a) prövas före kursspärren"
     }
   ]
 }
