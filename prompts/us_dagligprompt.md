@@ -423,6 +423,23 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
      innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering,
      eller **(d) en SCOUT-KANDIDAT med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**.
      Kapitalet tas ur indexsleeven; minska sleeven med motsvarande vikt.
+   - **VILLKORAD PLAN FÖR EN PRISSATT BUBBLARE (ny 2026-08-06).** Du FÅR lägga EN
+     villkorad bubblar-plan i LÄGE B, men bara när kursen var det ENDA som saknades.
+     Samtliga sex villkor måste hålla: (1) senaste us-veckorapporten angav uttryckligen
+     SAKNAD VERIFIERAD KURS som skälet att bubblaren inte fick en pending-rad – en
+     bubblare som rankades under av OMDÖMESSKÄL (ingen egen katalysator,
+     sektorkoncentration, ej beräkningsbar teknik) omfattas ALDRIG; (2)
+     `state/prices.json` har nu verifierad kurs med tidsstämpel; (3) katalysatorn är
+     fortfarande inom sina 5 handelsdagar och obruten; (4) bubblaren klarar FULL
+     poängsättning mot de fem grindarna – den kunde inte poängsättas på måndagen
+     eftersom kursen är det poängsättningen behöver; (5) regimfiltret är PÅ; (6) boken
+     har ledig plats och taket på TVÅ villkorade planer spräcks inte. Högst EN sådan
+     plan per körning. Planen läggs enligt punkt 4b i LÄGE A, med fullständiga nivåer
+     och entry-villkor mot verifierad kurs, och avförs som vanligt om den inte triggat
+     inom 5 handelsdagar. Faller bubblaren på något av villkoren: logga en
+     `AVVAKTA`-rad i `state/decisions.json` med den NAMNGIVNA spärren. Detta är en
+     SPÄRRAD väg, inte en uppmjukning – kursverifieringskravet, grindarna och taket
+     gäller oförändrat.
    - TIDSSTOPP: har innehavet en `catalystType` med tidsstopp (`ma_rumor`, `insider`, `index`) och
      horisonten passerats utan bekräftad tes – SÄLJ och flytta kapitalet till indexsleeven.
 5. Motivera varje beslut i 1–3 meningar med hänvisning till kurs (tidsstämpel) och/eller nyhet (datum + källa).
