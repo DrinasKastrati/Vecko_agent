@@ -2,5 +2,60 @@
   "version": 1,
   "schemaVersion": "2026-08-04-scoutbridge",
   "comment": "MASKINLÄSBAR BRYGGA SCOUT -> BÖCKERNA. Varför filen finns: scouten producerade prosa som ingen bok läste. Palantir flaggades i rapport-260801, -260802 och -260803 inför sin rapport 3/8 AMC; boken kunde varken se, avfärda eller köpa kandidaten, och aktien gick +27,6 % 4/8. Scoutens fynd fanns, men det fanns ingen kanal. Den här filen ÄR kanalen. REGEL SOM INTE FÅR LUCKRAS UPP: varje kandidat med status 'new' MÅSTE få ett avgörande av ansvarig bok vid nästa körning – antingen 'rejected' med NAMNGIVEN spärr i decisionReason, eller 'promoted' när alla grindar hålls. Att låta en kandidat ligga kvar som 'new' tills den expirerar är precis den tystnad filen byggdes för att göra omöjlig, och watchdogen larmar på den. Varje avgörande ska DESSUTOM loggas som en rad i state/decisions.json (KÖP vid promoted, AVVAKTA vid rejected) så att decision_eval.mjs kan mäta urvalet mot efterföljande kurs – de avvisade är det kontrafaktiska underlaget. Schema per kandidat: id (yymmdd-TICKER, unikt), date (åååå-mm-dd, när kandidaten skapades), ticker (Yahoo-format), book (nordic|us), source (scout|analys|monitor), catalystType (samma enum som decisions.json), catalystDate (åååå-mm-dd, när katalysatorn INTRÄFFADE), confirmed (bool – true endast för bekräftat utfall, false för rykte/väntat event), thesis (max 300 tecken), sourceRef (källa + datum), price (verifierad kurs eller null), priceAsOf (ISO-tidsstämpel eller null), status (new|rejected|promoted|expired), expiresAt (åååå-mm-dd, 5 handelsdagar från date), decidedBy (rapportfil som tog ställning, null tills dess), decidedAt (åååå-mm-dd eller null), decisionReason (max 200 tecken, KRÄVS när status inte är 'new'). VIKTIGT: price får vara null (kandidaten kan flaggas innan kursen hunnit hämtas) men en kandidat med price null får ALDRIG promotas – kursverifieringskravet är oförändrat. Valideras av .github/scripts/validate-scout-candidates.mjs i CI och i auto_merge-grinden.",
-  "candidates": []
+  "candidates": [
+    {
+      "id": "260805-ANET",
+      "date": "2026-08-05",
+      "ticker": "ANET",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-08-04",
+      "confirmed": true,
+      "thesis": "Q2 4/8 AMC krossade: intakt 3,04 mdr (+37,7%), EPS 1,02 vs 0,88, hojt Q3-guide 3,3 mdr. AI-Ethernet till hyperscalers. +~10% after-hours. Kurs ej i prices.json.",
+      "sourceRef": "Benzinga 2026-08-04",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-08-12",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260805-AMD",
+      "date": "2026-08-05",
+      "ticker": "AMD",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-08-04",
+      "confirmed": true,
+      "thesis": "Q2 4/8 AMC beat (11,54 mdr +50%, DC +107%) + starkt Q3-guide + Anthropic-megadeal (MI450/Helios), MEN -8,8% after-hours (ribban for hogt satt). Prices.json 518,58 ar FORE rapporten; post-kurs ej verifierad. AVVAKTA.",
+      "sourceRef": "CNBC/Benzinga 2026-08-04",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-08-12",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260805-AVGO",
+      "date": "2026-08-05",
+      "ticker": "AVGO",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-08-04",
+      "confirmed": false,
+      "thesis": "AI-ASIC-tema/momentum: +6,61% 4/8, Google arrangerar upp till 200 mdr AI-infra (delvis Anthropic), AVGO nyckelchipleverantor. Ingen enskild bekraftad 24h-katalysator - tema, ej rapportevent.",
+      "sourceRef": "Yahoo Finance/Barchart 2026-08-04",
+      "price": 418.16,
+      "priceAsOf": "2026-08-04T20:00:01.000Z",
+      "status": "new",
+      "expiresAt": "2026-08-12",
+      "decidedBy": null,
+      "decidedAt": null
+    }
+  ]
 }
