@@ -426,6 +426,52 @@
    "lessonIds": [
     "L-2"
    ]
+  },
+  {
+   "date": "2026-08-05",
+   "book": "nordic",
+   "mode": "B",
+   "ticker": "SAAB-B.ST",
+   "action": "SÄLJ",
+   "price": 635,
+   "currency": "SEK",
+   "weight": 0.35,
+   "entry": 585,
+   "stop": 585,
+   "target": 635,
+   "rr": 2,
+   "catalystType": "order",
+   "sector": "Försvarsindustri",
+   "rsi": 78.5,
+   "horizonDays": 30,
+   "holdDays": 4,
+   "outcomePct": 8.55,
+   "realizedRr": 2,
+   "benchPct": 2.87,
+   "alphaPct": 5.68,
+   "reason": "MALTRAFF: mal 635 genomhandlat intradag 4/8 (dayHigh 636,10, stangning 619,70). Bokat pa malnivan som Alleima 17/7. Malet ej hojt - ingen ny katalysator, RSI 78,5.",
+   "lessonIds": [
+    "L-3"
+   ]
+  },
+  {
+   "date": "2026-08-05",
+   "book": "nordic",
+   "mode": "B",
+   "ticker": "XACT-OMXS30.ST",
+   "action": "KÖP",
+   "price": 496.15,
+   "currency": "SEK",
+   "weight": 1,
+   "entry": 489.62,
+   "stop": null,
+   "target": null,
+   "rr": null,
+   "catalystType": "index",
+   "sector": "Indexsleeve",
+   "rsi": null,
+   "reason": "Sleeven utokad 65 -> 100 pct med Saab-kapitalet @ 496,15 (marketTime 2026-08-04 15:24:51Z). Viktat snittentry 486,10 -> 489,62. Kapitalparkering, ej case.",
+   "lessonIds": []
   }
  ]
 }
