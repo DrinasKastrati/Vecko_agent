@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-05T07:36:32.708Z",
+ "generatedAt": "2026-08-05T13:44:28.213Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 18,
-  "measurable": 18,
+  "decisions": 24,
+  "measurable": 24,
   "missing": 0,
-  "pending": 15
+  "pending": 21
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -483,6 +483,66 @@
    "action": "SÄLJ",
    "catalystType": "order",
    "sector": "Försvarsindustri",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "AMZN",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "E-handel/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "MSFT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "JPM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bank/finans",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "ANET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Natverk/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-05",
+   "ticker": "AVGO",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
    "reconstructed": false,
    "fwd": {}
   }
