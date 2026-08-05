@@ -87,6 +87,7 @@ export function collectTickers(){
     const t = line.trim().toUpperCase();
     if (t && !t.startsWith("#") && /^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)) tickers.add(t);
   }
+  for (const t of collectCandidateTickers("nordic")) tickers.add(t);
   return [...tickers].sort();
 }
 
@@ -110,6 +111,31 @@ export function collectEarningsTickers(readFile = readFirst){
     const j = JSON.parse(raw);
     const up = Array.isArray(j.upcoming) ? j.upcoming : [];
     return up.map(u => u && u.symbol).filter(s => typeof s === "string" && s).sort();
+  } catch { return []; }
+}
+
+/* Öppna kandidater ur state/scout_candidates.json som tickerkälla.
+
+   Fram till 2026-08-05 var filen INTE en källa: ANET hamnade i prices.json
+   bara för att scouten också handskrev in den i config/watchlist_us.txt. Den
+   handpåläggningen är precis vad kandidatfilen skulle göra överflödig.
+
+   Ingen egen utgångslogik: kandidatens `expiresAt` ÄR utgången. Repot har redan
+   två listor med utgångssemantik, och en tredje hygienregel har dålig historik
+   här – watchlist.txt bär "rensas efter 14 handelsdagar" och har aldrig rensats. */
+export function collectCandidateTickers(book, readFile = readFirst,
+                                        today = new Date().toISOString().slice(0, 10)){
+  const raw = readFile(["state/scout_candidates.json"]);
+  if (!raw) return [];
+  try {
+    const j = JSON.parse(raw);
+    const cs = Array.isArray(j.candidates) ? j.candidates : [];
+    return cs
+      .filter(c => c && c.status === "new" && c.book === book &&
+                   typeof c.ticker === "string" && c.ticker &&
+                   (!c.expiresAt || String(c.expiresAt) >= today))
+      .map(c => c.ticker)
+      .sort();
   } catch { return []; }
 }
 
@@ -230,6 +256,7 @@ export function collectUsTickers(){
   // US-rotationens egna innehav/case (så deras kurser garanterat hämtas):
   for (const t of extractUsPortfolioTickers(readFirst(["state/portfolj_us.md", "portfolj_us.md"]))) set.add(t);
   for (const t of extractUsCaseTickers(newestUsWeekly())) set.add(t);
+  for (const t of collectCandidateTickers("us")) set.add(t);
   return [...set];
 }
 

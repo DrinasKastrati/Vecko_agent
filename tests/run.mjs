@@ -1922,6 +1922,26 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
        timestamp: [], indicators: { quote: [{ close: [] }] } }] } }) })) === null);
 }
 
+// ---- kandidatfilen som tickerkälla ----
+{
+  const db = JSON.stringify({ candidates: [
+    { ticker: "ANET",     book: "us",     status: "new",      expiresAt: "2026-08-12" },
+    { ticker: "ALLEI.ST", book: "nordic", status: "new",      expiresAt: "2026-08-12" },
+    { ticker: "GAMMAL",   book: "us",     status: "new",      expiresAt: "2026-08-01" },
+    { ticker: "AVGJORD",  book: "us",     status: "rejected",  expiresAt: "2026-08-12" }
+  ] });
+  const rf = () => db;
+  const us = FP.collectCandidateTickers("us", rf, "2026-08-05");
+  const no = FP.collectCandidateTickers("nordic", rf, "2026-08-05");
+  ok("kandidatticker hamnar i rätt bok (us)", us.includes("ANET") && !us.includes("ALLEI.ST"));
+  ok("kandidatticker hamnar i rätt bok (nordic)", no.includes("ALLEI.ST") && !no.includes("ANET"));
+  ok("utgången kandidat blir ingen tickerkälla", !us.includes("GAMMAL"));
+  ok("avgjord kandidat blir ingen tickerkälla", !us.includes("AVGJORD"));
+  ok("saknad kandidatfil ger tom lista", FP.collectCandidateTickers("us", () => "", "2026-08-05").length === 0);
+  ok("trasig kandidatfil ger tom lista, inte kastat fel",
+     FP.collectCandidateTickers("us", () => "{trasig", "2026-08-05").length === 0);
+}
+
 /* ---- SCOUT -> BOK-BRYGGAN (2026-08-04) ----------------------------------
    Reglerna som INTE får luckras upp: ingen promotion utan verifierad kurs,
    ingen promotion av en obekräftad katalysator, inget avgörande utan skäl. */
