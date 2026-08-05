@@ -1859,6 +1859,42 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      FP.extendedScope({ upcoming: [null, {}, { symbol: "" }] }, { candidates: [null, {}] }, "2026-08-05").length === 0);
 }
 
+// ---- parseExtended: förbörs-/efterbörspunkt ur 1m-svaret ----
+{
+  // reguljär session 13:30–20:00 UTC 2026-08-05 (unix-sekunder)
+  const regStart = Math.floor(Date.parse("2026-08-05T13:30:00Z") / 1000);
+  const regEnd   = Math.floor(Date.parse("2026-08-05T20:00:00Z") / 1000);
+  const mk = (times, closes) => ({ chart: { result: [{
+    meta: { currentTradingPeriod: { regular: { start: regStart, end: regEnd } } },
+    timestamp: times,
+    indicators: { quote: [{ close: closes }] }
+  }] } });
+
+  const preT = Math.floor(Date.parse("2026-08-05T12:58:00Z") / 1000);
+  const regT = Math.floor(Date.parse("2026-08-05T14:00:00Z") / 1000);
+  const postT = Math.floor(Date.parse("2026-08-05T20:30:00Z") / 1000);
+
+  const onlyPre = FP.parseExtended(mk([preT, regT], [471.02, 480.0]));
+  ok("parseExtended tar förbörspunkt när ingen efterbörs finns",
+     onlyPre && onlyPre.extendedSession === "pre" && onlyPre.extendedPrice === 471.02);
+  ok("parseExtended ger ISO-tidsstämpel",
+     onlyPre && onlyPre.extendedTime === "2026-08-05T12:58:00.000Z");
+
+  const withPost = FP.parseExtended(mk([preT, regT, postT], [471.02, 480.0, 492.5]));
+  ok("parseExtended väljer SENASTE punkten utanför reguljär session",
+     withPost && withPost.extendedSession === "post" && withPost.extendedPrice === 492.5);
+
+  ok("parseExtended ger null när bara reguljära punkter finns",
+     FP.parseExtended(mk([regT], [480.0])) === null);
+  ok("parseExtended hoppar över null-close",
+     FP.parseExtended(mk([preT, postT], [471.02, null])).extendedSession === "pre");
+  ok("parseExtended ger null utan currentTradingPeriod",
+     FP.parseExtended({ chart: { result: [{ meta: {}, timestamp: [], indicators: { quote: [{ close: [] }] } }] } }) === null);
+  ok("parseExtended tål tomt svar", FP.parseExtended(null) === null);
+  ok("parseExtended tål saknad indicators",
+     FP.parseExtended({ chart: { result: [{ meta: { currentTradingPeriod: { regular: { start: regStart, end: regEnd } } } }] } }) === null);
+}
+
 /* ---- SCOUT -> BOK-BRYGGAN (2026-08-04) ----------------------------------
    Reglerna som INTE får luckras upp: ingen promotion utan verifierad kurs,
    ingen promotion av en obekräftad katalysator, inget avgörande utan skäl. */

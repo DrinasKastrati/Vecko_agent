@@ -283,6 +283,37 @@ export function parseChart(json, sym){
   };
 }
 
+/* Förbörs-/efterbörskurs ur ett `interval=1m&includePrePost=true`-svar.
+
+   Yahoos 1d-svar har `hasPrePostMarketData: true` men INGET postMarketPrice i
+   meta (kontrollerat live 2026-08-05) – utökad kurs finns bara i 1m-seriens
+   punkter, och sessionen avgörs av meta.currentTradingPeriod.regular.
+
+   Returnerar SENASTE punkten utanför reguljär session, eller null. Aldrig ett
+   objekt med null-fält: anroparen ska kunna skilja "ingen utökad kurs" från
+   "hämtningen föll", och det gör den på att fälten saknas helt. */
+export function parseExtended(json){
+  const res  = json && json.chart && json.chart.result && json.chart.result[0];
+  const reg  = res && res.meta && res.meta.currentTradingPeriod && res.meta.currentTradingPeriod.regular;
+  if (!reg || typeof reg.start !== "number" || typeof reg.end !== "number") return null;
+  const ts = Array.isArray(res.timestamp) ? res.timestamp : [];
+  const q  = res.indicators && res.indicators.quote && res.indicators.quote[0];
+  const close = (q && Array.isArray(q.close)) ? q.close : [];
+  let best = null;
+  for (let i = 0; i < ts.length; i++){
+    const t = ts[i], c = close[i];
+    if (typeof t !== "number" || c == null || isNaN(Number(c))) continue;
+    if (t >= reg.start && t < reg.end) continue;      // reguljär session – inte utökad
+    if (!best || t > best[0]) best = [t, Number(c)];
+  }
+  if (!best) return null;
+  return {
+    extendedPrice: Math.round(best[1] * 1e6) / 1e6,
+    extendedTime: new Date(best[0] * 1000).toISOString(),
+    extendedSession: best[0] < reg.start ? "pre" : "post"
+  };
+}
+
 // ---- network ----------------------------------------------------------
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
