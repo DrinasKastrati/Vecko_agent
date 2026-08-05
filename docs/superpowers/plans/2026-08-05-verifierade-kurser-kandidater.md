@@ -670,7 +670,12 @@ if (invokedDirectly){
   // Skriv BARA vid faktisk ändring: prices.yml kör var 30:e minut, och en
   // ovillkorlig skrivning gav decision_eval.mjs ~48 tomma commits per dygn.
   if (res.changed){
-    writeFileSync(DB, JSON.stringify(res.db, null, 1) + "\n");
+    // 2 mellanslag: filen är 2-indenterad och har TVÅ skrivare (det här skriptet
+    // och prompterna). Ett annat indrag hade formaterat om hela filen vid varje
+    // ifyllning, och nästa promptskrivning hade flippat tillbaka den – helfils-diffar
+    // i båda riktningarna för all framtid. `decision_eval.mjs` använder 1, men den
+    // filen är `-diff`-märkt så dess brus döljs.
+    writeFileSync(DB, JSON.stringify(res.db, null, 2) + "\n");
     console.log(`Fyllde kurs på ${res.filled.length} kandidat(er): ${res.filled.join(", ")}`);
   } else {
     console.log("Inga kandidater fick ny kurs – skriver inte (undviker tom commit).");
