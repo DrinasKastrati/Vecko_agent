@@ -123,17 +123,29 @@ jobb (samma mönster som `decision_eval.mjs`).
 För varje kandidat med `status: "new"` och `price: null`, fyll i **endast från en
 bevisligen post-katalysatorisk kurs**:
 
-1. Finns `extendedPrice` och `extendedTime` ligger efter **katalysatordagens reguljära
-   stängning för symbolens egen börs** → använd den. Sätt `price`,
-   `priceAsOf` = `extendedTime`, `priceSession` = `extendedSession`.
+1. Finns `extendedPrice`/`extendedTime` och punkten ligger efter katalysatordagens
+   stängning → använd den. Sätt `price`, `priceAsOf` = `extendedTime`,
+   `priceSession` = `extendedSession`.
 2. Annars, om den reguljära `marketTime` infaller en kalenderdag **strikt efter**
    `catalystDate` → använd `price`/`marketTime`, `priceSession: "regular"`.
 3. Annars lämna `price: null`. Kursen som finns är pre-event och duger inte.
 
-**Stängningstiden får INTE hårdkodas till 20:00 UTC.** Det är US-stängning; OSSD.ST
-stänger 15:30 UTC och NVO handlas som ADR. Gränsen tas ur `meta.currentTradingPeriod.regular.end`
-i samma svar som gav den utökade kursen — börsen definierar sin egen stängning, och
-sommartid flyttar den.
+**"Efter katalysatordagens stängning" uttrycks med datum + sessionsetikett, aldrig med
+klockslag.** En utökad punkt kvalificerar när
+
+- dess datum är **senare** än `catalystDate` (vilken session som helst — förbörs dag D+1
+  ligger per definition efter stängning dag D), **eller**
+- dess datum är **lika med** `catalystDate` och `extendedSession` är `"post"`.
+
+En `"pre"`-punkt på `catalystDate` själv faller alltså bort, korrekt: den ligger före
+stängningen samma dag.
+
+Formuleringen är medvetet fri från tidszonsaritmetik. Alternativet — att jämföra mot
+`meta.currentTradingPeriod.regular.end` — kräver att man plockar ut klockslaget för
+symbolens börs och applicerar det på ett annat datum, vilket går sönder vid sommartids-
+omställning och skiljer sig mellan Stockholm (15:30 UTC) och New York (20:00 UTC).
+Datum + sessionsetikett ger samma svar utan den risken. **Hårdkoda aldrig 20:00 UTC** —
+det är US-stängning och gäller inte OSSD.ST.
 
 **Kalendern skiljer inte på AMC och BMO.** `earnings_calendar.json` har bara ett datum.
 Regel 2 antar därför det strängare AMC-fallet: en rapport dag D anses inte vara prissatt
@@ -216,9 +228,9 @@ Varje avgörande loggas som i dag i `state/decisions.json` (`KÖP`/`AVVAKTA`), s
 - tomt/trasigt 1m-svar lämnar den reguljära noteringen orörd
 
 **Del 2**
-- fyller från `extendedPrice` när `extendedTime` ligger efter katalysatordagens
-  reguljära stängning för symbolens börs
-- använder symbolens EGEN stängning, inte 20:00 UTC (nordisk symbol, stängning 15:30 UTC)
+- fyller från `extendedPrice` när punktens datum är senare än `catalystDate`
+- fyller från `extendedPrice` när datum = `catalystDate` och session är `"post"`
+- fyller INTE när datum = `catalystDate` och session är `"pre"` (före stängning samma dag)
 - BMO-fallet: rapport dag D med kurs från D:s stängning lämnas `null` (avsiktligt strängt)
 - fyller från reguljär kurs när `marketTime` är en dag strikt efter `catalystDate`
 - **lämnar `null` när enda kursen är pre-event** (ANET/AMD-fallet — regressionsvakt)
