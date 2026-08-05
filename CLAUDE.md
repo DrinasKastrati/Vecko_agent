@@ -366,10 +366,11 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `reports/daily/…`). Läser `config/fokus.md`, `state/portfolj.md`, rätt mall i `templates/`, och
   **kurser i första hand ur `state/prices.json`**. Uppdaterar `state/portfolj.md` (historik är
   append-only). Committar till main.
-  **Sedan 2026-08-06 får LÄGE B lägga EN villkorad bubblar-plan** – men bara för en bubblare
-  där senaste veckorapporten angav saknad verifierad kurs som skälet att den inte fick en
-  pending-rad, och bara om sex villkor håller (kurs finns nu · katalysator inom 5 handelsdagar ·
-  full poängsättning mot de fem grindarna · regimfilter på · ledig plats · taket på två planer).
+  **Sedan 2026-08-06 får LÄGE B (i BÅDA rotationsprompterna) lägga EN villkorad bubblar-plan** –
+  men bara för en bubblare där senaste veckorapporten angav saknad verifierad kurs som skälet
+  att den inte fick en pending-rad, och bara om sex villkor håller (kurs finns nu · katalysator
+  inom 5 handelsdagar · full poängsättning mot de fem grindarna · regimfilter på · ledig plats ·
+  taket på två planer).
   **Anledningen:** veckorotationen 2026-08-03 kunde inte prissätta tre bubblare, kurserna kom
   4–5/8, och punkt 4b låg bara i LÄGE A – fyra handelsdagar där en färdigbedömd idé låg död av
   ett datafel. En bubblare som rankades under av OMDÖMESSKÄL omfattas aldrig; den bedömningen
