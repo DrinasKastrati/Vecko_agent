@@ -362,6 +362,19 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
       en ny kandidat då; förläng aldrig den gamla.
    b) **Saknas verifierad kurs (`price: null`)?** → `status: "rejected"`, `decisionReason`
       "kurs ej verifierbar". Kravet är oförändrat och sänks aldrig.
+
+   **Utökad session (förbörs/efterbörs).** Bär kandidaten `priceSession: "pre"` eller
+   `"post"` är kursen verifierad och tidsstämplad – den ligger EFTER katalysatorn, till
+   skillnad från den reguljära stängningen samma dag, och räknas därför INTE som "kurs ej
+   verifierbar". Kravet är oförändrat: kurs + källa + tidsstämpel.
+   **Men ett KÖP på en utökad kurs får aldrig bli ett direktköp.** Förbörs- och
+   efterbörshandel är tunn, och en kurs där är inte alltid möjlig att handla på. Promota
+   kandidaten och lägg köpet som en VILLKORAD PLAN i `state/portfolj_us.md`:s Pending-sektion
+   med entry-villkor mot REGULJÄR session (punkt 4b), så larmar monitorn när nivån korsas.
+   Redovisa alltid session och tidsstämpel i rapporten, t.ex. "471,02 USD (förbörs
+   2026-08-05 12:58 UTC)". En utökad kurs som redovisas utan sessionsmärkning ska
+   behandlas som overifierad.
+
    c) **Regimfiltret av** (S&P 500 under MA200 ur `state/price_history.json`)? → `rejected`,
       "regimen av – inga nya positioner".
    d) **Binär händelse inom 2 handelsdagar** enligt `state/earnings_calendar.json` (fältet

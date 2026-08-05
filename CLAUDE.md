@@ -111,6 +111,18 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   göra?", avvisad → `AVVAKTA` → "Avvisade" i beslutsutvärderingen). Det som INTE gick att se
   förrän nu var en kandidat som ligger och väntar, och det var precis den tystnaden som lät
   Palantir flaggas tre dagar i rad. En försenad kandidat får en röd kant och en varningsrad.
+  **Kursen fylls i AUTOMATISKT sedan 2026-08-05** av `.github/scripts/refresh-candidate-prices.mjs`
+  (körs i `prices.yml` efter hämtningen), men BARA från en kurs som bevisligen ligger efter
+  katalysatorn: utökad punkt senare än `catalystDate`, utökad `post`-punkt samma dag, eller
+  reguljär kurs en dag strikt efter. **Anledningen:** 2026-08-05 låg ANET och AMD båda med
+  `price: null` medan `prices.json` HADE kurser för dem – kurserna var stängningen 2026-08-04,
+  och båda rapporterade 2026-08-04 AMC. Ett skript som fyllt i "kursen som fanns" hade skrivit
+  en pre-event-kurs på en post-event-katalysator. Regeln uttrycks med datum + sessionsetikett,
+  ALDRIG med klockslag: Stockholm stänger 15:30 UTC, New York 20:00 UTC, och sommartid flyttar
+  båda. Kandidatfilen är sedan samma datum också TICKERKÄLLA för `fetch-prices.mjs`
+  (`collectCandidateTickers`), vilket ersätter handpåläggningen i `config/watchlist.txt`.
+  En kandidat med `priceSession` `"pre"`/`"post"` får BEDÖMAS men aldrig direktköpas –
+  köpet läggs som villkorad Pending-plan med entry mot reguljär session.
 - **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
   körs i `prices.yml` på 05:00-cronen. Redigera aldrig för hand.** Löser att watchlistan
   fylldes i EFTERHAND: PLTR saknade rad i `watchlist_us.txt`, fick därför ingen kurs, föll
