@@ -2034,7 +2034,9 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
       "2. **Betsson (BETS-B.ST)** – förvärvet slutfört.",
       "3. **Kongsberg (KOG.OL)** – 296,20 NOK. Rankad under på sektorkoncentration.",
       "",
-      "**Förra veckans bubblare:** **HNSA.ST** – STRUKEN. **BOOZT.ST** – STRUKEN.",
+      "**Förra veckans bubblare:**",
+      "1. **Hansa Biopharma (HNSA.ST)** – STRUKEN.",
+      "2. **Boozt (BOOZT.ST)** – STRUKEN.",
       "",
       "## Veckans radar",
       "1. **SCA-B.ST** – ska inte plockas upp, fel sektion."
@@ -2052,7 +2054,8 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
       "1. **MSFT** – näst högsta totalpoäng.",
       "2. **JPM** – rotationen till finans är intakt.",
       "",
-      "**Förra veckans bubblare:** **HCA** – STRUKEN."
+      "**Förra veckans bubblare:**",
+      "1. **HCA** – STRUKEN."
     ].join("\n");
     const u = WD.bubblareFromWeekly(us);
     ok("bubblare: amerikansk form (naken symbol)", u.includes("MSFT") && u.includes("JPM"));
