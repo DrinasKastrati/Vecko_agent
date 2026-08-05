@@ -2100,6 +2100,8 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
     ok("watchdog tiger utan indata",
        WD.checkStalePricedBubblare({ weeklyMd: md, weeklyDate: "2026-08-03",
          quotes: null, decisionsDb: null }).length === 0);
+    ok("watchdog tiger när decisions.json inte gick att läsa",
+       WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: null })).length === 0);
   }
 
   // ---- watchdog: kandidat utan kurs trots att post-event-kurs finns ----

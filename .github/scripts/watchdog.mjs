@@ -252,10 +252,15 @@ export function bubblareFromWeekly(md){
 export function checkStalePricedBubblare(opts){
   const { weeklyMd, weeklyDate, quotes, decisionsDb, book } = opts || {};
   const problems = [];
-  if (!weeklyDate || !quotes) return problems;
+  // Saknas decisionsDb (t.ex. trasig/oläsbar decisions.json – se try/catch i main())
+  // vet vi INTE om ett avgörande finns, och det får aldrig tolkas som att inget
+  // gjorts. Utan den här spärren blir "okänt" till "obeslutat" och varenda
+  // prissatt bubblare i BÅDA böckerna larmar falskt, precis den typen av tyst
+  // fel den här kontrollen är till för att undvika att SKAPA.
+  if (!weeklyDate || !quotes || !decisionsDb) return problems;
   const tickers = bubblareFromWeekly(weeklyMd);
   if (!tickers.length) return problems;
-  const rows = (decisionsDb && decisionsDb.decisions) || [];
+  const rows = decisionsDb.decisions || [];
   const decided = new Set(rows
     .filter(r => r && typeof r.date === "string" && r.date > weeklyDate)
     .map(r => r.ticker));
