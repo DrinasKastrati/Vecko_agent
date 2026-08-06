@@ -1,24 +1,24 @@
 {
- "generatedAt": "2026-08-06T11:57:52.393Z",
+ "generatedAt": "2026-08-06T13:58:09.257Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 24,
-  "measurable": 24,
+  "decisions": 27,
+  "measurable": 27,
   "missing": 0,
-  "pending": 19
+  "pending": 22
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
     "n": 5,
-    "meanAlphaPct": 4.68,
+    "meanAlphaPct": 4.41,
     "medianAlphaPct": 4.57,
-    "meanPct": 6.08,
+    "meanPct": 5.81,
     "beatIndexPct": 80,
     "insufficient": true,
     "need": 3
@@ -26,18 +26,18 @@
    "byAction": {
     "KÖP": {
      "n": 3,
-     "meanAlphaPct": 6.28,
+     "meanAlphaPct": 5.9,
      "medianAlphaPct": 4.57,
-     "meanPct": 6.78,
+     "meanPct": 6.36,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 5
     },
     "SÄLJ": {
      "n": 2,
-     "meanAlphaPct": 2.27,
-     "medianAlphaPct": 2.27,
-     "meanPct": 5.03,
+     "meanAlphaPct": 2.18,
+     "medianAlphaPct": 2.18,
+     "meanPct": 4.99,
      "beatIndexPct": 50,
      "insufficient": true,
      "need": 6
@@ -64,18 +64,18 @@
    "byBook": {
     "nordic": {
      "n": 3,
-     "meanAlphaPct": 6.75,
+     "meanAlphaPct": 6.37,
      "medianAlphaPct": 5.98,
-     "meanPct": 8.16,
+     "meanPct": 7.75,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 5
     },
     "us": {
      "n": 2,
-     "meanAlphaPct": 1.56,
-     "medianAlphaPct": 1.56,
-     "meanPct": 2.95,
+     "meanAlphaPct": 1.47,
+     "medianAlphaPct": 1.47,
+     "meanPct": 2.91,
      "beatIndexPct": 50,
      "insufficient": true,
      "need": 6
@@ -93,18 +93,18 @@
     },
     "macro": {
      "n": 2,
-     "meanAlphaPct": 1.56,
-     "medianAlphaPct": 1.56,
-     "meanPct": 2.95,
+     "meanAlphaPct": 1.47,
+     "medianAlphaPct": 1.47,
+     "meanPct": 2.91,
      "beatIndexPct": 50,
      "insufficient": true,
      "need": 6
     },
     "order": {
      "n": 1,
-     "meanAlphaPct": 4.57,
-     "medianAlphaPct": 4.57,
-     "meanPct": 7.64,
+     "meanAlphaPct": 3.42,
+     "medianAlphaPct": 3.42,
+     "meanPct": 6.39,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 7
@@ -123,9 +123,9 @@
     "horizon": 5,
     "bought": {
      "n": 3,
-     "meanAlphaPct": 6.28,
+     "meanAlphaPct": 5.9,
      "medianAlphaPct": 4.57,
-     "meanPct": 6.78,
+     "meanPct": 6.36,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 5
@@ -346,9 +346,9 @@
    "reconstructed": true,
    "fwd": {
     "5": {
-     "pct": 2.39,
-     "benchPct": 3.84,
-     "alphaPct": -1.45,
+     "pct": 2.32,
+     "benchPct": 3.95,
+     "alphaPct": -1.63,
      "toDate": "2026-08-06"
     }
    }
@@ -363,9 +363,9 @@
    "reconstructed": true,
    "fwd": {
     "5": {
-     "pct": 7.64,
-     "benchPct": 3.08,
-     "alphaPct": 4.57,
+     "pct": 6.39,
+     "benchPct": 2.97,
+     "alphaPct": 3.42,
      "toDate": "2026-08-06"
     }
    }
@@ -557,6 +557,36 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-06",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Halvledare/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-06",
+   "ticker": "GOOGL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Sok/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-06",
+   "ticker": "WFC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bank/finans",
    "reconstructed": false,
    "fwd": {}
   }
