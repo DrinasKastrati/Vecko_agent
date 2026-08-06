@@ -2235,5 +2235,159 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      filled.price > 0 && typeof filled.priceAsOf === "string" && filled.priceAsOf.length > 0);
 }
 
+// ---- reset-books.mjs (nollställning inför skarp start) ------------------
+{
+  const RB = await mod(".github/scripts/reset-books.mjs");
+
+  // nextMonday: måndag ger samma dag, övriga dagar nästa måndag
+  ok("nextMonday från torsdag", RB.nextMonday(new Date("2026-08-06T12:00:00Z")) === "2026-08-10");
+  ok("nextMonday från måndag ger samma dag", RB.nextMonday(new Date("2026-08-10T00:00:00Z")) === "2026-08-10");
+  ok("nextMonday från söndag", RB.nextMonday(new Date("2026-08-09T23:00:00Z")) === "2026-08-10");
+  ok("isoWeek 2026-08-10 är v33", RB.isoWeek("2026-08-10") === 33);
+  ok("yymmdd", RB.yymmdd("2026-08-10") === "260810");
+
+  ok("placeholderRow matchar kolumnantal",
+     RB.placeholderRow("| a | b | c |") === "| – | – | – |");
+
+  // En bok med samma FORM som de riktiga: två stängda affärer, ett innehav,
+  // två pending-block och en sidfot.
+  const paperBook = [
+    "# Portfölj – Testbok",
+    "**Senast uppdaterad:** 2026-08-06 06:47 UTC (LÄGE B – lång not med (parenteser) och `kod`)",
+    "**Ackumulerad avkastning sedan start:** +6,28 % (två stängda positioner)",
+    "",
+    "## Aktuellt innehav",
+    "| Aktie | Yahoo-ticker | Börs | Entry-datum | Entry | Stop-loss | Målkurs | Vikt | Anteckning |",
+    "|---|---|---|---|---|---|---|---|---|",
+    "| Indexsleeve | XACT-OMXS30.ST | Sthlm | 2026-08-03 | 489,62 kr | – | – | 100 % | parkering |",
+    "",
+    "### Pending veckorotation v32 (beslutad i veckorapport-260803.md)",
+    "| Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |",
+    "|---|---|---|---|---|---|---|---|---|",
+    "| Assa Abloy | ASSA-B.ST | Sthlm | köp ≤ 360 | 340 | 400 | 1:2,0 | 25 % | AKTIV |",
+    "",
+    "### Pending veckorotation v30 (beslutad i veckorapport-260720.md)",
+    "| Aktie | Yahoo-ticker | Börs | Planerad entry (villkor) | Planerad stop-loss | Planerad målkurs | R/R | Planerad vikt | Status |",
+    "|---|---|---|---|---|---|---|---|---|",
+    "| ~~Exxon~~ | ~~XOM~~ | ~~NYSE~~ | ~~köp ≤ 142~~ | ~~137,50~~ | ~~158~~ | ~~1:3,6~~ | ~~55 %~~ | AVFÖRD |",
+    "",
+    "## Kassa",
+    "0 % – oallokerat kapital ligger i indexsleeven.",
+    "",
+    "## Historik (append-only – rader får ALDRIG raderas eller ändras)",
+    "| Stängd | Aktie | Entry-datum | Entry | Exit | Utfall % | Vikt | Skäl (mål/stopp/rotation/katalysator) |",
+    "|---|---|---|---|---|---|---|---|",
+    "| – | – | – | – | – | – | – | – |",
+    "| 2026-07-17 | Alleima (ALLEI.ST) | 2026-07-14 | 97,05 kr | 103,25 kr | +6,39 % | 50 % | Målträff |",
+    "| 2026-08-04 | Saab (SAAB-B.ST) | 2026-07-30 | 585 kr | 635 kr | +8,55 % | 35 % | Målträff |",
+    "",
+    "---",
+    "*Automatiserat beslutsstöd, inte finansiell rådgivning.*"
+  ].join("\n");
+
+  const ps = RB.paperStats(paperBook);
+  ok("paperStats läser ackumulerad avkastning", ps.accum === "+6,28 %");
+  ok("paperStats räknar stängda affärer och hoppar över platshållarraden", ps.closedTrades === 2);
+  ok("paperStats på tom historik ger 0",
+     RB.paperStats("# X\n## Historik\n| a | b |\n|---|---|\n| – | – |\n").closedTrades === 0);
+
+  const opts = { startDate: "2026-08-10", resetAt: "2026-08-06T18:00:00Z", week: 33,
+                 archivePath: "state/archive/portfolj-paper-260810.md" };
+  const fresh = RB.buildResetBook(paperBook, opts);
+  const fp = VP.parsePortfolio(fresh);
+
+  // Kärnkravet: den tomma boken måste gå att parsa till EN TOM bok.
+  ok("tom bok: noll innehav", fp.holdings.length === 0);
+  ok("tom bok: noll pending", fp.pending.length === 0);
+  ok("tom bok: noll historikrader", fp.history.length === 0);
+  ok("tom bok: accum är 0", fp.accum === 0);
+  ok("tom bok: kassa är 100 %", /^100 %/.test(fp.cash));
+  ok("tom bok: 'Senast uppdaterad' finns kvar", /NOLLST/.test(fp.updated || ""));
+
+  // Parsningskontraktet: tabellhuvudena ska vara ORDAGRANT desamma.
+  const headersOf = md => md.split(/\r?\n/).filter(l => /^\|\s*(Aktie|Stängd)\s*\|/.test(l.trim()));
+  const hBefore = headersOf(paperBook), hAfter = headersOf(fresh);
+  ok("tom bok: innehavsrubriken oförändrad", hAfter[0] === hBefore[0]);
+  ok("tom bok: historikrubriken oförändrad", hAfter[hAfter.length - 1] === hBefore[hBefore.length - 1]);
+  ok("tom bok: pending-blocken slås ihop till ett", (fresh.match(/^### Pending/gm) || []).length === 1);
+  ok("tom bok: pending-blocket är v33", /^### Pending veckorotation v33/m.test(fresh));
+  ok("tom bok: historikens append-only-varning står kvar",
+     /## Historik \(append-only/.test(fresh));
+  ok("tom bok: sidfoten följer med", /inte finansiell rådgivning/.test(fresh));
+  ok("tom bok: inga gamla tickers läcker igenom",
+     !/ALLEI|SAAB|ASSA-B|XOM|XACT/.test(fresh.split("## Aktuellt innehav")[1] || ""));
+  ok("tom bok: pappersfacit refereras i accum-raden", /\+6,28 %/.test(fresh));
+  ok("tom bok: slutar med exakt en radbrytning", /[^\n]\n$/.test(fresh));
+
+  // Idempotens på formnivå: kör man om på resultatet ska formen hålla.
+  const twice = RB.buildResetBook(fresh, opts);
+  const fp2 = VP.parsePortfolio(twice);
+  ok("tom bok är stabil vid omkörning",
+     fp2.holdings.length === 0 && fp2.pending.length === 0 && fp2.history.length === 0);
+
+  // En bok som saknar en obligatorisk rubrik ska STOPPA, inte gissa.
+  let threw = false;
+  try { RB.buildResetBook("# Portfölj\n## Kassa\n0 %\n", opts); } catch { threw = true; }
+  ok("buildResetBook vägrar på ofullständig bok", threw);
+
+  // planReset är REN: den läser via callbacken och rör aldrig disken.
+  const files = {
+    "state/portfolj.md": paperBook,
+    "state/portfolj_us.md": paperBook.replace("Testbok", "Testbok US"),
+    "state/allocation.json": JSON.stringify({ week: "v 32", nordic: 0.5, us: 0.5 })
+  };
+  const readCalls = [];
+  const plan = RB.planReset(p => { readCalls.push(p); return files[p] ?? null; },
+                            { startDate: "2026-08-10", resetAt: "2026-08-06T18:00:00Z", week: 33 });
+  const paths = plan.writes.map(w => w.path);
+  ok("planReset arkiverar båda böckerna",
+     paths.includes("state/archive/portfolj-paper-260810.md") &&
+     paths.includes("state/archive/portfolj_us-paper-260810.md"));
+  ok("planReset skriver om båda böckerna",
+     paths.includes("state/portfolj.md") && paths.includes("state/portfolj_us.md"));
+  ok("planReset skriver allocation + live_start",
+     paths.includes("state/allocation.json") && paths.includes("state/live_start.json"));
+  ok("planReset rör ALDRIG decisions.json",
+     !paths.some(p => /decisions|decision_eval/.test(p)) &&
+     !readCalls.some(p => /decisions|decision_eval/.test(p)));
+  ok("planReset arkiverar innehållet oförändrat",
+     plan.writes.find(w => w.path === "state/archive/portfolj-paper-260810.md").content === paperBook);
+  ok("planReset saknad bok ger fel", (() => {
+     try { RB.planReset(() => null, { startDate: "2026-08-10", resetAt: "x", week: 33 }); return false; }
+     catch { return true; }
+  })());
+
+  const live = JSON.parse(plan.writes.find(w => w.path === "state/live_start.json").content);
+  ok("live_start bär startdatum", live.startDate === "2026-08-10");
+  ok("live_start summerar pappersperiodens affärer", live.paperStats.closedTrades === 4);
+  ok("live_start pekar på arkivfilerna",
+     live.archived.nordic === "state/archive/portfolj-paper-260810.md" &&
+     live.archived.us === "state/archive/portfolj_us-paper-260810.md");
+
+  const alloc = JSON.parse(plan.writes.find(w => w.path === "state/allocation.json").content);
+  ok("allocation nollställs till 50/50", alloc.nordic === 0.5 && alloc.us === 0.5);
+  ok("allocation får rätt vecka", alloc.week === "v 33");
+  ok("allocation motiverar nollställningen", /skarpa starten/.test(alloc.rationale));
+
+  // Dashboardens beräkningar måste tåla en tom bok utan att kasta.
+  const emptyHist = fp.history;
+  ok("computeTradeStats tål tom historik", (() => {
+     const s = VP.computeTradeStats(emptyHist, 0.25);
+     return !!s && s.trades === 0 && s.winRate === null && s.chainedPct === null;
+  })());
+  ok("computeRiskStats tål tom historik", (() => {
+     try { VP.computeRiskStats(emptyHist); return true; } catch { return false; }
+  })());
+  ok("buildMonthlyStats tål tom historik", (() => {
+     try { const m = VP.buildMonthlyStats(emptyHist); return Array.isArray(m) || !!m; } catch { return false; }
+  })());
+  ok("buildTradeSeries tål tom historik", (() => {
+     try { VP.buildTradeSeries(emptyHist, 0.25); return true; } catch { return false; }
+  })());
+  ok("computeAlphaStats tål tom historik", (() => {
+     try { VP.computeAlphaStats(emptyHist, { series: {} }, "^OMX"); return true; } catch { return false; }
+  })());
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

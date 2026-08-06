@@ -149,6 +149,26 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   finns noll gånger i loggen. En mening till i prompten hade inte hjälpt – regeln fanns.
   `checkGrossList` larmar därför när en måndagskörning ger < 6 rader för en bok. Tröskeln är
   medvetet låg (prompten kräver 10–15 kandidater) så den bara fångar det uppenbara fallet.
+- **`state/live_start.json` – SKARP START MED RIKTIGA PENGAR 2026-08-10. Läs den innan du
+  felsöker en "tom" bok.** Båda portföljerna nollställdes 2026-08-06 av
+  `.github/scripts/reset-books.mjs`: noll innehav, noll pending, 100 % kassa, tom historik och
+  ackumulerad avkastning +0,00 %. **Det är avsett – leta ingen bugg i en tom bok före
+  v33-rotationen.** Pappersperioden 2026-07-14–2026-08-06 (nordiskt +6,28 %/2 affärer, US
+  +0,89 %/1 affär) ligger oförändrad i `state/archive/portfolj-paper-260810.md` respektive
+  `portfolj_us-paper-260810.md` och syns MEDVETET inte i dashboarden – Avkastning-vyn ska visa
+  skarp period och ingenting annat. **`decisions.json` och `decision_eval.json` nollställdes
+  INTE och får aldrig nollställas i efterhand:** de mäter om URVALET slår index, vilket är
+  oberoende av om pengarna var riktiga, och de är det enda underlag som växer i meningsfull takt
+  (~10–15 rader/vecka mot `minN` 8 och retrons krav på 15 SÄLJ-rader). Av samma skäl loggades
+  INGA SÄLJ-rader för AMZN eller indexsleevarna när böckerna tömdes – de affärerna gjordes
+  aldrig, och ett fiktivt utfall hade förgiftat just den mätningen. Snittet markeras därför i
+  den här filen och inte i beslutsloggen; validatorns `action`-enum tillåter ändå bara
+  KÖP/SÄLJ/BEHÅLL/AVVAKTA. **Kör aldrig om `reset-books.mjs` utan `--force`** – den vägrar av
+  sig själv när den här filen finns. Skriptet är torrkörning som standard, återanvänder
+  tabellhuvudena ur den befintliga filen (parsningskontraktet mot `vparse.js:parsePortfolio`,
+  hårdkoda dem aldrig) och committar inte. Kapitalmodellen är OFÖRÄNDRAD: böckerna räknar
+  fortsatt i vikt-%, inte i belopp. Designen står i
+  `docs/superpowers/specs/2026-08-06-nollstallning-skarp-start-design.md`.
 - `state/decisions.json` – append-only, valideras i CI av `validate-decisions.mjs`.
   **HELA bruttolistan loggas i LÄGE A sedan 2026-08-03**, inte bara de valda: varje kandidat som föll
   bort får en `AVVAKTA`-rad med den namngivna spärren i `reason`. Rotationen 2026-08-03 hade 16
