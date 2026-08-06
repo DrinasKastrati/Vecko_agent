@@ -123,12 +123,6 @@ och rapportflöde samt trovärdiga marknadsrykten.
    - `status`: alltid `"new"` när du skapar posten. Du avgör den ALDRIG själv – det gör
      ansvarig bok.
 
-   Sätt `price`/`priceAsOf` bara om kursen ligger EFTER katalysatorn. En reguljär
-   stängning samma dag som en AMC-rapport är en PRE-event-kurs – lämna då `price: null`
-   och skriv varför i tesen. `prices.yml` fyller i kursen automatiskt så snart en
-   post-event-kurs finns (förbörs, efterbörs eller nästa dags reguljära), och märker den
-   med `priceSession`. Fyll aldrig i en pre-event-kurs för att fältet ska bli ifyllt.
-
    Validera före commit: `node .github/scripts/validate-scout-candidates.mjs`. Samma
    kontroll körs i CI och i auto-merge-grinden; faller den når rapporten inte main.
 

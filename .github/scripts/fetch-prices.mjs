@@ -52,14 +52,6 @@ export function readFirst(paths){
   return "";
 }
 
-// Parsad JSON ur första filen som finns. null vid saknad eller trasig fil –
-// en hjälpfil får aldrig fälla kursbevakningen.
-export function readJsonFirst(paths){
-  const raw = readFirst(paths);
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
-}
-
 export function newestWeekly(){
   const dirs = ["reports/weekly", "."];
   let best = null;
@@ -87,7 +79,6 @@ export function collectTickers(){
     const t = line.trim().toUpperCase();
     if (t && !t.startsWith("#") && /^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)) tickers.add(t);
   }
-  for (const t of collectCandidateTickers("nordic")) tickers.add(t);
   return [...tickers].sort();
 }
 
@@ -112,61 +103,6 @@ export function collectEarningsTickers(readFile = readFirst){
     const up = Array.isArray(j.upcoming) ? j.upcoming : [];
     return up.map(u => u && u.symbol).filter(s => typeof s === "string" && s).sort();
   } catch { return []; }
-}
-
-/* Öppna kandidater ur state/scout_candidates.json som tickerkälla.
-
-   Fram till 2026-08-05 var filen INTE en källa: ANET hamnade i prices.json
-   bara för att scouten också handskrev in den i config/watchlist_us.txt. Den
-   handpåläggningen är precis vad kandidatfilen skulle göra överflödig.
-
-   Ingen egen utgångslogik: kandidatens `expiresAt` ÄR utgången. Repot har redan
-   två listor med utgångssemantik, och en tredje hygienregel har dålig historik
-   här – watchlist.txt bär "rensas efter 14 handelsdagar" och har aldrig rensats. */
-export function collectCandidateTickers(book, readFile = readFirst,
-                                        today = new Date().toISOString().slice(0, 10)){
-  const raw = readFile(["state/scout_candidates.json"]);
-  if (!raw) return [];
-  try {
-    const j = JSON.parse(raw);
-    const cs = Array.isArray(j.candidates) ? j.candidates : [];
-    return cs
-      .filter(c => c && c.status === "new" && c.book === book &&
-                   typeof c.ticker === "string" && c.ticker &&
-                   (!c.expiresAt || String(c.expiresAt) >= today))
-      .map(c => c.ticker)
-      .sort();
-  } catch { return []; }
-}
-
-/* Symboler som ska få ett EXTRA anrop med förbörs-/efterbörsdata.
-
-   Varför mängden är smal: det extra anropet är `interval=1m` och ger ~1400
-   punkter per symbol. Att göra det för alla ~54 symboler var 30:e minut är
-   onödig last mot ett API som redan svarar 403 när det tycker att det är för
-   mycket. Varje MÄTT miss (PLTR 2026-08-04, ANET och AMD 2026-08-05) är en
-   rapporthändelse, så mängden begränsas till dem.
-
-   `isEstimate: true` räknas MED här. CLAUDE.md drar gränsen så: ett gissat
-   datum duger för att säkra en kurs i förväg, men aldrig som bekräftad binär
-   händelse. Den här funktionen avgör bara HÄMTNING – aldrig ett beslut. */
-export function extendedScope(calendar, candidates, today){
-  const out = new Set();
-  const up = (calendar && Array.isArray(calendar.upcoming)) ? calendar.upcoming : [];
-  for (const u of up){
-    if (!u || typeof u.symbol !== "string" || !u.symbol) continue;
-    if (typeof u.tradingDaysAway !== "number") continue;
-    if (u.tradingDaysAway < 0 || u.tradingDaysAway > 2) continue;
-    out.add(u.symbol);
-  }
-  const cs = (candidates && Array.isArray(candidates.candidates)) ? candidates.candidates : [];
-  for (const c of cs){
-    if (!c || c.status !== "new" || c.confirmed !== true) continue;
-    if (typeof c.ticker !== "string" || !c.ticker) continue;
-    if (today && c.expiresAt && String(c.expiresAt) < today) continue;
-    out.add(c.ticker);
-  }
-  return [...out].sort();
 }
 
 // ---- USA + krypto (scout-routinen) ------------------------------------
@@ -256,7 +192,6 @@ export function collectUsTickers(){
   // US-rotationens egna innehav/case (så deras kurser garanterat hämtas):
   for (const t of extractUsPortfolioTickers(readFirst(["state/portfolj_us.md", "portfolj_us.md"]))) set.add(t);
   for (const t of extractUsCaseTickers(newestUsWeekly())) set.add(t);
-  for (const t of collectCandidateTickers("us")) set.add(t);
   return [...set];
 }
 
@@ -318,37 +253,6 @@ export function parseChart(json, sym){
   };
 }
 
-/* Förbörs-/efterbörskurs ur ett `interval=1m&includePrePost=true`-svar.
-
-   Yahoos 1d-svar har `hasPrePostMarketData: true` men INGET postMarketPrice i
-   meta (kontrollerat live 2026-08-05) – utökad kurs finns bara i 1m-seriens
-   punkter, och sessionen avgörs av meta.currentTradingPeriod.regular.
-
-   Returnerar SENASTE punkten utanför reguljär session, eller null. Aldrig ett
-   objekt med null-fält: anroparen ska kunna skilja "ingen utökad kurs" från
-   "hämtningen föll", och det gör den på att fälten saknas helt. */
-export function parseExtended(json){
-  const res  = json && json.chart && json.chart.result && json.chart.result[0];
-  const reg  = res && res.meta && res.meta.currentTradingPeriod && res.meta.currentTradingPeriod.regular;
-  if (!reg || typeof reg.start !== "number" || typeof reg.end !== "number") return null;
-  const ts = Array.isArray(res.timestamp) ? res.timestamp : [];
-  const q  = res.indicators && res.indicators.quote && res.indicators.quote[0];
-  const close = (q && Array.isArray(q.close)) ? q.close : [];
-  let best = null;
-  for (let i = 0; i < ts.length; i++){
-    const t = ts[i], c = close[i];
-    if (typeof t !== "number" || c == null || isNaN(Number(c))) continue;
-    if (t >= reg.start && t < reg.end) continue;      // reguljär session – inte utökad
-    if (!best || t > best[0]) best = [t, Number(c)];
-  }
-  if (!best) return null;
-  return {
-    extendedPrice: Math.round(best[1] * 1e6) / 1e6,
-    extendedTime: new Date(best[0] * 1000).toISOString(),
-    extendedSession: best[0] < reg.start ? "pre" : "post"
-  };
-}
-
 // ---- network ----------------------------------------------------------
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -394,47 +298,17 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
   return { symbol: sym, error: "kunde inte hämtas (alla källor gav fel)" };
 }
 
-/* Extra anrop för förbörs-/efterbörskurs. Faller det ska den vanliga
-   noteringen INTE påverkas – därför null i stället för kastat fel, och därför
-   ingen stooq-reserv: stooq har ingen utökad session att ge. */
-export async function fetchExtended(sym, fetchImpl = globalThis.fetch){
-  const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
-  for (const host of hosts){
-    const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}` +
-                `?range=2d&interval=1m&includePrePost=true`;
-    try {
-      const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Accept": "application/json",
-        "Accept-Language": "en-US,en;q=0.9" } });
-      if (!r.ok) continue;
-      const ext = parseExtended(await r.json());
-      if (ext) return ext;
-    } catch { /* prova nästa host */ }
-  }
-  return null;
-}
-
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch){
   const tickers = [...new Set([...collectTickers(), ...collectUsTickers(),
                                ...collectEarningsTickers()])].sort();
-  // Utökad session hämtas bara för symboler med en rapport inom räckhåll.
-  const today = new Date().toISOString().slice(0, 10);
-  const scope = new Set(extendedScope(
-    readJsonFirst(["state/earnings_calendar.json"]),
-    readJsonFirst(["state/scout_candidates.json"]),
-    today));
   const quotes = {};
-  let okCount = 0, extCount = 0;
+  let okCount = 0;
   for (const t of tickers){
     const q = await fetchQuote(t, fetchImpl);
     quotes[t] = q;
     if (!q.error) okCount++;
     await sleep(250); // var snäll mot API:t
-    if (!q.error && scope.has(t)){
-      const ext = await fetchExtended(t, fetchImpl);
-      if (ext){ Object.assign(q, ext); extCount++; }
-      await sleep(250);
-    }
   }
   const out = {
     generatedAt: new Date().toISOString(),
@@ -453,14 +327,12 @@ export async function run(fetchImpl = globalThis.fetch){
           "~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
     tickerCount: tickers.length,
     okCount,
-    extendedCount: extCount,
     quotes
   };
   mkdirSync("state", { recursive: true });
   writeFileSync("state/prices.json", JSON.stringify(out, null, 2) + "\n");
   updatePriceHistory(quotes);
-  console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade, ` +
-              `${extCount} med utökad session.`);
+  console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade.`);
   return out;
 }
 

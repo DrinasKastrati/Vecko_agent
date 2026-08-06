@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schemaVersion": "2026-08-04-scoutbridge",
-  "comment": "MASKINLÄSBAR BRYGGA SCOUT -> BÖCKERNA. Varför filen finns: scouten producerade prosa som ingen bok läste. Palantir flaggades i rapport-260801, -260802 och -260803 inför sin rapport 3/8 AMC; boken kunde varken se, avfärda eller köpa kandidaten, och aktien gick +27,6 % 4/8. Scoutens fynd fanns, men det fanns ingen kanal. Den här filen ÄR kanalen. REGEL SOM INTE FÅR LUCKRAS UPP: varje kandidat med status 'new' MÅSTE få ett avgörande av ansvarig bok vid nästa körning – antingen 'rejected' med NAMNGIVEN spärr i decisionReason, eller 'promoted' när alla grindar hålls. Att låta en kandidat ligga kvar som 'new' tills den expirerar är precis den tystnad filen byggdes för att göra omöjlig, och watchdogen larmar på den. Varje avgörande ska DESSUTOM loggas som en rad i state/decisions.json (KÖP vid promoted, AVVAKTA vid rejected) så att decision_eval.mjs kan mäta urvalet mot efterföljande kurs – de avvisade är det kontrafaktiska underlaget. Schema per kandidat: id (yymmdd-TICKER, unikt), date (åååå-mm-dd, när kandidaten skapades), ticker (Yahoo-format), book (nordic|us), source (scout|analys|monitor), catalystType (samma enum som decisions.json), catalystDate (åååå-mm-dd, när katalysatorn INTRÄFFADE), confirmed (bool – true endast för bekräftat utfall, false för rykte/väntat event), thesis (max 300 tecken), sourceRef (källa + datum), price (verifierad kurs eller null), priceAsOf (ISO-tidsstämpel eller null), priceSession (regular|pre|post — sätts av refresh-candidate-prices.mjs; pre/post får BEDÖMAS men aldrig direktköpas, köpet läggs som villkorad Pending-plan), status (new|rejected|promoted|expired), expiresAt (åååå-mm-dd, 5 handelsdagar från date), decidedBy (rapportfil som tog ställning, null tills dess), decidedAt (åååå-mm-dd eller null), decisionReason (max 200 tecken, KRÄVS när status inte är 'new'). VIKTIGT: price får vara null (kandidaten kan flaggas innan kursen hunnit hämtas) men en kandidat med price null får ALDRIG promotas – kursverifieringskravet är oförändrat. Valideras av .github/scripts/validate-scout-candidates.mjs i CI och i auto_merge-grinden.",
+  "comment": "MASKINLÄSBAR BRYGGA SCOUT -> BÖCKERNA. Varför filen finns: scouten producerade prosa som ingen bok läste. Palantir flaggades i rapport-260801, -260802 och -260803 inför sin rapport 3/8 AMC; boken kunde varken se, avfärda eller köpa kandidaten, och aktien gick +27,6 % 4/8. Scoutens fynd fanns, men det fanns ingen kanal. Den här filen ÄR kanalen. REGEL SOM INTE FÅR LUCKRAS UPP: varje kandidat med status 'new' MÅSTE få ett avgörande av ansvarig bok vid nästa körning – antingen 'rejected' med NAMNGIVEN spärr i decisionReason, eller 'promoted' när alla grindar hålls. Att låta en kandidat ligga kvar som 'new' tills den expirerar är precis den tystnad filen byggdes för att göra omöjlig, och watchdogen larmar på den. Varje avgörande ska DESSUTOM loggas som en rad i state/decisions.json (KÖP vid promoted, AVVAKTA vid rejected) så att decision_eval.mjs kan mäta urvalet mot efterföljande kurs – de avvisade är det kontrafaktiska underlaget. Schema per kandidat: id (yymmdd-TICKER, unikt), date (åååå-mm-dd, när kandidaten skapades), ticker (Yahoo-format), book (nordic|us), source (scout|analys|monitor), catalystType (samma enum som decisions.json), catalystDate (åååå-mm-dd, när katalysatorn INTRÄFFADE), confirmed (bool – true endast för bekräftat utfall, false för rykte/väntat event), thesis (max 300 tecken), sourceRef (källa + datum), price (verifierad kurs eller null), priceAsOf (ISO-tidsstämpel eller null), status (new|rejected|promoted|expired), expiresAt (åååå-mm-dd, 5 handelsdagar från date), decidedBy (rapportfil som tog ställning, null tills dess), decidedAt (åååå-mm-dd eller null), decisionReason (max 200 tecken, KRÄVS när status inte är 'new'). VIKTIGT: price får vara null (kandidaten kan flaggas innan kursen hunnit hämtas) men en kandidat med price null får ALDRIG promotas – kursverifieringskravet är oförändrat. Valideras av .github/scripts/validate-scout-candidates.mjs i CI och i auto_merge-grinden.",
   "candidates": [
     {
       "id": "260805-ANET",
@@ -73,11 +73,11 @@
       "sourceRef": "Benzinga/ts2.tech 2026-08-05",
       "price": 219.22,
       "priceAsOf": "2026-08-05T20:00:00.000Z",
-      "status": "rejected",
+      "status": "new",
       "expiresAt": "2026-08-13",
-      "decidedBy": "reports/us_daily/us-daglig-260806.md",
-      "decidedAt": "2026-08-06",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd 2026-08-06 inför skarp start 2026-08-10, allokeringen avgörs helt av v33-rotationen. (a)-(d) passerade; går in i v33:s bruttolista."
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     },
     {
       "id": "260806-GOOGL",
@@ -92,11 +92,11 @@
       "sourceRef": "Benzinga/AOL 2026-08-05",
       "price": 362.43,
       "priceAsOf": "2026-08-05T20:00:01.000Z",
-      "status": "rejected",
+      "status": "new",
       "expiresAt": "2026-08-13",
-      "decidedBy": "reports/us_daily/us-daglig-260806.md",
-      "decidedAt": "2026-08-06",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10. Faller dessutom på grind 2 – händelsen 5/8 är bekräftad men NEGATIV (ledningsflykt) och bär inget köpcase."
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }

@@ -362,21 +362,6 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
       en ny kandidat då; förläng aldrig den gamla.
    b) **Saknas verifierad kurs (`price: null`)?** → `status: "rejected"`, `decisionReason`
       "kurs ej verifierbar". Kravet är oförändrat och sänks aldrig.
-
-   **Utökad session (förbörs/efterbörs).** Bär kandidaten `priceSession: "pre"` eller
-   `"post"` med `price` och `priceAsOf` satta är kursen verifierad och tidsstämplad – den
-   ligger EFTER katalysatorn, till skillnad från den reguljära stängningen samma dag, och
-   räknas därför INTE som "kurs ej verifierbar". Kravet är oförändrat: kurs + källa +
-   tidsstämpel.
-   **Men ett KÖP på en utökad kurs får aldrig bli ett direktköp.** Förbörs- och
-   efterbörshandel är tunn, och en kurs där är inte alltid möjlig att handla på. Håller
-   kandidaten återstående spärrar (c)–(f), promota den — men lägg köpet som en VILLKORAD
-   PLAN i `state/portfolj_us.md`:s Pending-sektion med entry-villkor mot REGULJÄR session
-   (punkt 4b i LÄGE A), så larmar monitorn när nivån korsas.
-   Redovisa alltid session och tidsstämpel i rapporten, t.ex. "471,02 USD (förbörs
-   2026-08-05 12:58 UTC)". En utökad kurs som redovisas utan sessionsmärkning ska
-   behandlas som overifierad.
-
    c) **Regimfiltret av** (S&P 500 under MA200 ur `state/price_history.json`)? → `rejected`,
       "regimen av – inga nya positioner".
    d) **Binär händelse inom 2 handelsdagar** enligt `state/earnings_calendar.json` (fältet
@@ -423,27 +408,6 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
      innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering,
      eller **(d) en SCOUT-KANDIDAT med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**.
      Kapitalet tas ur indexsleeven; minska sleeven med motsvarande vikt.
-   - **VILLKORAD PLAN FÖR EN PRISSATT BUBBLARE (ny 2026-08-06).** Du FÅR lägga EN
-     villkorad bubblar-plan i LÄGE B, men bara när kursen var det ENDA som
-     saknades. Samtliga sex villkor måste hålla: (1) senaste us-veckorapporten
-     angav uttryckligen SAKNAD VERIFIERAD KURS som skälet att bubblaren inte fick
-     en pending-rad – en bubblare som rankades under av OMDÖMESSKÄL (ingen egen
-     katalysator, sektorkoncentration, ej beräkningsbar teknik) omfattas ALDRIG;
-     (2) `state/prices.json` har nu verifierad kurs med tidsstämpel; (3)
-     katalysatorn är fortfarande inom sina 5 handelsdagar och obruten; (4)
-     bubblaren klarar och PASSERAR full poängsättning mot de fem grindarna – den
-     kunde inte poängsättas på måndagen eftersom kursen är det poängsättningen
-     behöver; (5) regimfiltret är PÅ; (6) boken har ledig plats och taket på TVÅ
-     villkorade planer spräcks inte. Högst EN sådan plan per körning. Regeln prövas
-     EN gång per körning, oberoende av innehavsslingan. Planen läggs enligt punkt
-     4b i LÄGE A, med fullständiga nivåer och entry-villkor mot verifierad kurs,
-     och avförs som vanligt om den inte triggat inom 5 handelsdagar. **Logga
-     avgörandet i `state/decisions.json` OAVSETT utfall:** en rad när planen läggs,
-     och en `AVVAKTA`-rad med den NAMNGIVNA spärren när bubblaren faller på något
-     av villkoren. Båda behövs – `checkStalePricedBubblare` tystnar bara när det
-     finns en rad daterad efter veckorapporten, så en plan som läggs utan att
-     loggas ger falsklarm resten av veckan. Detta är en SPÄRRAD väg, inte en
-     uppmjukning – kursverifieringskravet, grindarna och taket gäller oförändrat.
    - TIDSSTOPP: har innehavet en `catalystType` med tidsstopp (`ma_rumor`, `insider`, `index`) och
      horisonten passerats utan bekräftad tes – SÄLJ och flytta kapitalet till indexsleeven.
 5. Motivera varje beslut i 1–3 meningar med hänvisning till kurs (tidsstämpel) och/eller nyhet (datum + källa).

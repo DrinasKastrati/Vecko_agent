@@ -56,18 +56,11 @@ jobs:
       - name: Utvärdera beslutsloggen mot efterföljande kurs
         continue-on-error: true
         run: node .github/scripts/decision_eval.mjs
-      # Kandidatkurserna fylls EFTER hämtningen: det är den färska prices.json
-      # som avgör om en kandidats katalysator hunnit få en kurs efter sig.
-      # Fyller bara från en bevisligen post-event-kurs – se skriptets huvud.
-      # Faller den ska INTE kursbevakningen falla med den.
-      - name: Fyll kandidatkurser ur post-event-kurs
-        continue-on-error: true
-        run: node .github/scripts/refresh-candidate-prices.mjs
       - name: Committa prices.json om ändrad
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/prices.json state/price_history.json state/decision_eval.json state/earnings_calendar.json state/scout_candidates.json
+          git add state/prices.json state/price_history.json state/decision_eval.json state/earnings_calendar.json
           if git diff --cached --quiet; then
             echo "Inga kursandringar - hoppar over commit."
           else
