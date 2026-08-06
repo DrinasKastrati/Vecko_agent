@@ -12,6 +12,7 @@
    ============================================================ */
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { staleCandidates } from "./validate-scout-candidates.mjs";
+import { postCatalystQuote } from "./refresh-candidate-prices.mjs";
 
 // Senaste rapportdatum (yymmdd) bland filnamn med givet prefix, eller null.
 export function latestReportDate(files, prefix){
@@ -206,6 +207,106 @@ export function checkScoutCandidates(opts){
   return problems;
 }
 
+/* Bubblarlistan ur en veckorapport, som tickers.
+
+   KLIPPET VID "Förra veckans bubblare" ÄR INTE KOSMETIK. Utan det plockas de
+   STRUKNA bubblarna upp ur uppföljningsstycket: veckorapport-260803 gav åtta
+   tickers i stället för fem, och HNSA.ST, BOOZT.ST och SCA-B.ST var alla
+   strukna. Watchdogen hade larmat på idéer rotationen medvetet dödat.
+
+   Böckerna skriver tickern olika – nordiskt "**ASSA ABLOY (ASSA-B.ST)**",
+   amerikanskt "**MSFT**" – så båda formerna måste hanteras. En extraktor som
+   bara klarar den ena hittar NOLL i den andra boken, tyst.
+
+   Fail-silent: markdown-parsning är bräcklig, och en watchdog som kraschar på
+   en formulering är värre än ingen watchdog. */
+export function bubblareFromWeekly(md){
+  if (typeof md !== "string" || !md) return [];
+  const after = md.split(/^## Bubblare/m)[1];
+  if (!after) return [];
+  let sec = after.split(/^## /m)[0];
+  sec = sec.split(/\*\*F[oö]rra veckans bubblare/)[0];
+  const out = [];
+  for (const line of sec.split("\n")){
+    const t = line.trim();
+    if (!/^\d+\.\s/.test(t)) continue;
+    const bold = t.match(/\*\*([^*]+)\*\*/);
+    if (!bold) continue;
+    const label = bold[1].trim();
+    const paren = label.match(/\(\s*([A-Za-z0-9][A-Za-z0-9.\-]{0,13})\s*\)/);
+    if (paren && /\.(ST|OL|CO|HE)$/i.test(paren[1])){ out.push(paren[1].toUpperCase()); continue; }
+    if (/^[A-Z]{1,6}$/.test(label)) out.push(label);
+  }
+  return [...new Set(out)];
+}
+
+/* PRISSATT BUBBLARE SOM ALDRIG FICK ETT AVGÖRANDE.
+
+   Veckorotationen 2026-08-03 kunde inte ge tre bubblare en villkorad plan
+   eftersom prices.json saknade deras kurser. Kurserna kom 4–5/8. Utan en
+   kontroll ligger idén död till nästa måndag utan att något syns: inget går
+   sönder, rapporten ser normal ut, bubblaren bara tystnar.
+
+   Bakåtkompatibel och fail-silent: saknas rapporttext, kurser eller
+   bubblarlista returneras inga problem. */
+export function checkStalePricedBubblare(opts){
+  const { weeklyMd, weeklyDate, quotes, decisionsDb, book } = opts || {};
+  const problems = [];
+  // Saknas decisionsDb (t.ex. trasig/oläsbar decisions.json – se try/catch i main())
+  // vet vi INTE om ett avgörande finns, och det får aldrig tolkas som att inget
+  // gjorts. Utan den här spärren blir "okänt" till "obeslutat" och varenda
+  // prissatt bubblare i BÅDA böckerna larmar falskt, precis den typen av tyst
+  // fel den här kontrollen är till för att undvika att SKAPA.
+  if (!weeklyDate || !quotes || !decisionsDb) return problems;
+  const tickers = bubblareFromWeekly(weeklyMd);
+  if (!tickers.length) return problems;
+  const rows = decisionsDb.decisions || [];
+  const decided = new Set(rows
+    .filter(r => r && typeof r.date === "string" && r.date > weeklyDate)
+    .map(r => r.ticker));
+  const stuck = tickers.filter(t => {
+    const q = quotes[t];
+    return q && !q.error && q.price != null && !decided.has(t);
+  });
+  if (stuck.length)
+    problems.push({ key: "bubblare-price", title:
+      `Watchdog: ${stuck.length} prissatt(a) bubblare utan avgörande (${book || "?"})`,
+      body: "Följande bubblare ur veckorapporten " + weeklyDate + " har nu verifierad kurs i " +
+        "`state/prices.json`, men ingen körning har tagit ställning till dem sedan dess:\n\n" +
+        stuck.map(t => `- **${t}** (${quotes[t].price}, ${quotes[t].marketTime || "utan tidsstämpel"})`).join("\n") +
+        "\n\nEn bubblare som bara stoppades av att kursen saknades ska få en villkorad plan i " +
+        "LÄGE B så snart kursen finns. Ligger den kvar utan avgörande är den död till nästa " +
+        "veckorotation utan att något syns." });
+  return problems;
+}
+
+/* KANDIDAT UTAN KURS TROTS ATT EN POST-EVENT-KURS FINNS.
+
+   Fyller `refresh-candidate-prices.mjs` inte i kursen avvisas kandidaten på
+   "kurs ej verifierbar" vid nästa rotation – rapporten ser normal ut, ingenting
+   går sönder, och en bekräftad katalysator tystnar. Det är samma tysta felsort
+   som regimfiltret och rapportkalendern redan bevakas för.
+
+   Bakåtkompatibel: saknas kandidatfil eller noteringar är kontrollen tyst. */
+export function checkCandidatePrice(opts){
+  const { candidatesDb, quotes } = opts || {};
+  const problems = [];
+  const cs = (candidatesDb && Array.isArray(candidatesDb.candidates)) ? candidatesDb.candidates : [];
+  if (!cs.length || !quotes) return problems;
+  const stuck = cs.filter(c => c && c.status === "new" && c.price == null &&
+                               postCatalystQuote(quotes[c.ticker], c.catalystDate));
+  if (stuck.length)
+    problems.push({ key: "candidate-price", title:
+      `Watchdog: ${stuck.length} kandidat(er) saknar kurs trots att en post-event-kurs finns`,
+      body: "Följande kandidater i `state/scout_candidates.json` har `price: null` medan " +
+        "`state/prices.json` bär en kurs som ligger EFTER deras katalysator:\n\n" +
+        stuck.map(c => `- **${c.id}** (${c.book}, katalysator ${c.catalystDate})`).join("\n") +
+        "\n\nDet betyder att steget \"Fyll kandidatkurser ur post-event-kurs\" i `prices.yml` " +
+        "inte kört eller inte fungerat. Utan kursen avvisas kandidaten på \"kurs ej " +
+        "verifierbar\" vid nästa rotation, trots att kursen finns." });
+  return problems;
+}
+
 /* RAPPORTKALENDERN. Faller den slutar watchlisten fyllas på i förväg, och en
    bevakad rapport hamnar återigen utan verifierad kurs på dagen den infaller –
    utan att något går sönder. Samma tysta felsort som regimfiltret. */
@@ -268,6 +369,8 @@ function main(){
   } catch {}
   let candidatesDb = null;
   try { candidatesDb = JSON.parse(readFileSync("state/scout_candidates.json", "utf8")); } catch {}
+  let priceQuotes = null;
+  try { priceQuotes = JSON.parse(readFileSync("state/prices.json", "utf8")).quotes || null; } catch {}
   let earningsCalAt = null;
   try { earningsCalAt = JSON.parse(readFileSync("state/earnings_calendar.json", "utf8")).generatedAt || null; } catch {}
   let moversAt = null;
@@ -278,6 +381,14 @@ function main(){
     alertsAt = a.checkedAt || null;   // generatedAt duger INTE – se checkStale
   } catch {}
   const ls = d => { try { return readdirSync(d); } catch { return []; } };
+  const readLatest = (dir, re) => {
+    const files = ls(dir).filter(f => re.test(f)).sort();
+    if (!files.length) return { md: null, date: null };
+    const f = files[files.length - 1];
+    const m = f.match(/(\d{2})(\d{2})(\d{2})\.md$/);
+    const date = m ? `20${m[1]}-${m[2]}-${m[3]}` : null;
+    try { return { md: readFileSync(dir + "/" + f, "utf8"), date }; } catch { return { md: null, date }; }
+  };
   const now = new Date();
   const problems = checkStale({
     now,
@@ -300,7 +411,15 @@ function main(){
   problems.push(...checkScoutCandidates({
     candidatesDb, today: todayIso, staleFn: staleCandidates
   }));
+  problems.push(...checkCandidatePrice({ candidatesDb, quotes: priceQuotes }));
   problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
+
+  const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);
+  const wkUs     = readLatest("reports/us_weekly", /^us-veckorapport-\d{6}\.md$/);
+  problems.push(...checkStalePricedBubblare({ weeklyMd: wkNordic.md, weeklyDate: wkNordic.date,
+    quotes: priceQuotes, decisionsDb, book: "nordic" }));
+  problems.push(...checkStalePricedBubblare({ weeklyMd: wkUs.md, weeklyDate: wkUs.date,
+    quotes: priceQuotes, decisionsDb, book: "us" }));
 
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");

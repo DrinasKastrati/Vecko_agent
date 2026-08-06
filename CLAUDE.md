@@ -111,6 +111,18 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   göra?", avvisad → `AVVAKTA` → "Avvisade" i beslutsutvärderingen). Det som INTE gick att se
   förrän nu var en kandidat som ligger och väntar, och det var precis den tystnaden som lät
   Palantir flaggas tre dagar i rad. En försenad kandidat får en röd kant och en varningsrad.
+  **Kursen fylls i AUTOMATISKT sedan 2026-08-05** av `.github/scripts/refresh-candidate-prices.mjs`
+  (körs i `prices.yml` efter hämtningen), men BARA från en kurs som bevisligen ligger efter
+  katalysatorn: utökad punkt senare än `catalystDate`, utökad `post`-punkt samma dag, eller
+  reguljär kurs en dag strikt efter. **Anledningen:** 2026-08-05 låg ANET och AMD båda med
+  `price: null` medan `prices.json` HADE kurser för dem – kurserna var stängningen 2026-08-04,
+  och båda rapporterade 2026-08-04 AMC. Ett skript som fyllt i "kursen som fanns" hade skrivit
+  en pre-event-kurs på en post-event-katalysator. Regeln uttrycks med datum + sessionsetikett,
+  ALDRIG med klockslag: Stockholm stänger 15:30 UTC, New York 20:00 UTC, och sommartid flyttar
+  båda. Kandidatfilen är sedan samma datum också TICKERKÄLLA för `fetch-prices.mjs`
+  (`collectCandidateTickers`), vilket ersätter handpåläggningen i `config/watchlist_us.txt`.
+  En kandidat med `priceSession` `"pre"`/`"post"` får BEDÖMAS men aldrig direktköpas –
+  köpet läggs som villkorad Pending-plan med entry mot reguljär session.
 - **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
   körs i `prices.yml` på 05:00-cronen. Redigera aldrig för hand.** Löser att watchlistan
   fylldes i EFTERHAND: PLTR saknade rad i `watchlist_us.txt`, fick därför ingen kurs, föll
@@ -137,6 +149,26 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   finns noll gånger i loggen. En mening till i prompten hade inte hjälpt – regeln fanns.
   `checkGrossList` larmar därför när en måndagskörning ger < 6 rader för en bok. Tröskeln är
   medvetet låg (prompten kräver 10–15 kandidater) så den bara fångar det uppenbara fallet.
+- **`state/live_start.json` – SKARP START MED RIKTIGA PENGAR 2026-08-10. Läs den innan du
+  felsöker en "tom" bok.** Båda portföljerna nollställdes 2026-08-06 av
+  `.github/scripts/reset-books.mjs`: noll innehav, noll pending, 100 % kassa, tom historik och
+  ackumulerad avkastning +0,00 %. **Det är avsett – leta ingen bugg i en tom bok före
+  v33-rotationen.** Pappersperioden 2026-07-14–2026-08-06 (nordiskt +6,28 %/2 affärer, US
+  +0,89 %/1 affär) ligger oförändrad i `state/archive/portfolj-paper-260810.md` respektive
+  `portfolj_us-paper-260810.md` och syns MEDVETET inte i dashboarden – Avkastning-vyn ska visa
+  skarp period och ingenting annat. **`decisions.json` och `decision_eval.json` nollställdes
+  INTE och får aldrig nollställas i efterhand:** de mäter om URVALET slår index, vilket är
+  oberoende av om pengarna var riktiga, och de är det enda underlag som växer i meningsfull takt
+  (~10–15 rader/vecka mot `minN` 8 och retrons krav på 15 SÄLJ-rader). Av samma skäl loggades
+  INGA SÄLJ-rader för AMZN eller indexsleevarna när böckerna tömdes – de affärerna gjordes
+  aldrig, och ett fiktivt utfall hade förgiftat just den mätningen. Snittet markeras därför i
+  den här filen och inte i beslutsloggen; validatorns `action`-enum tillåter ändå bara
+  KÖP/SÄLJ/BEHÅLL/AVVAKTA. **Kör aldrig om `reset-books.mjs` utan `--force`** – den vägrar av
+  sig själv när den här filen finns. Skriptet är torrkörning som standard, återanvänder
+  tabellhuvudena ur den befintliga filen (parsningskontraktet mot `vparse.js:parsePortfolio`,
+  hårdkoda dem aldrig) och committar inte. Kapitalmodellen är OFÖRÄNDRAD: böckerna räknar
+  fortsatt i vikt-%, inte i belopp. Designen står i
+  `docs/superpowers/specs/2026-08-06-nollstallning-skarp-start-design.md`.
 - `state/decisions.json` – append-only, valideras i CI av `validate-decisions.mjs`.
   **HELA bruttolistan loggas i LÄGE A sedan 2026-08-03**, inte bara de valda: varje kandidat som föll
   bort får en `AVVAKTA`-rad med den namngivna spärren i `reason`. Rotationen 2026-08-03 hade 16
@@ -301,9 +333,22 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `assets/themes/`: `base.css` har all struktur uttryckt i CSS-variabler, temafilerna sätter bara
   variabler + sina avvikelser. `assets/theme.js` (`window.VTheme`) väljer tema och ljust/mörkt
   läge, pekar om `<link id="themeCss">` och sparar valet i localStorage (läget sparas PER tema).
-  Fyra teman × två lägen. **Nytt tema = en rad i `THEMES` i theme.js + en fil i `assets/themes/`**
+  Fem teman × två lägen. **Nytt tema = en rad i `THEMES` i theme.js + en fil i `assets/themes/`**
   – rör aldrig markupen. `base.css` härleder mjuka/linje-varianter med `color-mix`, så ett tema
   sätter ~19 färger per läge, inte ~50. `tests/theme.mjs` larmar om ett tema saknar en token.
+  **Checklistan när ett tema läggs till** (missas något syns det inte förrän det är fel): raden i
+  `THEMES`, filen i `assets/themes/`, filen i `SHELL` i `sw.js` PLUS en bump av `CACHE` (annars
+  saknas temat offline på enheter som redan installerat den gamla cachen), `THEMES`-listan och
+  antalsvillkoren i `tests/theme.mjs`, och antalet i hjälptexten för Tema i `assets/settings.js`.
+  **Ett femte tema (`sjokort`) fanns 2026-08-06 och togs bort samma dag** på Drens begäran.
+  Borttagningen kräver samma checklista fast baklänges, plus TVÅ saker som inte är uppenbara:
+  (1) `CACHE` i `sw.js` måste bumpas ÄVEN vid borttagning – annars ligger den raderade CSS-filen
+  kvar i en redan installerad cache och serveras därifrån, så temat överlever sin egen radering
+  på just de enheter som hann installera den gamla versionen; (2) en enhet med det borttagna
+  temat sparat i `localStorage` faller tillbaka på `THEMES[0]` (deck) via raden
+  `byId(read(KEY_THEME)) || THEMES[0]` i `theme.js` – ingen extra migrering behövs, men ändra
+  aldrig den raden till något som kastar på okänt id. Hämta filen ur git-historiken före
+  2026-08-06 om temat ska tillbaka.
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
@@ -354,6 +399,16 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `reports/daily/…`). Läser `config/fokus.md`, `state/portfolj.md`, rätt mall i `templates/`, och
   **kurser i första hand ur `state/prices.json`**. Uppdaterar `state/portfolj.md` (historik är
   append-only). Committar till main.
+  **Sedan 2026-08-06 får LÄGE B (i BÅDA rotationsprompterna) lägga EN villkorad bubblar-plan** –
+  men bara för en bubblare där senaste veckorapporten angav saknad verifierad kurs som skälet
+  att den inte fick en pending-rad, och bara om sex villkor håller (kurs finns nu · katalysator
+  inom 5 handelsdagar · full poängsättning mot de fem grindarna · regimfilter på · ledig plats ·
+  taket på två planer).
+  **Anledningen:** veckorotationen 2026-08-03 kunde inte prissätta tre bubblare, kurserna kom
+  4–5/8, och punkt 4b låg bara i LÄGE A – fyra handelsdagar där en färdigbedömd idé låg död av
+  ett datafel. En bubblare som rankades under av OMDÖMESSKÄL omfattas aldrig; den bedömningen
+  görs om vid rotationen. `watchdog.mjs:checkStalePricedBubblare` larmar när en bubblare fått
+  kurs men ingen körning tagit ställning.
 - **En separat måndagsprompt (`veckoprompt.md`) fanns tidigare men är raderad** – den körde
   rotationen en andra gång och skapade dubbletter. Schemalägg endast `dagligprompt.md`.
 - **`prompts/scoutprompt.md`** (USA & krypto) – FRISTÅENDE daglig scout. Läser `config/fokus_scout.md`
