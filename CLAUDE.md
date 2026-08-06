@@ -678,6 +678,35 @@ ta bort skyddet.
   räcker fyra kvartal) → rapportdagar detekteras ur pris + volym, vilket är en PROXY.
   Ändra ingen av dessa regler utan att köra om båda marknaderna på 10y.
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
+- **EN RÖD "pages build and deployment" ÄR NÄSTAN ALDRIG REPOTS FEL (2026-08-06).** Deployen
+  gick från ~10 s till 10 minuter och började faila. Loggen säger vad som händer:
+  `Current status: deployment_in_progress` upprepas i tio minuter, sedan
+  `##[error]Timeout reached, aborting!` + `Canceling Pages deployment...`. Artefakten laddas
+  upp, GitHub tar emot deploymenten och den blir aldrig klar; actionen pollar en statusendpoint
+  tills den ger upp och avbryter SIG SJÄLV. GitHub returnerar aldrig ett fel.
+  **Innan någon rullar tillbaka något: mät.** `build`-steget och `deploy`-steget är olika saker
+  – build är det som läser repot, och det stod stilla på 5–10 s genom hela haveriet. Jämför
+  filantal och trädstorlek mellan sista snabba och första långsamma körningen
+  (`git ls-tree -r -l <sha>`): här var det 206 → 206 filer och +0,5 % bytes mot 40× längre
+  deploy, alltså friat. Jämför också artefaktstorleken mellan en lyckad och en misslyckad
+  körning – 1,77 MB deployade både på 8 s och till timeout.
+  **Fällan som gjorde felsökningen förvirrande: en "failed" deploy kan ändå publicera.**
+  Körning 457 loggade `Canceled deployment` men innehållet nådde CDN:en ändå och serverades i
+  flera minuter. Körningslistan och sajten sa emot varandra, och båda hade rätt. **Lita därför
+  inte på Actions-statusen för att avgöra vad som ligger live – mät sajten**, och gör det med
+  cache-busting, annars svarar CDN:en med gammalt innehåll:
+  `curl -s "https://drinaskastrati.github.io/Vecko_agent/state/dashboard.json?cb=$RANDOM"`.
+  Bra markörer för VILKEN commit som ligger ute: `CACHE`-namnet i `sw.js`, förekomsten av
+  `state/live_start.json`, och antalet innehav i `dashboard.json`.
+  **Loggen kräver inloggning.** Anonymt API ger `403: Must have admin rights to Repository`,
+  och taket är 60 anrop/timme (autentiserat: 5 000). `gh` är installerat sedan 2026-08-06;
+  logga in som **DrinasKastrati**, inte Drinas-k – samma tvåkontofälla som ovan. Hämta med
+  `gh run view <run-id> --log-failed`. **PowerShell förstör `--jq`-uttryck** (backslashen äts)
+  och lägger BOM på piping till Node – skriv `gh`-utdata till fil och parsa den därifrån.
+  **Behöver ett experiment ändå köras: gör det reversibelt.** Sätt trädet till ett tidigare
+  läge med `git read-tree -u --reset <sha>` och committa – historiken skrivs inte om, och allt
+  kommer tillbaka med `git revert`. En force-push hade kostat 40 commits för ett fel som gick
+  över av sig självt inom en timme.
 - **Sänk inte verifieringskravet** för kurser – lösningen är pålitliga priser (prices.json), inte
   att ta bort skyddet.
 - **Radera aldrig** `state/portfolj.md` (historik/ackumulerad avkastning) eller de mallar en prompt
