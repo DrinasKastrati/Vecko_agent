@@ -288,7 +288,7 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
    Hem har två detaljnivåer. Valet ligger som data-hemmode på <html> (skrivet av
    assets/settings.js) så att både CSS och app.js kan läsa det utan att känna
    varandra. Reglerna nedan är rena token-användningar – inga hårdkodade färger,
-   så vyn följer alla fyra teman i både ljust och mörkt läge.
+   så vyn följer alla fem teman i både ljust och mörkt läge.
 
    I enkelt läge döljs teckenförklaringen och den detaljerade ingressen: de
    förklarar en kortlayout som inte visas då. Högerspalten renderas tom, så

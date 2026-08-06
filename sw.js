@@ -14,12 +14,16 @@
    Cachen töms inte automatiskt på gamla nycklar – CACHE-namnet nedan bumpas
    manuellt om formatet på det som cachas ändras.
    ========================================================================== */
+// v5 (2026-08-06): temat "sjokort" tillkom. SHELL innehåller en fil till, och
+// install-steget körs bara när CACHE-namnet är nytt – utan bump hade en enhet
+// som redan installerat v4 saknat sjokort.css OFFLINE (online hämtas den ändå
+// och läggs in av fetch-hanteraren, så felet syns bara utan nät).
 // v4 (2026-08-04): index.html fick två nya behållare – "candidates" (kandidatkön
 // i Scout-vyn) och "earningsSoon" (rapporter på väg i Översikt). app.js renderar
 // till dem, så ett cachat skal från v3 saknar dem. Strategin är nät-först och
 // renderingen är null-säkrad, så följden hade blivit tysta tomma rutor snarare än
 // ett fel – men just det är skälet att bumpa: format på det som cachas ändrades.
-const CACHE = "vecko-agent-v4";
+const CACHE = "vecko-agent-v5";
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */
@@ -39,7 +43,8 @@ const SHELL = [
   "./assets/themes/deck.css",
   "./assets/themes/nordlys.css",
   "./assets/themes/terminal.css",
-  "./assets/themes/enkel.css"
+  "./assets/themes/enkel.css",
+  "./assets/themes/sjokort.css"
 ];
 
 self.addEventListener("install", e => {

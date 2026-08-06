@@ -29,7 +29,7 @@
      standardvärde och hur den appliceras (attr = data-attribut på <html>). */
   var SCHEMA = [
     { id: "theme", group: "Utseende", label: "Tema", def: "deck", special: "theme",
-      help: "Fyra kompletta utseenden. Ljust/mörkt väljs separat nedan.",
+      help: "Fem kompletta utseenden. Ljust/mörkt väljs separat nedan.",
       options: [] /* fylls ur VTheme-registret */ },
     { id: "mode", group: "Utseende", label: "Ljust eller mörkt", def: "theme", special: "mode",
       help: "”Följ temat” använder det läge temat är gjort för. ”Följ systemet” följer din dator eller telefon.",

@@ -313,9 +313,16 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `assets/themes/`: `base.css` har all struktur uttryckt i CSS-variabler, temafilerna sätter bara
   variabler + sina avvikelser. `assets/theme.js` (`window.VTheme`) väljer tema och ljust/mörkt
   läge, pekar om `<link id="themeCss">` och sparar valet i localStorage (läget sparas PER tema).
-  Fyra teman × två lägen. **Nytt tema = en rad i `THEMES` i theme.js + en fil i `assets/themes/`**
+  Fem teman × två lägen. **Nytt tema = en rad i `THEMES` i theme.js + en fil i `assets/themes/`**
   – rör aldrig markupen. `base.css` härleder mjuka/linje-varianter med `color-mix`, så ett tema
   sätter ~19 färger per läge, inte ~50. `tests/theme.mjs` larmar om ett tema saknar en token.
+  **Checklistan när ett tema läggs till** (missas något syns det inte förrän det är fel): raden i
+  `THEMES`, filen i `assets/themes/`, filen i `SHELL` i `sw.js` PLUS en bump av `CACHE` (annars
+  saknas temat offline på enheter som redan installerat den gamla cachen), `THEMES`-listan och
+  antalsvillkoren i `tests/theme.mjs`, och antalet i hjälptexten för Tema i `assets/settings.js`.
+  **`sjokort` (2026-08-06)** är det femte: sjökortstema, ljust som standard, magenta som accent
+  och antikva i rapportbrödtexten. Det DÖLJER ingenting – till skillnad från `enkel`, som
+  medvetet skalar bort vyer. Skälen bakom varje val står i filens egen huvudkommentar.
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.
