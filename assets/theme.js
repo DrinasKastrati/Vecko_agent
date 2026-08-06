@@ -25,9 +25,7 @@
     { id: "terminal", label: "Term",    css: "assets/themes/terminal.css", defaultMode: "dark",
       title: "Terminal 80 – tät handelsterminal, monospace" },
     { id: "enkel",    label: "Enkel",   css: "assets/themes/enkel.css",    defaultMode: "light",
-      title: "Enkel – bara det väsentliga, stor text" },
-    { id: "sjokort",  label: "Sjökort", css: "assets/themes/sjokort.css",  defaultMode: "light",
-      title: "Sjökort – navigation: djupbandade paneler, magenta sjömärkesbläck, gratikulat" }
+      title: "Enkel – bara det väsentliga, stor text" }
   ];
 
   var KEY_THEME = "vr_theme", KEY_MODE = "vr_mode";

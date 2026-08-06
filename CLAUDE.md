@@ -340,9 +340,15 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   `THEMES`, filen i `assets/themes/`, filen i `SHELL` i `sw.js` PLUS en bump av `CACHE` (annars
   saknas temat offline på enheter som redan installerat den gamla cachen), `THEMES`-listan och
   antalsvillkoren i `tests/theme.mjs`, och antalet i hjälptexten för Tema i `assets/settings.js`.
-  **`sjokort` (2026-08-06)** är det femte: sjökortstema, ljust som standard, magenta som accent
-  och antikva i rapportbrödtexten. Det DÖLJER ingenting – till skillnad från `enkel`, som
-  medvetet skalar bort vyer. Skälen bakom varje val står i filens egen huvudkommentar.
+  **Ett femte tema (`sjokort`) fanns 2026-08-06 och togs bort samma dag** på Drens begäran.
+  Borttagningen kräver samma checklista fast baklänges, plus TVÅ saker som inte är uppenbara:
+  (1) `CACHE` i `sw.js` måste bumpas ÄVEN vid borttagning – annars ligger den raderade CSS-filen
+  kvar i en redan installerad cache och serveras därifrån, så temat överlever sin egen radering
+  på just de enheter som hann installera den gamla versionen; (2) en enhet med det borttagna
+  temat sparat i `localStorage` faller tillbaka på `THEMES[0]` (deck) via raden
+  `byId(read(KEY_THEME)) || THEMES[0]` i `theme.js` – ingen extra migrering behövs, men ändra
+  aldrig den raden till något som kastar på okänt id. Hämta filen ur git-historiken före
+  2026-08-06 om temat ska tillbaka.
 - **Datakälla:** hämtar fillista via GitHub-API (`git/trees/main?recursive=1`) och råtext via
   `raw.githubusercontent.com`. Upptäcker rapporter automatiskt på filnamn → **inga ändringar
   behövs i webbappen när filer flyttas till undermappar.** Uppdateras när routinen pushar.

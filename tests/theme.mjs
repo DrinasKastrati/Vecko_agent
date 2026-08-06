@@ -21,7 +21,7 @@ import { dirname, resolve, join } from "node:path";
 import { createRequire } from "node:module";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const THEMES = ["deck", "nordlys", "terminal", "enkel", "sjokort"];
+const THEMES = ["deck", "nordlys", "terminal", "enkel"];
 let pass = 0, fail = 0;
 const ok = (name, cond) => { if (cond) pass++; else { fail++; console.log("  FAIL:", name); } };
 const css = f => readFileSync(join(root, "assets/themes", f + ".css"), "utf8");
@@ -87,12 +87,12 @@ if (!JSDOM) {
 
   const w = await boot("https://x.test/index.html");
   const doc = w.document, T = w.VTheme;
-  ok("motor: VTheme exponerad med 5 teman", !!T && T.themes.length === 5);
+  ok("motor: VTheme exponerad med 4 teman", !!T && T.themes.length === 4);
   ok("boot: data-theme satt före första målningen", doc.documentElement.getAttribute("data-theme") === "deck");
   ok("boot: data-mode = temats standardläge", doc.documentElement.getAttribute("data-mode") === "dark");
   ok("boot: themeCss pekar på rätt fil", doc.getElementById("themeCss").getAttribute("href") === "assets/themes/deck.css");
   ok("växlare: en knapp per tema + lägesknapp",
-    doc.querySelectorAll("#themeCtl [data-theme-set]").length === 5 && !!doc.getElementById("modeBtn"));
+    doc.querySelectorAll("#themeCtl [data-theme-set]").length === 4 && !!doc.getElementById("modeBtn"));
   ok("växlare: aktivt tema markerat", (doc.querySelector("#themeCtl button.cur") || {}).dataset?.themeSet === "deck");
 
   T.setTheme("terminal");
