@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-08-05T21:56:00.563Z",
+  "generatedAt": "2026-08-06T07:36:19.893Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 34,
-    "resolved": 32,
+    "requested": 36,
+    "resolved": 34,
     "failed": 0,
     "notApplicable": 2,
     "upcoming": 4
@@ -14,16 +14,6 @@
   "upcoming": [
     {
       "tradingDaysAway": 0,
-      "symbol": "NVO",
-      "date": "2026-08-05",
-      "isEstimate": false,
-      "epsConsensus": 4.70467,
-      "epsLow": 4.49,
-      "epsHigh": 5.094,
-      "revenueConsensus": 71946199740
-    },
-    {
-      "tradingDaysAway": 1,
       "symbol": "MARA",
       "date": "2026-08-06",
       "isEstimate": false,
@@ -33,7 +23,17 @@
       "revenueConsensus": 209616650
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 0,
+      "symbol": "PDX.ST",
+      "date": "2026-08-06",
+      "isEstimate": false,
+      "epsConsensus": 1.59928,
+      "epsLow": 1.55,
+      "epsHigh": 1.64857,
+      "revenueConsensus": 520250000
+    },
+    {
+      "tradingDaysAway": 1,
       "symbol": "RIOT",
       "date": "2026-08-07",
       "isEstimate": true,
@@ -43,7 +43,7 @@
       "revenueConsensus": 152878700
     },
     {
-      "tradingDaysAway": 9,
+      "tradingDaysAway": 8,
       "symbol": "OSSD.ST",
       "date": "2026-08-18",
       "isEstimate": false,
@@ -73,6 +73,15 @@
       "revenueConsensus": 1975597220
     },
     {
+      "symbol": "NOVO-B.CO",
+      "date": "2026-08-05",
+      "isEstimate": false,
+      "epsConsensus": 4.88188,
+      "epsLow": 4.54,
+      "epsHigh": 5.11,
+      "revenueConsensus": 71946199740
+    },
+    {
       "symbol": "NVO",
       "date": "2026-08-05",
       "isEstimate": false,
@@ -89,6 +98,15 @@
       "epsLow": -0.58,
       "epsHigh": -0.29,
       "revenueConsensus": 209616650
+    },
+    {
+      "symbol": "PDX.ST",
+      "date": "2026-08-06",
+      "isEstimate": false,
+      "epsConsensus": 1.59928,
+      "epsLow": 1.55,
+      "epsHigh": 1.64857,
+      "revenueConsensus": 520250000
     },
     {
       "symbol": "RIOT",
