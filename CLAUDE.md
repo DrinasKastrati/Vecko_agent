@@ -315,6 +315,31 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   OCH WEBBLÄSARE** – inget sparas i repot, inget delas mellan personer. Tema och ljust/mörkt ÄGS
   av `VTheme`; VSettings delegerar dit så det bara finns en sanning. Precedens för läget:
   `?mode=` i URL:en > sparat val > temats standardläge.
+- **Mina verkliga affärer (sedan 2026-08-07): `assets/fills.js` (`window.VFills`).** Systemet
+  lägger inga ordrar – roboten skriver den VERIFIERADE kurs den såg när beslutet fattades, inte
+  det pris Dren betalade. Skillnaden var betydelselös under pappersperioden och är kumulativ från
+  den skarpa starten. Dren fyller i kurs + antal på innehavskortet i Översikt; en stängd affär
+  utan säljkurs listas i `#fillsPending` tills den är ifylld. **Lagring: `localStorage`, nyckel
+  `vr_fills` – per enhet och webbläsare, som temat. Inget committas och det finns INGEN backup:
+  rensad webbläsardata raderar allt.** Egen nyckel och inte `vr_settings`, vars "Återställ
+  inställningar" gör `removeItem()` och annars hade tagit affärsdatan med sig.
+  **Nyckeln är ticker + entry-datum** och måste fungera i BÅDA tabellerna – innehavstabellen har
+  en egen `Yahoo-ticker`-kolumn, historiktabellen bara tickern i parentes i `Aktie`
+  (`Saab (SAAB-B.ST)`). Utan den dubbelhanteringen i `tickerFrom` tappas affären i samma sekund
+  roboten flyttar den till historiken, vilket är precis när säljkursen behövs.
+  **Tre regler som inte får luckras upp:** (1) `computeMyStats` returnerar `null` för avkastningen
+  så snart en enda affär saknas – vyn skriver "3 av 5 affärer ifyllda", aldrig ett tal, samma
+  princip som `decision_eval`; (2) `totalt` räknar bara STÄNGDA affärer – räknades öppna
+  positioner in i nämnaren vore `klara < totalt` alltid sant och talet aldrig synligt; (3)
+  böckerna redovisas var för sig, ingen gemensam summa över SEK och USD.
+  **Siffrorna MÄTER utfall men STYR inga beslut:** prompterna kör i Actions och kan inte läsa
+  `localStorage`, så stop-loss och målkurs prövas fortsatt mot robotens entry. Läste besluten
+  datan skulle två enheter med olika ifyllt ge olika signaler för samma position, och en
+  handinmatad siffra saknar dessutom den verifierade källa och tidsstämpel beslutsunderlaget
+  kräver. **`tests/sim.mjs` och `tests/data.mjs` måste evaluera `fills.js`** i sin modullista –
+  de laddar modulerna manuellt och skripttaggarna i `index.html` strippas, så utan raden blir
+  `window.VFills` undefined och inmatningsraden renderas tyst till tomt i simuleringen.
+  Designen står i `docs/superpowers/specs/2026-08-07-mina-verkliga-affarer-design.md`.
 - **Tredjepartsbiblioteken laddas LAT (sedan 2026-08-03).** `marked` (35 kB), `chart.js` (206 kB)
   och `lightweight-charts` (164 kB) låg som fasta `<script>` i `index.html` och hämtades vid VARJE
   sidladdning – 405 kB som startvyn inte använder en rad av. De hämtas nu av `app.js:lib(name)`
