@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T00:21:25.389Z",
+  "generatedAt": "2026-08-07T01:02:06.963Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -117,14 +117,14 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 64193.34,
+      "price": 64317.13,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-07T00:21:07.000Z",
+      "marketTime": "2026-08-07T01:01:47.000Z",
       "marketState": null,
       "previousClose": 64597.5,
       "dayHigh": 64340.625,
-      "dayLow": 64240.7,
+      "dayLow": 64206.945,
       "source": "Yahoo Finance (chart API)"
     },
     "COIN": {
@@ -177,14 +177,14 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1899.2,
+      "price": 1903.63,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-07T00:21:03.000Z",
+      "marketTime": "2026-08-07T01:01:39.000Z",
       "marketState": null,
       "previousClose": 1906.5260009765625,
       "dayHigh": 1903.2695,
-      "dayLow": 1900.4644,
+      "dayLow": 1899.3553,
       "source": "Yahoo Finance (chart API)"
     },
     "GOOGL": {
@@ -594,13 +594,13 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.5184,
+      "price": 9.5173,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-07T00:21:21.000Z",
+      "marketTime": "2026-08-07T01:02:03.000Z",
       "marketState": null,
       "previousClose": 9.48031997680664,
-      "dayHigh": 9.5203,
+      "dayHigh": 9.522,
       "dayLow": 9.5021,
       "source": "Yahoo Finance (chart API)"
     },
