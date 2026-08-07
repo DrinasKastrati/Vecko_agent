@@ -1,6 +1,24 @@
 name: Daglig digest (issue -> e-post)
 
 on:
+  # SCHEMAT ÄR DET SOM FAKTISKT KÖR DEN. Push-triggern nedan gick ALDRIG igång
+  # för robotens egna rapporter: GitHub startar medvetet inga workflows för
+  # pushar gjorda med den inbyggda GITHUB_TOKEN, och rapporterna når main via
+  # auto_merge.yml med just den token. Följden var att digesten byggdes, testades
+  # och låg klar – men aldrig kördes en enda gång mellan 2026-07-31 och
+  # 2026-08-07. Ingenting blev rött; workflow-listan var bara tom.
+  #
+  # 07:30 UTC: nordiska rotationen skriver sin rapport ~06:49, så 40 minuters
+  # marginal räcker även när GitHubs cron är försenad (den är best-effort).
+  # 12:00 UTC: skyddsnät om rotationen kom sent. digest.mjs skriver `null` när
+  # dagens rapport saknas, och issue-steget har dubblettskydd på titeln, så en
+  # extra körning är gratis och kan aldrig ge två mejl.
+  schedule:
+    - cron: "30 7 * * 1-5"
+    - cron: "0 12 * * 1-5"
+  # BEHÅLLS ändå: den fungerar för rapporter Dren pushar SJÄLV med push.bat
+  # (egna credentials ⇒ workflows triggas normalt). Den är alltså inte död,
+  # bara otillräcklig ensam.
   push:
     branches: [main]
     paths:

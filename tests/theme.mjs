@@ -15,7 +15,7 @@
    Kör:  node tests/theme.mjs
          SIM_DEPS=<mapp med node_modules som har jsdom> node tests/theme.mjs
    ============================================================ */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 import { createRequire } from "node:module";
@@ -285,6 +285,35 @@ const indexSrc = readFileSync(join(root, "index.html"), "utf8");
 for (const m of indexSrc.match(/src="(assets\/[^"]+\.js)"/g) || []) {
   const p = m.slice(5, -1);
   ok(`sw.js precachar ${p}`, swSrc.includes(`"./${p}"`));
+}
+
+/* GITHUB_TOKEN-FÄLLAN, spärr för hela klassen (2026-08-07).
+
+   GitHub startar MEDVETET inga workflows för pushar gjorda med den inbyggda
+   GITHUB_TOKEN (skydd mot rekursion). Allt systemet självt producerar når main
+   via auto_merge.yml med just den token, så en workflow som BARA lyssnar på
+   `push: branches: [main]` går aldrig igång för robotens egna commits – utan
+   att något blir rött någonstans.
+
+   Fällan har slagit till tre gånger: test.yml och dashboard.yml (åtgärdat
+   2026-08-03 genom att auto_merge kör dem själv) och digest.yml, som aldrig
+   körde en enda gång mellan 2026-07-31 och 2026-08-07.
+
+   Regeln: en workflow som triggar på push mot main MÅSTE dessutom ha antingen
+   en `schedule` eller anropas inifrån auto_merge.yml. Annars är den tyst död
+   för allt utom Drens manuella pushar. */
+{
+  const wfDir = join(root, ".github", "workflows");
+  const am = readFileSync(join(wfDir, "auto_merge.yml"), "utf8");
+  for (const f of readdirSync(wfDir).filter(n => n.endsWith(".yml"))) {
+    const src = readFileSync(join(wfDir, f), "utf8");
+    if (!/^\s*branches:\s*\[main\]/m.test(src)) continue;
+    const harCron = /^\s*schedule:/m.test(src);
+    // Anropas den inifrån grinden? Leta på skriptnamnen den kör.
+    const körsAvGrinden = (src.match(/node \.github\/scripts\/[\w.-]+\.mjs/g) || [])
+      .some(cmd => am.includes(cmd));
+    ok(`${f}: push-mot-main-triggern är inte ensam (GITHUB_TOKEN-fällan)`, harCron || körsAvGrinden);
+  }
 }
 
 /* fills.js håller Drens lokala affärsdata och måste laddas i <head>, som
