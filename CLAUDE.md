@@ -715,7 +715,21 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
      ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.
-- **Valfria förbättringar (ej byggda):** daglig digest-notis. (Jämför två tickers, fulltextsökning
+- ✅ **Daglig digest (2026-08-07): byggd sedan 2026-07-31, men körde ALDRIG förrän nu.**
+  `digest.yml` triggade bara på `push` mot main, och rapporterna når main via `auto_merge.yml`
+  med `GITHUB_TOKEN` – för vilken GitHub medvetet inte startar workflows. Noll körningar på en
+  vecka, utan att något blev rött: workflow-listan var bara tom. Fixen är ett **schema**
+  (07:30 och 12:00 UTC, mån–fre); push-triggern behålls eftersom den fungerar för rapporter Dren
+  pushar själv med `push.bat`. `digest.mjs` skriver `null` när dagens rapport saknas och
+  issue-steget har dubblettskydd på titeln, så en extra körning är gratis. Issuet **stängs
+  direkt** – e-postnotisen går ändå ut och issue-listan hålls ren.
+  **Spärr för hela fällklassen finns nu i `tests/theme.mjs`:** en workflow som triggar på push
+  mot main måste dessutom ha en `schedule` ELLER anropas inifrån `auto_merge.yml`. Fällan hade
+  då slagit till tre gånger (`test.yml`, `dashboard.yml`, `digest.yml`).
+  **Digesten går som e-post, inte push-notis** – och ska inte flyttas dit: push är reserverat
+  för KÖP/SÄLJ, som är åtgärdbart. En daglig sammanfattning är passiv läsning, och att väcka
+  telefonen för den urholkar värdet av de notiser som kräver handling.
+- **Valfria förbättringar (ej byggda):** (Jämför två tickers, fulltextsökning
   och alert-historik byggdes 2026-07-17; miss-retron + Retro-fliken, per-affär-equity-kurvan,
   månadsheatmapen och sälj-triggad avkastningsuppdatering byggdes 2026-07-31.)
 
