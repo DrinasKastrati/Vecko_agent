@@ -257,7 +257,7 @@ for (const t of ["deck", "nordlys", "terminal", "enkel"]) {
    Testet gäller ALLA textfiler appen läser – felet är osynligt i en diff om man
    inte tittar på bytes. */
 for (const f of ["index.html", "assets/app.js", "assets/vparse.js", "assets/vrender.js",
-                 "assets/theme.js", "assets/settings.js", "assets/themes/base.css",
+                 "assets/theme.js", "assets/settings.js", "assets/fills.js", "assets/themes/base.css",
                  "assets/manual.css", "sw.js", "manifest.json"]) {
   const buf = readFileSync(join(root, f));
   ok(`${f}: ingen BOM`, !(buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF));
@@ -286,6 +286,15 @@ for (const m of indexSrc.match(/src="(assets\/[^"]+\.js)"/g) || []) {
   const p = m.slice(5, -1);
   ok(`sw.js precachar ${p}`, swSrc.includes(`"./${p}"`));
 }
+
+/* fills.js håller Drens lokala affärsdata och måste laddas i <head>, som
+   settings.js: renderarna i vrender.js frågar window.VFills direkt när ett
+   innehavskort byggs. Laddas den sist blir raden tom vid första renderingen
+   utan att något fel syns. */
+ok("index.html laddar fills.js i <head>", (() => {
+  const head = indexSrc.slice(0, indexSrc.indexOf("</head>"));
+  return head.includes('src="assets/fills.js"');
+})());
 
 /* PUSH-NOTISER. Två saker som annars går sönder TYST:
    (1) `new Notification(...)` kastar "Illegal constructor" på Android – felet

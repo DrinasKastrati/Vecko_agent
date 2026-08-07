@@ -40,6 +40,11 @@
      direkt vid inläsning så inget hinner målas med standardvärdena först.
      Själva vyn renderas först vid DOMContentLoaded. -->
 <script src="assets/settings.js"></script>
+<!-- fills.js: Drens EGNA köp-/säljkurser, lagrade lokalt i localStorage precis
+     som temat. Måste ligga i <head>, före vrender.js/app.js: innehavskortets
+     inmatningsrad frågar window.VFills direkt när kortet byggs, och laddas
+     modulen senare blir raden tom vid första renderingen utan att något syns. -->
+<script src="assets/fills.js"></script>
 </head>
 <body>
 <div class="shell">
