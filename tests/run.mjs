@@ -420,6 +420,24 @@ ok("fillRow: avvikelsen skrivs ut i procent", /3,2\d? %/.test(frAvvik));
 ok("fillRow: rad utan nyckel renderas inte",
   VR.fillRow({ "Aktie": "Indexsleeve (XACT OMXS30)" }, null) === "");
 
+/* Rutan som gör en glömd säljkurs omöjlig att missa. Den ligger kvar tills
+   affären är ifylld – försvinner den av sig själv går säljkursen förlorad, och
+   det är precis det som skulle göra "Mina verkliga" omöjlig att lita på. */
+ok("renderFillsPending: tomt när inget saknas", VR.renderFillsPending([]) === "");
+ok("renderFillsPending: tål null", VR.renderFillsPending(null) === "");
+const fp = VR.renderFillsPending([
+  { ticker: "SAAB-B.ST", key: "SAAB-B.ST|2026-08-10", vad: "sälj" },
+  { ticker: "VOLV-B.ST", key: "VOLV-B.ST|2026-08-11", vad: "köp och sälj" }
+]);
+ok("renderFillsPending: rubrik i klarspråk med antal", fp.includes("2 affärer väntar på din säljkurs"));
+ok("renderFillsPending: namnger tickrarna", fp.includes("SAAB-B.ST") && fp.includes("VOLV-B.ST"));
+ok("renderFillsPending: knapp per affär", (fp.match(/data-fill-open=/g) || []).length === 2);
+ok("renderFillsPending: säger vad som saknas per affär", fp.includes("sälj") && fp.includes("köp och sälj"));
+ok("renderFillsPending: singular när det är en",
+  VR.renderFillsPending([{ ticker: "SAAB-B.ST", key: "k", vad: "sälj" }]).includes("1 affär väntar"));
+ok("renderFillsPending: poster utan nyckel hoppas över",
+  VR.renderFillsPending([{ ticker: "X", vad: "sälj" }]) === "");
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",

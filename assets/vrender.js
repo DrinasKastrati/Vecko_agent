@@ -227,6 +227,27 @@
       + `<button type="button" class="fill-btn" data-fill-open="${esc(key)}">Ändra</button></div>`;
   }
 
+  /* Stängda affärer som saknar Drens siffror.
+
+     Rutan ligger kvar tills de är ifyllda. Skulle den försvinna av sig själv
+     går säljkursen förlorad, och "Mina verkliga" bygger då tyst på halv data –
+     precis den sortens tystnad systemet i övrigt är byggt för att undvika.
+
+     Ligger i Översikt UNDER intradag-bannern: en signal är åtgärdbar nu, en
+     saknad säljkurs är bokföring. Poster utan nyckel hoppas över; utan nyckel
+     finns inget att fylla i. */
+  function renderFillsPending(saknar){
+    const lista = (saknar || []).filter(s => s && s.key);
+    if (!lista.length) return "";
+    const n = lista.length;
+    return `<div class="fills-pending"><div class="fp-head">`
+      + `${n} affär${n === 1 ? "" : "er"} väntar på din säljkurs</div><div class="fp-list">`
+      + lista.map(s => `<div class="fp-item"><b>${esc(s.ticker)}</b>`
+        + `<span class="fp-what">saknar ${esc(s.vad)}</span>`
+        + `<button type="button" class="fill-btn" data-fill-open="${esc(s.key)}">Fyll i</button></div>`).join("")
+      + `</div></div>`;
+  }
+
   function heldCard(o, live){
     const name = strip(o["Aktie"] || "");
     const ticker = strip(o["Yahoo-ticker"] || "");
@@ -1159,7 +1180,7 @@
   }
 
   const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
-    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow,
+    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,

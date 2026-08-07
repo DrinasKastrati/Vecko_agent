@@ -148,6 +148,10 @@
       <section class="view" id="view-oversikt" data-view="oversikt">
         <div class="sec-head"><h2>Nordisk rotation</h2><span class="hint">portfölj &amp; dagens beslut</span></div>
         <div id="statusRow"></div>
+        <!-- Stängda affärer som saknar Drens säljkurs. Ligger före KPI:erna men
+             efter statusraden: det är en påminnelse om bokföring, inte en
+             signal att agera på. Rutan är tom tills något faktiskt saknas. -->
+        <div id="fillsPending"></div>
         <div id="kpis"></div>
         <div id="market"></div>
         <details class="sblock" id="earningsSoonBlock">
