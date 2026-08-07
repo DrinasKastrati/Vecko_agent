@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-06T19:47:52.603Z",
+ "generatedAt": "2026-08-07T00:21:25.466Z",
  "horizons": [
   5,
   20
@@ -9,19 +9,19 @@
   "decisions": 27,
   "measurable": 27,
   "missing": 0,
-  "pending": 22
+  "pending": 21
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
-    "n": 5,
-    "meanAlphaPct": 4.36,
-    "medianAlphaPct": 4.57,
-    "meanPct": 5.65,
-    "beatIndexPct": 80,
+    "n": 6,
+    "meanAlphaPct": 4.11,
+    "medianAlphaPct": 4.09,
+    "meanPct": 5.58,
+    "beatIndexPct": 83.33,
     "insufficient": true,
-    "need": 3
+    "need": 2
    },
    "byAction": {
     "KÖP": {
@@ -43,13 +43,13 @@
      "need": 6
     },
     "BEHÅLL": {
-     "n": 0,
-     "meanAlphaPct": null,
-     "medianAlphaPct": null,
-     "meanPct": null,
-     "beatIndexPct": null,
+     "n": 1,
+     "meanAlphaPct": 2.86,
+     "medianAlphaPct": 2.86,
+     "meanPct": 5.2,
+     "beatIndexPct": 100,
      "insufficient": true,
-     "need": 8
+     "need": 7
     },
     "AVVAKTA": {
      "n": 0,
@@ -63,13 +63,13 @@
    },
    "byBook": {
     "nordic": {
-     "n": 3,
-     "meanAlphaPct": 6.43,
-     "medianAlphaPct": 5.98,
-     "meanPct": 7.74,
+     "n": 4,
+     "meanAlphaPct": 5.54,
+     "medianAlphaPct": 4.79,
+     "meanPct": 7.11,
      "beatIndexPct": 100,
      "insufficient": true,
-     "need": 5
+     "need": 4
     },
     "us": {
      "n": 2,
@@ -101,13 +101,13 @@
      "need": 6
     },
     "order": {
-     "n": 1,
-     "meanAlphaPct": 3.6,
-     "medianAlphaPct": 3.6,
-     "meanPct": 6.38,
+     "n": 2,
+     "meanAlphaPct": 3.23,
+     "medianAlphaPct": 3.23,
+     "meanPct": 5.79,
      "beatIndexPct": 100,
      "insufficient": true,
-     "need": 7
+     "need": 6
     },
     "other": {
      "n": 0,
@@ -378,7 +378,14 @@
    "catalystType": "order",
    "sector": "Försvarsindustri",
    "reconstructed": true,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.2,
+     "benchPct": 2.35,
+     "alphaPct": 2.86,
+     "toDate": "2026-08-07"
+    }
+   }
   },
   {
    "date": "2026-08-03",
