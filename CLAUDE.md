@@ -196,6 +196,12 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   märker det. Deras GEMENSAMMA utseende ligger i `assets/manual.css` (utbruten 2026-08-02) –
   ändra där, inte i respektive fils `<style>`-block. Blocken innehåller bara det som är unikt
   för filen plus Systemguidens nio medvetna överskrivningar.
+  **INGEN av manualerna bäddar in skärmbilder (sedan 2026-08-07).** `docs/manual/hem.png` och
+  `avkastning.png` hörde till `Anvandarmanual.html`, som raderades 2026-08-02 i filstädningen –
+  bilderna blev kvar utan att någon fil pekade på dem, och stod i KVAR-listan i fem dagar som
+  "åldras" fast de i själva verket var oanvända. De är raderade; hämta dem ur git-historiken före
+  2026-08-07 om de behövs. Vill du ha bilder igen: recept finns i `make-manual.bat`, men lägg
+  ALLTID in en `<img>` i rätt HTML-fil samtidigt. En bild ingen fil pekar på åldras osynligt.
 - **Push-notiser (sedan 2026-08-03): `.github/scripts/webpush.mjs` + `push-notify.mjs`, körs i
   `monitor.yml`.** Den gamla 🔔-knappen gjorde två fel, båda TYSTA: (1) den använde
   `new Notification(...)`, som på Android är en förbjuden konstruktor ("Illegal constructor") och
@@ -620,12 +626,7 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
 - **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
-  1. **`docs/manual/`-skärmbilderna åldras** (`hem.png`, `avkastning.png`, båda 2026-08-02).
-     **Vänta till EFTER v33-rotationen 2026-08-10.** Böckerna nollställdes 2026-08-06, så en
-     skärmbild tagen dessförinnan visar "Roboten äger inget just nu" – sämre som illustration än
-     de gamla bilderna med en fylld bok. Kommandot står i `make-manual.bat`; kör skriptet efteråt
-     så PDF:erna följer med.
-  2. **Ingenting STÄNGER GitHub-issues.** `monitor.yml` och `watchdog.yml` öppnar dem, men ingen
+  1. **Ingenting STÄNGER GitHub-issues.** `monitor.yml` och `watchdog.yml` öppnar dem, men ingen
      workflow stänger dem när tillståndet är löst – därför samlas signal- och watchdog-issues på
      hög och säger inget om nuläget. Städa för hand, eller bygg stängningen (kontrollera i så
      fall mot `alerts.json`/watchdogens egen utdata, inte mot titeln).
