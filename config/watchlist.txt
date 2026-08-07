@@ -21,6 +21,12 @@ NOKIA.HE
 ASSA-B.ST
 BETS-B.ST
 SUBC.OL
+KOG.OL
+# Kongsberg – bubblare v32 med verifierad kurs redan 2026-08-03. Tillagd 2026-08-07 (LÄGE B)
+# enligt punkt 6b: körningen skrev en AVVAKTA-rad för KOG.OL, och en ticker som inte hämtas av
+# prices.yml blir omätbar för alltid (price_history.json backfillas bara för hämtade symboler).
+# Kursen fanns hittills bara för att pris-hämtaren läser tickers ur senaste veckorapporten –
+# den kopplingen bryts när v33-rapporten ersätter v32:ans.
 
 # Färska katalysatorer ur state/news_feed.json, tillagda 2026-08-06 (LÄGE B) så att
 # v33-rotationen 2026-08-10 kan poängsätta dem mot VERIFIERAD kurs i stället för att

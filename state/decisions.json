@@ -703,6 +703,116 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-08-07",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "ASSA-B.ST",
+      "action": "AVVAKTA",
+      "price": 366.9,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Byggprodukter/sakerhet",
+      "rsi": 77.9,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (4) faller pa RSI(14) 77,9 > 75 utan exceptionell katalysator (bolt-on Gunnebo). Aven villkor (6): nollstalld bok till 10/8.",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-08-07",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "BETS-B.ST",
+      "action": "AVVAKTA",
+      "price": 90.05,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Spel/betting",
+      "rsi": 47.9,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1)-(5) haller (kurs, katalysator dag 5/5, regim PA, mal-tak 9,60 pct). Faller ENBART pa (6): nollstalld bok, v33 agnas allokeringen.",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-08-07",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 334.6,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Offshore/energiservice",
+      "rsi": 57.7,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (3) faller: katalysatorn HSR-fristen 31/7 loppte ut efter 5 handelsdagar vid stangning 6/8. Provas pa nytt i v33.",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-08-07",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "KOG.OL",
+      "action": "AVVAKTA",
+      "price": 307.7,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "macro",
+      "sector": "Forsvar",
+      "rsi": 80.4,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller: veckorapporten rankade KOG under av OMDOMESSKAL, inte av saknad kurs. RSI(14) 80,4 hade dessutom fallt grind 2.",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-08-07",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "SF.ST",
+      "action": "AVVAKTA",
+      "price": 6.46,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Spelutveckling",
+      "rsi": 78.2,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller: rankad under av OMDOMESSKAL (rorelsen redan intraffad), inte av saknad kurs. RSI(14) nu berakningsbar: 78,2 > 75.",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ]
     }
   ]
 }
