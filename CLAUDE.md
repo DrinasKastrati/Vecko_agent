@@ -239,6 +239,20 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   och rapporterna når main.
 - Actions `monitor`/`news`/`movers`/`analys_queue`/`push_subscribe` är nyckellösa och LLM-fria –
   de kostar noll tokens.
+- **`.github/scripts/issue-sync.mjs` – issues speglar NULÄGET (sedan 2026-08-07).** Monitorn och
+  watchdogen öppnade issues men stängde dem aldrig; 2026-08-07 låg sju öppna, samtliga
+  inaktuella. En lista som bara växer säger ingenting, och då slutar man läsa den. Nu öppnas nya
+  och stängs de vars orsak försvunnit — monitorn mot `alerts.json`:s `active`, watchdogen mot sin
+  egen problemlista. **Nyckeln ligger i en HTML-kommentar i BRÖDTEXTEN, aldrig i titeln.**
+  Dedupen matchade tidigare på titel, och watchdog-titlar bär antal ("5 prissatt(a) bubblare
+  utan avgörande"): gick antalet 5 → 3 lästes det som ett NYTT problem, ett andra issue öppnades
+  och det första låg kvar. Kommentaren syns inte i renderad markdown.
+  **Två säkerhetsregler som inte får luckras upp:** ett issue UTAN markör rörs aldrig (det är
+  handskrivet eller äldre än mekanismen, och att stänga något man inte kan identifiera är värre
+  än att låta det ligga), och en källa stänger aldrig en annan källas ärenden. Logiken är ren och
+  testad i `tests/run.mjs`; workflowen importerar modulen dynamiskt i `github-script`-steget.
+  Monitorns synksteg hoppas över vid `testnotis`, eftersom `alerts.mjs` då inte kört och
+  `alerts.json` speglar en tidigare körning.
 - **`auto_merge.yml` KÖR CI SJÄLV (sedan 2026-08-03) – rör inte den grinden.** GitHub startar
   medvetet inga workflows för pushar gjorda med den inbyggda `GITHUB_TOKEN` (skydd mot rekursiva
   körningar), och både `test.yml` och `dashboard.yml` lyssnar på `push` mot main. Följden var att
@@ -626,10 +640,7 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
 - **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
-  1. **Ingenting STÄNGER GitHub-issues.** `monitor.yml` och `watchdog.yml` öppnar dem, men ingen
-     workflow stänger dem när tillståndet är löst – därför samlas signal- och watchdog-issues på
-     hög och säger inget om nuläget. Städa för hand, eller bygg stängningen (kontrollera i så
-     fall mot `alerts.json`/watchdogens egen utdata, inte mot titeln).
+  *(Tom. Allt känt är åtgärdat – se listan över avklarat ovan.)*
 - ✅ **Verifierat i skarp körning 2026-08-03 (samma kväll):** `news.yml` 15:56 UTC skrev `window`-fältet
   och fönstret bar **6 av 10 handelsdagar direkt** (äldsta post 2026-07-27) – flödena serverar själva
   äldre poster, så det behövde inte fyllas på dag för dag. Taket per källa och dygn band vid exakt 30

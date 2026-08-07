@@ -23,21 +23,35 @@ jobs:
           node-version: "20"
       - name: Kontrollera färskhet (LLM-fritt, inga tokens)
         run: node .github/scripts/watchdog.mjs
-      - name: Öppna issue per problem (dedupe mot redan öppna)
+      # Issues speglar NULAGET: nya problem oppnas, atgardade stangs.
+      # Dedupen matchade tidigare pa TITEL, och watchdog-titlar bar antal
+      # ("5 prissatt(a) bubblare utan avgorande"). Gick antalet 5 -> 3 lastes
+      # det som ett nytt problem: ett andra issue oppnades och det forsta lag
+      # kvar. Nyckeln (p.key) ar stabil och ligger nu i brodtexten.
+      - name: Synka issues mot problemlistan (oppna nya, stang atgardade)
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
+            const S = await import(process.env.GITHUB_WORKSPACE + '/.github/scripts/issue-sync.mjs');
             let problems = [];
             try { problems = JSON.parse(fs.readFileSync((process.env.RUNNER_TEMP || '.') + '/watchdog.json', 'utf8')); } catch (e) {}
-            if (!problems.length) { core.info('Allt friskt.'); return; }
             const open = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
-            const titles = new Set(open.data.map(i => i.title));
-            for (const p of problems) {
-              if (titles.has(p.title)) { core.info('Redan öppet: ' + p.title); continue; }
-              await github.rest.issues.create({
-                owner: context.repo.owner, repo: context.repo.repo, title: p.title,
-                body: p.body + '\n\n_Automatisk vakthund (LLM-fri). Stäng ärendet när orsaken är åtgärdad._' });
-              core.info('Öppnade: ' + p.title);
+            const plan = S.planIssues(open.data, problems, 'watchdog');
+            for (const p of plan.open) {
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo,
+                title: p.title,
+                body: [p.body,
+                       '_Automatisk vakthund (LLM-fri). Stangs av sig sjalv nar orsaken ar borta._',
+                       S.keyMarker('watchdog', p.key)].join('\n\n') });
+              core.info('Oppnade: ' + p.key);
             }
+            for (const c of plan.close) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: c.number, body: 'Kontrollen ar frisk igen vid senaste korningen. Stangs automatiskt.' });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: c.number, state: 'closed' });
+              core.info('Stangde: ' + c.key);
+            }
+            core.info(`Problem: ${problems.length} - oppnade ${plan.open.length}, stangde ${plan.close.length}.`);

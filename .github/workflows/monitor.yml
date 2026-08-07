@@ -66,18 +66,44 @@ jobs:
             echo "Kunde inte pusha efter 3 försök."
             exit 1
           fi
-      - name: Öppna issue (e-post) för NYA signaler
+      # Issues speglar NULÄGET: nya signaler öppnas, upphörda stängs.
+      # Tidigare öppnades de bara, sa listan vaxte i evighet och sa ingenting
+      # om vad som faktiskt galler nu (sju inaktuella lag oppna 2026-08-07).
+      # Nyckeln ligger i en HTML-kommentar i brodtexten, inte i titeln - se
+      # .github/scripts/issue-sync.mjs for varfor.
+      # Hoppas over vid testnotis: da har alerts.mjs inte kort, och
+      # state/alerts.json speglar en tidigare korning.
+      - name: Synka issues mot aktiva signaler (oppna nya, stang upphorda)
+        if: ${{ inputs.testnotis != true }}
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const p = (process.env.RUNNER_TEMP || '.') + '/alerts_new.json';
-            let news = [];
-            try { news = JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) {}
-            for (const s of news) {
-              const title = `⚠️ ${s.type}-signal: ${s.ticker} – ${s.reason}`;
-              const body = `**${s.ticker}** ${s.reason}. Kurs ${s.price}${s.currency ? (' ' + s.currency) : ''}` +
-                `${s.level != null ? ` (nivå ${s.level})` : ''}${s.marketTime ? ` · ${s.marketTime}` : ''}.\n\n` +
-                `Automatiserad intradag-signal (LLM-fri, ren nivåkorsning). Beslutsstöd, inte finansiell rådgivning.`;
-              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+            const S = await import(process.env.GITHUB_WORKSPACE + '/.github/scripts/issue-sync.mjs');
+            let alerts = { active: [] };
+            try { alerts = JSON.parse(fs.readFileSync('state/alerts.json', 'utf8')); } catch (e) {}
+            const live = (alerts.active || []).map(s => ({
+              key: s.ticker + '|' + s.type,
+              title: `⚠️ ${s.type}-signal: ${s.ticker} – ${s.reason}`,
+              body: `**${s.ticker}** ${s.reason}. Kurs ${s.price}${s.currency ? (' ' + s.currency) : ''}` +
+                `${s.level != null ? ` (nivå ${s.level})` : ''}` +
+                `${s.basis === 'intraday' && s.hitPrice != null ? ` · intradag ${s.hitPrice}` : ''}` +
+                `${s.marketTime ? ` · ${s.marketTime}` : ''}.\n\n` +
+                `Automatiserad intradag-signal (LLM-fri, ren nivåkorsning). Beslutsstöd, inte finansiell rådgivning.`
+            }));
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            const plan = S.planIssues(open.data, live, 'monitor');
+            for (const l of plan.open) {
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo,
+                title: l.title, body: [l.body, S.keyMarker('monitor', l.key)].join('\n\n') });
+              core.info('Oppnade: ' + l.key);
             }
+            for (const c of plan.close) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: c.number, body: 'Signalen ar inte langre aktiv - niva ej korsad vid senaste kontrollen. Stangs automatiskt.' });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: c.number, state: 'closed' });
+              core.info('Stangde: ' + c.key);
+            }
+            core.info(`Aktiva: ${live.length} - oppnade ${plan.open.length}, stangde ${plan.close.length}.`);
