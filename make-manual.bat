@@ -9,14 +9,19 @@ REM  markdown for drift och renderas inte):
 REM    Kom-igang.html      -> anvanda dashboarden (enkel)
 REM    Systemguide.html    -> forsta hur besluten fattas (djup)
 REM
-REM  Skarmbilderna i docs\manual\ bakas in automatiskt (relativa lankar).
+REM  INGEN av manualerna baddar in skarmbilder. De tva som lag i docs\manual\
+REM  (hem.png, avkastning.png) horde till Anvandarmanual.html, som raderades
+REM  2026-08-02 i filstadningen; bilderna blev kvar utan att nagot pekade pa
+REM  dem och togs bort 2026-08-07. Hamta dem ur git-historiken om de behovs.
 REM
 REM  BADA manualerna hamtar sitt gemensamma utseende ur assets\manual.css
 REM  (relativ lank, fungerar aven over file:// som Chrome anvander har).
 REM  Andrar du den filen: kor det har skriptet, annars ligger BADA PDF:erna
 REM  kvar pa gammalt utseende.
 REM
-REM  Vill du ta nya skarmbilder av dashboarden:
+REM  Vill du bilder i en manual igen: ta dem sa har, lagg dem i docs\manual\
+REM  och lagg in en <img> i ratt HTML-fil. En bild som ingen fil pekar pa
+REM  aldras osynligt och ar bara skrap.
 REM    chrome --headless --screenshot="docs\manual\hem.png" ^
 REM           --window-size=1400,1150 --virtual-time-budget=15000 ^
 REM           "https://drinaskastrati.github.io/Vecko_agent/#hem"
