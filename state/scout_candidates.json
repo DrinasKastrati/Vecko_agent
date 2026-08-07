@@ -111,11 +111,11 @@
       "sourceRef": "StockStory/Benzinga 2026-08-06",
       "price": 217.0667,
       "priceAsOf": "2026-08-06T23:50:19.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_daily/us-daglig-260807.md",
+      "decidedAt": "2026-08-07",
+      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10, allokeringen avgörs av v33-rotationen. (a)-(d) passerade, reguljär post-katalysatorkurs 215,97 USD finns nu.",
       "priceSession": "pre"
     },
     {
@@ -131,11 +131,11 @@
       "sourceRef": "TipRanks/Yahoo Finance 2026-08-06",
       "price": 40.78,
       "priceAsOf": "2026-08-07T08:07:18.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_daily/us-daglig-260807.md",
+      "decidedAt": "2026-08-07",
+      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10. (a)-(d) passerade, reguljär post-katalysatorkurs 40,81 USD (2026-08-06 20:00:03Z) finns nu.",
       "priceSession": "pre"
     }
   ]
