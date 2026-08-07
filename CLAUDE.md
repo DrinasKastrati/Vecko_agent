@@ -580,14 +580,20 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   förlorade kapplöpningen mot en samtidig `prices.yml`-push (`! [rejected] main -> main`).
   Att grinden stoppar en branch med FALLERANDE TESTER är alltså ännu inte sett i skarp drift –
   ingen branch har haft det. Påstå inte motsatsen.
-- **`auto_merge.yml` SAKNAR RETRY PÅ PUSHEN – till skillnad från `monitor.yml`.** Den kör ett
-  naket `git push origin main`, medan monitorn har en `for i in 1 2 3`-slinga med
-  `pull --rebase` mellan försöken. Felfrekvensen är ~5 % (2 av 40 körningar), och den är som
-  HÖGST på måndagar: scout 07:47, nordisk rotation 08:40, US-rotation 15:00 och allokering 15:30
-  konkurrerar då med kurser var 30:e minut och nyheter varannan timme. Förlorar grinden
-  kapplöpningen når rapporten ALDRIG main av sig själv – branchen ligger kvar och någon måste
-  märka det och köra `workflow_dispatch` (den mergar alla befintliga `claude/**`-brancher).
-  Watchdogen fångar det först indirekt, via "dagens rapport saknas".
+- **`auto_merge.yml` PUSHAR MED RETRY (sedan 2026-08-07) – ta aldrig bort slingan.** Den körde
+  tidigare ett naket `git push origin main` och förlorade mot varje samtidig push. De är många:
+  kurser var 30:e minut, nyheter varannan timme, monitorn varje timme under börstid. Körning
+  31189191076 föll på exakt det – `! [rejected] main -> main (fetch first)` – EFTER att ha
+  klarat hela grinden, och rapporten nådde då aldrig main av sig själv: branchen låg kvar tills
+  någon märkte det och körde `workflow_dispatch`. Felfrekvensen var ~5 % (2 av 40) och är som
+  högst på måndagar, när båda veckorotationerna och allokeringen ligger samma dag.
+  `monitor.yml` hade haft slingan hela tiden; grinden hade den inte.
+  **Skillnaden mot monitorns slinga:** efter en rebase byggs `state/dashboard.json` och
+  `search-index.json` OM i stället för att väljas från någon sida. De är genererade och märkta
+  `-merge` i `.gitattributes` – de får aldrig handmergas, och en rebase som väljer sida ger en
+  fil som inte motsvarar trädet. Samma regel som `push.bat` följer lokalt. Misslyckas alla tre
+  försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
+  failar synligt – exakt som grindens övriga felvägar.
 - **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
   1. **`docs/manual/`-skärmbilderna åldras** (`hem.png`, `avkastning.png`, båda 2026-08-02).
      **Vänta till EFTER v33-rotationen 2026-08-10.** Böckerna nollställdes 2026-08-06, så en

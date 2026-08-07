@@ -111,7 +111,45 @@ jobs:
               echo "::warning::build-dashboard.mjs failade - dashboard.json kan ligga efter. Mergen pushas anda."
             fi
 
-            git push origin main
+            # ---- PUSH MED RETRY -------------------------------------------------
+            # Ett naket "git push origin main" forlorar mot varje samtidig push, och
+            # de ar manga: kurser var 30:e minut, nyheter varannan timme, monitorn
+            # varje timme under borstid. Korning 31189191076 (2026-08-07) foll pa
+            # exakt det - "! [rejected] main -> main (fetch first)" - efter att ha
+            # klarat HELA grinden. Rapporten nar da aldrig main av sig sjalv:
+            # branchen ligger kvar tills nagon markt det och kort workflow_dispatch.
+            # Risken ar storst pa mandagar, nar bada veckorotationerna och
+            # allokeringen ligger samma dag. monitor.yml har haft den har slingan
+            # hela tiden; grinden hade den inte.
+            #
+            # state/dashboard.json och search-index.json ar GENERERADE och markta
+            # -merge i .gitattributes: de far ALDRIG handmergas. Efter en rebase
+            # byggs de darfor om mot det nya tradet i stallet for att valjas fran
+            # nagon sida - samma regel som push.bat foljer lokalt.
+            PUSHAD=0
+            for i in 1 2 3; do
+              if git push origin main; then PUSHAD=1; break; fi
+              echo "Push-forsok $i misslyckades (kollision med annan push?) - hamtar och forsoker igen..."
+              sleep $((5 * i))
+              if ! git pull --rebase --autostash -X theirs origin main; then
+                git rebase --abort 2>/dev/null || true
+                echo "::error::Rebase mot main misslyckades for $BRANCH - branchen ligger kvar."
+                break
+              fi
+              if node .github/scripts/build-dashboard.mjs; then
+                git add state/dashboard.json state/search-index.json
+                if ! git diff --cached --quiet; then
+                  git commit -m "Dashboard-data ombyggd efter push-kollision: $BRANCH"
+                fi
+              fi
+            done
+            if [ "$PUSHAD" != "1" ]; then
+              echo "::error::Kunde inte pusha $BRANCH till main efter 3 forsok - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
+
             git push origin --delete "$BRANCH"
             echo "==> Klart: $BRANCH mergad, validerad, dashboard ombyggd och branchen borttagen."
           done
