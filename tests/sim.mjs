@@ -71,7 +71,7 @@ window.fetch = async (url) => {
 window.marked ={ parse: md => "<h1>" + md.split("\n")[0].replace(/^#+\s*/, "") + "</h1><p>" + md + '</p><script>alert(1)<\/script>' };
 
 // ---- ladda modulerna i samma ordning som index.html ----
-for (const f of ["vparse.js", "vrender.js", "app.js"])
+for (const f of ["fills.js", "vparse.js", "vrender.js", "app.js"])
   window.eval(readFileSync(resolve(root, "assets", f), "utf8"));
 
 const doc = window.document;
@@ -158,6 +158,27 @@ ok("hem: växlar tillbaka till enkelt", txt("hemMain").includes("Behöver du gö
 // Nordisk + Total + US
 ok("nordisk: KPI:er", txt("kpis").includes("Ackumulerad avkastning"));
 ok("nordisk: innehav", nHold.length ? txt("holdings").includes("hold") : txt("holdings").length > 0);
+
+/* Mina verkliga affärer. Med tom bok finns ingen position att fylla i och inget
+   som väntar — det är ett GILTIGT läge före v33-rotationen, inte ett fel.
+   Rutan får bara synas när något faktiskt saknas. */
+ok("fills: behållaren för väntande affärer finns", !!doc.getElementById("fillsPending"));
+/* Ingenting är ifyllt i simuleringen, så VARJE stängd affär i båda böckerna
+   ska stå i rutan. Med tom bok blir det noll och rutan är tom — båda utfallen
+   är korrekta, och påståendet skiljer dem åt i stället för att gissa. */
+ok("fills: alla stängda affärer väntar när inget är ifyllt", (() => {
+  const stangda = nTrades.length + uTrades.length;
+  const t = txt("fillsPending");
+  if (!stangda) return t.trim() === "";
+  return t.includes(`${stangda} affär`) &&
+    [...nTrades, ...uTrades].every(r => t.includes(window.VFills.tickerFrom(r)));
+})());
+ok("fills: inmatning på varje innehavskort", (() => {
+  const n = doc.querySelectorAll("#holdings [data-fill-open]").length;
+  // Indexsleeven saknar entry-datum och får medvetet ingen inmatning.
+  const nycklade = nHold.filter(h => String(h["Entry-datum"] || "").trim()).length;
+  return n === nycklade;
+})());
 ok("total: blended", txt("totalBody").includes("Blended avkastning"));
 ok("total: kapitalfördelning", txt("totalBody").includes("alloc-seg"));
 ok("total: valutaupplysning", txt("totalBody").includes("exkl. valutaeffekt"));
@@ -217,7 +238,7 @@ ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-v
 {
   const vy = doc.getElementById("view-avkastning");
   ok("avkastning: nordiska boken vald från start", vy.getAttribute("data-book") === "nordic");
-  ok("avkastning: bokväljaren har tre knappar", doc.querySelectorAll("[data-book-set]").length === 3);
+  ok("avkastning: bokväljaren har fyra knappar", doc.querySelectorAll("[data-book-set]").length === 4);
   ok("avkastning: nordiska knappen markerad",
     doc.querySelector('[data-book-set="nordic"]').getAttribute("aria-pressed") === "true");
   doc.querySelector('[data-book-set="us"]').dispatchEvent(new window.Event("click", { bubbles: true }));
@@ -260,6 +281,21 @@ ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-v
      tom-ruta – det gemensamma läget har då ingenting att jämföra. */
   ok("gemensamt: alpha renderat",
     (harN || harU) ? txt("allAlphaStats").length > 20 : txt("allAlphaStats") === "");
+
+  /* Mina verkliga: fjärde läget. Ingenting är ifyllt i simuleringen, så BÅDA
+     böckerna ska säga vad som fattas – aldrig ett tal. Det är hela poängen
+     med regeln, och den måste hålla i båda dataläget. */
+  doc.querySelector('[data-book-set="mina"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+  ok("mina verkliga: växeln fungerar", vy.getAttribute("data-book") === "mina");
+  ok("mina verkliga: båda böckerna renderade",
+    txt("myStatsNordic").length > 20 && txt("myStatsUs").length > 20);
+  ok("mina verkliga: visar INGET tal utan ifyllda siffror",
+    !/\d+,\d+\s*%/.test(txt("myStatsNordic")) && !/\d+,\d+\s*%/.test(txt("myStatsUs")));
+  ok("mina verkliga: säger vad som fattas", (() => {
+    const t = txt("myStatsNordic");
+    return harN ? /\d+ av \d+ affärer ifyllda/.test(t) : t.includes("Inga stängda affärer");
+  })());
+  doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
   ok("gemensamt: riskmått och månadsutfall utelämnade med flit",
     !doc.querySelector("#allRiskStats") && !doc.querySelector("#allMonthly"));
   doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));

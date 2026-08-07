@@ -318,6 +318,144 @@ const iHtml = VR.renderAlerts({ active: saabSig, history: [] });
 ok("renderAlerts visar den intradagskurs som korsade nivån", iHtml.includes("636.1"));
 // Notisen testas där push-modulen laddas (sök "intradag: notisen").
 
+/* ---- MINA VERKLIGA AFFÄRER (assets/fills.js) ----------------------------
+   Rena funktioner, ingen DOM och ingen localStorage i testerna – lagringen är
+   tre rader try/catch precis som i settings.js. Det som MÅSTE testas är
+   nyckeln (den ska överleva att roboten flyttar en position från innehav till
+   historik, där tickern står i parentes i stället för i en egen kolumn) och
+   regeln att ett tal aldrig visas på ofullständigt underlag. */
+load("fills.js");
+const VF = globalThis.window.VFills;
+
+// Tickern: innehavstabellen har egen kolumn, historiktabellen har den i parentes.
+ok("fills: ticker ur innehavsrad", VF.tickerFrom({ "Aktie": "Saab (SAAB-B.ST)", "Yahoo-ticker": "SAAB-B.ST" }) === "SAAB-B.ST");
+ok("fills: ticker ur historikrad utan egen kolumn", VF.tickerFrom({ "Aktie": "Saab (SAAB-B.ST)" }) === "SAAB-B.ST");
+ok("fills: ticker normaliseras till versaler", VF.tickerFrom({ "Yahoo-ticker": " saab-b.st " }) === "SAAB-B.ST");
+ok("fills: rad utan ticker ger tom sträng", VF.tickerFrom({ "Aktie": "Indexsleeve" }) === "");
+
+// Nyckeln binder ticker till entry-datum, så samma aktie köpt två gånger blir två affärer.
+ok("fills: nyckel av ticker + entry-datum",
+  VF.keyFor({ "Yahoo-ticker": "SAAB-B.ST", "Entry-datum": "2026-08-10" }) === "SAAB-B.ST|2026-08-10");
+ok("fills: nyckeln fungerar på en historikrad",
+  VF.keyFor({ "Aktie": "Saab (SAAB-B.ST)", "Entry-datum": "2026-08-10" }) === "SAAB-B.ST|2026-08-10");
+ok("fills: rad utan datum ger ingen nyckel", VF.keyFor({ "Yahoo-ticker": "SAAB-B.ST" }) === null);
+ok("fills: rad utan ticker ger ingen nyckel", VF.keyFor({ "Entry-datum": "2026-08-10" }) === null);
+
+// Beräkningen. Courtaget är rundtur och tas på det investerade beloppet.
+const stangda = [
+  { "Aktie": "Saab (SAAB-B.ST)", "Entry-datum": "2026-08-10" },
+  { "Aktie": "Volvo (VOLV-B.ST)", "Entry-datum": "2026-08-11" }
+];
+const fyllda = {
+  "SAAB-B.ST|2026-08-10": { bok: "nordic", kop: { kurs: 600, antal: 10 }, salj: { kurs: 700, antal: 10 } },
+  "VOLV-B.ST|2026-08-11": { bok: "nordic", kop: { kurs: 300, antal: 10 }, salj: { kurs: 330, antal: 10 } }
+};
+const full = VF.computeMyStats(fyllda, stangda, "nordic", 0);
+ok("fills: räknar alla stängda affärer", full.klara === 2 && full.totalt === 2);
+ok("fills: investerat belopp summeras", full.investerat === 9000);
+ok("fills: netto i kronor", full.kronor === 1300);
+ok("fills: avkastning viktas på investerat belopp",
+  Math.abs(full.avkastningPct - (1300 / 9000 * 100)) < 1e-9);
+ok("fills: perAffar har en rad per affär", full.perAffar.length === 2 && full.perAffar[0].ticker === "SAAB-B.ST");
+
+// Courtaget dras av. 0,25 % rundtur på 9000 investerat = 22,50 kr.
+const medCourtage = VF.computeMyStats(fyllda, stangda, "nordic", 0.25);
+ok("fills: courtage dras från nettot", Math.abs(medCourtage.kronor - (1300 - 22.5)) < 1e-9);
+
+// KÄRNREGELN: halv data ger inget tal.
+const halv = { "SAAB-B.ST|2026-08-10": { bok: "nordic", kop: { kurs: 600, antal: 10 } } };
+const ofull = VF.computeMyStats(halv, stangda, "nordic", 0.25);
+ok("fills: ofullständigt underlag ger INGET tal", ofull.avkastningPct === null && ofull.kronor === null);
+ok("fills: men säger hur många som är klara", ofull.klara === 0 && ofull.totalt === 2);
+ok("fills: och namnger vad som saknas",
+  ofull.saknar.length === 2 && ofull.saknar[0].ticker === "SAAB-B.ST" && ofull.saknar[0].vad === "sälj");
+ok("fills: saknad säljkurs pekas ut specifikt", (() => {
+  const bara = { "SAAB-B.ST|2026-08-10": { bok: "nordic", kop: { kurs: 600, antal: 10 } },
+                 "VOLV-B.ST|2026-08-11": { bok: "nordic", kop: { kurs: 300, antal: 10 }, salj: { kurs: 330, antal: 10 } } };
+  const r = VF.computeMyStats(bara, stangda, "nordic", 0);
+  return r.klara === 1 && r.saknar.length === 1 && r.saknar[0].vad === "sälj";
+})());
+
+// Böckerna hålls isär: en US-affär får aldrig räknas in i den nordiska summan.
+ok("fills: fel bok räknas inte in", (() => {
+  const blandat = {
+    "SAAB-B.ST|2026-08-10": { bok: "nordic", kop: { kurs: 600, antal: 10 }, salj: { kurs: 700, antal: 10 } },
+    "VOLV-B.ST|2026-08-11": { bok: "us", kop: { kurs: 300, antal: 10 }, salj: { kurs: 330, antal: 10 } }
+  };
+  const r = VF.computeMyStats(blandat, stangda, "nordic", 0);
+  return r.klara === 1 && r.saknar.length === 1;
+})());
+
+// Öppna positioner ingår inte – annars hade talet aldrig kunnat visas.
+ok("fills: tom lista stängda affärer ger totalt 0 och inget tal", (() => {
+  const r = VF.computeMyStats(fyllda, [], "nordic", 0);
+  return r.totalt === 0 && r.klara === 0 && r.avkastningPct === null;
+})());
+
+// Robusthet: trasig eller saknad indata får aldrig kasta.
+ok("fills: null-indata kraschar inte", (() => {
+  const r = VF.computeMyStats(null, null, "nordic", 0.25);
+  return r.totalt === 0 && r.avkastningPct === null;
+})());
+ok("fills: antal 0 räknas som ofullständigt", (() => {
+  const noll = { "SAAB-B.ST|2026-08-10": { bok: "nordic", kop: { kurs: 600, antal: 0 }, salj: { kurs: 700, antal: 0 } } };
+  return VF.computeMyStats(noll, [stangda[0]], "nordic", 0).klara === 0;
+})());
+
+/* Inmatningsraden på innehavskortet. REN funktion – den tar fyllnaden som
+   argument i stället för att läsa localStorage, så den går att testa utan DOM
+   och utan lagring. heldCard slår upp värdet och skickar in det. */
+const fillRad = { "Yahoo-ticker": "SAAB-B.ST", "Entry-datum": "2026-08-10", "Entry": "620,00 kr" };
+const fr = VR.fillRow(fillRad, null);
+ok("fillRow: tom rad bjuder in till ifyllnad",
+  fr.includes('data-fill-open="SAAB-B.ST|2026-08-10"') && fr.includes("Vad betalade du?"));
+ok("fillRow: tom rad är ingen varning", !/varning|fel-|alert/i.test(fr));
+const frFylld = VR.fillRow(fillRad, { kop: { kurs: 623.5, antal: 40 } });
+ok("fillRow: visar din kurs", frFylld.includes("623,5"));
+ok("fillRow: visar antalet", frFylld.includes("40"));
+ok("fillRow: liten avvikelse markeras inte", !frFylld.includes("fill-avvik"));
+const frAvvik = VR.fillRow(fillRad, { kop: { kurs: 640, antal: 40 } });
+ok("fillRow: avvikelse över 1 % markeras", frAvvik.includes("fill-avvik"));
+ok("fillRow: avvikelsen skrivs ut i procent", /3,2\d? %/.test(frAvvik));
+ok("fillRow: rad utan nyckel renderas inte",
+  VR.fillRow({ "Aktie": "Indexsleeve (XACT OMXS30)" }, null) === "");
+
+/* Rutan som gör en glömd säljkurs omöjlig att missa. Den ligger kvar tills
+   affären är ifylld – försvinner den av sig själv går säljkursen förlorad, och
+   det är precis det som skulle göra "Mina verkliga" omöjlig att lita på. */
+ok("renderFillsPending: tomt när inget saknas", VR.renderFillsPending([]) === "");
+ok("renderFillsPending: tål null", VR.renderFillsPending(null) === "");
+const fp = VR.renderFillsPending([
+  { ticker: "SAAB-B.ST", key: "SAAB-B.ST|2026-08-10", vad: "sälj" },
+  { ticker: "VOLV-B.ST", key: "VOLV-B.ST|2026-08-11", vad: "köp och sälj" }
+]);
+ok("renderFillsPending: rubrik i klarspråk med antal", fp.includes("2 affärer väntar på din säljkurs"));
+ok("renderFillsPending: namnger tickrarna", fp.includes("SAAB-B.ST") && fp.includes("VOLV-B.ST"));
+ok("renderFillsPending: knapp per affär", (fp.match(/data-fill-open=/g) || []).length === 2);
+ok("renderFillsPending: säger vad som saknas per affär", fp.includes("sälj") && fp.includes("köp och sälj"));
+ok("renderFillsPending: singular när det är en",
+  VR.renderFillsPending([{ ticker: "SAAB-B.ST", key: "k", vad: "sälj" }]).includes("1 affär väntar"));
+ok("renderFillsPending: poster utan nyckel hoppas över",
+  VR.renderFillsPending([{ ticker: "X", vad: "sälj" }]) === "");
+
+/* Avkastningsblocket. KÄRNAN: det får ALDRIG visa ett tal som computeMyStats
+   inte gav. Ett halvfyllt utfall ser ut att betyda något och inbjuder till
+   jämförelse med robotens — samma regel som "Tillför urvalet något?". */
+const msFull = VR.renderMyStats({ klara: 2, totalt: 2, saknar: [], avkastningPct: 14.44,
+  kronor: 1300, investerat: 9000, perAffar: [{ ticker: "SAAB-B.ST", netto: 1000, pct: 16.7 }] }, "nordiska", "kr");
+ok("renderMyStats: visar avkastningen när allt är ifyllt", msFull.includes("14,44"));
+ok("renderMyStats: visar nettot i valutan", msFull.includes("1300") && msFull.includes("kr"));
+ok("renderMyStats: en rad per affär", msFull.includes("SAAB-B.ST"));
+const msDel = VR.renderMyStats({ klara: 3, totalt: 5, saknar: [{ ticker: "VOLV-B.ST", vad: "sälj" }],
+  avkastningPct: null, kronor: null, investerat: 0, perAffar: [] }, "nordiska", "kr");
+ok("renderMyStats: säger vad som fattas i stället för ett tal", msDel.includes("3 av 5"));
+ok("renderMyStats: visar INGET procenttal vid halv data", !/\d+,\d+\s*%/.test(msDel));
+ok("renderMyStats: namnger vad som saknas", msDel.includes("VOLV-B.ST"));
+const msTom = VR.renderMyStats({ klara: 0, totalt: 0, saknar: [], avkastningPct: null,
+  kronor: null, investerat: 0, perAffar: [] }, "nordiska", "kr");
+ok("renderMyStats: tom bok förklarar sig", msTom.includes("Inga stängda affärer"));
+ok("renderMyStats: tom bok visar inget tal", !/\d+,\d+\s*%/.test(msTom));
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",

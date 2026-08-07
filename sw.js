@@ -14,6 +14,11 @@
    Cachen töms inte automatiskt på gamla nycklar – CACHE-namnet nedan bumpas
    manuellt om formatet på det som cachas ändras.
    ========================================================================== */
+// v7 (2026-08-07): assets/fills.js tillkom (Drens egna köp-/säljkurser, lagrade
+// i localStorage). SHELL innehåller en fil till, och install-steget körs bara när
+// CACHE-namnet är nytt – utan bump saknar en enhet som redan installerat v6
+// filen OFFLINE. Online hämtas den ändå av fetch-hanteraren, så felet hade
+// visat sig som att inmatningsraden tyst uteblir först när nätet är borta.
 // v6 (2026-08-06): temat "sjokort" TOGS BORT igen. Bumpen behövs åt andra
 // hållet än v5: utan den ligger sjokort.css kvar i en redan installerad v5-cache
 // och serveras från den i evighet – filen finns inte längre på servern, så
@@ -29,7 +34,7 @@
 // till dem, så ett cachat skal från v3 saknar dem. Strategin är nät-först och
 // renderingen är null-säkrad, så följden hade blivit tysta tomma rutor snarare än
 // ett fel – men just det är skälet att bumpa: format på det som cachas ändrades.
-const CACHE = "vecko-agent-v6";
+const CACHE = "vecko-agent-v7";
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */
@@ -42,6 +47,7 @@ const SHELL = [
   "./assets/badge-96.png",
   "./assets/theme.js",
   "./assets/settings.js",
+  "./assets/fills.js",
   "./assets/vparse.js",
   "./assets/vrender.js",
   "./assets/app.js",

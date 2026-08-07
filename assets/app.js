@@ -264,6 +264,41 @@
         b.setAttribute("aria-pressed", String(b.dataset.hemmodeSet === cur)));
     }
 
+    /* Stängda affärer som saknar Drens siffror, från BÅDA böckerna.
+       Kostnaden är 0 här med flit: rutan påminner bara, den redovisar ingen
+       avkastning och behöver därför varken courtage eller valuta. Blandningen
+       av böcker är av samma skäl ofarlig — den listar tickers, inte tal. */
+    /* "Mina verkliga": Drens EGNA kurser, en tabell per bok.
+
+       ALDRIG en gemensam summa. Två separat finansierade böcker i olika
+       valutor har ingen gemensam avkastning – samma skäl som gemensamt-läget
+       utelämnar riskmått och månadsutfall. costFor() lägger på växlingspåslaget
+       för US-boken, så en USD-affär bär det åt båda håll. */
+    renderMyBooks() {
+      const el = this.el("myStatsNordic");
+      if (!el) return;
+      const S = this.state, R = this.R;
+      if (!root.VFills) { el.innerHTML = ""; return; }
+      const db = root.VFills.all();
+      const put = (id, html) => { const e = this.el(id); if (e) e.innerHTML = html; };
+      put("myStatsNordic", R.renderMyStats(root.VFills.computeMyStats(
+        db, (S.portfolio && S.portfolio.history) || [], "nordic",
+        this.P.costFor("nordic", S.costs)), "nordiska", "kr"));
+      put("myStatsUs", R.renderMyStats(root.VFills.computeMyStats(
+        db, (S.portfolioUs && S.portfolioUs.history) || [], "us",
+        this.P.costFor("us", S.costs)), "amerikanska", "USD"));
+    }
+
+    renderFillsPending() {
+      const el = this.el("fillsPending");
+      if (!el) return;
+      if (!root.VFills) { el.innerHTML = ""; return; }
+      const S = this.state, db = root.VFills.all();
+      const saknar = root.VFills.computeMyStats(db, (S.portfolio && S.portfolio.history) || [], "nordic", 0).saknar
+        .concat(root.VFills.computeMyStats(db, (S.portfolioUs && S.portfolioUs.history) || [], "us", 0).saknar);
+      el.innerHTML = this.R.renderFillsPending(saknar);
+    }
+
     renderPxBadge() {
       const el = this.el("pxBadge"); if (!el) return;
       const p = this.state.prices;
@@ -294,6 +329,7 @@
       this.el("kpis").innerHTML = R.renderKPIs(S.portfolio, latestDaily);
       this.el("market").innerHTML = R.renderMarket(latestDaily);
       this.el("holdings").innerHTML = R.renderHoldings(latestDaily, S.portfolio, this.buildLiveMap(), this.buildDecisionMap(latestDaily), this.P.diffDailies(S.dailies[0], S.dailies[1]));
+      this.renderFillsPending();
       this.renderPxBadge();
       // Rollerna gör Kurser-vyn läsbar: innehav, plan, bubblare, indexdel och
       // rena bevakningar såg tidigare exakt likadana ut.
@@ -314,6 +350,7 @@
       this.renderBookStats("", S.portfolio, "nordic", "^OMX", "OMXS30");
       this.renderBookStats("us", S.portfolioUs, "us", "^GSPC", "S&P 500");
       this.renderBothBooks();
+      this.renderMyBooks();
       // Beslutsloggen: gör kalibreringsunderlaget synligt (och synligt när det slutat fyllas).
       const dlEl = this.el("decisionStats");
       if (dlEl) dlEl.innerHTML = R.renderDecisionStats(this.P.decisionStats(S.decisions));
@@ -1477,6 +1514,36 @@
       if (cb) cb.addEventListener("click", () => this.toggleCompare());
       // Delegerade klick (innehållet re-renderas med innerHTML, så lyssna globalt):
       document.addEventListener("click", e => {
+        /* Inmatning av Drens EGNA kurser. prompt() räcker: fälten är fyra,
+           används en gång per affär och ska inte kosta en modal med egen
+           layout och egen tangentbordshantering. Komma accepteras som
+           decimaltecken — svensk inmatning skriver 623,50.
+           Boken avgörs av vilken portföljfil affären finns i, inte av tickern:
+           en US-listad nordisk aktie ska inte gissa fel courtage. */
+        const fb = e.target.closest("[data-fill-open]");
+        if (fb && root.VFills) {
+          const key = fb.getAttribute("data-fill-open");
+          const ticker = key.split("|")[0];
+          const iUs = ((this.state.portfolioUs && this.state.portfolioUs.history) || [])
+            .concat((this.state.portfolioUs && this.state.portfolioUs.holdings) || [])
+            .some(r => root.VFills.keyFor(r) === key);
+          const num = s => { const n = parseFloat(String(s == null ? "" : s).replace(",", ".")); return isFinite(n) ? n : 0; };
+          const nu = root.VFills.get(key) || {};
+          const kk = window.prompt(ticker + " – vad betalade du per aktie?", nu.kop ? String(nu.kop.kurs) : "");
+          if (kk === null) return;
+          const ka = window.prompt(ticker + " – hur många aktier köpte du?", nu.kop ? String(nu.kop.antal) : "");
+          if (ka === null) return;
+          root.VFills.setKop(key, { bok: iUs ? "us" : "nordic", kurs: num(kk), antal: num(ka) });
+          const sk = window.prompt(ticker + " – säljkurs per aktie? Lämna tomt om du inte sålt.",
+            nu.salj ? String(nu.salj.kurs) : "");
+          if (sk) {
+            const sa = window.prompt(ticker + " – hur många aktier sålde du?", nu.salj ? String(nu.salj.antal) : ka);
+            root.VFills.setSalj(key, { kurs: num(sk), antal: num(sa) });
+          }
+          this.renderAll();
+          this.renderMyBooks();
+          return;
+        }
         const more = e.target.closest(".clamp-more");
         if (more) {
           const cw = more.closest(".cw");

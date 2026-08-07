@@ -17,6 +17,16 @@
     if (n == null || isNaN(n)) return "–";
     return (n > 0 ? "+" : "") + Number(n).toFixed(2) + " %";
   }
+  // Första talet i en sträng som "620,00 kr" -> 620. Svenskt decimalkomma.
+  function numOf(s){
+    const m = String(s == null ? "" : s).replace(/\s/g, "").replace(",", ".").match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  }
+  // Tal -> svensk sträng med komma, max två decimaler och inga onödiga nollor.
+  function nf(n){
+    if (n == null || isNaN(n)) return "–";
+    return String(Math.round(Number(n) * 100) / 100).replace(".", ",");
+  }
   function trendClass(n){
     if (n == null || isNaN(n) || n === 0) return "flat";
     return n > 0 ? "pos" : "neg";
@@ -186,6 +196,93 @@
   }
 
   // Kort för en FAKTISK öppen position ur portfolj.md:s "Aktuellt innehav".
+  /* Raden på innehavskortet där Dren fyller i vad han FAKTISKT betalade.
+     Robotens entry och Drens ligger bredvid varandra.
+
+     REN funktion: fyllnaden kommer in som argument, inte ur localStorage, så
+     den går att testa utan DOM och utan lagring. heldCard slår upp värdet.
+
+     En avvikelse större än 1 % markeras — INFORMATIVT, inte som fel. Att priset
+     skiljer sig från robotens är normalt; det är bara värt att se. Ett TOMT
+     fält är heller ingen varning: en nyss öppnad position är inte ett problem.
+
+     Indexsleeven har ingen entry-datum-rad att nyckla på och får därför ingen
+     inmatning. Det är rätt — den är kapitalparkering, inte en affär. */
+  function fillRow(row, fill){
+    const VF = (typeof window !== "undefined" && window.VFills) || null;
+    const key = VF ? VF.keyFor(row) : null;
+    if (!key) return "";
+    const min = fill && fill.kop ? fill.kop.kurs : null;
+    if (min == null || !(min > 0)){
+      return `<div class="fill-row"><button type="button" class="fill-btn" `
+        + `data-fill-open="${esc(key)}">Vad betalade du?</button></div>`;
+    }
+    const robot = numOf(strip(row["Entry"] || ""));
+    const antal = fill.kop.antal;
+    const avvik = (robot && robot > 0) ? Math.abs(min / robot - 1) * 100 : 0;
+    return `<div class="fill-row${avvik > 1 ? " fill-avvik" : ""}">`
+      + `<span class="k">Du betalade</span>`
+      + `<span class="v">${esc(nf(min))}${antal ? ` × ${esc(String(antal))}` : ""}</span>`
+      + (avvik > 1 ? `<span class="fill-diff" title="Skillnad mot robotens entry">${esc(nf(avvik))} %</span>` : "")
+      + `<button type="button" class="fill-btn" data-fill-open="${esc(key)}">Ändra</button></div>`;
+  }
+
+  /* Stängda affärer som saknar Drens siffror.
+
+     Rutan ligger kvar tills de är ifyllda. Skulle den försvinna av sig själv
+     går säljkursen förlorad, och "Mina verkliga" bygger då tyst på halv data –
+     precis den sortens tystnad systemet i övrigt är byggt för att undvika.
+
+     Ligger i Översikt UNDER intradag-bannern: en signal är åtgärdbar nu, en
+     saknad säljkurs är bokföring. Poster utan nyckel hoppas över; utan nyckel
+     finns inget att fylla i. */
+  function renderFillsPending(saknar){
+    const lista = (saknar || []).filter(s => s && s.key);
+    if (!lista.length) return "";
+    const n = lista.length;
+    return `<div class="fills-pending"><div class="fp-head">`
+      + `${n} affär${n === 1 ? "" : "er"} väntar på din säljkurs</div><div class="fp-list">`
+      + lista.map(s => `<div class="fp-item"><b>${esc(s.ticker)}</b>`
+        + `<span class="fp-what">saknar ${esc(s.vad)}</span>`
+        + `<button type="button" class="fill-btn" data-fill-open="${esc(s.key)}">Fyll i</button></div>`).join("")
+      + `</div></div>`;
+  }
+
+  /* Drens verkliga utfall för EN bok.
+
+     Den får ALDRIG visa ett tal som computeMyStats inte gav. Är underlaget
+     ofullständigt säger rutan hur många affärer som fattas och vilka — hellre
+     "för tidigt" än en siffra som ser ut att betyda något. Samma regel som
+     renderDecisionEval följer för `insufficient`.
+
+     Valutan kommer in som argument: nordiskt och amerikanskt redovisas var för
+     sig och summeras aldrig ihop. */
+  function renderMyStats(s, bokLabel, valuta){
+    if (!s || !s.totalt){
+      return `<div class="empty">Inga stängda affärer i den ${esc(bokLabel)} boken ännu – `
+        + `dina egna kurser fylls i på innehavskortet i Översikt.</div>`;
+    }
+    if (s.avkastningPct == null){
+      return `<div class="empty">${s.klara} av ${s.totalt} affärer ifyllda – `
+        + `fyll i resten för att se din avkastning.`
+        + (s.saknar && s.saknar.length
+            ? ` Saknas: ${s.saknar.map(x => esc(x.ticker)).join(", ")}.` : "")
+        + `</div>`;
+    }
+    const rader = s.perAffar.map(a =>
+      `<tr><td>${esc(a.ticker)}</td><td>${esc(nf(a.netto))} ${esc(valuta)}</td>`
+      + `<td class="${a.pct >= 0 ? "pos" : "neg"}">${esc(nf(a.pct))} %</td></tr>`).join("");
+    return `<div class="stat-grid">`
+      + `<div class="stat"><div class="stat-l">Din avkastning</div>`
+      + `<div class="stat-v ${s.avkastningPct >= 0 ? "pos" : "neg"}">${esc(nf(s.avkastningPct))} %</div>`
+      + `<div class="stat-s">på ${esc(nf(s.investerat))} ${esc(valuta)} investerat</div></div>`
+      + `<div class="stat"><div class="stat-l">Netto</div>`
+      + `<div class="stat-v ${s.kronor >= 0 ? "pos" : "neg"}">${esc(nf(s.kronor))} ${esc(valuta)}</div>`
+      + `<div class="stat-s">efter courtage</div></div></div>`
+      + `<table class="tbl"><thead><tr><th>Aktie</th><th>Netto</th><th>Utfall</th></tr></thead>`
+      + `<tbody>${rader}</tbody></table>`;
+  }
+
   function heldCard(o, live){
     const name = strip(o["Aktie"] || "");
     const ticker = strip(o["Yahoo-ticker"] || "");
@@ -208,6 +305,8 @@
         <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
       </div>
+      ${fillRow(o, (typeof window !== "undefined" && window.VFills)
+        ? window.VFills.get(window.VFills.keyFor(o)) : null)}
       ${gaugeStrip(live)}
       ${liveStrip(live)}
       ${note ? `<div class="hold-note">${clamp(note, 3)}</div>` : ""}
@@ -1116,7 +1215,7 @@
   }
 
   const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
-    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
+    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending, renderMyStats,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,
