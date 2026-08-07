@@ -1,0 +1,59 @@
+# Daglig Scout: USA & Krypto
+**Datum:** 2026-08-07
+**Marknadsklimat:** Avvaktande läge inför dagens NFP: US-index gav tillbaka lite av veckans rekordrally när ett energilyft (Hormuz-omvärdering) väckte förnyad Fed-höjningsoro och drev räntorna uppåt (Dow −0,85 %/−464 p från rekord, S&P −0,18 %, Nasdaq −0,06 %). Krypto trögt och range-bundet – BTC håller ~64,3k, ETH släpar kvar under 2 000.
+
+## Marknadsöversikt
+Kurskälla: `state/prices.json` (Yahoo Finance chart API, `generatedAt` **2026-08-07T01:02Z**, `schemaVersion` **"2026-08-02-prevclose"** – dagsrörelser mot `previousClose` är därmed giltiga). `git pull` kört före läsning; filen är dagens 01:02Z-hämtning och speglar **gårdagens (6/8) reguljära US-stängning** + en färsk krypto-snapshot – exakt vad en rapport före US-öppning behöver. Dagsrörelserna nedan stämmer mot verifierade sessionsutfall från etablerade medier (S&P −0,18 %, Nasdaq −0,06 %, Dow −0,85 %). **Ingen datadefekt i dag** (L-3 nedan).
+
+- **S&P 500 (^GSPC):** 7 709,96 — marketTime 2026-08-06T22:32Z. **−0,18 %** mot förra sessionens 7 723,55 (`previousClose`). Liten rekyl från veckans rekord. Källa: prices.json (2026-08-07) + TheStreet/CNBC (2026-08-06).
+- **Nasdaq (^IXIC):** 26 348,35 — marketTime 2026-08-06T21:15Z. **−0,06 %** mot 26 363,44. I princip oförändrat; megacap-tech höll emot medan Dow tyngdes. Källa: prices.json (2026-08-07) + CNBC (2026-08-06).
+- **Dow Jones (^DJI):** 53 885,10 — **−0,85 % / −464 p, backade från rekordet** (ej i prices.json; ^DJI saknas i filen). Energilyft + stigande räntor pressade blue chips. Källa: TheStreet/Yahoo Finance (2026-08-06).
+- **BTC-USD:** 64 317,13 USD — marketTime 2026-08-07T01:01Z (verifierad, ~live snapshot). **−0,43 %** mot 64 597,50. Håller >64k; BTC-dominans ~56,5 %. Källa: prices.json (2026-08-07) + Nexo/CoinDesk (2026-08-06).
+- **ETH-USD:** 1 903,63 USD — marketTime 2026-08-07T01:01Z (verifierad, ~live snapshot). **−0,15 %** mot 1 906,53; fortsatt under 2 000 och underpresterar mot BTC på dagen – 2 000-utbrottet uteblir alltjämt. Källa: prices.json (2026-08-07) + Nexo (2026-08-06). *(Krypto-nivån är en tidsstämplad snapshot 01:01Z, inte en sessionsstängning – enskilda medier visar något avvikande beroende på avläsningstid.)*
+
+## Ekonomiska siffror & kalender
+**Senaste marknadsrörande utfall:**
+- **★ Initial jobless claims (v. t.o.m. 1/8, rapporterat tors 6/8):** **199 000** – **under** konsensus ~204k och +1k mot föregående vecka. En fortsatt **stram** arbetsmarknad, vilket motverkar onsdagens svaga ADP (44k) och gör NFP-facit än mer binärt. Källa: Labor Department/CNBC (2026-08-06).
+- **Produktivitet Q2 (rapporterat tors 6/8):** **+1,4 %** mot väntat 0,6 % (och 0,8 % föregående kvartal) – bättre produktivitet dämpar enhetsarbetskostnaderna, marginellt duvaktigt för inflationsbilden. Källa: BLS/CNBC (2026-08-06).
+- **ADP privat sysselsättning (juli, ons 5/8):** **+44 000** – svagast på sex månader, under konsensus (~70k). Svalnande arbetsmarknad, förfacit inför NFP. Källa: ADP/PRNewswire (news_feed.json, 2026-08-05).
+- **ISM Services (juli, ons 5/8):** **54,1** mot 54,0 i juni – fortsatt expansion. Källa: ISM/ABA Banking Journal (2026-08-05).
+- **FOMC 29/7:** styrränta oförändrad **3,50–3,75 %**, hökaktig hold med **tre höjnings-dissens**. Källa: Federal Reserve/CNBC (2026-07-29).
+
+**Kommande releaser & händelser (7–13 aug) – marknadsrörande markerat:**
+- **★ FREDAG 7/8 08:30 ET: Juli jobbrapport (NFP) ← veckans i särklass mest marknadsrörande, släpps I DAG.** Konsensus **+87 500** jobb, arbetslöshet väntas upp till **4,3 %** (från 4,2 %). Signalerna är MOTSTRIDIGA – svag ADP (44k) mot strama jobless claims (199k) – vilket med en hökaktig Fed (tre höjnings-dissens) gör facit binärt: mjukt = räntesänkningshopp (medvind), för svagt = tillväxtoro. Rapporten är ett event, inte ett köptillfälle (punkt 8). Källa: CNBC/FactSet (2026-07-31).
+- **Nästa vecka:** Senatens hantering av **CLARITY Act** (krypto-marknadsstruktur) före recessen bevakas som kryptokatalysator. Källa: CoinDesk/Nexo (2026-08-06).
+
+## Aktuella händelser & katalysatorer
+- **★ Paycom (PAYC) rusade ~+23 % (6/8)** på ett **Q2-beat + höjd helårsguide** (rapport 5/8 AMC): intäkt **531,2 MUSD** (+9,8 % å/å, ~3,5 % över konsensus), justerad EPS **2,78 USD** vs 2,38 väntat (16,8 % beat), höjd FY-guide till ~2,20 mdr. Analytiker höjde riktkurser. Bekräftad (ej rykte). Källa: StockStory/Benzinga (2026-08-06). Se case 1.
+- **★ Unity Software (U) rapporterade Q2-beat (6/8):** intäkt **546,5 MUSD** (+24 % å/å), justerad EPS **0,28 USD** (vändning från förlust); reaktion ~+11 % i tidig handel men enskilda medier rapporterar spretigt utfall in i stängning. Bekräftat utfall, men reguljär post-event-stängning ännu ej verifierbar. Källa: TipRanks/Yahoo Finance (2026-08-06). Se case 2.
+- **MSFT +2,54 % (6/8)** — noteras men är **INGEN färsk katalysator:** rapporten kom 29/7 (Q4 FY26: intäkt 90,0 mdr, Azure +43 %). Dagens uppgång är eftersläpande drift/rotation utan bekräftat 24h-event och byggs därför inte till ett case. Källa: prices.json (2026-08-07) + CNBC (2026-07-29).
+- **Energi/Hormuz:** ett oljelyft på omvärderad Hormuz-sjöfart drev upp räntor och väckte förnyad Fed-höjningsoro – tyngsta makrokatalysatorn för sessionen (Dow −464 p). Källa: Yahoo Finance markets live (2026-08-06).
+- **SpaceX lock-up-utgång (6/8):** SpaceX första rapport som noterat bolag utlöste en klausul som lät investerare sälja 20 % av inlåsta aktier (upp till 911,5 mln). SpaceX-specifikt, ej direkt handlingsbart via listad ticker. Källa: CNBC (2026-08-06).
+- **Efter stängning 6/8 rapporterade** Airbnb (ABNB), Lyft (LYFT) och Cloudflare (NET) – utfall ej verifierade i denna körning. Källa: earnings-kalender/TheStreet (2026-08-06).
+- **Krypto:** inga bekräftade 24h-katalysatorer på uppsidan; BTC håller >64k, ETH släpar. ETF-inflöden bevakas men NFP i dag är den binära triggern. Källa: Nexo/CoinDesk (2026-08-06).
+
+## Uppföljning av tidigare case
+- **NVIDIA (NVDA, rapport-260806 case 1):** 219,22 → **218,99 USD** (**−0,10 %**, marketTime 2026-08-06T20:00Z, prices.json). SpaceX-chipavtalet gav ingen fortsättning – momentum pausade helt. Tesen (strukturell AI-#1, breddad kundbas) fundamentalt oförändrad. → **INTAKT men vilande.**
+- **Alphabet (GOOGL, rapport-260806 case 2):** 362,43 → **357,75 USD** (**−1,29 %**, marketTime 2026-08-06T20:00Z, prices.json). Fortsatte ned efter AI-ledningsflykten – ingen stabilisering ännu; "avvakta stabilisering"-beslutet var korrekt, fallande kniv bekräftad. → **FÖRSVAGAD (ingen botten satt).**
+
+## Dagens case
+> Två grundade case ur dygnets bekräftade rapportreaktioner: PAYC (verifierat Q2-beat + guidehöjning, kraftig positiv reaktion) och Unity (verifierat Q2-beat, reaktion ännu inte rent prissättbar). Noll ryktesdrivna case. Ett tredje tvingas inte fram (se makro) – marknaden håller andan inför NFP.
+
+### Case 1: Paycom Software ([PAYC] / NYSE)
+**Katalysator:** **Q2 CY2026-rapport 5/8 AMC krossade:** intäkt 531,2 MUSD (+9,8 % å/å, ~3,5 % beat), justerad EPS 2,78 USD vs 2,38 väntat (16,8 % beat), **höjd helårsguide** för både intäkt och justerad EBITDA. Aktien **~+23 %** (6/8). Bekräftat utfall (ej rykte). Källa: StockStory/Benzinga (2026-08-06).
+**Bull case:** Rapporten bekräftar återaccelererad tillväxt och prissättningsförmåga i en HCM/payroll-plattform med hög marginal och stark FCF; en guidehöjning direkt efter beat signalerar att momentum är operativt, inte engångs. Analytikerhöjningar ger fundamental medvind bortom dagsrörelsen.
+**Bear case:** En +23 %-dagsrörelse är extrem – klassiskt "buy the rumor / gap-and-fade"-läge där en stor del av uppsidan redan är inprisad, och en mjuk NFP i dag kan pressa högbeta-tillväxt oavsett bolagsnyhet. Värderingen efter gapet är sträckt; risk för rekyl som fyller gapet innan en bas bildas.
+**Setup:** Post-katalysatorstängning ej i `state/prices.json` (PAYC ligger inte i filen) → **KURS EJ VERIFIERAD** i denna körning; medierna spretar (~216–219 USD, 6/8) så ingen tvärsäker nivå anges. **PAYC läggs i `config/watchlist_us.txt`** (L-2) så prices.json verifierar kursen till nästa hämtning. **Ingen jakt in i gapet** – föredra en verifierad rekyl/basbildning och väg in NFP 7/8 som riskfilter. Källa: StockStory/Benzinga (2026-08-06).
+
+### Case 2: Unity Software ([U] / NYSE)
+**Katalysator:** **Q2-rapport 6/8:** intäkt 546,5 MUSD (+24 % å/å), justerad EPS 0,28 USD (vändning från fjolårets förlust) – ett bekräftat vändningskvartal. Reaktion ~+11 % i tidig handel. Bekräftat utfall (ej rykte). Källa: TipRanks/Yahoo Finance (2026-08-06).
+**Bull case:** En tvåsiffrig intäktstillväxt kombinerad med vinstvändning är precis det operativa bevis Unity-tesen saknat efter flera svaga kvartal – lyckas Engine/Grow-monetiseringen fortsätta är omvärderingspotentialen stor från en nedtryckt bas.
+**Bear case:** Unity har en historik av att inte hålla rapportpoppar (motstridiga medierubriker redan samma dag – en "stock drops"-rubrik trots beat), turnaround-case är hög-beta och särskilt sårbara för en svag NFP. Utan verifierad post-event-stängning saknas mätbar risknivå.
+**Setup:** Reguljär post-event-stängning ej verifierbar i denna körning (U ligger inte i prices.json och intradagsutfallet spretar) → **KURS EJ VERIFIERAD**; ingen prisnivå anges. **U läggs i `config/watchlist_us.txt`** (L-2) för verifiering nästa hämtning. Bevakas som vändningscandidat – **inget köp utan verifierad kurs och en satt bas.** Källa: TipRanks/Yahoo Finance (2026-08-06).
+
+## Makro- & sektorfaktorer att bevaka
+Allt drar in mot **fredagens NFP (i dag)**, som blir veckans facit på arbetsmarknaden. Signalerna är medvetet motstridiga: en svag ADP (44k) mot strama jobless claims (199k) och stark produktivitet (+1,4 %) – och med en hökaktig Fed som redan bär tre höjnings-dissens gör det utfallet binärt (mjukt = sänkningshopp och medvind; för svagt = tillväxtoro). **Räntesidan vände hökaktigt i går:** ett energilyft på omvärderad Hormuz-sjöfart drev upp oljepriset och räntorna, väckte förnyad höjningsoro och tog Dow −464 p från rekordet – en motvind för värderingskänsliga megacaps som förklarar varför inga nya köp jagas in i NFP. **Rapportsäsongen är fortsatt case-motorn:** de bekräftade beat-reaktionerna (PAYC, Unity) är dagens starkaste enskilda katalysatorer, men båda saknar verifierad post-event-kurs och båda är extended – rätt hållning är bevakning, inte jakt. **Krypto (egen, trög väg):** BTC håller >64k med ~56,5 % dominans men ETH släpar under 2 000; utan vändning i ETF-flöden/ETH-ledarskap och med NFP + CLARITY Act som nästa triggrar syns ingen bred kryptomedvind. Därför tvingas inget tredje case fram i dag.
+
+**Tillämpade lärdomar:** **L-3** – `state/prices.json` kontrollerad: `schemaVersion "2026-08-02-prevclose"` finns, `generatedAt` 2026-08-07T01:02Z (färsk), och dagsrörelserna stämmer mot verifierade sessionsutfall (S&P −0,18 %, Nasdaq −0,06 %, Dow −0,85 %) – **ingen datadefekt att eskalera i dag**; MSFT +2,54 % kontrollerades mot mediekälla och är en genuin sessionsrörelse utan färskt event (rapport 29/7), inte ett filfel. `state/news_feed.json` bär **10 handelsdagar** i `window` (oldest 2026-07-27, `missingDays: []`, ≥5 – inget fönster-larm). **L-2** – båda dagens case-tickrar (PAYC, U) läggs i `config/watchlist_us.txt` så prices.json verifierar dem nästa hämtning; NVDA/GOOGL (uppföljning) ligger redan i filen med verifierad kurs. Watchlist-hygien granskad: listan ligger över riktmärket 25, men överskjutet ägs av andra routiner (US-rotationens bubblare WFC/JPM, analys-köade NVO, bevakade case MU/TSM/INTC/XOM/CVX/COIN/MSTR/MARA/RIOT/IREN/ANET/PLTR – samtliga nämnda inom 14 handelsdagar) – ingen unilateral trimning härifrån. **L-1** är nordisk-specifik och gäller inte scouten. **Ryktesdrivet case i dag: nej** – båda case vilar på bekräftade rapportutfall; NFP behandlas som event, inte köpförslag (punkt 8).
+
+Detta är automatiserat beslutsstöd, inte finansiell rådgivning.

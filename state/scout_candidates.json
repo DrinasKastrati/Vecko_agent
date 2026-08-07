@@ -97,6 +97,44 @@
       "decidedBy": "reports/us_daily/us-daglig-260806.md",
       "decidedAt": "2026-08-06",
       "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10. Faller dessutom på grind 2 – händelsen 5/8 är bekräftad men NEGATIV (ledningsflykt) och bär inget köpcase."
+    },
+    {
+      "id": "260807-PAYC",
+      "date": "2026-08-07",
+      "ticker": "PAYC",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-08-05",
+      "confirmed": true,
+      "thesis": "Q2 CY26 5/8 AMC krossade: intakt 531,2 MUSD (+9,8% a/a, ~3,5% beat), just EPS 2,78 vs 2,38 (16,8% beat), hojd FY-guide. Aktien ~+23% 6/8. Ej i prices.json - post-event-kurs ej verifierad. Extended, ingen jakt.",
+      "sourceRef": "StockStory/Benzinga 2026-08-06",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-08-14",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "260807-U",
+      "date": "2026-08-07",
+      "ticker": "U",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-08-06",
+      "confirmed": true,
+      "thesis": "Q2 6/8 beat: intakt 546,5 MUSD (+24% a/a), just EPS 0,28 (vandning fran forlust). Reaktion ~+11% tidig handel men spretigt in i stangning. Ej i prices.json - reguljar post-event-kurs ej verifierbar. Vandningscase, bevakas.",
+      "sourceRef": "TipRanks/Yahoo Finance 2026-08-06",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-08-14",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
