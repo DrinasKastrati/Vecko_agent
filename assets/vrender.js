@@ -964,12 +964,22 @@
         + `${mon.watched ? ` · ${mon.watched} bevakade` : ""}</div>`
       : "";
     if (!active.length && !hist.length) return monHtml ? `<div class="al-wrap al-wrap--calm">${monHtml}</div>` : "";
+    /* En intradagsignal utlöstes av dagens extrem, inte av senastekursen. Visas
+       bara senastekursen läser larmet "målkurs nådd (nivå 635) · kurs 619,7" –
+       motsägelsefullt, och ett larm man slutar lita på. Därför redovisas den
+       korsande kursen först och senastekursen efter. */
+    const priceBit = s => {
+      const cur = s.currency ? " " + s.currency : "";
+      if (s.basis === "intraday" && s.hitPrice != null)
+        return ` · intradag ${esc(String(s.hitPrice) + cur)}`
+          + (s.price != null ? ` · senast ${esc(String(s.price))}` : "");
+      return s.price != null ? ` · kurs ${esc(String(s.price) + cur)}` : "";
+    };
     const items = active.map(s => {
       const cls = s.type === "KÖP" ? "al-kop" : "al-salj";
-      const px = s.price != null ? (s.price + (s.currency ? " " + s.currency : "")) : "";
       const tm = s.marketTime ? String(s.marketTime).slice(0, 16).replace("T", " ") : "";
       return `<div class="al-item ${cls}"><span class="al-tag">${esc(s.type)}</span><b>${esc(s.ticker)}</b> — ${esc(s.reason)}`
-        + `${s.level != null ? ` (nivå ${esc(String(s.level))})` : ""}${px ? ` · kurs ${esc(String(px))}` : ""}${tm ? ` · ${esc(tm)}` : ""}</div>`;
+        + `${s.level != null ? ` (nivå ${esc(String(s.level))})` : ""}${priceBit(s)}${tm ? ` · ${esc(tm)}` : ""}</div>`;
     }).join("");
     const histItems = hist.map(s => {
       const cls = s.type === "KÖP" ? "al-kop" : "al-salj";

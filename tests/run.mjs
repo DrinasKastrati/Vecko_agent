@@ -246,6 +246,78 @@ ok("mergeHistory cap", AL.mergeHistory({ active: [], history: Array.from({ lengt
 ok("renderAlerts history", VR.renderAlerts({ active: [], history: hist }).includes("Tidigare signaler"));
 ok("renderAlerts empty still empty", VR.renderAlerts({ active: [], history: [] }) === "");
 
+/* ---- intradag-korsningar -------------------------------------------------
+   evalSignals läste tidigare BARA q.price, aldrig dayHigh/dayLow. Följden var
+   att en nivå som genomhandlades mellan två timvisa mätpunkter aldrig gav en
+   signal: Saabs målkurs 635 handlades genom 2026-08-04 (dagshögsta 636,10) och
+   monitorn teg – försäljningen beslutades först dagen efter av routinen. Både
+   Yahoo och stooq levererar dayHigh/dayLow, så datat fanns hela tiden.
+   Reason-strängarna hålls OFÖRÄNDRADE: mergeHistory och push-notiserna nycklas
+   på ticker|type respektive reason, och en ny sträng hade gett en andra notis
+   för samma händelse. Hur signalen utlöstes bärs i stället av `basis`, och den
+   korsande extremen av `hitPrice`. -------------------------------------------- */
+const ISIG = { held: [{ ticker: "AMZN", stop: 256.5, target: 310 }], pending: [] };
+
+const iTarget = AL.evalSignals(ISIG, { AMZN: { price: 280, dayHigh: 315, dayLow: 279 } });
+ok("intradag: mål genomhandlat ger SÄLJ trots lägre senastekurs",
+  iTarget.length === 1 && iTarget[0].type === "SÄLJ" && iTarget[0].reason === "målkurs nådd");
+ok("intradag: basis märker att det var intradag", iTarget[0] && iTarget[0].basis === "intraday");
+ok("intradag: hitPrice bär dagshögsta", iTarget[0] && iTarget[0].hitPrice === 315);
+ok("intradag: price är fortfarande senaste kurs", iTarget[0] && iTarget[0].price === 280);
+
+const iStop = AL.evalSignals(ISIG, { AMZN: { price: 280, dayHigh: 281, dayLow: 250 } });
+ok("intradag: stop genomhandlad ger SÄLJ trots högre senastekurs",
+  iStop.length === 1 && iStop[0].type === "SÄLJ" && iStop[0].reason === "stop-loss träffad");
+ok("intradag: hitPrice bär dagslägsta", iStop[0] && iStop[0].hitPrice === 250);
+
+ok("intradag: stop går före mål när BÅDA korsats (risk först)", (() => {
+  const s = AL.evalSignals(ISIG, { AMZN: { price: 300, dayHigh: 315, dayLow: 250 } });
+  return s.length === 1 && s[0].reason === "stop-loss träffad";
+})());
+
+const iPendDown = AL.evalSignals({ held: [], pending: [{ ticker: "MSFT", cmp: "≤", level: 445 }] },
+  { MSFT: { price: 450, dayHigh: 452, dayLow: 440 } });
+ok("intradag: entry ≤ genomhandlad ger KÖP",
+  iPendDown.length === 1 && iPendDown[0].type === "KÖP" && iPendDown[0].basis === "intraday" && iPendDown[0].hitPrice === 440);
+
+const iPendUp = AL.evalSignals({ held: [], pending: [{ ticker: "NVDA", cmp: "≥", level: 230 }] },
+  { NVDA: { price: 225, dayHigh: 233, dayLow: 224 } });
+ok("intradag: entry ≥ genomhandlad ger KÖP",
+  iPendUp.length === 1 && iPendUp[0].type === "KÖP" && iPendUp[0].hitPrice === 233);
+
+// Utlöses nivån av senastekursen ska basis säga det – annars går det inte att
+// skilja "stängde under stoppen" från "nuddade den och återhämtade sig".
+const iClose = AL.evalSignals(ISIG, { AMZN: { price: 256, dayHigh: 300, dayLow: 255 } });
+ok("basis=price när senastekursen själv korsar nivån",
+  iClose.length === 1 && iClose[0].basis === "price" && iClose[0].hitPrice === 256);
+
+// Bakåtkompatibilitet: äldre prices.json och instrument utan intradagfält.
+const iNone = AL.evalSignals(ISIG, { AMZN: { price: 280 } });
+ok("utan dayHigh/dayLow larmar den inte", iNone.length === 0);
+ok("utan dayHigh/dayLow fungerar nivåträff på kurs ändå",
+  AL.evalSignals(ISIG, { AMZN: { price: 311 } }).length === 1);
+ok("null i intradagfälten kraschar inte",
+  AL.evalSignals(ISIG, { AMZN: { price: 280, dayHigh: null, dayLow: null } }).length === 0);
+
+// Indexsleeven har varken stop eller mål och får ALDRIG larma, hur vilt
+// dagsintervallet än ser ut.
+ok("sleeve utan stop/mål larmar aldrig intradag",
+  AL.evalSignals({ held: [{ ticker: "SPY", stop: null, target: null }], pending: [] },
+    { SPY: { price: 700, dayHigh: 9999, dayLow: 1 } }).length === 0);
+
+// Verklig händelse: Saab 2026-08-04, tal ur portfolj.md:s historikrad.
+const saabSig = AL.evalSignals({ held: [{ ticker: "SAAB-B.ST", stop: 560, target: 635 }], pending: [] },
+  { "SAAB-B.ST": { price: 619.7, dayHigh: 636.1, dayLow: 615.4 } });
+ok("Saab 2026-08-04: målträffen upptäcks nu",
+  saabSig.length === 1 && saabSig[0].type === "SÄLJ" && saabSig[0].hitPrice === 636.1);
+
+// Presentationen måste visa den korsande kursen – annars läser en signal som
+// "målkurs nådd (nivå 635) · kurs 619,7", vilket ser fel ut och underminerar
+// förtroendet för larmet.
+const iHtml = VR.renderAlerts({ active: saabSig, history: [] });
+ok("renderAlerts visar den intradagskurs som korsade nivån", iHtml.includes("636.1"));
+// Notisen testas där push-modulen laddas (sök "intradag: notisen").
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",
@@ -294,6 +366,82 @@ ok("watchdog tyst på färskt hjärtslag",
   !WD.checkStale({ ...wdBase, alertsCheckedAt: "2026-07-17T07:00:00Z" }).some(p => p.key === "alerts"));
 ok("watchdog larmar när checkedAt saknas helt (gammal alerts.mjs)",
   WD.checkStale({ ...wdBase, alertsCheckedAt: null }).some(p => p.key === "alerts"));
+
+/* ---- analyskön -----------------------------------------------------------
+   Kön fylls av ett nyckellöst Action men töms av en MANUELL arbetare. Blir en
+   begäran liggande händer ingenting alls: inget går sönder, dashboarden ser
+   normal ut och issuet är redan stängt och kvitterat. SAAB.ST låg pending från
+   2026-07-14 till 2026-08-07 – 24 dagar – utan att något larmade. Tröskeln är
+   medvetet generös: arbetaren körs för hand och ska inte larma på en helg. */
+const kö = (ticker, requestedAt) => ({ pending: [{ ticker, requestedAt, issue: "#5" }], done: [] });
+ok("analyskö: färsk begäran larmar inte",
+  WD.checkAnalysisQueue({ queueDb: kö("SAAB.ST", "2026-08-05T00:00:00Z"), now: "2026-08-07T12:00:00Z" }).length === 0);
+ok("analyskö: glömd begäran larmar",
+  WD.checkAnalysisQueue({ queueDb: kö("SAAB.ST", "2026-07-14T00:04:25Z"), now: "2026-08-07T12:00:00Z" })
+    .some(p => p.key === "analysis-queue"));
+ok("analyskö: larmet namnger tickern och åldern", (() => {
+  const p = WD.checkAnalysisQueue({ queueDb: kö("SAAB.ST", "2026-07-14T00:04:25Z"), now: "2026-08-07T12:00:00Z" })[0];
+  return p && p.body.includes("SAAB.ST") && /24\s*dygn/.test(p.body);
+})());
+ok("analyskö: flera glömda listas i ETT larm", (() => {
+  const db = { pending: [
+    { ticker: "SAAB.ST", requestedAt: "2026-07-14T00:00:00Z" },
+    { ticker: "VOLV-B.ST", requestedAt: "2026-07-15T00:00:00Z" }] };
+  const p = WD.checkAnalysisQueue({ queueDb: db, now: "2026-08-07T12:00:00Z" });
+  return p.length === 1 && p[0].body.includes("SAAB.ST") && p[0].body.includes("VOLV-B.ST");
+})());
+ok("analyskö: färdiga poster ignoreras",
+  WD.checkAnalysisQueue({ queueDb: { pending: [], done: [{ ticker: "NVO", requestedAt: "2026-01-01T00:00:00Z" }] },
+    now: "2026-08-07T12:00:00Z" }).length === 0);
+ok("analyskö: tom kö är tyst",
+  WD.checkAnalysisQueue({ queueDb: { pending: [] }, now: "2026-08-07T12:00:00Z" }).length === 0);
+ok("analyskö: saknad fil är tyst (bakåtkompatibelt)",
+  WD.checkAnalysisQueue({ queueDb: null, now: "2026-08-07T12:00:00Z" }).length === 0);
+ok("analyskö: oläsbar tidsstämpel larmar inte i onödan",
+  WD.checkAnalysisQueue({ queueDb: kö("X.ST", "inte-ett-datum"), now: "2026-08-07T12:00:00Z" }).length === 0);
+ok("analyskö: tröskeln går att sätta",
+  WD.checkAnalysisQueue({ queueDb: kö("SAAB.ST", "2026-08-01T00:00:00Z"), now: "2026-08-07T12:00:00Z", maxAgeDays: 3 })
+    .some(p => p.key === "analysis-queue"));
+
+/* En pending-post som ALLTID legat kvar trots att analysen är gjord är ett
+   ANNAT fel än en glömd begäran, och har en annan åtgärd: posten ska bort, inte
+   arbetaren köras. SAAB.ST låg så i 24 dygn – analysen skrevs 2026-07-14T00:06
+   till `reports/analysis/analys-SAAB.ST-260714.md` och posten kopierades till
+   `done` i stället för att FLYTTAS dit (analysprompt.md punkt 3f säger flytta).
+   Matchningen sker på ticker + requestedAt: samma ticker får begäras om (NVO
+   finns tre gånger i done med olika requestedAt) och det är helt legitimt. */
+const dubblettDb = {
+  pending: [{ ticker: "SAAB.ST", requestedAt: "2026-07-14T00:04:25.845Z", issue: "#5" }],
+  done: [{ ticker: "SAAB.ST", requestedAt: "2026-07-14T00:04:25.845Z", issue: "#5",
+           analysedAt: "2026-07-14T00:06:27Z", file: "reports/analysis/analys-SAAB.ST-260714.md" }]
+};
+ok("analyskö: pending som redan är klar larmar",
+  WD.checkAnalysisQueue({ queueDb: dubblettDb, now: "2026-08-07T12:00:00Z" })
+    .some(p => p.key === "analysis-queue-done"));
+ok("analyskö: dubblettlarmet pekar ut analysfilen", (() => {
+  const p = WD.checkAnalysisQueue({ queueDb: dubblettDb, now: "2026-08-07T12:00:00Z" })
+    .find(x => x.key === "analysis-queue-done");
+  return p && p.body.includes("SAAB.ST") && p.body.includes("analys-SAAB.ST-260714.md");
+})());
+ok("analyskö: en dubblett rapporteras BARA som dubblett, inte också som glömd", (() => {
+  const ps = WD.checkAnalysisQueue({ queueDb: dubblettDb, now: "2026-08-07T12:00:00Z" });
+  return ps.length === 1 && ps[0].key === "analysis-queue-done";
+})());
+ok("analyskö: samma ticker men ny begäran är legitim", (() => {
+  const db = {
+    pending: [{ ticker: "NVO", requestedAt: "2026-08-06T00:00:00Z" }],
+    done: [{ ticker: "NVO", requestedAt: "2026-08-04T16:20:00.000Z", file: "reports/analysis/analys-NVO-260804.md" }]
+  };
+  return WD.checkAnalysisQueue({ queueDb: db, now: "2026-08-07T12:00:00Z" }).length === 0;
+})());
+ok("analyskö: dubblett larmar direkt, oavsett ålder",
+  WD.checkAnalysisQueue({ queueDb: {
+    pending: [{ ticker: "X.ST", requestedAt: "2026-08-07T09:00:00Z" }],
+    done: [{ ticker: "X.ST", requestedAt: "2026-08-07T09:00:00Z", file: "f.md" }] },
+    now: "2026-08-07T12:00:00Z" }).some(p => p.key === "analysis-queue-done"));
+ok("analyskö: utan done-lista är dubblettkontrollen tyst",
+  WD.checkAnalysisQueue({ queueDb: { pending: [{ ticker: "Y.ST", requestedAt: "2026-08-06T00:00:00Z" }] },
+    now: "2026-08-07T12:00:00Z" }).length === 0);
 
 // veckans rörelser: en död lördagsaction får inte tysta retrons breddsökning
 ok("watchdog larmar på gammal movers.json",
@@ -1591,6 +1739,15 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("push: alerts blir notiser", al.length === 1 && al[0].body.includes("nivå 74") && al[0].url === "#hem");
   ok("push: dedupe hoppar över redan skickade", PN.pending([...al, ...n], [al[0].key]).length === 1);
   ok("push: taket per körning håller", PN.pending(Array.from({ length: 30 }, (_, i) => ({ key: "k" + i })), []).length === 5);
+  /* En intradagsignal måste visa den kurs som faktiskt korsade nivån. Annars
+     lyder notisen "målkurs nådd (nivå 635) · kurs 619,7" – ett larm som ser
+     motsägelsefullt ut blir ett larm man slutar lita på. */
+  const alIntra = PN.alertNotifications({ active: [{ ticker: "SAAB-B.ST", type: "SÄLJ", reason: "målkurs nådd",
+    level: 635, price: 619.7, hitPrice: 636.1, basis: "intraday", currency: "SEK" }] });
+  ok("intradag: notisen visar den korsande kursen",
+    alIntra.length === 1 && alIntra[0].body.includes("636.1") && alIntra[0].body.includes("intradag"));
+  ok("intradag: notisnyckeln är oförändrad så samma händelse inte väcker två gånger",
+    alIntra[0].key === ["alert", "SAAB-B.ST", "SÄLJ", "målkurs nådd", 635].join("|"));
 }
 { // Prenumerationen måste valideras – en trasig endpoint ger annars ett tyst 400 varje timme.
   const good = { endpoint: "https://fcm.googleapis.com/fcm/send/abc", keys: { p256dh: WP.b64u(Buffer.concat([Buffer.from([4]), Buffer.alloc(64, 1)])), auth: WP.b64u(Buffer.alloc(16, 2)) } };

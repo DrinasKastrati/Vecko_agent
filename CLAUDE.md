@@ -250,6 +250,30 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   från en genuint svag marknad. Larmar per index under 200 stängningar. (2) Nyhetsfönstrets
   TÄCKNING, inte bara `generatedAt` – en fil kan vara färsk och ändå för tunn, och bara det första
   mättes tidigare. Båda kontrollerna är bakåtkompatibla: saknas fälten är watchdogen tyst.
+  (3) **Analyskön (`checkAnalysisQueue`, 2026-08-07).** Kön FYLLS av ett nyckellöst Action men
+  TÖMS av en manuell arbetare, så en glömd begäran bryter ingenting: issuet är redan kvitterat
+  och stängt, dashboarden ser normal ut och ingen fil blir gammal. SAAB.ST låg pending
+  2026-07-14 → 2026-08-07 – 24 dygn – utan att något larmade. Tröskeln är 14 dygn och medvetet
+  generös (arbetaren körs för hand); en oläsbar `requestedAt` larmar INTE. **Checken skiljer på
+  två fel med olika åtgärd:** en post som ligger i BÅDE `pending` och `done` (matchat på
+  ticker + `requestedAt`) är REDAN KLAR och ska bara bort – det var det som faktiskt hade hänt
+  med SAAB.ST, arbetaren kopierade i stället för att flytta. Den rapporteras som
+  `analysis-queue-done` och utesluts ur ålderslarmet, annars hade svaret blivit "kör arbetaren"
+  på en analys som redan fanns. Samma ticker med ANNAN `requestedAt` är en legitim ombegäran
+  (NVO finns tre gånger i `done`) och larmar aldrig.
+- **INTRADAG-KORSNINGAR: `alerts.mjs:evalSignals` MÅSTE läsa `dayHigh`/`dayLow` (fix 2026-08-07).**
+  Funktionen läste bara `q.price`. Monitorn mäter en gång i timmen, så varje nivå som handlades
+  genom MELLAN två mätpunkter var osynlig – för stop-loss, målkurs OCH pending-entry. Saabs
+  målkurs 635 genomhandlades 2026-08-04 (dagshögsta 636,10) medan senastekursen låg på 619,70;
+  monitorn teg och försäljningen beslutades först dagen efter av routinen. Datat fanns hela
+  tiden: BÅDE Yahoo och stooq levererar fälten, för alla 58 tickers. **Gör aldrig om det till en
+  ren `q.price`-jämförelse.** Signalen bär numera `basis` (`"price"` | `"intraday"`) och
+  `hitPrice` (kursen som korsade nivån); `reason` hålls OFÖRÄNDRAD med flit, eftersom
+  `mergeHistory` nycklar på `ticker|type` och notisnyckeln på `reason` – en ny sträng hade gett
+  en andra notis för samma händelse. Både `renderAlerts` och notistexten visar `hitPrice`, annars
+  läser larmet "målkurs nådd (nivå 635) · kurs 619,7" och ser motsägelsefullt ut. Stoppen prövas
+  FÖRE målet även när båda korsats samma dag: risken först. Saknas fälten är beteendet exakt som
+  förr.
 
 Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad, dd=dag).
 
@@ -390,6 +414,28 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   gjorde att en amerikansk affär (JPM) inte syntes där en nordisk (Alleima) gjorde det. Den vyn
   visar nu bara boken just nu och länkar hit – duplicera inte tillbaka blocken dit.
 - Rena funktioner (parsning/rendering/kurslogik) testas med `node tests/run.mjs` (ingen nätåtkomst krävs).
+- **HÅRDKODA ALDRIG INSTRUMENTNAMN ELLER ANTAL I `tests/sim.mjs` (städat 2026-08-07).** Filen
+  bootar hela appen mot repots VERKLIGA filer, så ett påstående som `includes("Saab")` eller
+  `n + u === 2` är en ögonblicksbild av dataläget – inte av koden. När böckerna nollställdes
+  2026-08-06 föll tjugo assertions utan att en rad appkod var fel, och `=== 2` (kommenterad
+  "1 + 1 i dag") hade dessutom varit fel sedan den tredje affären stängdes. Påståendena härleds
+  numera ur `dash.state`: sifferfallet prövas när det finns stängda affärer, tom-rutans text
+  annars, och invarianten är att gemensamt-läget räknar SUMMAN av böckerna – inte ett visst tal.
+  Verifiera alltid en ändring i BÅDA lägena: exportera en commit med fyllda böcker
+  (`git archive <sha> | tar -x -C <mapp>`), bygg om dess `dashboard.json` och kör sim.mjs där
+  också – annars är det lätt att göra ett påstående tomt sant.
+- **`test.yml` INSTALLERAR jsdom (sedan 2026-08-07) – ta aldrig bort det steget.** Fram till dess
+  körde CI `npm install` aldrig, och tre sviter hoppade tyst över sig själva UTAN att faila:
+  `theme.mjs` DEL B (34 test), `tests/data.mjs` (36 test, avslutade direkt med exit 0) och
+  `tests/sim.mjs` (157 test, anropades inte alls). 227 påståenden var dekoration – de gick att
+  bryta utan att något blev rött. Installationen är AD HOC och versionspinnad
+  (`npm install --no-save jsdom@29.1.1`) därför att repot medvetet saknar Node-paketidentitet:
+  både `package.json` och `package-lock.json` ligger i `.gitignore`, så `npm ci` är omöjlig.
+  Höjs versionen måste den höjas i BÅDA (workflow + lokal `package.json`), annars mäter CI och
+  lokalt olika saker. `node-version` står kvar på `"20"` som i repots övriga workflows – det
+  löser till senaste 20.x och uppfyller jsdoms golv `^20.19.0`, men pinna aldrig till en äldre
+  20.x. **`sim.mjs` ligger i `test.yml`, INTE i auto-merge-grinden** – grinden ska vara snabb,
+  och `data.mjs` är utanför den av samma skäl (~110 nätanrop).
 
 ---
 
@@ -517,25 +563,29 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   **Kvar att se i skarp drift:** första scout-körningen som skriver kandidater (07:47) och
   första rotationen som avgör dem – kontrollera att `state/scout_candidates.json` växer och
   att inga poster står kvar som `new` efter `expiresAt`.
-- **KVAR (uppdaterad 2026-08-03 19:20) – i prioritetsordning:**
-  0. **PUSH-NOTISER: verifierade i skarp körning 2026-08-03 22:03 UTC.** En testnotis krypterades,
-     accepterades av FCM och nådde telefonen (Android 10). Nyckelparet är genererat (publik i
-     `config/push.json`, privat i `.env` – **kör aldrig om `vapid-keys.mjs`**, ett nytt par gör
-     alla registrerade enheter tysta), telefonen ligger i `state/push_subs.json`.
-     **Kvar att bekräfta:** att hemligheten `VAPID_PRIVATE_KEY` verkligen är satt i GitHub –
-     den lokala testkörningen läste nyckeln ur `.env` och bevisar alltså INTE att runnern har den.
-     Provet är nästa monitor-körning: loggen ska inte säga "VAPID-nycklar saknas … hoppar över
-     push". Manuellt prov: Actions → "Intradag-monitor" → Run workflow → `testnotis`.
-  1. **Kör `movers.yml` manuellt en gång** (Actions → "Veckans rörelser" → Run workflow).
-     `state/movers.json` har fortfarande `asOf: 2026-07-30`, alltså en session efter – lördagens
-     körning läser torsdagsstängningar i stället för fredagens (veckorapport-260803 punkt 6), och
-     orsaken är inte utredd. Watchdogen larmar först vid 9 dygn, så felet är osynligt tills dess.
-  2. **`docs/manual/`-skärmbilderna åldras.** Tas nya: se kommentaren i `make-manual.bat`, kör
-     sedan skriptet så PDF:erna följer med.
-  3. **Första skarpa körningen av `auto_merge.yml`-grinden är inte sedd.** Nästa routine-commit blir
-     provet: kontrollera i Actions att stegen `validate-decisions`/`run.mjs`/`theme.mjs` körde och att
-     `dashboard.json` byggdes om i samma jobb. Faller grinden lämnas `claude/**`-branchen kvar –
-     inget arbete försvinner, men rapporten når inte main förrän felet är åtgärdat.
+- ✅ **AVKLARAT 2026-08-07 (var punkt 0, 1 och 3 i listan nedan) – verifierat, inte antaget.**
+  (0) **Push-notiser i skarp drift från runnern.** `VAPID_PRIVATE_KEY` ÄR satt i GitHub:
+  monitor-körningen 13:11 UTC loggade `VAPID_PRIVATE_KEY: ***` och `Skickade 1 notis(er) till
+  1 enhet(er)`. Fyra notiser i verklig KÖP/SÄLJ-form skickades dessutom med `--preview`, och en
+  leveranskontroll gav **HTTP 201** från FCM med levande prenumeration (ej 404/410). Dren
+  bekräftade mottagning på telefonen. Kryptot är dessutom bevisat mot RFC 8291 §5:s testvektor i
+  `tests/run.mjs`. (1) **`movers.json` är i fas** – manuell körning 13:04 UTC gav `asOf:
+  2026-08-07`, samma dag. Orsaken till den tidigare eftersläpningen förblir outredd; larmar
+  watchdogen igen är det den tråden som ska dras. (3) **Auto-merge-grinden är sedd skarpt** –
+  körning 31155334760 (06:49 UTC) körde `validate-decisions`, `validate-scout-candidates`,
+  `run.mjs` (654 gröna) och `theme.mjs`, och byggde om `dashboard.json` 17 sekunder efter att
+  rapporten landade. Grinden BLOCKERAR dessutom bevisligen: körning 31105771472 (2026-08-06,
+  "KOP NVDA 25 %") failade och nästa försök gick igenom.
+- **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
+  1. **`docs/manual/`-skärmbilderna åldras** (`hem.png`, `avkastning.png`, båda 2026-08-02).
+     **Vänta till EFTER v33-rotationen 2026-08-10.** Böckerna nollställdes 2026-08-06, så en
+     skärmbild tagen dessförinnan visar "Roboten äger inget just nu" – sämre som illustration än
+     de gamla bilderna med en fylld bok. Kommandot står i `make-manual.bat`; kör skriptet efteråt
+     så PDF:erna följer med.
+  2. **Ingenting STÄNGER GitHub-issues.** `monitor.yml` och `watchdog.yml` öppnar dem, men ingen
+     workflow stänger dem när tillståndet är löst – därför samlas signal- och watchdog-issues på
+     hög och säger inget om nuläget. Städa för hand, eller bygg stängningen (kontrollera i så
+     fall mot `alerts.json`/watchdogens egen utdata, inte mot titeln).
 - ✅ **Verifierat i skarp körning 2026-08-03 (samma kväll):** `news.yml` 15:56 UTC skrev `window`-fältet
   och fönstret bar **6 av 10 handelsdagar direkt** (äldsta post 2026-07-27) – flödena serverar själva
   äldre poster, så det behövde inte fyllas på dag för dag. Taket per källa och dygn band vid exakt 30
@@ -545,8 +595,7 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   stämmer och filen bär `schemaVersion 2026-08-02-prevclose`; (b) `alerts.json` har `checkedAt`;
   (c) `decisions.json` har 15 rader varav 0 med `source: backfill`; (d) båda böckerna har migrerat
   kassa till sleeven (nordisk 65 % XACT, US-boken öppnade AMZN + SPY 2026-08-03).
-  4. `docs/manual/`-skärmbilderna åldras. Tas nya: se kommentaren i `make-manual.bat`, och kör
-     sedan skriptet så PDF:en följer med.
+  4. (Skärmbilderna – se punkt 1 i KVAR-listan ovan. Dubbletten borttagen 2026-08-07.)
   5. ✅ **Avklarat 2026-08-02:** filstädningen. `Anvandarguide.html`, `Anvandarmanual.html/.pdf`,
      `prompts/veckoprompt.md`, `templates/case_rapport.md`, `auto_push.bat` och
      `setup_autopush.bat` är raderade efter beslut av Dren. Se punkt 6 nedan om auto-pushen.

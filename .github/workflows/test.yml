@@ -21,13 +21,35 @@ jobs:
           fetch-depth: 2   # föregående commit krävs för append-only-kontrollen nedan
       - uses: actions/setup-node@v4
         with:
+          # Samma som repots övriga workflows. "20" löser till senaste 20.x,
+          # vilket uppfyller jsdoms golv ^20.19.0 – pinna aldrig till en äldre
+          # 20.x här, då failar installationssteget nedan på engine-krav.
           node-version: "20"
+      # jsdom installeras AD HOC och versionspinnat. Repot har medvetet ingen
+      # Node-paketidentitet (både package.json och package-lock.json ligger i
+      # .gitignore), så npm ci är inte möjlig – och att låsa versionen här är
+      # ändå poängen: en jsdom-minor som ändrar beteende ska inte kunna göra
+      # CI röd av skäl som inte rör repot. Höjs versionen: höj den i
+      # package.json också, annars mäter lokalt och CI olika saker.
+      #
+      # UTAN det här steget hoppade tre sviter över sig själva UTAN att failas:
+      # theme.mjs DEL B (34 test), data.mjs (36 test) och sim.mjs (som inte ens
+      # anropades). 227 påståenden var dekoration fram till 2026-08-07.
+      - name: Installera jsdom (krävs av theme.mjs del B, data.mjs och sim.mjs)
+        run: npm install --no-save --no-audit --no-fund jsdom@29.1.1
       - name: Kör testsviten (rena funktioner, ingen nätåtkomst)
         run: node tests/run.mjs
-      - name: Kontrollera temalagret (tokentäckning; jsdom-delen hoppas över i CI)
+      - name: Kontrollera temalagret (tokentäckning + motorn i jsdom)
         run: node tests/theme.mjs
-      - name: Kontrollera datalagret (hoppas över utan jsdom)
+      - name: Kontrollera datalagret (förbyggd väg + fallback, ~110 hämtningar)
         run: node tests/data.mjs
+      # Bootar HELA appen mot repots riktiga filer och klickar igenom varje vy.
+      # Enda täckningen av WIRING: modulordning, showView, klickhanterare, att
+      # DOM-id:na finns och att renderarna får riktig parsad data. run.mjs matar
+      # dem med syntetisk indata och kan därför inte se att appen aldrig anropar
+      # en renderare, eller anropar den med fel id.
+      - name: Simulera dashboarden (alla vyer mot riktiga data)
+        run: node tests/sim.mjs
       - name: Bygg dashboard-data och verifiera att den blir läsbar
         run: node .github/scripts/build-dashboard.mjs
       - name: Validera beslutsdatabasen (schema + append-only mot föregående commit)

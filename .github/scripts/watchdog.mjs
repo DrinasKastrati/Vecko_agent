@@ -207,6 +207,65 @@ export function checkScoutCandidates(opts){
   return problems;
 }
 
+/* ANALYSKÖN. Kön FYLLS av ett nyckellöst Action men TÖMS av en manuell
+   arbetare (`prompts/analysprompt.md`, körs i Cowork). Blir en begäran
+   liggande händer ingenting alls: issuet är redan kvitterat och stängt,
+   `analysis_queue.json` får en ny tidsstämpel av varje annan post, dashboarden
+   ser normal ut och ingen fil blir "gammal" i den mening de andra
+   kontrollerna mäter. SAAB.ST låg pending från 2026-07-14 till 2026-08-07 –
+   24 dygn – utan att något larmade, för ingenting mätte köns ÅLDER.
+
+   Tröskeln är medvetet generös: arbetaren körs för hand och ska inte larma
+   över en helg eller en semestervecka. Oläsbar `requestedAt` larmar INTE –
+   watchdogen ska göra tysta fel hörbara, inte skapa nya av trasig indata. */
+export function checkAnalysisQueue(opts){
+  const { queueDb, now, maxAgeDays = 14 } = opts || {};
+  const problems = [];
+  const pending = (queueDb && queueDb.pending) || [];
+  if (!pending.length) return problems;
+  const nowMs = Date.parse(now);
+  if (!Number.isFinite(nowMs)) return problems;
+
+  /* En post som redan ligger i `done` är ett ANNAT fel än en glömd begäran, och
+     har en annan åtgärd: posten ska bort, inte arbetaren köras. SAAB.ST låg så
+     i 24 dygn – analysen skrevs 2026-07-14T00:06 men posten KOPIERADES till
+     `done` i stället för att flyttas dit (analysprompt.md punkt 3f säger
+     flytta). Matchningen sker på ticker + requestedAt: samma ticker får begäras
+     om, och gör det (NVO finns tre gånger i `done` med olika requestedAt). */
+  const done = (queueDb && queueDb.done) || [];
+  const färdig = p => done.find(d => d && p && d.ticker === p.ticker && d.requestedAt === p.requestedAt);
+  const klara = pending.map(p => ({ post: p, done: färdig(p) })).filter(x => x.done);
+  if (klara.length)
+    problems.push({ key: "analysis-queue-done", title:
+      `Watchdog: ${klara.length} analyspost ligger kvar i pending trots att den är klar`,
+      body: "Följande poster i `state/analysis_queue.json` finns i BÅDE `pending` och `done` – " +
+        "analysen är alltså gjord och posten skulle ha FLYTTATS, inte kopierats:\n\n" +
+        klara.map(x => `- **${x.post.ticker}** (${x.post.requestedAt}) → \`${x.done.file || "okänd fil"}\``).join("\n") +
+        "\n\nÅtgärd: ta bort posten ur `pending`. Kör INTE arbetaren igen – analysen finns redan. " +
+        "`prompts/analysprompt.md` punkt 3f säger *flytta* tickern från `pending` till `done`." });
+
+  const kvar = pending.filter(p => !färdig(p));
+  const gamla = kvar
+    .map(p => {
+      const t = Date.parse(p && p.requestedAt);
+      if (!Number.isFinite(t)) return null;
+      return { ticker: (p && p.ticker) || "?", issue: (p && p.issue) || "",
+               days: Math.floor((nowMs - t) / 86400000) };
+    })
+    .filter(x => x && x.days > maxAgeDays)
+    .sort((a, b) => b.days - a.days);
+  if (gamla.length)
+    problems.push({ key: "analysis-queue", title:
+      `Watchdog: ${gamla.length} analysbegäran i kön utan svar`,
+      body: "Följande poster i `state/analysis_queue.json` har status pending längre än " +
+        `${maxAgeDays} dygn:\n\n` +
+        gamla.map(g => `- **${g.ticker}** – ${g.days} dygn${g.issue ? ` (${g.issue})` : ""}`).join("\n") +
+        "\n\nKön töms av den MANUELLA arbetaren: kör `prompts/analysprompt.md` i Cowork " +
+        "(\"analysera kön\"). Ingenting går sönder av en liggande post – det är just därför " +
+        "den behöver larmas om." });
+  return problems;
+}
+
 /* Bubblarlistan ur en veckorapport, som tickers.
 
    KLIPPET VID "Förra veckans bubblare" ÄR INTE KOSMETIK. Utan det plockas de
@@ -369,6 +428,8 @@ function main(){
   } catch {}
   let candidatesDb = null;
   try { candidatesDb = JSON.parse(readFileSync("state/scout_candidates.json", "utf8")); } catch {}
+  let queueDb = null;
+  try { queueDb = JSON.parse(readFileSync("state/analysis_queue.json", "utf8")); } catch {}
   let priceQuotes = null;
   try { priceQuotes = JSON.parse(readFileSync("state/prices.json", "utf8")).quotes || null; } catch {}
   let earningsCalAt = null;
@@ -413,6 +474,7 @@ function main(){
   }));
   problems.push(...checkCandidatePrice({ candidatesDb, quotes: priceQuotes }));
   problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
+  problems.push(...checkAnalysisQueue({ queueDb, now: now.toISOString() }));
 
   const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);
   const wkUs     = readLatest("reports/us_weekly", /^us-veckorapport-\d{6}\.md$/);
