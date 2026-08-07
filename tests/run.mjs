@@ -456,6 +456,67 @@ const msTom = VR.renderMyStats({ klara: 0, totalt: 0, saknar: [], avkastningPct:
 ok("renderMyStats: tom bok förklarar sig", msTom.includes("Inga stängda affärer"));
 ok("renderMyStats: tom bok visar inget tal", !/\d+,\d+\s*%/.test(msTom));
 
+/* ---- AUTOMATISK STÄNGNING AV ISSUES (issue-sync.mjs) --------------------
+   Monitorn och watchdogen ÖPPNAR issues men har aldrig stängt dem, så listan
+   sa ingenting om nuläget – sju låg öppna 2026-08-07, alla inaktuella.
+
+   Dedupen matchade dessutom på TITEL, och watchdog-titlar bär antal
+   ("5 prissatt(a) bubblare utan avgörande"). Ändrades antalet 5 → 3 sågs det
+   som ett nytt problem: ett andra issue öppnades och det första låg kvar.
+   Därför en MASKINNYCKEL i brödtexten i stället. */
+const IS = await mod(".github/scripts/issue-sync.mjs");
+
+ok("issue-sync: markören är osynlig i renderad markdown",
+  IS.keyMarker("monitor", "SAAB-B.ST|KÖP").startsWith("<!--") && IS.keyMarker("m", "k").endsWith("-->"));
+ok("issue-sync: nyckeln läses tillbaka",
+  IS.parseKey("text\n" + IS.keyMarker("monitor", "SAAB-B.ST|KÖP")) === "monitor:SAAB-B.ST|KÖP");
+ok("issue-sync: text utan markör ger null", IS.parseKey("bara text") === null);
+ok("issue-sync: tål tom/saknad text", IS.parseKey(null) === null && IS.parseKey("") === null);
+
+const öppna = [
+  { number: 1, body: "x\n" + IS.keyMarker("monitor", "SAAB-B.ST|KÖP") },
+  { number: 2, body: "x\n" + IS.keyMarker("monitor", "JPM|SÄLJ") },
+  { number: 3, body: "x\n" + IS.keyMarker("watchdog", "prices") },
+  { number: 4, body: "handskrivet issue utan markör" }
+];
+
+const p1 = IS.planIssues(öppna, [{ key: "SAAB-B.ST|KÖP" }], "monitor");
+ok("issue-sync: signal som kvarstår rörs inte", !p1.close.some(c => c.number === 1) && !p1.open.length);
+ok("issue-sync: signal som upphört stängs", p1.close.some(c => c.number === 2));
+ok("issue-sync: ANNAN källas issue rörs aldrig", !p1.close.some(c => c.number === 3));
+/* Ett handskrivet issue utan markör får ALDRIG stängas automatiskt. Vi kan inte
+   veta vad det handlar om, och att stänga något en människa öppnat är värre än
+   att låta det ligga. */
+ok("issue-sync: issue utan markör rörs aldrig", !p1.close.some(c => c.number === 4));
+
+const p2 = IS.planIssues(öppna, [{ key: "SAAB-B.ST|KÖP" }, { key: "NVDA|KÖP" }], "monitor");
+ok("issue-sync: ny signal ska öppnas", p2.open.length === 1 && p2.open[0].key === "NVDA|KÖP");
+ok("issue-sync: befintlig signal öppnas inte igen", !p2.open.some(o => o.key === "SAAB-B.ST|KÖP"));
+
+ok("issue-sync: allt friskt stänger allt från källan", (() => {
+  const p = IS.planIssues(öppna, [], "monitor");
+  return p.close.length === 2 && p.close.every(c => c.number === 1 || c.number === 2);
+})());
+
+/* Watchdog-fallet som titeldedupen missade: samma nyckel, ändrad titel. Det
+   ska INTE ge ett andra issue. */
+ok("issue-sync: ändrad titel med samma nyckel ger ingen dubblett", (() => {
+  const wd = [{ number: 9, title: "Watchdog: 5 prissatt(a) bubblare utan avgörande (nordic)",
+                body: "x\n" + IS.keyMarker("watchdog", "bubblare-price-nordic") }];
+  const p = IS.planIssues(wd, [{ key: "bubblare-price-nordic",
+    title: "Watchdog: 3 prissatt(a) bubblare utan avgörande (nordic)" }], "watchdog");
+  return p.open.length === 0 && p.close.length === 0;
+})());
+
+ok("issue-sync: tål tomma listor", (() => {
+  const p = IS.planIssues([], [], "monitor");
+  return p.open.length === 0 && p.close.length === 0;
+})());
+ok("issue-sync: tål null", (() => {
+  const p = IS.planIssues(null, null, "monitor");
+  return p.open.length === 0 && p.close.length === 0;
+})());
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",
