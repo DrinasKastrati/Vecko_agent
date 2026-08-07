@@ -248,6 +248,41 @@
       + `</div></div>`;
   }
 
+  /* Drens verkliga utfall för EN bok.
+
+     Den får ALDRIG visa ett tal som computeMyStats inte gav. Är underlaget
+     ofullständigt säger rutan hur många affärer som fattas och vilka — hellre
+     "för tidigt" än en siffra som ser ut att betyda något. Samma regel som
+     renderDecisionEval följer för `insufficient`.
+
+     Valutan kommer in som argument: nordiskt och amerikanskt redovisas var för
+     sig och summeras aldrig ihop. */
+  function renderMyStats(s, bokLabel, valuta){
+    if (!s || !s.totalt){
+      return `<div class="empty">Inga stängda affärer i den ${esc(bokLabel)} boken ännu – `
+        + `dina egna kurser fylls i på innehavskortet i Översikt.</div>`;
+    }
+    if (s.avkastningPct == null){
+      return `<div class="empty">${s.klara} av ${s.totalt} affärer ifyllda – `
+        + `fyll i resten för att se din avkastning.`
+        + (s.saknar && s.saknar.length
+            ? ` Saknas: ${s.saknar.map(x => esc(x.ticker)).join(", ")}.` : "")
+        + `</div>`;
+    }
+    const rader = s.perAffar.map(a =>
+      `<tr><td>${esc(a.ticker)}</td><td>${esc(nf(a.netto))} ${esc(valuta)}</td>`
+      + `<td class="${a.pct >= 0 ? "pos" : "neg"}">${esc(nf(a.pct))} %</td></tr>`).join("");
+    return `<div class="stat-grid">`
+      + `<div class="stat"><div class="stat-l">Din avkastning</div>`
+      + `<div class="stat-v ${s.avkastningPct >= 0 ? "pos" : "neg"}">${esc(nf(s.avkastningPct))} %</div>`
+      + `<div class="stat-s">på ${esc(nf(s.investerat))} ${esc(valuta)} investerat</div></div>`
+      + `<div class="stat"><div class="stat-l">Netto</div>`
+      + `<div class="stat-v ${s.kronor >= 0 ? "pos" : "neg"}">${esc(nf(s.kronor))} ${esc(valuta)}</div>`
+      + `<div class="stat-s">efter courtage</div></div></div>`
+      + `<table class="tbl"><thead><tr><th>Aktie</th><th>Netto</th><th>Utfall</th></tr></thead>`
+      + `<tbody>${rader}</tbody></table>`;
+  }
+
   function heldCard(o, live){
     const name = strip(o["Aktie"] || "");
     const ticker = strip(o["Yahoo-ticker"] || "");
@@ -1180,7 +1215,7 @@
   }
 
   const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
-    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending,
+    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending, renderMyStats,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,

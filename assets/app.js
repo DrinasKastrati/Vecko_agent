@@ -268,6 +268,27 @@
        Kostnaden är 0 här med flit: rutan påminner bara, den redovisar ingen
        avkastning och behöver därför varken courtage eller valuta. Blandningen
        av böcker är av samma skäl ofarlig — den listar tickers, inte tal. */
+    /* "Mina verkliga": Drens EGNA kurser, en tabell per bok.
+
+       ALDRIG en gemensam summa. Två separat finansierade böcker i olika
+       valutor har ingen gemensam avkastning – samma skäl som gemensamt-läget
+       utelämnar riskmått och månadsutfall. costFor() lägger på växlingspåslaget
+       för US-boken, så en USD-affär bär det åt båda håll. */
+    renderMyBooks() {
+      const el = this.el("myStatsNordic");
+      if (!el) return;
+      const S = this.state, R = this.R;
+      if (!root.VFills) { el.innerHTML = ""; return; }
+      const db = root.VFills.all();
+      const put = (id, html) => { const e = this.el(id); if (e) e.innerHTML = html; };
+      put("myStatsNordic", R.renderMyStats(root.VFills.computeMyStats(
+        db, (S.portfolio && S.portfolio.history) || [], "nordic",
+        this.P.costFor("nordic", S.costs)), "nordiska", "kr"));
+      put("myStatsUs", R.renderMyStats(root.VFills.computeMyStats(
+        db, (S.portfolioUs && S.portfolioUs.history) || [], "us",
+        this.P.costFor("us", S.costs)), "amerikanska", "USD"));
+    }
+
     renderFillsPending() {
       const el = this.el("fillsPending");
       if (!el) return;
@@ -329,6 +350,7 @@
       this.renderBookStats("", S.portfolio, "nordic", "^OMX", "OMXS30");
       this.renderBookStats("us", S.portfolioUs, "us", "^GSPC", "S&P 500");
       this.renderBothBooks();
+      this.renderMyBooks();
       // Beslutsloggen: gör kalibreringsunderlaget synligt (och synligt när det slutat fyllas).
       const dlEl = this.el("decisionStats");
       if (dlEl) dlEl.innerHTML = R.renderDecisionStats(this.P.decisionStats(S.decisions));
@@ -1519,6 +1541,7 @@
             root.VFills.setSalj(key, { kurs: num(sk), antal: num(sa) });
           }
           this.renderAll();
+          this.renderMyBooks();
           return;
         }
         const more = e.target.closest(".clamp-more");

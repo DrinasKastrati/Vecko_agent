@@ -438,6 +438,24 @@ ok("renderFillsPending: singular när det är en",
 ok("renderFillsPending: poster utan nyckel hoppas över",
   VR.renderFillsPending([{ ticker: "X", vad: "sälj" }]) === "");
 
+/* Avkastningsblocket. KÄRNAN: det får ALDRIG visa ett tal som computeMyStats
+   inte gav. Ett halvfyllt utfall ser ut att betyda något och inbjuder till
+   jämförelse med robotens — samma regel som "Tillför urvalet något?". */
+const msFull = VR.renderMyStats({ klara: 2, totalt: 2, saknar: [], avkastningPct: 14.44,
+  kronor: 1300, investerat: 9000, perAffar: [{ ticker: "SAAB-B.ST", netto: 1000, pct: 16.7 }] }, "nordiska", "kr");
+ok("renderMyStats: visar avkastningen när allt är ifyllt", msFull.includes("14,44"));
+ok("renderMyStats: visar nettot i valutan", msFull.includes("1300") && msFull.includes("kr"));
+ok("renderMyStats: en rad per affär", msFull.includes("SAAB-B.ST"));
+const msDel = VR.renderMyStats({ klara: 3, totalt: 5, saknar: [{ ticker: "VOLV-B.ST", vad: "sälj" }],
+  avkastningPct: null, kronor: null, investerat: 0, perAffar: [] }, "nordiska", "kr");
+ok("renderMyStats: säger vad som fattas i stället för ett tal", msDel.includes("3 av 5"));
+ok("renderMyStats: visar INGET procenttal vid halv data", !/\d+,\d+\s*%/.test(msDel));
+ok("renderMyStats: namnger vad som saknas", msDel.includes("VOLV-B.ST"));
+const msTom = VR.renderMyStats({ klara: 0, totalt: 0, saknar: [], avkastningPct: null,
+  kronor: null, investerat: 0, perAffar: [] }, "nordiska", "kr");
+ok("renderMyStats: tom bok förklarar sig", msTom.includes("Inga stängda affärer"));
+ok("renderMyStats: tom bok visar inget tal", !/\d+,\d+\s*%/.test(msTom));
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",

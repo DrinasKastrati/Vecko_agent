@@ -618,6 +618,9 @@ pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
 #view-avkastning[data-book="us"] .book-block[data-book="us"]{display:block}
 #view-avkastning[data-book="bada"] .book-block{display:none}
 #view-avkastning[data-book="bada"] .book-block[data-book="bada"]{display:block}
+#view-avkastning .book-block[data-book="mina"]{display:none}
+#view-avkastning[data-book="mina"] .book-block{display:none}
+#view-avkastning[data-book="mina"] .book-block[data-book="mina"]{display:block}
 /* två prickar i den gemensamma rubriken, en per bok */
 #view-avkastning .book-h .bk + .bk{margin-left:-4px}
 /* Bokrubriken får luft och en tydlig avgränsning mot det gemensamma nedanför. */

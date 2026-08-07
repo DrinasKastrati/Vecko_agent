@@ -251,7 +251,20 @@
             <button type="button" class="btn" data-book-set="nordic" aria-pressed="true">Nordiska</button>
             <button type="button" class="btn" data-book-set="us" aria-pressed="false">Amerikanska</button>
             <button type="button" class="btn" data-book-set="bada" aria-pressed="false">Gemensamt</button>
+            <button type="button" class="btn" data-book-set="mina" aria-pressed="false">Mina verkliga</button>
           </div>
+        </div>
+
+        <!-- MINA VERKLIGA AFFÄRER. Drens egna kurser, lagrade i localStorage och
+             alltså bara på den här enheten. En tabell per bok och ALDRIG en
+             gemensam summa: två separat finansierade böcker i olika valutor har
+             ingen gemensam avkastning. Matas av renderBookStats() i app.js. -->
+        <div class="book-block" data-book="mina">
+          <div class="book-h">Mina verkliga affärer<span class="book-bench">sparas bara på den här enheten</span></div>
+          <h3 class="sub">Nordiska boken</h3>
+          <div id="myStatsNordic"></div>
+          <h3 class="sub">Amerikanska boken</h3>
+          <div id="myStatsUs"></div>
         </div>
 
         <div class="book-block" data-book="bada">

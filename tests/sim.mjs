@@ -238,7 +238,7 @@ ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-v
 {
   const vy = doc.getElementById("view-avkastning");
   ok("avkastning: nordiska boken vald från start", vy.getAttribute("data-book") === "nordic");
-  ok("avkastning: bokväljaren har tre knappar", doc.querySelectorAll("[data-book-set]").length === 3);
+  ok("avkastning: bokväljaren har fyra knappar", doc.querySelectorAll("[data-book-set]").length === 4);
   ok("avkastning: nordiska knappen markerad",
     doc.querySelector('[data-book-set="nordic"]').getAttribute("aria-pressed") === "true");
   doc.querySelector('[data-book-set="us"]').dispatchEvent(new window.Event("click", { bubbles: true }));
@@ -281,6 +281,21 @@ ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-v
      tom-ruta – det gemensamma läget har då ingenting att jämföra. */
   ok("gemensamt: alpha renderat",
     (harN || harU) ? txt("allAlphaStats").length > 20 : txt("allAlphaStats") === "");
+
+  /* Mina verkliga: fjärde läget. Ingenting är ifyllt i simuleringen, så BÅDA
+     böckerna ska säga vad som fattas – aldrig ett tal. Det är hela poängen
+     med regeln, och den måste hålla i båda dataläget. */
+  doc.querySelector('[data-book-set="mina"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+  ok("mina verkliga: växeln fungerar", vy.getAttribute("data-book") === "mina");
+  ok("mina verkliga: båda böckerna renderade",
+    txt("myStatsNordic").length > 20 && txt("myStatsUs").length > 20);
+  ok("mina verkliga: visar INGET tal utan ifyllda siffror",
+    !/\d+,\d+\s*%/.test(txt("myStatsNordic")) && !/\d+,\d+\s*%/.test(txt("myStatsUs")));
+  ok("mina verkliga: säger vad som fattas", (() => {
+    const t = txt("myStatsNordic");
+    return harN ? /\d+ av \d+ affärer ifyllda/.test(t) : t.includes("Inga stängda affärer");
+  })());
+  doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
   ok("gemensamt: riskmått och månadsutfall utelämnade med flit",
     !doc.querySelector("#allRiskStats") && !doc.querySelector("#allMonthly"));
   doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
