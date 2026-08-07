@@ -431,6 +431,25 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 .hold-note{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);
   font-family:var(--prose);font-size:12.3px;color:var(--muted)}
 
+/* MINA VERKLIGA AFFÄRER. Ett tomt fält är en INBJUDAN, inte en varning – en
+   nyss öppnad position är inte ett problem, så raden är dämpad. En avvikelse
+   mot robotens entry får accentfärg och inte rött: att priset skiljer sig är
+   normalt och ska bara vara synligt. Inga hårdkodade färger, allt via tokens. */
+.fill-row{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;
+  border-top:1px solid var(--border);font-size:12.3px;color:var(--muted)}
+.fill-row .k{font-size:var(--label-size);letter-spacing:var(--label-spacing);
+  text-transform:var(--label-transform);color:var(--faint);font-weight:var(--label-weight)}
+.fill-row .v{font-family:var(--mono);font-size:13px;color:var(--text)}
+.fill-row .fill-diff{font-family:var(--mono);font-size:12px;color:var(--accent-primary);font-weight:700}
+.fill-btn{margin-left:auto;background:none;border:1px solid var(--border);border-radius:var(--r);
+  padding:2px 9px;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;transition:.16s}
+.fill-btn:hover{border-color:var(--accent-line);color:var(--accent-primary)}
+.fills-pending{background:var(--panel);border:1px solid var(--border);border-radius:var(--r2);
+  padding:13px 15px;margin-bottom:var(--gap)}
+.fills-pending .fp-head{font-family:var(--display);font-weight:700;margin-bottom:8px}
+.fills-pending .fp-item{display:flex;align-items:center;gap:10px;padding:4px 0}
+.fills-pending .fp-what{font-size:12.3px;color:var(--muted)}
+
 .status-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;background:var(--panel2);
   border:1px solid var(--border);border-radius:var(--r2);padding:9px 13px;margin-bottom:14px;
   font-size:12.3px;color:var(--muted);box-shadow:var(--shadow-sm)}

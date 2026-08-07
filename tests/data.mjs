@@ -72,7 +72,7 @@ async function boot(hide = []) {
     return { ok: true, status: 200, text: async () => body, json: async () => JSON.parse(body) };
   };
   window.matchMedia = window.matchMedia || (() => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
-  for (const f of ["vparse.js", "vrender.js", "app.js"])
+  for (const f of ["fills.js", "vparse.js", "vrender.js", "app.js"])
     window.eval(readFileSync(resolve(root, "assets", f), "utf8"));
   const dash = window.dashboard;
   await dash.load(true);

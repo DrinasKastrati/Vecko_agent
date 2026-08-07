@@ -71,7 +71,7 @@ window.fetch = async (url) => {
 window.marked ={ parse: md => "<h1>" + md.split("\n")[0].replace(/^#+\s*/, "") + "</h1><p>" + md + '</p><script>alert(1)<\/script>' };
 
 // ---- ladda modulerna i samma ordning som index.html ----
-for (const f of ["vparse.js", "vrender.js", "app.js"])
+for (const f of ["fills.js", "vparse.js", "vrender.js", "app.js"])
   window.eval(readFileSync(resolve(root, "assets", f), "utf8"));
 
 const doc = window.document;
@@ -158,6 +158,27 @@ ok("hem: växlar tillbaka till enkelt", txt("hemMain").includes("Behöver du gö
 // Nordisk + Total + US
 ok("nordisk: KPI:er", txt("kpis").includes("Ackumulerad avkastning"));
 ok("nordisk: innehav", nHold.length ? txt("holdings").includes("hold") : txt("holdings").length > 0);
+
+/* Mina verkliga affärer. Med tom bok finns ingen position att fylla i och inget
+   som väntar — det är ett GILTIGT läge före v33-rotationen, inte ett fel.
+   Rutan får bara synas när något faktiskt saknas. */
+ok("fills: behållaren för väntande affärer finns", !!doc.getElementById("fillsPending"));
+/* Ingenting är ifyllt i simuleringen, så VARJE stängd affär i båda böckerna
+   ska stå i rutan. Med tom bok blir det noll och rutan är tom — båda utfallen
+   är korrekta, och påståendet skiljer dem åt i stället för att gissa. */
+ok("fills: alla stängda affärer väntar när inget är ifyllt", (() => {
+  const stangda = nTrades.length + uTrades.length;
+  const t = txt("fillsPending");
+  if (!stangda) return t.trim() === "";
+  return t.includes(`${stangda} affär`) &&
+    [...nTrades, ...uTrades].every(r => t.includes(window.VFills.tickerFrom(r)));
+})());
+ok("fills: inmatning på varje innehavskort", (() => {
+  const n = doc.querySelectorAll("#holdings [data-fill-open]").length;
+  // Indexsleeven saknar entry-datum och får medvetet ingen inmatning.
+  const nycklade = nHold.filter(h => String(h["Entry-datum"] || "").trim()).length;
+  return n === nycklade;
+})());
 ok("total: blended", txt("totalBody").includes("Blended avkastning"));
 ok("total: kapitalfördelning", txt("totalBody").includes("alloc-seg"));
 ok("total: valutaupplysning", txt("totalBody").includes("exkl. valutaeffekt"));
