@@ -52,9 +52,16 @@ export function alertNotifications(alerts){
   return ((alerts && alerts.active) || []).map(s => ({
     key: ["alert", s.ticker, s.type, s.reason, s.level].join("|"),
     title: (s.type === "KÖP" ? "🟢 KÖP" : "🔴 SÄLJ") + " · " + s.ticker,
+    /* Nyckeln ovan bär MEDVETET varken kurs eller basis: samma händelse kan
+       larma först på dagens extrem och sedan på senastekursen, och två notiser
+       för en händelse är brus. Texten får däremot visa vilken kurs som korsade
+       nivån – annars lyder notisen "målkurs nådd (nivå 635) · kurs 619,7". */
     body: s.reason
       + (s.level != null ? " (nivå " + s.level + ")" : "")
-      + (s.price != null ? " · kurs " + s.price + (s.currency ? " " + s.currency : "") : ""),
+      + (s.basis === "intraday" && s.hitPrice != null
+          ? " · intradag " + s.hitPrice + (s.currency ? " " + s.currency : "")
+            + (s.price != null ? " · senast " + s.price : "")
+          : (s.price != null ? " · kurs " + s.price + (s.currency ? " " + s.currency : "") : "")),
     tag: "alert-" + s.ticker,
     url: "#hem"
   }));

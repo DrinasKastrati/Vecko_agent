@@ -52,23 +52,49 @@ export function collectTargets(md){
   return { held, pending };
 }
 
+/* Har nivån korsats? Mätpunkten är timvis, så en nivå kan handlas genom MELLAN
+   två mätningar och ändå vara borta när vi tittar. Därför prövas först den
+   senaste kursen, sedan dagens extrem åt samma håll. Saabs målkurs 635 nåddes
+   2026-08-04 (dagshögsta 636,10) medan senastekursen låg på 619,70 – med bara
+   q.price teg monitorn, och försäljningen beslutades först dagen efter.
+   Både Yahoo och stooq levererar fälten; saknas de faller vi tillbaka på
+   kursen ensam, precis som förut. Returnerar null när nivån inte korsats. */
+function crossed(q, level, dir){
+  if (level == null) return null;
+  const px = q.price, ext = dir === "down" ? q.dayLow : q.dayHigh;
+  const under = v => v != null && v <= level, over = v => v != null && v >= level;
+  const hitPx = dir === "down" ? under(px) : over(px);
+  if (hitPx) return { basis: "price", hitPrice: px };
+  const hitExt = dir === "down" ? under(ext) : over(ext);
+  if (hitExt) return { basis: "intraday", hitPrice: ext };
+  return null;
+}
+
 export function evalSignals(targets, quotes){
   const out = [];
   for (const h of targets.held){
     const q = quotes[h.ticker];
     if (!q || q.error || q.price == null) continue;
-    if (h.stop != null && q.price <= h.stop)
-      out.push({ ticker: h.ticker, type: "SÄLJ", reason: "stop-loss träffad", level: h.stop, price: q.price, currency: q.currency || null, marketTime: q.marketTime || null });
-    else if (h.target != null && q.price >= h.target)
-      out.push({ ticker: h.ticker, type: "SÄLJ", reason: "målkurs nådd", level: h.target, price: q.price, currency: q.currency || null, marketTime: q.marketTime || null });
+    const common = { price: q.price, currency: q.currency || null, marketTime: q.marketTime || null };
+    // Stoppen prövas FÖRE målet, även när båda korsats samma dag: risken först.
+    const stop = crossed(q, h.stop, "down");
+    if (stop)
+      out.push(Object.assign({ ticker: h.ticker, type: "SÄLJ", reason: "stop-loss träffad", level: h.stop }, common, stop));
+    else {
+      const target = crossed(q, h.target, "up");
+      if (target)
+        out.push(Object.assign({ ticker: h.ticker, type: "SÄLJ", reason: "målkurs nådd", level: h.target }, common, target));
+    }
   }
   for (const p of targets.pending){
     const q = quotes[p.ticker];
     if (!q || q.error || q.price == null) continue;
-    const hit = (p.cmp === "≤" || p.cmp === "<") ? q.price <= p.level
-              : (p.cmp === "≥" || p.cmp === ">") ? q.price >= p.level : false;
+    const dir = (p.cmp === "≤" || p.cmp === "<") ? "down"
+              : (p.cmp === "≥" || p.cmp === ">") ? "up" : null;
+    const hit = dir ? crossed(q, p.level, dir) : null;
     if (hit)
-      out.push({ ticker: p.ticker, type: "KÖP", reason: "entry-villkor uppfyllt", level: p.level, price: q.price, currency: q.currency || null, marketTime: q.marketTime || null });
+      out.push(Object.assign({ ticker: p.ticker, type: "KÖP", reason: "entry-villkor uppfyllt", level: p.level },
+        { price: q.price, currency: q.currency || null, marketTime: q.marketTime || null }, hit));
   }
   return out;
 }

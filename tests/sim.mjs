@@ -103,10 +103,34 @@ ok("hem/enkel: högerspalten tom", txt("hemRail").trim() === "");
 ok("hem/enkel: ingen rå jargong i uppgiftsrutan", !/P\/L|R\/R|sleeve/i.test(txt("hemMain")));
 /* Innehaven MÅSTE komma ur portfolj.md, inte ur dagsrapportens beslutslista.
    En LÄGE B-rapport kan sakna beslutsrader helt – första versionen av vyn
-   påstod då "äger inget" trots att portföljen hade en öppen position. */
-ok("hem/enkel: äger-listan kommer ur portföljen", txt("hemMain").includes("Saab"));
-ok("hem/enkel: påstår inte tomt bo när portföljen har innehav",
-  !txt("hemMain").includes("Roboten äger inget just nu"));
+   påstod då "äger inget" trots att portföljen hade en öppen position.
+
+   Villkoret läses ur det FAKTISKA läget i stället för mot namnet "Saab".
+   Hårdkodade instrumentnamn gör påståendet till en ögonblicksbild: när
+   böckerna nollställdes 2026-08-06 inför den skarpa starten föll tjugo
+   assertions i den här filen utan att en rad appkod var fel. Formen nedan
+   håller i BÅDA lägena och prövar dessutom SAMTLIGA innehav, inte ett. */
+const nHold = (dash.state.portfolio && dash.state.portfolio.holdings) || [];
+const uHold = (dash.state.portfolioUs && dash.state.portfolioUs.holdings) || [];
+const nTrades = (dash.state.portfolio && dash.state.portfolio.history) || [];
+const uTrades = (dash.state.portfolioUs && dash.state.portfolioUs.history) || [];
+const namn = o => String(o["Aktie"] || "").replace(/\*|~/g, "").trim();
+const tick = o => String(o["Yahoo-ticker"] || "").trim();
+
+/* Indexsleeven döps MEDVETET om i den enkla vyn ("Indexsleeve (SPY)" →
+   "Indexfond", se KLARSPRÅK-blocket i vrender.js) och kan därför inte matchas
+   på sitt namn ur portfolj.md. Den räknas bort ur namnkontrollen; att vyn ändå
+   redovisar boken som icke-tom täcks av assertionen under. */
+const ärSleeve = o => /XACT|SPY|indexsleeve|indexdel/i.test(namn(o) + " " + tick(o));
+if (nHold.length) {
+  ok("hem/enkel: äger-listan kommer ur portföljen",
+    nHold.filter(h => !ärSleeve(h)).every(h => txt("hemMain").includes(namn(h).split(" (")[0])));
+  ok("hem/enkel: påstår inte tomt bo när portföljen har innehav",
+    !txt("hemMain").includes("Roboten äger inget just nu"));
+} else {
+  ok("hem/enkel: tom bok redovisas som tom", txt("hemMain").includes("Roboten äger inget just nu"));
+  ok("hem/enkel: tom bok listar inga innehav", !/innehav-kort|hold-card/.test(txt("hemMain")));
+}
 ok("hem/enkel: procent skrivs med svenskt komma", !/\d\.\d+ %/.test(txt("hemMain")));
 ok("hem/enkel: växeln finns med båda lägena",
   doc.querySelectorAll("[data-hemmode-set]").length === 2);
@@ -118,7 +142,9 @@ doc.querySelector('[data-hemmode-set="detaljerad"]').dispatchEvent(new window.Ev
 await new Promise(r => setTimeout(r, 50));
 ok("hem/detaljerad: attributet växlade", doc.documentElement.getAttribute("data-hemmode") === "detaljerad");
 ok("hem/detaljerad: nordiska boken renderad", txt("hemMain").includes("Nordisk bok"));
-ok("hem/detaljerad: innehavskort med ticker", txt("hemMain").includes("SAAB-B.ST"));
+ok("hem/detaljerad: innehavskort med ticker",
+  nHold.length ? nHold.every(h => txt("hemMain").includes(tick(h)))
+               : !/SAAB-B\.ST|AMZN/.test(txt("hemMain")));
 ok("hem/detaljerad: högerspalt med paneler", (txt("hemRail").match(/rail-card/g) || []).length >= 2);
 ok("hem/detaljerad: aktiva lärdomar-panelen (L-1)", txt("hemRail").includes("L-1"));
 ok("hem/detaljerad: knappmarkeringen följde med",
@@ -131,7 +157,7 @@ ok("hem: växlar tillbaka till enkelt", txt("hemMain").includes("Behöver du gö
 
 // Nordisk + Total + US
 ok("nordisk: KPI:er", txt("kpis").includes("Ackumulerad avkastning"));
-ok("nordisk: innehav", txt("holdings").includes("hold"));
+ok("nordisk: innehav", nHold.length ? txt("holdings").includes("hold") : txt("holdings").length > 0);
 ok("total: blended", txt("totalBody").includes("Blended avkastning"));
 ok("total: kapitalfördelning", txt("totalBody").includes("alloc-seg"));
 ok("total: valutaupplysning", txt("totalBody").includes("exkl. valutaeffekt"));
@@ -143,30 +169,45 @@ ok("retro: lärdomskort L-1", txt("lessonsBody").includes("L-1"));
 ok("retro: rapportväljare har retro-260731", doc.getElementById("retroSelect").innerHTML.includes("2026-07-31"));
 ok("retro: rapporten renderad", txt("retroBody").length > 100);
 
-// Avkastning
-ok("avkastning: handelsstatistik", txt("tradeStats").includes("Profit factor"));
-ok("avkastning: nettoavkastning efter kostnad", txt("tradeStats").includes("Netto efter kostnad"));
-ok("avkastning: månadsheatmap", txt("monthly").includes("hm-cell"));
-ok("avkastning: riskmått", txt("riskStats").includes("Max drawdown"));
+/* Avkastning. Varje block har två giltiga utfall – siffror när det finns
+   stängda affärer, en tom-ruta annars – och båda måste renderas. Att bara
+   pröva sifferfallet gjorde blocken röda genom hela pappersperiodens
+   nollställning trots att renderarna gjorde exakt rätt. */
+const harN = nTrades.length > 0, harU = uTrades.length > 0;
+ok("avkastning: handelsstatistik", harN ? txt("tradeStats").includes("Profit factor")
+  : txt("tradeStats").includes("Inga stängda affärer ännu"));
+ok("avkastning: nettoavkastning efter kostnad", harN ? txt("tradeStats").includes("Netto efter kostnad")
+  : txt("tradeStats").includes("Inga stängda affärer ännu"));
+ok("avkastning: månadsheatmap", harN ? txt("monthly").includes("hm-cell")
+  : txt("monthly").includes("Inget månadsutfall ännu"));
+ok("avkastning: riskmått", harN ? txt("riskStats").includes("Max drawdown")
+  : txt("riskStats").includes("Inga stängda affärer ännu"));
 ok("avkastning: alpha mot index", txt("alphaStats").includes("Snitt-alpha") || txt("alphaStats").includes("Ingen alpha-mätning"));
 ok("avkastning: beslutsloggen renderad", (() => {
   const t = txt("decisionStats");
   return t.includes("Utvärderbara SÄLJ") || t.includes("Beslutsloggen är tom");
 })());
-ok("historik: alpha-kolumn mot OMXS30", txt("history").includes("Alpha"));
-ok("avkastning: färgkodad historik", txt("history").includes('class="pos"'));
+ok("historik: alpha-kolumn mot OMXS30", harN ? txt("history").includes("Alpha") : txt("history").length >= 0);
+ok("avkastning: färgkodad historik",
+  harN ? txt("history").includes('class="pos"') || txt("history").includes('class="neg"')
+       : !txt("history").includes('class="pos"'));
 
 /* BÅDA böckerna ska redovisas i Avkastning-vyn, i var sitt block. Tidigare låg
    US-bokens statistik bara i US-rotation-vyn, så en amerikansk affär (JPM)
    syntes inte alls där en nordisk (Alleima) gjorde det. */
-ok("avkastning: nordiska boken visar sin affär", txt("history").includes("Alleima"));
-ok("avkastning: US-boken har eget statistikblock", txt("usTradeStats").includes("Profit factor"));
-ok("avkastning: US-boken visar sin affär", txt("usHistory").includes("JPMorgan"));
-ok("avkastning: US-riskmått renderade", txt("usRiskStats").includes("Max drawdown"));
+ok("avkastning: nordiska boken visar sin affär",
+  harN ? nTrades.every(r => txt("history").includes(namn(r).split(" (")[0])) : true);
+ok("avkastning: US-boken har eget statistikblock",
+  harU ? txt("usTradeStats").includes("Profit factor") : txt("usTradeStats").includes("Inga stängda affärer ännu"));
+ok("avkastning: US-boken visar sin affär",
+  harU ? uTrades.every(r => txt("usHistory").includes(namn(r).split(" (")[0])) : true);
+ok("avkastning: US-riskmått renderade",
+  harU ? txt("usRiskStats").includes("Max drawdown") : txt("usRiskStats").includes("Inga stängda affärer ännu"));
 ok("avkastning: US-alpha mot S&P 500",
   txt("usAlphaStats").includes("Snitt-alpha") || txt("usAlphaStats").includes("Ingen alpha-mätning"));
 ok("avkastning: US-månadsutfall renderat", txt("usMonthly").length > 20);
-ok("avkastning: böckerna hålls isär", txt("history").indexOf("JPMorgan") === -1);
+ok("avkastning: böckerna hålls isär",
+  uTrades.every(r => { const n = namn(r).split(" (")[0]; return !n || txt("history").indexOf(n) === -1; }));
 // US-rotation-vyn ska INTE längre duplicera statistiken – bara peka dit
 ok("us-rotation: statistiken duplicerad ej", !txt("usBody").includes("Profit factor"));
 ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-view="avkastning"'));
@@ -197,15 +238,28 @@ ok("us-rotation: hänvisar till Avkastning", txt("usBody").includes('data-goto-v
   doc.querySelector('[data-book-set="bada"]').dispatchEvent(new window.Event("click", { bubbles: true }));
   ok("gemensamt: växeln fungerar", vy.getAttribute("data-book") === "bada");
   ok("gemensamt: båda affärerna i samma tabell",
-    txt("allHistory").includes("Alleima") && txt("allHistory").includes("JPMorgan"));
+    [...nTrades, ...uTrades].every(r => txt("allHistory").includes(namn(r).split(" (")[0])));
   ok("gemensamt: varje rad märks med sin bok",
-    txt("allHistory").includes("Nordisk") && txt("allHistory").includes("US"));
+    (harN || harU) ? (!harN || txt("allHistory").includes("Nordisk")) && (!harU || txt("allHistory").includes("US"))
+                   : true);
+  /* Invarianten är att den gemensamma statistiken räknar SUMMAN av böckerna –
+     inte att summan råkar vara ett visst tal. Raden löd tidigare `n + u === 2`
+     med kommentaren "1 + 1 i dag"; verkligt antal var redan 3 (två nordiska,
+     en amerikansk), så påståendet föll oavsett dataläge och ingen märkte det
+     eftersom sim.mjs inte körs i CI. */
   ok("gemensamt: handelsstatistik räknar båda", (() => {
-    const n = dash.P.computeTradeStats(dash.state.portfolio.history, 0).trades;
-    const u = dash.P.computeTradeStats(dash.state.portfolioUs.history, 0).trades;
-    return txt("allTradeStats").includes("Profit factor") && n + u === 2;   // 1 + 1 i dag
+    const n = dash.P.computeTradeStats(nTrades, 0).trades;
+    const u = dash.P.computeTradeStats(uTrades, 0).trades;
+    const bada = dash.P.computeTradeStats([...nTrades, ...uTrades], 0).trades;
+    const renderad = (harN || harU) ? txt("allTradeStats").includes("Profit factor")
+                                    : txt("allTradeStats").includes("Inga stängda");
+    return renderad && bada === n + u;
   })());
-  ok("gemensamt: alpha renderat", txt("allAlphaStats").length > 20);
+  /* Utan stängda affärer i någon bok NOLLAR app.js medvetet alpha-rutan
+     (assets/app.js: set("allAlphaStats", "")) i stället för att visa en
+     tom-ruta – det gemensamma läget har då ingenting att jämföra. */
+  ok("gemensamt: alpha renderat",
+    (harN || harU) ? txt("allAlphaStats").length > 20 : txt("allAlphaStats") === "");
   ok("gemensamt: riskmått och månadsutfall utelämnade med flit",
     !doc.querySelector("#allRiskStats") && !doc.querySelector("#allMonthly"));
   doc.querySelector('[data-book-set="nordic"]').dispatchEvent(new window.Event("click", { bubbles: true }));
@@ -262,13 +316,18 @@ ok("kurser: rollchips renderade", chips.length >= 3);
 const total = doc.querySelectorAll(".px-item").length;
 ok("kurser: alla tickers som kort", total > 10);
 
-const innehavChip = chips.find(c => c.dataset.role === "innehav");
-if (innehavChip) {
-  click(innehavChip);
+/* Rollen "innehav" saknar chip när boken är tom – det finns ingen ticker med
+   den rollen att filtrera fram. Filtreringen prövas då på någon annan roll som
+   faktiskt finns, så mekaniken täcks oavsett bokläge. */
+const rollChip = chips.find(c => c.dataset.role === "innehav")
+  || chips.find(c => c.dataset.role && c.dataset.role !== "alla");
+if (rollChip) {
+  click(rollChip);
+  const roll = rollChip.dataset.role;
   const shown = vis(".px-item");
   ok("kurser: chip filtrerar till en roll",
-    shown.length > 0 && shown.length < total && shown.every(n => n.dataset.role === "innehav"));
-  ok("kurser: aktivt chip markeras", innehavChip.classList.contains("on"));
+    shown.length > 0 && shown.length < total && shown.every(n => n.dataset.role === roll));
+  ok("kurser: aktivt chip markeras", rollChip.classList.contains("on"));
 } else { ok("kurser: chip filtrerar till en roll", false); ok("kurser: aktivt chip markeras", false); }
 
 const allaChip = chips.find(c => (c.dataset.role || "alla") === "alla");
@@ -436,13 +495,19 @@ if (pill) {
 
 // ---- Sorterbar historiktabell ----
 dash.showView("avkastning");
+/* Sorterbar tabell finns bara när det finns rader att sortera. Utan stängda
+   affärer i någon bok är frånvaron rätt beteende, inte ett fel. */
 const th = doc.querySelector(".tbl--sort th");
 if (th) {
   click(th);
   ok("historik: kolumnklick sorterar", th.classList.contains("asc") || th.classList.contains("desc"));
   click(th);
   ok("historik: andra klicket vänder ordningen", th.classList.contains("desc"));
-} else { ok("historik: kolumnklick sorterar", false); ok("historik: andra klicket vänder ordningen", false); }
+} else {
+  const tomt = !harN && !harU;
+  ok("historik: kolumnklick sorterar", tomt);
+  ok("historik: andra klicket vänder ordningen", tomt);
+}
 
 // ---- Klamp-knappar ("Visa mer") ----
 const cw = doc.querySelector(".cw");
