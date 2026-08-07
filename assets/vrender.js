@@ -17,6 +17,16 @@
     if (n == null || isNaN(n)) return "–";
     return (n > 0 ? "+" : "") + Number(n).toFixed(2) + " %";
   }
+  // Första talet i en sträng som "620,00 kr" -> 620. Svenskt decimalkomma.
+  function numOf(s){
+    const m = String(s == null ? "" : s).replace(/\s/g, "").replace(",", ".").match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  }
+  // Tal -> svensk sträng med komma, max två decimaler och inga onödiga nollor.
+  function nf(n){
+    if (n == null || isNaN(n)) return "–";
+    return String(Math.round(Number(n) * 100) / 100).replace(".", ",");
+  }
   function trendClass(n){
     if (n == null || isNaN(n) || n === 0) return "flat";
     return n > 0 ? "pos" : "neg";
@@ -186,6 +196,37 @@
   }
 
   // Kort för en FAKTISK öppen position ur portfolj.md:s "Aktuellt innehav".
+  /* Raden på innehavskortet där Dren fyller i vad han FAKTISKT betalade.
+     Robotens entry och Drens ligger bredvid varandra.
+
+     REN funktion: fyllnaden kommer in som argument, inte ur localStorage, så
+     den går att testa utan DOM och utan lagring. heldCard slår upp värdet.
+
+     En avvikelse större än 1 % markeras — INFORMATIVT, inte som fel. Att priset
+     skiljer sig från robotens är normalt; det är bara värt att se. Ett TOMT
+     fält är heller ingen varning: en nyss öppnad position är inte ett problem.
+
+     Indexsleeven har ingen entry-datum-rad att nyckla på och får därför ingen
+     inmatning. Det är rätt — den är kapitalparkering, inte en affär. */
+  function fillRow(row, fill){
+    const VF = (typeof window !== "undefined" && window.VFills) || null;
+    const key = VF ? VF.keyFor(row) : null;
+    if (!key) return "";
+    const min = fill && fill.kop ? fill.kop.kurs : null;
+    if (min == null || !(min > 0)){
+      return `<div class="fill-row"><button type="button" class="fill-btn" `
+        + `data-fill-open="${esc(key)}">Vad betalade du?</button></div>`;
+    }
+    const robot = numOf(strip(row["Entry"] || ""));
+    const antal = fill.kop.antal;
+    const avvik = (robot && robot > 0) ? Math.abs(min / robot - 1) * 100 : 0;
+    return `<div class="fill-row${avvik > 1 ? " fill-avvik" : ""}">`
+      + `<span class="k">Du betalade</span>`
+      + `<span class="v">${esc(nf(min))}${antal ? ` × ${esc(String(antal))}` : ""}</span>`
+      + (avvik > 1 ? `<span class="fill-diff" title="Skillnad mot robotens entry">${esc(nf(avvik))} %</span>` : "")
+      + `<button type="button" class="fill-btn" data-fill-open="${esc(key)}">Ändra</button></div>`;
+  }
+
   function heldCard(o, live){
     const name = strip(o["Aktie"] || "");
     const ticker = strip(o["Yahoo-ticker"] || "");
@@ -208,6 +249,8 @@
         <div><span class="k">Stop-loss</span><span class="v">${esc(stop || "–")}</span></div>
         <div><span class="k">Målkurs</span><span class="v">${esc(target || "–")}</span></div>
       </div>
+      ${fillRow(o, (typeof window !== "undefined" && window.VFills)
+        ? window.VFills.get(window.VFills.keyFor(o)) : null)}
       ${gaugeStrip(live)}
       ${liveStrip(live)}
       ${note ? `<div class="hold-note">${clamp(note, 3)}</div>` : ""}
@@ -1116,7 +1159,7 @@
   }
 
   const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
-    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed,
+    renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,
     renderLessons, renderMonthlyHeatmap, renderRiskStats, renderAlphaStats, renderDecisionStats,

@@ -402,6 +402,24 @@ ok("fills: antal 0 räknas som ofullständigt", (() => {
   return VF.computeMyStats(noll, [stangda[0]], "nordic", 0).klara === 0;
 })());
 
+/* Inmatningsraden på innehavskortet. REN funktion – den tar fyllnaden som
+   argument i stället för att läsa localStorage, så den går att testa utan DOM
+   och utan lagring. heldCard slår upp värdet och skickar in det. */
+const fillRad = { "Yahoo-ticker": "SAAB-B.ST", "Entry-datum": "2026-08-10", "Entry": "620,00 kr" };
+const fr = VR.fillRow(fillRad, null);
+ok("fillRow: tom rad bjuder in till ifyllnad",
+  fr.includes('data-fill-open="SAAB-B.ST|2026-08-10"') && fr.includes("Vad betalade du?"));
+ok("fillRow: tom rad är ingen varning", !/varning|fel-|alert/i.test(fr));
+const frFylld = VR.fillRow(fillRad, { kop: { kurs: 623.5, antal: 40 } });
+ok("fillRow: visar din kurs", frFylld.includes("623,5"));
+ok("fillRow: visar antalet", frFylld.includes("40"));
+ok("fillRow: liten avvikelse markeras inte", !frFylld.includes("fill-avvik"));
+const frAvvik = VR.fillRow(fillRad, { kop: { kurs: 640, antal: 40 } });
+ok("fillRow: avvikelse över 1 % markeras", frAvvik.includes("fill-avvik"));
+ok("fillRow: avvikelsen skrivs ut i procent", /3,2\d? %/.test(frAvvik));
+ok("fillRow: rad utan nyckel renderas inte",
+  VR.fillRow({ "Aktie": "Indexsleeve (XACT OMXS30)" }, null) === "");
+
 // ---- digest + watchdog (rena funktioner) ----
 const DG = await mod(".github/scripts/digest.mjs");
 const dmd = ["# Daglig bevakning", "**Datum:** 2026-07-17 | **Läge:** Daglig bevakning",
