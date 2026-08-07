@@ -574,8 +574,20 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   watchdogen igen är det den tråden som ska dras. (3) **Auto-merge-grinden är sedd skarpt** –
   körning 31155334760 (06:49 UTC) körde `validate-decisions`, `validate-scout-candidates`,
   `run.mjs` (654 gröna) och `theme.mjs`, och byggde om `dashboard.json` 17 sekunder efter att
-  rapporten landade. Grinden BLOCKERAR dessutom bevisligen: körning 31105771472 (2026-08-06,
-  "KOP NVDA 25 %") failade och nästa försök gick igenom.
+  rapporten landade. **Var noga med vad som ÄR bevisat:** grinden har observerats stoppa arbete
+  två gånger, båda av andra skäl än underkänd CI – körning 31105771472 (2026-08-06) föll på
+  MERGEKONFLIKT innan testerna ens kördes, och 31189191076 (2026-08-07) på att pushen till main
+  förlorade kapplöpningen mot en samtidig `prices.yml`-push (`! [rejected] main -> main`).
+  Att grinden stoppar en branch med FALLERANDE TESTER är alltså ännu inte sett i skarp drift –
+  ingen branch har haft det. Påstå inte motsatsen.
+- **`auto_merge.yml` SAKNAR RETRY PÅ PUSHEN – till skillnad från `monitor.yml`.** Den kör ett
+  naket `git push origin main`, medan monitorn har en `for i in 1 2 3`-slinga med
+  `pull --rebase` mellan försöken. Felfrekvensen är ~5 % (2 av 40 körningar), och den är som
+  HÖGST på måndagar: scout 07:47, nordisk rotation 08:40, US-rotation 15:00 och allokering 15:30
+  konkurrerar då med kurser var 30:e minut och nyheter varannan timme. Förlorar grinden
+  kapplöpningen når rapporten ALDRIG main av sig själv – branchen ligger kvar och någon måste
+  märka det och köra `workflow_dispatch` (den mergar alla befintliga `claude/**`-brancher).
+  Watchdogen fångar det först indirekt, via "dagens rapport saknas".
 - **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
   1. **`docs/manual/`-skärmbilderna åldras** (`hem.png`, `avkastning.png`, båda 2026-08-02).
      **Vänta till EFTER v33-rotationen 2026-08-10.** Böckerna nollställdes 2026-08-06, så en
