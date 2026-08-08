@@ -16,16 +16,26 @@ Denna prompt körs VARJE handelsdag FÖRE US-öppning (~15:00 CET / före 09:30 
 lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut per aktie
 (KÖP / SÄLJ / BEHÅLL, eller AVVAKTA om kurs ej kan verifieras). All P/L i **USD**.
 
-## POSITIONSSTORLEK (4 positioner à 25 %, ersätter 2 à 50 %)
-- **Standardläget är 4 aktier à 25 %**, med conviction-band **15–35 % per aktie**. Summan av
-  aktievikterna + indexsleeven (nedan) = 100 %. Ingen aktie över 35 %.
+## POSITIONSSTORLEK (4 positioner à 25 %, PLATT — conviction-bandet borttaget 2026-08-08)
+- **Varje aktieposition väger exakt 25 %.** Ingen viktning efter conviction. Summan av
+  aktievikterna + indexsleeven (nedan) = 100 %.
+- **Skälet till att bandet 15–35 % togs bort:** totalpoängen styrde tidigare BÅDE om aktien
+  köptes och hur mycket kapital som riskerades. Poängvikterna (35/30/15/20) är uttryckligen
+  antagna och kan inte kalibreras förrän beslutsstatistiken har ≥ 15 stängda SÄLJ-rader. En
+  obevisad signal fick alltså förstärka sin egen osäkerhet. Platt 25 % tar bort det lagret till
+  noll kostnad och är den NOLLMODELL som en framtida volatilitetsjusterad sizing mäts MOT.
+- **Poängen loggas fortfarande** i `state/decisions.json` som forskningsfeature – den styr urval
+  och rangordning, men aldrig vikt. Samma regel i båda böckerna; håll dem i synk.
+- Vikt får INTE återinföras som conviction-mått förrän ≥ 15 stängda SÄLJ-rader finns OCH
+  poängen visat prediktiv kraft mot 5d/20d benchmark-relativ avkastning.
 - Skälet: med två innehav dominerar slumpen över urvalsförmågan och beslutsstatistiken växer
   för långsamt för att kunna kalibrera poängmodellen. Courtaget är procentuellt – fler
   positioner kostar inte mer per krona (växlingspåslaget är också procentuellt).
 - Färre än 4 godkända case är OK: fyll de platser som håller, resten går till sleeven. Tvinga
   ALDRIG fram ett case för att fylla en plats.
-- **Varje avvikelse från 25 % MÅSTE motiveras skriftligt.** Ange alltid vikten per position i
-  `state/portfolj_us.md` (kolumnen "Vikt") och i veckorapporten.
+- **Avvikelse från 25 % är inte tillåten.** Har boken färre än 4 innehav går skillnaden till
+  indexsleeven – aldrig till att övervikta ett befintligt innehav. Ange alltid vikten per
+  position i `state/portfolj_us.md` (kolumnen "Vikt") och i veckorapporten.
 
 ## INDEXSLEEVE (oallokerat kapital ligger i index, ALDRIG på konto)
 - Oallokerat USD-kapital parkeras i **SPY** (S&P 500 ETF) – inte i kassa.
@@ -132,12 +142,28 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    | catalystType | Horisont | Målavstånd | Stop | Tidsstopp |
    |---|---|---|---|---|
    | `earnings`, `order`, `regulatory`, `buyback` | 3–6 veckor (post-earnings drift) | 14–18 % | 5–6 % | inget |
-   | `ma_rumor`, `insider`, `index` | 5–10 handelsdagar | 10–12 % | 5–6 % | **ja: avveckla efter 10 handelsdagar** om ryktet varken bekräftats eller dementerats |
+   | `ma_rumor`, `insider`, `index` | 10–15 handelsdagar | 10–12 % | 5–6 % | **ja: avveckla efter 15 handelsdagar** om ryktet varken bekräftats eller dementerats |
    | `macro`, `turnaround`, `other` | 2–4 veckor | 10–14 % | 5–6 % | inget |
    Stoppkolumnen är omkalibrerad 2026-08-02 till 5–6 % rakt igenom: gridet visar att −5 %/+10 %
    är den ENDA kombinationen som ger PF över 1,0 med hållregeln, att den vinner vid varje
    lookback, och att den håller out-of-sample (5 av 8, se punkt 1). 3–4 % stoppas ut på brus
    (PF 0,79–0,86). Målavståndet i rad 2 höjdes så R/R-kravet 2:1 håller mot det bredare stoppet.
+   **RAD 2:s HORISONT ÄNDRAD 2026-08-08 (5–10 ⇒ 10–15 handelsdagar, tidsstopp 10 ⇒ 15).**
+   Skälet: raden motsade nåbarhetstaket i punkt 6. Kedjan är tvingande – stoppet 5–6 % är
+   backtestat och får inte röras, R/R 2:1 kräver då ett mål på minst 10 %, och taket
+   `2 × dagsrörelse × √handelsdagar` ger 10 % först vid en dagsrörelse på ≥ 1,58 % över 5 dagar.
+   Mätt över 60 dagar på US-namnen i `state/price_history.json` (28 st) föll **9 av 28 under
+   det kravet vid 10 dagars horisont** – JPM, WFC, XOM, CVX, NOC, AAPL, C, MS. Vid 15 dagar
+   faller 3 (varav SPY är sleeven, inte en kandidat). Målet sänktes INTE, eftersom det är låst
+   av stoppet och R/R-kravet; horisonten är den enda fria variabeln. 20 dagar prövades och
+   räddar bara ett namn till för fem dagars extra ryktesexponering – därför 15.
+   **Detta är INTE en backtestad förbättring**; det löser en intern motsägelse och gör inget
+   påstående om avkastning. Skriv aldrig att den är mätt eller kalibrerad.
+   **Priset:** tidsstoppet följer horisonten, så ett obekräftat rykte hålls fem dagar längre.
+   Det är den enda faktiska riskökningen – bevaka `realizedRr` för klassen.
+   **Når taket inte 10 % ens vid 15 dagar: STRYK caset** och logga det avvisat med grind 5
+   (nåbarhetstaket) NAMNGIVEN i `reason`. Att en lugn megacap inte gör 10 % på tre veckor på ett
+   rykte är korrekt beteende – men det måste loggas per grind, annars är dödzonen osynlig igen.
    Målavstånden är högre än i nordiska boken eftersom rundturskostnaden är tre gånger så hög.
    Skriv ut `catalystType` och horisont i handelsplanen; logga `horizonDays` i beslutsloggen.
 6. **MÅLET MÅSTE VARA NÅBART (ny hård regel):** målavståndet i procent får vara högst **2× aktiens
@@ -294,10 +320,10 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    OMSÄTTNING". Max 2 av 4 ryktesdrivna. Undvik flera bolag med identisk riskprofil – fyra
    megacap-teknikbolag är en position. Tvinga ALDRIG fram case: färre än 4 godkända ⇒ fyll de
    platser som håller och lägg resten i indexsleeven.
-3b. POSITIONSVIKTER: bestäm vikt per vald aktie enligt "POSITIONSSTORLEK" ovan. Använd totalpoängen
-   som conviction-signal: jämna poäng ⇒ 25 % var; tydligt starkare case ⇒ upp till 35 %; svagare men
-   godkänt ⇒ ned till 15 %. Summan av aktievikterna + indexsleeven = 100 %. Skriv ut vikterna och
-   motivera varje avvikelse från 25 %.
+3b. POSITIONSVIKTER: varje vald aktie får exakt 25 % enligt "POSITIONSSTORLEK" ovan. Totalpoängen
+   används för URVAL och RANGORDNING, aldrig för vikt. Summan av aktievikterna + indexsleeven
+   = 100 % (3 innehav ⇒ 75 % aktier + 25 % sleeve, osv). Skriv ut vikterna; ingen viktmotivering
+   behövs längre eftersom vikten är fast.
 4. RAPPORT enligt `templates/us_vecko_rapport.md`, inkl. komplett handelsplan per case (entry,
    stop strax under stöd, mål, R/R) och 3–5 BUBBLARE (ersättarlista för läge B). Lägg gärna
    bevakade tickers i `config/watchlist_us.txt` så finns färska kurser nästa körning.

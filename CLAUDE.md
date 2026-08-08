@@ -639,8 +639,19 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   fil som inte motsvarar trädet. Samma regel som `push.bat` följer lokalt. Misslyckas alla tre
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
-- **KVAR (uppdaterad 2026-08-07) – i prioritetsordning:**
-  *(Tom. Allt känt är åtgärdat – se listan över avklarat ovan.)*
+- **KVAR (uppdaterad 2026-08-08) – i prioritetsordning:**
+  Driftlistan är tom; allt känt driftfel är åtgärdat (se avklarat ovan). Det som återstår är
+  **strategiarbete efter den externa granskningen** och ligger i **`docs/STRATEGI-ATGARDER.md`**
+  – fyra punkter, var och en med godkännandekriterium satt i FÖRVÄG. Filen laddas medvetet inte
+  automatiskt (samma skäl som `HISTORIK.md`). Kort: (1) grind-funnel över `decisions.json` –
+  vilken avkastning hade de som föll på grind X · (2) räkna om regimfiltret som active return
+  mot sleeven, inte som bokavkastning · (3) logga USD/SEK per US-beslut så allokeraren går att
+  utvärdera · (4) bevaka `ma_rumor` efter horisontändringen 2026-08-08.
+  **Utfört 2026-08-08 och redan i prompterna:** conviction-bandet 15–35 % är BORTTAGET (platt
+  25 %; poängen styr urval och rangordning, aldrig vikt – en okalibrerad poäng fick tidigare
+  förstärka sin egen osäkerhet), och `ma_rumor`/`insider`/`index` fick horisont 10–15 dagar
+  eftersom nivåtabellen och nåbarhetstaket i grind 5 motsade varandra. Motiveringen och de
+  mätta talen står i åtgärdsfilen – ändra inte tillbaka utan att läsa den.
 - ✅ **Verifierat i skarp körning 2026-08-03 (samma kväll):** `news.yml` 15:56 UTC skrev `window`-fältet
   och fönstret bar **6 av 10 handelsdagar direkt** (äldsta post 2026-07-27) – flödena serverar själva
   äldre poster, så det behövde inte fyllas på dag för dag. Taket per källa och dygn band vid exakt 30
