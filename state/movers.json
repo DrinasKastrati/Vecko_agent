@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-07T13:05:07.440Z",
+ "generatedAt": "2026-08-08T06:46:47.272Z",
  "note": "Breddad rörelsedetektion för miss-retrons STEG 1. Rörelsen har REDAN inträffat – detta är bevakningsunderlag, inte köpsignaler.",
  "universeCount": 110,
  "okCount": 107,
@@ -13,46 +13,54 @@
   "dayPct": 6,
   "sessionsWeek": 5
  },
- "asOf": "2026-08-07",
+ "asOf": "2026-08-06",
  "movers": [
   {
+   "symbol": "CTM.ST",
+   "lastClose": 4.4,
+   "lastDate": "2026-08-06",
+   "weekPct": 11.96,
+   "dayPct": 1.85,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "NOVO-B.CO",
+   "lastClose": 293.6,
+   "lastDate": "2026-08-06",
+   "weekPct": -11.27,
+   "dayPct": -0.24,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "G5EN.ST",
+   "lastClose": 69.7,
+   "lastDate": "2026-08-06",
+   "weekPct": 10.63,
+   "dayPct": 0,
+   "trigger": "vecka"
+  },
+  {
    "symbol": "HNSA.ST",
-   "lastClose": 40.2,
-   "lastDate": "2026-08-07",
-   "weekPct": 16.86,
-   "dayPct": 6.24,
+   "lastClose": 37.84,
+   "lastDate": "2026-08-06",
+   "weekPct": 10.32,
+   "dayPct": 9.94,
    "trigger": "dag"
   },
   {
-   "symbol": "CTM.ST",
-   "lastClose": 4.15,
-   "lastDate": "2026-08-07",
-   "weekPct": 10.67,
-   "dayPct": -5.68,
+   "symbol": "NESTE.HE",
+   "lastClose": 28.41,
+   "lastDate": "2026-08-06",
+   "weekPct": -8.68,
+   "dayPct": -0.21,
    "trigger": "vecka"
   },
   {
-   "symbol": "ELUX-B.ST",
-   "lastClose": 30.65,
-   "lastDate": "2026-08-07",
-   "weekPct": 10.37,
-   "dayPct": -0.58,
-   "trigger": "vecka"
-  },
-  {
-   "symbol": "BOL.ST",
-   "lastClose": 520.8,
-   "lastDate": "2026-08-07",
-   "weekPct": 9.23,
-   "dayPct": 2.48,
-   "trigger": "vecka"
-  },
-  {
-   "symbol": "GMAB.CO",
-   "lastClose": 2028,
-   "lastDate": "2026-08-07",
-   "weekPct": 9.12,
-   "dayPct": 8.04,
+   "symbol": "PDX.ST",
+   "lastClose": 134.9,
+   "lastDate": "2026-08-06",
+   "weekPct": -1.53,
+   "dayPct": -7.6,
    "trigger": "dag"
   }
  ]
