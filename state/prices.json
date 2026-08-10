@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-10T21:09:41.523Z",
+  "generatedAt": "2026-08-10T21:56:19.648Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -141,10 +141,10 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 64082.58,
+      "price": 63937.12,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-10T21:09:20.000Z",
+      "marketTime": "2026-08-10T21:55:55.000Z",
       "marketState": null,
       "previousClose": 64844.88671875,
       "dayHigh": 65278.344,
@@ -225,10 +225,10 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1876.5,
+      "price": 1872.98,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-10T21:09:17.000Z",
+      "marketTime": "2026-08-10T21:55:58.000Z",
       "marketState": null,
       "previousClose": 1908.6827392578125,
       "dayHigh": 1928.543,
@@ -546,8 +546,8 @@
       "dayHigh": 20.46,
       "dayLow": 19.13,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 21.31,
-      "extendedTime": "2026-08-10T21:09:34.000Z",
+      "extendedPrice": 21.743,
+      "extendedTime": "2026-08-10T21:55:57.000Z",
       "extendedSession": "post"
     },
     "SCA-B.ST": {
@@ -648,14 +648,14 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.478,
+      "price": 9.4833,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-10T21:09:13.000Z",
+      "marketTime": "2026-08-10T21:56:14.000Z",
       "marketState": null,
       "previousClose": 9.482950210571289,
-      "dayHigh": 9.5156,
-      "dayLow": 9.4422,
+      "dayHigh": 9.492,
+      "dayLow": 9.4794,
       "source": "Yahoo Finance (chart API)"
     },
     "WFC": {
@@ -723,7 +723,7 @@
       "price": 26605.357,
       "currency": "USD",
       "exchange": "Nasdaq GIDS",
-      "marketTime": "2026-08-10T21:09:38.000Z",
+      "marketTime": "2026-08-10T21:15:59.000Z",
       "marketState": null,
       "previousClose": 26690.619140625,
       "dayHigh": 26724.63,
