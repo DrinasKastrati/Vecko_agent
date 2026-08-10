@@ -37,9 +37,27 @@ NOVO-B.CO
 # Novo Nordisk – Q2 2026 justerat rörelseresultat 33 389 MDKK + HÖJD helårsprognos
 # (MFN 2026-08-04 16:33/16:37 UTC), catalystType earnings.
 
+# Bruttolistan v33 (veckorapport-260810), tillagda 2026-08-10 enligt punkt 6b: varje ticker som
+# fatt en rad i state/decisions.json MASTE hamtas av prices.yml, annars backfillas den aldrig i
+# state/price_history.json och beslutet blir omatbart for alltid i state/decision_eval.json.
+# Detta gar FORE riktmarket pa 25 tickers. Samtliga sex loggades med price: null (grind 1).
+ZEAL.CO
+DFDS.CO
+# Zealand Pharma (Q2 13/8) och DFDS (Q2 14/8) – namngivna i veckans radar enligt L-1.
+CTY1S.HE
+# Citycon – G Citys ovillkorade kontantbud, MFN 2026-08-04.
+CTM.ST
+G5EN.ST
+NESTE.HE
+# Tre rader ur state/movers.json som saknade verifierad kurs och darfor foll pa grind 1.
+BOOZT.ST
+HEXA-B.ST
+# Boozt (Q2-rapport 14/8) och Hexagon – bada hade verifierad kurs via senaste veckorapportens
+# case-lista, men den kopplingen bryts nar v33-rapporten ersatter v32:an. Samma skal som KOG.OL
+# tillfordes 2026-08-07.
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
-# NOVO-B.CO
 # EQNR.OL
 
 # --- Analys-köade tickers (auto) ---

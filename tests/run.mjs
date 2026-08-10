@@ -1200,12 +1200,28 @@ ok("evaluate tål tom beslutslogg", (() => {
   return r.counts.decisions === 0 && r.byHorizon[5].selectionEdge.insufficient === true;
 })());
 // Den riktiga filen ska gå att utvärdera utan att kasta, och aldrig uttala sig i dag.
+// OBS: assertionen krävde tidigare missingSymbols.length === 0, vilket var ett påstående om
+// DATALÄGET och inte om koden. Punkt 6b i rotationsprompterna kräver uttryckligen att en kandidat
+// som föll på saknad kurs loggas med price: null OCH läggs i watchlisten – tickern har då per
+// definition ingen serie i price_history.json förrän prices.yml hunnit hämta den. Kravet på en tom
+// lista var därför garanterat att falla vid varje rotation som följde prompten, precis som
+// backfill-assertionen 2026-08-03 och de hårdkodade instrumentnamnen i sim.mjs 2026-08-07.
+// Invarianten som FAKTISKT betyder något är att varje omätbar ticker är på väg att bli mätbar,
+// dvs. att den ligger i en watchlist-fil – det är den kontrollen som görs nedan i stället.
 ok("evaluate mot repots faktiska filer", (() => {
   const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
   const ph = JSON.parse(readFileSync(resolve(root, "state/price_history.json"), "utf8"));
   const r = DE.evaluate(db, ph);
   return r.counts.decisions > 0 && r.byHorizon[5].selectionEdge.insufficient === true &&
-         r.missingSymbols.length === 0;
+         Array.isArray(r.missingSymbols);
+})());
+ok("varje omätbar ticker ligger i en watchlist (punkt 6b)", (() => {
+  const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
+  const ph = JSON.parse(readFileSync(resolve(root, "state/price_history.json"), "utf8"));
+  const watched = new Set(["watchlist.txt", "watchlist_us.txt"].flatMap(f =>
+    readFileSync(resolve(root, "config", f), "utf8").split(/\r?\n/)
+      .map(l => l.trim()).filter(l => l && !l.startsWith("#"))));
+  return DE.evaluate(db, ph).missingSymbols.every(s => watched.has(s));
 })());
 
 // renderDecisionEval: ren funktion, ingen DOM. Får ALDRIG visa en siffra som ser
