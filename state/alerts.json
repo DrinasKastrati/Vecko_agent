@@ -1,12 +1,24 @@
 {
-  "generatedAt": "2026-07-30T09:30:07.517Z",
-  "checkedAt": "2026-08-10T14:57:38.112Z",
+  "generatedAt": "2026-08-10T17:51:03.242Z",
+  "checkedAt": "2026-08-10T17:51:03.242Z",
   "watched": [
     "ASSA-B.ST",
     "NVDA",
     "SPY",
     "PLTR"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "NVDA",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 217,
+      "price": 218.14,
+      "currency": "USD",
+      "marketTime": "2026-08-10T17:51:01.000Z",
+      "basis": "intraday",
+      "hitPrice": 216.77
+    }
+  ],
   "history": []
 }
