@@ -65,6 +65,24 @@ IREN
 WFC
 JPM
 
+# --- Nyhetsdrivna kandidater v33 (punkt 6b: varje symbol med ett beslut i decisions.json ---
+# ska gå att prissätta, annars blir raden omätbar för alltid. Går FÖRE taket på 25 symboler.
+# Samtliga föll på grind 1 (saknades i prices.json) i us-veckorapport-260810 och loggades
+# med price: null. Faller de ur nästa rotations bruttolista utan nytt beslut kan de rensas.
+ACHR
+# Archer Aviation – förvärvar Boeings Wisk Aero, Insitu och SkyGrid; Boeing investerar i
+# Archer (PR Newswire 2026-08-10).
+BA
+# Boeing – säljar-/investerarsidan i samma affär 2026-08-10.
+CXW
+# CoreCivic – 500 MUSD accelererat återköpsprogram (GlobeNewswire 2026-08-10).
+RHP
+# Ryman Hospitality – förvärvar Grande Lakes Orlando för 1,38 md USD (GlobeNewswire 2026-08-10).
+ITW
+# Illinois Tool Works – 7 % höjd utdelning + 6 md USD återköp (GlobeNewswire 2026-08-07).
+BIIB
+# Biogen – slutför förvärvet av RayThera (GlobeNewswire 2026-08-06).
+
 # --- Analys-köade tickers ---
 NVO
 # Novo Nordisk (NYSE-ADR) – analyserad 2026-08-03. Q2-rapport 2026-08-05 och efterspelet

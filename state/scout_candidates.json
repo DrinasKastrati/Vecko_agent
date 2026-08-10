@@ -14,13 +14,14 @@
       "confirmed": true,
       "thesis": "Q2 4/8 AMC krossade: intakt 3,04 mdr (+37,7%), EPS 1,02 vs 0,88, hojt Q3-guide 3,3 mdr. AI-Ethernet till hyperscalers. +~10% after-hours. Kurs ej i prices.json.",
       "sourceRef": "Benzinga 2026-08-04",
-      "price": null,
-      "priceAsOf": null,
+      "price": 188.67,
+      "priceAsOf": "2026-08-07T20:00:03.000Z",
       "status": "rejected",
       "expiresAt": "2026-08-12",
-      "decidedBy": "reports/us_daily/us-daglig-260805.md",
-      "decidedAt": "2026-08-05",
-      "decisionReason": "kurs ej verifierbar – enda verifierade kursen 190,51 USD (2026-08-04T20:00:03Z) är reguljär stängning FÖRE rapporten 4/8 AMC; post-katalysatorkurs saknas"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "L-4 omprovning, kurs nu verifierad. Post-katalysatorreaktionen fadar tre dagar: 197,31 -> 192,23 -> 188,67. Grind 3 ej provbar (4 punkter i price_history).",
+      "priceSession": "regular"
     },
     {
       "id": "260805-AMD",
@@ -33,13 +34,14 @@
       "confirmed": true,
       "thesis": "Q2 4/8 AMC beat (11,54 mdr +50%, DC +107%) + starkt Q3-guide + Anthropic-megadeal (MI450/Helios), MEN -8,8% after-hours (ribban for hogt satt). Prices.json 518,58 ar FORE rapporten; post-kurs ej verifierad. AVVAKTA.",
       "sourceRef": "CNBC/Benzinga 2026-08-04",
-      "price": null,
-      "priceAsOf": null,
+      "price": 483.36,
+      "priceAsOf": "2026-08-07T20:00:01.000Z",
       "status": "rejected",
       "expiresAt": "2026-08-12",
-      "decidedBy": "reports/us_daily/us-daglig-260805.md",
-      "decidedAt": "2026-08-05",
-      "decisionReason": "kurs ej verifierbar – prices.json 518,58 USD (2026-08-04T20:00:01Z) är FÖRE rapporten 4/8 AMC; post-reaktionskurs (-8,8 % AH) finns bara i nyhetskälla"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "L-4 omprovning, kurs nu verifierad. Passerar alla fem grindar men falls av tekniska filtret: under EMA20 497,55, 20d -9,5 pct, beatet saldes -8,8 pct AH.",
+      "priceSession": "regular"
     },
     {
       "id": "260805-AVGO",
@@ -73,11 +75,11 @@
       "sourceRef": "Benzinga/ts2.tech 2026-08-05",
       "price": 219.22,
       "priceAsOf": "2026-08-05T20:00:00.000Z",
-      "status": "rejected",
+      "status": "promoted",
       "expiresAt": "2026-08-13",
-      "decidedBy": "reports/us_daily/us-daglig-260806.md",
-      "decidedAt": "2026-08-06",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd 2026-08-06 inför skarp start 2026-08-10, allokeringen avgörs helt av v33-rotationen. (a)-(d) passerade; går in i v33:s bruttolista."
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "PROMOTAD i v33-rotationen: alla fem grindar hallna (RSI 64,5, over EMA20/50/200, mal 14,31 pct < tak 21,0 pct, R/R 2,47). Kopt som ben 1 om 12,5 pct till 223,96 USD."
     },
     {
       "id": "260806-GOOGL",
@@ -90,13 +92,14 @@
       "confirmed": true,
       "thesis": "AI-ledningsflykt (5/8): chefsforskaren Jeff Dean + Sanjay Ghemawat lamnar for AI-startup, Hassabis far utokad roll. Aktien -4,03 %. Dislokation nedat att utvardera - negativ katalysator, ingen sjalvklar kopsignal.",
       "sourceRef": "Benzinga/AOL 2026-08-05",
-      "price": 362.43,
-      "priceAsOf": "2026-08-05T20:00:01.000Z",
+      "price": 354.3,
+      "priceAsOf": "2026-08-07T20:00:00.000Z",
       "status": "rejected",
       "expiresAt": "2026-08-13",
-      "decidedBy": "reports/us_daily/us-daglig-260806.md",
-      "decidedAt": "2026-08-06",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10. Faller dessutom på grind 2 – händelsen 5/8 är bekräftad men NEGATIV (ledningsflykt) och bär inget köpcase."
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "Omprovad i v33-rotationen (kapacitet fanns): faller pa grind 2 - handelsen 5/8 ar bekraftad men NEGATIV (AI-ledningsflykt, -4,03 pct) och bar inget kopcase.",
+      "priceSession": "regular"
     },
     {
       "id": "260807-PAYC",
@@ -109,14 +112,14 @@
       "confirmed": true,
       "thesis": "Q2 CY26 5/8 AMC krossade: intakt 531,2 MUSD (+9,8% a/a, ~3,5% beat), just EPS 2,78 vs 2,38 (16,8% beat), hojd FY-guide. Aktien ~+23% 6/8. Ej i prices.json - post-event-kurs ej verifierad. Extended, ingen jakt.",
       "sourceRef": "StockStory/Benzinga 2026-08-06",
-      "price": 217.0667,
-      "priceAsOf": "2026-08-06T23:50:19.000Z",
+      "price": 214.94,
+      "priceAsOf": "2026-08-07T20:01:10.000Z",
       "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": "reports/us_daily/us-daglig-260807.md",
-      "decidedAt": "2026-08-07",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10, allokeringen avgörs av v33-rotationen. (a)-(d) passerade, reguljär post-katalysatorkurs 215,97 USD finns nu.",
-      "priceSession": "pre"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "Omprovad i v33-rotationen (kapacitet fanns): grind 3 ej provbar, 2 punkter i price_history. En rekylfri session efter +23 pct-gapet ar inte en satt bas. Bubblare.",
+      "priceSession": "regular"
     },
     {
       "id": "260807-U",
@@ -129,14 +132,14 @@
       "confirmed": true,
       "thesis": "Q2 6/8 beat: intakt 546,5 MUSD (+24% a/a), just EPS 0,28 (vandning fran forlust). Reaktion ~+11% tidig handel men spretigt in i stangning. Ej i prices.json - reguljar post-event-kurs ej verifierbar. Vandningscase, bevakas.",
       "sourceRef": "TipRanks/Yahoo Finance 2026-08-06",
-      "price": 40.78,
-      "priceAsOf": "2026-08-07T08:07:18.000Z",
+      "price": 43,
+      "priceAsOf": "2026-08-07T20:00:02.000Z",
       "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": "reports/us_daily/us-daglig-260807.md",
-      "decidedAt": "2026-08-07",
-      "decisionReason": "spärr (e) ingen ledig kapacitet: boken nollställd inför skarp start 2026-08-10. (a)-(d) passerade, reguljär post-katalysatorkurs 40,81 USD (2026-08-06 20:00:03Z) finns nu.",
-      "priceSession": "pre"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "Omprovad i v33-rotationen (kapacitet fanns): grind 3 ej provbar, 2 punkter i price_history. Follow-through +5,37 pct 7/8 noterat, men RSI ej berakningsbar. Bubblare.",
+      "priceSession": "regular"
     },
     {
       "id": "260808-NET",
@@ -149,13 +152,14 @@
       "confirmed": true,
       "thesis": "Q2 6/8 AMC beat + hojd FY-guide: intakt 696,1 MUSD (+36% a/a), FY 2,864-2,870 mdr (over konsensus), AI-driven internettrafik som draglok. Aktien ~+16% 7/8. Ej i prices.json - post-event-kurs ej verifierad. Extended, ingen jakt.",
       "sourceRef": "Quartz/24-7 Wall St. 2026-08-07",
-      "price": 302.01,
-      "priceAsOf": "2026-08-07T23:59:48.000Z",
-      "status": "new",
+      "price": 300.27,
+      "priceAsOf": "2026-08-07T20:04:01.000Z",
+      "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "priceSession": "regular",
+      "decisionReason": "gap-and-fade: dagshogsta 324,73 men stangning 300,27, forbors 293,76 (10/8). Grind 3 ej provbar (1 punkt i price_history). Ingen jakt in i en pagaende fade."
     },
     {
       "id": "260808-PLTR",
@@ -171,10 +175,11 @@
       "price": 172.01,
       "priceAsOf": "2026-08-07T20:00:00.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "decisionReason": "grind 3 ej provbar: 5 punkter i price_history, RSI(14) ej berakningsbar efter +10,32 pct 7/8. Ingen jakt i gapet. Villkorad plan lagd <= 160,00 USD i stallet."
     },
     {
       "id": "260808-TEAM",
@@ -187,13 +192,14 @@
       "confirmed": true,
       "thesis": "Q2 6/8 AMC starkt kvartal, aktien ~+35% 7/8 (dagens storsta mjukvarurusning). Collaboration-mjukvara med prissattningsformaga. Ej i prices.json - post-event-kurs ej verifierad. Extremt extended, ingen jakt.",
       "sourceRef": "Motley Fool 2026-08-07",
-      "price": 149.7887,
-      "priceAsOf": "2026-08-07T23:59:51.000Z",
-      "status": "new",
+      "price": 149.07,
+      "priceAsOf": "2026-08-07T20:00:00.000Z",
+      "status": "rejected",
       "expiresAt": "2026-08-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260810.md",
+      "decidedAt": "2026-08-10",
+      "priceSession": "regular",
+      "decisionReason": "grind 3 ej provbar: 1 punkt i price_history efter +35,3 pct pa en session. Enda tekniska ankaret ar dagslagsta 141,51. Bevakas for satt bas."
     }
   ]
 }
