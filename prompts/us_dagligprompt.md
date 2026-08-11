@@ -338,8 +338,27 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    Undantag där HELA positionen får läggas som limit: aktien har gapat upp > 3 % samma dag, eller
    en binär händelse (rapport, Fed-besked, FDA) infaller inom 2 handelsdagar – US-boken har fler
    sådana kluster än den nordiska, så undantaget kommer att användas oftare. Motivera skriftligt.
-   Efter att båda benen fyllts: räkna om entry som viktat snitt och justera stop/mål proportionellt
-   i `state/portfolj_us.md`.
+   **NÄR BEN 2 FYLLS (gäller i BÅDA lägena – ben 2 triggar oftast i LÄGE B, tisdag–fredag):
+   positionen SLÅS IHOP till EN rad i `state/portfolj_us.md`. Lägg ALDRIG en andra rad för samma
+   ticker** (punkt 8:s "ny rad vid KÖP" gäller nya positioner, inte ben 2). Gör exakt detta:
+   - **Vikt = summan av benen** (12,5 % + 12,5 % = **25 %**), skriven i den BEFINTLIGA raden.
+     Minska indexsleeven (SPY) med ben 2:s vikt i samma körning.
+   - **Entry = viktat snitt** av de två fyllnadskurserna. **Entry-datum lämnas OFÖRÄNDRAT
+     (ben 1:s datum)** – dashboardens affärsinmatning (`assets/fills.js`) nycklar på
+     ticker + entry-datum, så ett ändrat datum tappar Drens ifyllda affär.
+   - **Stop-loss flyttas ALDRIG ned** – punkt 6 är överordnad och gäller utan undantag. Ben 2
+     fyller till en LÄGRE kurs, så oförändrad stop innebär mindre riskavstånd och bättre R/R,
+     aldrig sämre. Målkursen lämnas också oförändrad; höjning kräver ny katalysator (punkt 6).
+     Räkna om och skriv ut R/R mot det nya viktade entryt.
+   - **Stryk pending-raden** med `~~…~~` och sätt Status "TRIGGAD <datum>" – radera den aldrig.
+     Ligger raden kvar olöst larmar monitorn (`monitor.yml`) vidare på en nivå som redan fyllts.
+   - Logga ben 2 som en egen `KÖP`-rad i `state/decisions.json` med samma ticker.
+   Varför en rad och inte två: `computeTradeStats` räknar VARJE historikrad som en affär, så två
+   rader gör ETT case till två affärer och förvanskar träffsäkerhet, profit factor och hålltid på
+   ett underlag som redan är för litet. Två rader ger dessutom två kort för samma aktie i
+   Översikt och två nycklar i `fills.js`.
+   Triggar ben 2 aldrig: positionen förblir 12,5 % (det är INTE ett fel), pending-raden avförs
+   efter 5 handelsdagar och kapitalet stannar i sleeven.
 4b. VILLKORADE BUBBLAR-PLANER: du FÅR lägga max 2 av bubblarna som pending-planer i
    `state/portfolj_us.md`:s Pending-sektion med explicit entry-villkor (verifierad kurs ≤/≥ $X),
    planerad stop, mål, R/R (minst 2:1) och vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn
@@ -444,7 +463,10 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
      varför positionen hålls genom eventet, eller sälj i förväg.
    - KÖP endast i fyra fall: (a) ersättningsköp från senaste us-veckorapportens bubblarlista om en
      position sålts i förtid och bubblaren nu uppfyller ALLA krav (katalysator + teknik + likviditet
-     + 2:1), (b) ett entry-villkor från veckorapporten som nu triggats, (c) en villkorad
+     + 2:1), (b) ett entry-villkor från veckorapporten som nu triggats – **är raden märkt "BEN 2"
+     gäller sammanslagningsregeln i punkt 4a: uppdatera den BEFINTLIGA innehavsraden till summerad
+     vikt (12,5 + 12,5 = 25 %) med viktat entry, oförändrat entry-datum och oförändrad stop; lägg
+     ALDRIG en andra rad för samma ticker**, (c) en villkorad
      BUBBLAR-plan i Pending som TRIGGATS mot verifierad kurs OCH ledig kapacitet finns (< 4
      innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering,
      eller **(d) en SCOUT-KANDIDAT med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**.
@@ -480,7 +502,10 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
 8. Uppdatera `state/portfolj_us.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall %
    och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja
    alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation;
-   dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan;
+   dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan
+   – **UNDANTAG: ett fyllt BEN 2 för en ticker som redan står i Aktuellt innehav får ALDRIG en egen
+   rad, den befintliga raden uppdateras enligt punkt 4a (summerad vikt 25 %, viktat entry,
+   entry-datum och stop oförändrade, pending-raden struken som TRIGGAD)**;
    vid BEHÅLL uppdateras bara "Senast uppdaterad".
 
 ## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena

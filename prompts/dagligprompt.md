@@ -243,9 +243,29 @@ nedan kommer ur den ombyggda motorn – tidigare formuleringar i den här filen 
      5 handelsdagar avförs benet och den delen stannar i kassa.
    Undantag där HELA positionen får läggas som limit: aktien har gapat upp > 3 % samma dag, eller
    en binär händelse (rapport, besked) infaller inom 2 handelsdagar. Motivera undantaget skriftligt.
-   Efter att båda benen fyllts: räkna om entry som viktat snitt och justera stop/mål proportionellt
-   i `state/portfolj.md`. Kostnadsneutralt: courtaget är procentuellt, så två halva köp kostar
-   detsamma som ett helt (minimicourtaget slår bara på mycket små belopp).
+   **NÄR BEN 2 FYLLS (gäller i BÅDA lägena – ben 2 triggar oftast i LÄGE B, tisdag–fredag):
+   positionen SLÅS IHOP till EN rad i `state/portfolj.md`. Lägg ALDRIG en andra rad för samma
+   ticker** (punkt 8:s "ny rad vid KÖP" gäller nya positioner, inte ben 2). Gör exakt detta:
+   - **Vikt = summan av benen** (12,5 % + 12,5 % = **25 %**), skriven i den BEFINTLIGA raden.
+     Minska indexsleeven med ben 2:s vikt i samma körning.
+   - **Entry = viktat snitt** av de två fyllnadskurserna. **Entry-datum lämnas OFÖRÄNDRAT
+     (ben 1:s datum)** – dashboardens affärsinmatning (`assets/fills.js`) nycklar på
+     ticker + entry-datum, så ett ändrat datum tappar Drens ifyllda affär.
+   - **Stop-loss flyttas ALDRIG ned** – punkt 6 är överordnad och gäller utan undantag. Ben 2
+     fyller till en LÄGRE kurs, så oförändrad stop innebär mindre riskavstånd och bättre R/R,
+     aldrig sämre. Målkursen lämnas också oförändrad; höjning kräver ny katalysator (punkt 6).
+     Räkna om och skriv ut R/R mot det nya viktade entryt.
+   - **Stryk pending-raden** med `~~…~~` och sätt Status "TRIGGAD <datum>" – radera den aldrig.
+     Ligger raden kvar olöst larmar monitorn (`monitor.yml`) vidare på en nivå som redan fyllts.
+   - Logga ben 2 som en egen `KÖP`-rad i `state/decisions.json` med samma ticker.
+   Varför en rad och inte två: `computeTradeStats` räknar VARJE historikrad som en affär, så två
+   rader gör ETT case till två affärer och förvanskar träffsäkerhet, profit factor och hålltid på
+   ett underlag som redan är för litet. Två rader ger dessutom två kort för samma aktie i
+   Översikt och två nycklar i `fills.js`.
+   Triggar ben 2 aldrig: positionen förblir 12,5 % (det är INTE ett fel), pending-raden avförs
+   efter 5 handelsdagar och kapitalet stannar i sleeven.
+   Kostnadsneutralt: courtaget är procentuellt, så två halva köp kostar detsamma som ett helt
+   (minimicourtaget slår bara på mycket små belopp).
 4b. VILLKORADE BUBBLAR-PLANER (aktiverar intradag-monitorn för idéerna): du FÅR lägga max 2 av bubblarna som pending-planer i `state/portfolj.md`:s Pending-sektion, med explicit entry-villkor (verifierad kurs ≤/≥ X), planerad stop-loss, målkurs, R/R (minst 2:1) och planerad vikt, märkta "BUBBLARE" i Status-kolumnen. Monitorn (`monitor.yml`) läser Pending och larmar automatiskt när nivån korsas – noll tokens. En bubblar-plan som inte triggats inom 5 handelsdagar AVFÖRS vid nästa rotation (stryk med ~~…~~, radera aldrig). Lägg ALDRIG fler än 2 och aldrig planer utan fullständiga nivåer.
 5. Uppdatera `state/portfolj.md` med det nya innehavet och eventuell kassa.
 
@@ -264,13 +284,13 @@ Gör följande för VARJE innehav i `state/portfolj.md`:
 4. Fatta EXAKT ETT beslut per innehav:
    - SÄLJ om: stop-loss träffats eller brutits; målkursen nåtts; katalysatorn punkterats (rykte dementerat, vinstvarning, negativt besked); eller en makrohändelse brutit tesen.
    - BEHÅLL om: tesen är intakt och kursen inom plan. Ange om läget stärkts eller försvagats sedan igår. Har innehavet en BINÄR händelse (kvartalsrapport, regulatoriskt besked, dom) inom 2 handelsdagar: motivera EXPLICIT varför positionen hålls genom händelsen, eller sälj i förväg.
-   - KÖP endast i fyra fall: (a) ersättningsköp från senaste veckorapportens bubblarlista (senaste filen i `reports/weekly/`) om en position sålts i förtid och bubblaren nu uppfyller ALLA krav (katalysator + teknik + likviditet + 2:1 + nåbart mål), (b) ett entry-villkor från veckorapporten ("köp om kursen är under X") som nu triggats, (c) en villkorad BUBBLAR-plan i Pending-sektionen som TRIGGATS mot verifierad kurs OCH det finns ledig kapacitet (< 4 innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering, eller **(d) en KANDIDAT ur `state/scout_candidates.json` med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**. Kapitalet till köpet tas ur indexsleeven; minska sleeven med motsvarande vikt.
+   - KÖP endast i fyra fall: (a) ersättningsköp från senaste veckorapportens bubblarlista (senaste filen i `reports/weekly/`) om en position sålts i förtid och bubblaren nu uppfyller ALLA krav (katalysator + teknik + likviditet + 2:1 + nåbart mål), (b) ett entry-villkor från veckorapporten ("köp om kursen är under X") som nu triggats – **är raden märkt "BEN 2" gäller sammanslagningsregeln i punkt 4a: uppdatera den BEFINTLIGA innehavsraden till summerad vikt (12,5 + 12,5 = 25 %) med viktat entry, oförändrat entry-datum och oförändrad stop; lägg ALDRIG en andra rad för samma ticker**, (c) en villkorad BUBBLAR-plan i Pending-sektionen som TRIGGATS mot verifierad kurs OCH det finns ledig kapacitet (< 4 innehav) – köp enligt planens nivåer om alla krav fortfarande håller, annars AVFÖR med motivering, eller **(d) en KANDIDAT ur `state/scout_candidates.json` med bekräftad katalysator (ny 2026-08-04, se punkt 2d)**. Kapitalet till köpet tas ur indexsleeven; minska sleeven med motsvarande vikt.
    - **VILLKORAD PLAN FÖR EN PRISSATT BUBBLARE (ny 2026-08-06).** Du FÅR lägga EN villkorad bubblar-plan i LÄGE B, men bara när kursen var det ENDA som saknades. Samtliga sex villkor måste hålla: (1) senaste veckorapporten angav uttryckligen SAKNAD VERIFIERAD KURS som skälet att bubblaren inte fick en pending-rad – en bubblare som rankades under av OMDÖMESSKÄL (ingen egen katalysator, sektorkoncentration, ej beräkningsbar teknik) omfattas ALDRIG; (2) `state/prices.json` har nu verifierad kurs med tidsstämpel; (3) katalysatorn är fortfarande inom sina 5 handelsdagar och obruten; (4) bubblaren klarar och PASSERAR full poängsättning mot de fem grindarna – den kunde inte poängsättas på måndagen eftersom kursen är det poängsättningen behöver; (5) regimfiltret är PÅ; (6) boken har ledig plats och taket på TVÅ villkorade planer spräcks inte. Högst EN sådan plan per körning. Regeln prövas EN gång per körning, oberoende av innehavsslingan. Planen läggs enligt punkt 4b i LÄGE A, med fullständiga nivåer och entry-villkor mot verifierad kurs, och avförs som vanligt om den inte triggat inom 5 handelsdagar. **Logga avgörandet i `state/decisions.json` OAVSETT utfall:** en rad när planen läggs, och en `AVVAKTA`-rad med den NAMNGIVNA spärren när bubblaren faller på något av villkoren. Båda behövs – `checkStalePricedBubblare` tystnar bara när det finns en rad daterad efter veckorapporten, så en plan som läggs utan att loggas ger falsklarm resten av veckan. Detta är en SPÄRRAD väg, inte en uppmjukning – kursverifieringskravet, grindarna och taket gäller oförändrat.
    - TIDSSTOPP: har innehavet en `catalystType` med tidsstopp enligt tabellen i "NIVÅER & OMSÄTTNING" (`ma_rumor`, `insider`, `index`) och horisonten passerats utan att tesen bekräftats – SÄLJ och flytta kapitalet till indexsleeven.
 5. Motivera varje beslut i 1–3 meningar med hänvisning till kurs (med tidsstämpel) och/eller nyhet (med datum och källa).
 6. Riskjusteringar: stop-loss får flyttas UPP (t.ex. till entry när positionen är +5 %, eller trailing under nya stöd) men ALDRIG ned. Målkurs får endast höjas vid extraordinär ny katalysator, med tydlig motivering.
 7. Skriv dagens rapport enligt `templates/daglig_mall.md` (spara i `reports/daily/`). Håll den kort – målet är ett tydligt beslut per aktie, inte en ny djupanalys.
-8. Uppdatera `state/portfolj.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall i % och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation; dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan; vid BEHÅLL uppdateras bara "Senast uppdaterad".
+8. Uppdatera `state/portfolj.md`: vid SÄLJ flyttas positionen till Historik med exitkurs, utfall i % och skäl, OCH fältet "Ackumulerad avkastning sedan start" räknas om DIREKT i samma körning (kedja alla stängda positioner multiplikativt enligt faktisk vikt – vänta ALDRIG till måndagens rotation; dashboarden läser fältet live); vid KÖP läggs ny rad i Aktuellt innehav med komplett handelsplan – **UNDANTAG: ett fyllt BEN 2 för en ticker som redan står i Aktuellt innehav får ALDRIG en egen rad, den befintliga raden uppdateras enligt punkt 4a (summerad vikt 25 %, viktat entry, entry-datum och stop oförändrade, pending-raden struken som TRIGGAD)**; vid BEHÅLL uppdateras bara "Senast uppdaterad".
 
 ## BESLUTSDATABASEN (state/decisions.json) – gäller BÅDA lägena
 Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/decisions.json`
