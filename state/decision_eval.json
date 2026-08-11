@@ -1,24 +1,24 @@
 {
- "generatedAt": "2026-08-11T13:50:57.880Z",
+ "generatedAt": "2026-08-11T14:51:03.387Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 79,
-  "measurable": 79,
+  "decisions": 86,
+  "measurable": 86,
   "missing": 0,
-  "pending": 63
+  "pending": 70
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
     "n": 16,
-    "meanAlphaPct": 1.52,
-    "medianAlphaPct": 1.62,
-    "meanPct": 2.7,
+    "meanAlphaPct": 1.51,
+    "medianAlphaPct": 1.85,
+    "meanPct": 2.71,
     "beatIndexPct": 68.75
    },
    "byAction": {
@@ -42,17 +42,17 @@
     },
     "BEHÅLL": {
      "n": 3,
-     "meanAlphaPct": 1.49,
+     "meanAlphaPct": 1.53,
      "medianAlphaPct": 2.02,
-     "meanPct": 2.54,
+     "meanPct": 2.62,
      "beatIndexPct": 66.67,
      "insufficient": true,
      "need": 5
     },
     "AVVAKTA": {
      "n": 7,
-     "meanAlphaPct": 0.31,
-     "medianAlphaPct": 1.16,
+     "meanAlphaPct": 0.26,
+     "medianAlphaPct": 0.39,
      "meanPct": 1.33,
      "beatIndexPct": 71.43,
      "insufficient": true,
@@ -69,18 +69,18 @@
     },
     "us": {
      "n": 8,
-     "meanAlphaPct": 0.17,
-     "medianAlphaPct": 0.59,
-     "meanPct": 1.3,
+     "meanAlphaPct": 0.15,
+     "medianAlphaPct": 0.21,
+     "meanPct": 1.33,
      "beatIndexPct": 62.5
     }
    },
    "byCatalyst": {
     "earnings": {
      "n": 8,
-     "meanAlphaPct": 1.13,
-     "medianAlphaPct": 0.23,
-     "meanPct": 2.05,
+     "meanAlphaPct": 1.2,
+     "medianAlphaPct": 0.39,
+     "meanPct": 2.16,
      "beatIndexPct": 50
     },
     "macro": {
@@ -103,9 +103,9 @@
     },
     "other": {
      "n": 3,
-     "meanAlphaPct": 1.08,
-     "medianAlphaPct": 1.16,
-     "meanPct": 2.12,
+     "meanAlphaPct": 0.82,
+     "medianAlphaPct": 0.39,
+     "meanPct": 1.9,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 5
@@ -136,6 +136,15 @@
      "beatIndexPct": null,
      "insufficient": true,
      "need": 8
+    },
+    "turnaround": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
     }
    },
    "selectionEdge": {
@@ -151,8 +160,8 @@
     },
     "passed": {
      "n": 7,
-     "meanAlphaPct": 0.31,
-     "medianAlphaPct": 1.16,
+     "meanAlphaPct": 0.26,
+     "medianAlphaPct": 0.39,
      "meanPct": 1.33,
      "beatIndexPct": 71.43,
      "insufficient": true,
@@ -291,6 +300,15 @@
      "need": 8
     },
     "ma_rumor": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "turnaround": {
      "n": 0,
      "meanAlphaPct": null,
      "medianAlphaPct": null,
@@ -572,9 +590,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -1.31,
-     "benchPct": 0.17,
-     "alphaPct": -1.48,
+     "pct": -1.05,
+     "benchPct": 0.29,
+     "alphaPct": -1.34,
      "toDate": "2026-08-11"
     }
    }
@@ -589,9 +607,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.62,
-     "benchPct": 0.17,
-     "alphaPct": 1.46,
+     "pct": 2.22,
+     "benchPct": 0.29,
+     "alphaPct": 1.93,
      "toDate": "2026-08-11"
     }
    }
@@ -606,9 +624,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.33,
-     "benchPct": 0.17,
-     "alphaPct": 1.16,
+     "pct": 0.68,
+     "benchPct": 0.29,
+     "alphaPct": 0.39,
      "toDate": "2026-08-11"
     }
    }
@@ -1230,6 +1248,76 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "order",
+   "sector": "Halvledare/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Dataanalys/AI-mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "PAYC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "HR-mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Spelmotor/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "TEAM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/samarbete",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-11",
+   "ticker": "ANET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Natverk/AI-infra",
    "reconstructed": false,
    "fwd": {}
   }
