@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-11T15:51:53.640Z",
+ "generatedAt": "2026-08-11T16:48:00.658Z",
  "horizons": [
   5,
   20
@@ -16,9 +16,9 @@
   "5": {
    "all": {
     "n": 16,
-    "meanAlphaPct": 1.47,
-    "medianAlphaPct": 1.66,
-    "meanPct": 2.63,
+    "meanAlphaPct": 1.52,
+    "medianAlphaPct": 1.8,
+    "meanPct": 2.66,
     "beatIndexPct": 68.75
    },
    "byAction": {
@@ -42,18 +42,18 @@
     },
     "BEHÅLL": {
      "n": 3,
-     "meanAlphaPct": 1.31,
+     "meanAlphaPct": 1.32,
      "medianAlphaPct": 2.02,
-     "meanPct": 2.33,
+     "meanPct": 2.31,
      "beatIndexPct": 66.67,
      "insufficient": true,
      "need": 5
     },
     "AVVAKTA": {
      "n": 7,
-     "meanAlphaPct": 0.27,
-     "medianAlphaPct": 0.84,
-     "meanPct": 1.28,
+     "meanAlphaPct": 0.37,
+     "medianAlphaPct": 1.24,
+     "meanPct": 1.35,
      "beatIndexPct": 71.43,
      "insufficient": true,
      "need": 1
@@ -69,18 +69,18 @@
     },
     "us": {
      "n": 8,
-     "meanAlphaPct": 0.07,
-     "medianAlphaPct": 0.43,
-     "meanPct": 1.17,
+     "meanAlphaPct": 0.16,
+     "medianAlphaPct": 0.63,
+     "meanPct": 1.23,
      "beatIndexPct": 62.5
     }
    },
    "byCatalyst": {
     "earnings": {
      "n": 8,
-     "meanAlphaPct": 1.07,
-     "medianAlphaPct": 0.27,
-     "meanPct": 1.98,
+     "meanAlphaPct": 1.11,
+     "medianAlphaPct": 0.39,
+     "meanPct": 1.99,
      "beatIndexPct": 50
     },
     "macro": {
@@ -103,9 +103,9 @@
     },
     "other": {
      "n": 3,
-     "meanAlphaPct": 0.97,
-     "medianAlphaPct": 0.84,
-     "meanPct": 1.99,
+     "meanAlphaPct": 1.1,
+     "medianAlphaPct": 1.24,
+     "meanPct": 2.09,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 5
@@ -160,9 +160,9 @@
     },
     "passed": {
      "n": 7,
-     "meanAlphaPct": 0.27,
-     "medianAlphaPct": 0.84,
-     "meanPct": 1.28,
+     "meanAlphaPct": 0.37,
+     "medianAlphaPct": 1.24,
+     "meanPct": 1.35,
      "beatIndexPct": 71.43,
      "insufficient": true,
      "need": 1
@@ -590,9 +590,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -1.93,
-     "benchPct": 0.09,
-     "alphaPct": -2.02,
+     "pct": -1.98,
+     "benchPct": -0.01,
+     "alphaPct": -1.98,
      "toDate": "2026-08-11"
     }
    }
@@ -607,9 +607,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.63,
-     "benchPct": 0.09,
-     "alphaPct": 1.54,
+     "pct": 1.81,
+     "benchPct": -0.01,
+     "alphaPct": 1.82,
      "toDate": "2026-08-11"
     }
    }
@@ -624,9 +624,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 0.93,
-     "benchPct": 0.09,
-     "alphaPct": 0.84,
+     "pct": 1.24,
+     "benchPct": -0.01,
+     "alphaPct": 1.24,
      "toDate": "2026-08-11"
     }
    }
