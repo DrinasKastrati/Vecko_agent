@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-10T17:51:03.242Z",
-  "checkedAt": "2026-08-10T17:51:03.242Z",
+  "generatedAt": "2026-08-11T08:09:04.225Z",
+  "checkedAt": "2026-08-11T08:09:04.225Z",
   "watched": [
     "ASSA-B.ST",
     "NVDA",
@@ -9,13 +9,24 @@
   ],
   "active": [
     {
+      "ticker": "ASSA-B.ST",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 361,
+      "price": 360.4,
+      "currency": "SEK",
+      "marketTime": "2026-08-11T08:08:54.000Z",
+      "basis": "price",
+      "hitPrice": 360.4
+    },
+    {
       "ticker": "NVDA",
       "type": "KÖP",
       "reason": "entry-villkor uppfyllt",
       "level": 217,
-      "price": 218.14,
+      "price": 217.55,
       "currency": "USD",
-      "marketTime": "2026-08-10T17:51:01.000Z",
+      "marketTime": "2026-08-10T20:00:00.000Z",
       "basis": "intraday",
       "hitPrice": 216.77
     }
