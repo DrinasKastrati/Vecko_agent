@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-10T21:56:19.648Z",
+  "generatedAt": "2026-08-11T05:52:18.952Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
   "tickerCount": 61,
   "okCount": 61,
-  "extendedCount": 1,
+  "extendedCount": 4,
   "quotes": {
     "AAPL": {
       "symbol": "AAPL",
@@ -141,14 +141,14 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 63937.12,
+      "price": 63967.06,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-10T21:55:55.000Z",
+      "marketTime": "2026-08-11T05:51:56.000Z",
       "marketState": null,
       "previousClose": 64844.88671875,
-      "dayHigh": 65278.344,
-      "dayLow": 63764.758,
+      "dayHigh": 64088.84,
+      "dayLow": 63871.457,
       "source": "Yahoo Finance (chart API)"
     },
     "COIN": {
@@ -173,7 +173,10 @@
       "previousClose": 4.25,
       "dayHigh": 4.245,
       "dayLow": 3.8,
-      "source": "Yahoo Finance (chart API)"
+      "source": "Yahoo Finance (chart API)",
+      "extendedPrice": 3.9,
+      "extendedTime": "2026-08-10T15:29:00.000Z",
+      "extendedSession": "pre"
     },
     "CTY1S.HE": {
       "symbol": "CTY1S.HE",
@@ -185,7 +188,10 @@
       "previousClose": 2.9100000858306885,
       "dayHigh": 2.92,
       "dayLow": 2.895,
-      "source": "Yahoo Finance (chart API)"
+      "source": "Yahoo Finance (chart API)",
+      "extendedPrice": 2.9,
+      "extendedTime": "2026-08-10T15:29:00.000Z",
+      "extendedSession": "pre"
     },
     "CVX": {
       "symbol": "CVX",
@@ -225,14 +231,14 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1872.98,
+      "price": 1874.5,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-10T21:55:58.000Z",
+      "marketTime": "2026-08-11T05:51:59.000Z",
       "marketState": null,
       "previousClose": 1908.6827392578125,
-      "dayHigh": 1928.543,
-      "dayLow": 1868.058,
+      "dayHigh": 1879.145,
+      "dayLow": 1870.517,
       "source": "Yahoo Finance (chart API)"
     },
     "G5EN.ST": {
@@ -245,7 +251,10 @@
       "previousClose": 70.30000305175781,
       "dayHigh": 69.7,
       "dayLow": 67,
-      "source": "Yahoo Finance (chart API)"
+      "source": "Yahoo Finance (chart API)",
+      "extendedPrice": 69.199997,
+      "extendedTime": "2026-08-10T15:29:00.000Z",
+      "extendedSession": "pre"
     },
     "GOOGL": {
       "symbol": "GOOGL",
@@ -545,10 +554,7 @@
       "previousClose": 20.520000457763672,
       "dayHigh": 20.46,
       "dayLow": 19.13,
-      "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 21.743,
-      "extendedTime": "2026-08-10T21:55:57.000Z",
-      "extendedSession": "post"
+      "source": "Yahoo Finance (chart API)"
     },
     "SCA-B.ST": {
       "symbol": "SCA-B.ST",
@@ -648,14 +654,14 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.4833,
+      "price": 9.4903,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-10T21:56:14.000Z",
+      "marketTime": "2026-08-11T05:52:15.000Z",
       "marketState": null,
       "previousClose": 9.482950210571289,
-      "dayHigh": 9.492,
-      "dayLow": 9.4794,
+      "dayHigh": 9.497,
+      "dayLow": 9.4781,
       "source": "Yahoo Finance (chart API)"
     },
     "WFC": {
@@ -704,7 +710,10 @@
       "previousClose": 331,
       "dayHigh": 335.6,
       "dayLow": 323.1,
-      "source": "Yahoo Finance (chart API)"
+      "source": "Yahoo Finance (chart API)",
+      "extendedPrice": 326,
+      "extendedTime": "2026-08-10T14:59:00.000Z",
+      "extendedSession": "pre"
     },
     "^GSPC": {
       "symbol": "^GSPC",
@@ -732,14 +741,14 @@
     },
     "^OMX": {
       "symbol": "^OMX",
-      "price": 3305.5735,
+      "price": 3305.573,
       "currency": "SEK",
       "exchange": "Stockholm",
       "marketTime": "2026-08-10T15:35:02.000Z",
       "marketState": null,
       "previousClose": 3312.340087890625,
-      "dayHigh": 3315.3835,
-      "dayLow": 3294.4412,
+      "dayHigh": 0,
+      "dayLow": 0,
       "source": "Yahoo Finance (chart API)"
     }
   }
