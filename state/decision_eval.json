@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-11T20:34:58.049Z",
+ "generatedAt": "2026-08-12T06:11:18.198Z",
  "horizons": [
   5,
   20
@@ -9,17 +9,17 @@
   "decisions": 86,
   "measurable": 86,
   "missing": 0,
-  "pending": 70
+  "pending": 64
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
-    "n": 16,
-    "meanAlphaPct": 1.57,
-    "medianAlphaPct": 1.9,
-    "meanPct": 2.69,
-    "beatIndexPct": 68.75
+    "n": 22,
+    "meanAlphaPct": 1.22,
+    "medianAlphaPct": 1.05,
+    "meanPct": 2.06,
+    "beatIndexPct": 63.64
    },
    "byAction": {
     "KÖP": {
@@ -41,22 +41,20 @@
      "need": 6
     },
     "BEHÅLL": {
-     "n": 3,
-     "meanAlphaPct": 1.4,
-     "medianAlphaPct": 2.02,
-     "meanPct": 2.35,
-     "beatIndexPct": 66.67,
+     "n": 4,
+     "meanAlphaPct": 1,
+     "medianAlphaPct": 0.91,
+     "meanPct": 1.73,
+     "beatIndexPct": 50,
      "insufficient": true,
-     "need": 5
+     "need": 4
     },
     "AVVAKTA": {
-     "n": 7,
-     "meanAlphaPct": 0.46,
-     "medianAlphaPct": 1.37,
-     "meanPct": 1.41,
-     "beatIndexPct": 71.43,
-     "insufficient": true,
-     "need": 1
+     "n": 12,
+     "meanAlphaPct": 0.43,
+     "medianAlphaPct": 0.47,
+     "meanPct": 1.01,
+     "beatIndexPct": 66.67
     }
    },
    "byBook": {
@@ -68,19 +66,19 @@
      "beatIndexPct": 75
     },
     "us": {
-     "n": 8,
-     "meanAlphaPct": 0.27,
-     "medianAlphaPct": 0.7,
-     "meanPct": 1.3,
-     "beatIndexPct": 62.5
+     "n": 14,
+     "meanAlphaPct": 0.28,
+     "medianAlphaPct": 0.12,
+     "meanPct": 0.89,
+     "beatIndexPct": 57.14
     }
    },
    "byCatalyst": {
     "earnings": {
-     "n": 8,
-     "meanAlphaPct": 1.2,
-     "medianAlphaPct": 0.39,
-     "meanPct": 2.06,
+     "n": 12,
+     "meanAlphaPct": 0.94,
+     "medianAlphaPct": 0,
+     "meanPct": 1.53,
      "beatIndexPct": 50
     },
     "macro": {
@@ -102,13 +100,13 @@
      "need": 5
     },
     "other": {
-     "n": 3,
-     "meanAlphaPct": 1.15,
-     "medianAlphaPct": 1.37,
-     "meanPct": 2.1,
-     "beatIndexPct": 100,
+     "n": 5,
+     "meanAlphaPct": 0.71,
+     "medianAlphaPct": 0.72,
+     "meanPct": 1.31,
+     "beatIndexPct": 80,
      "insufficient": true,
-     "need": 5
+     "need": 3
     },
     "regulatory": {
      "n": 0,
@@ -159,20 +157,18 @@
      "need": 4
     },
     "passed": {
-     "n": 7,
-     "meanAlphaPct": 0.46,
-     "medianAlphaPct": 1.37,
-     "meanPct": 1.41,
-     "beatIndexPct": 71.43,
-     "insufficient": true,
-     "need": 1
+     "n": 12,
+     "meanAlphaPct": 0.43,
+     "medianAlphaPct": 0.47,
+     "meanPct": 1.01,
+     "beatIndexPct": 66.67
     },
     "edgePct": null,
     "verdict": "för tidigt att uttala sig",
     "insufficient": true,
     "need": {
      "bought": 4,
-     "passed": 1
+     "passed": 0
     }
    }
   },
@@ -649,7 +645,14 @@
    "catalystType": "earnings",
    "sector": "E-handel/moln",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -0.14,
+     "benchPct": 0.06,
+     "alphaPct": -0.2,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-05",
@@ -659,7 +662,14 @@
    "catalystType": "earnings",
    "sector": "Mjukvara/moln",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 3.35,
+     "benchPct": 0.06,
+     "alphaPct": 3.29,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-05",
@@ -669,7 +679,14 @@
    "catalystType": "other",
    "sector": "Bank/finans",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.78,
+     "benchPct": 0.06,
+     "alphaPct": 0.72,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-05",
@@ -679,7 +696,14 @@
    "catalystType": "earnings",
    "sector": "Natverk/AI-infra",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.27,
+     "benchPct": 0.06,
+     "alphaPct": 0.21,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-05",
@@ -689,7 +713,14 @@
    "catalystType": "earnings",
    "sector": "Halvledare",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -1.6,
+     "benchPct": 0.06,
+     "alphaPct": -1.66,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-05",
@@ -699,7 +730,14 @@
    "catalystType": "other",
    "sector": "Halvledare",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -0.53,
+     "benchPct": 0.06,
+     "alphaPct": -0.59,
+     "toDate": "2026-08-12"
+    }
+   }
   },
   {
    "date": "2026-08-06",
