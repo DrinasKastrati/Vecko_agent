@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T20:33:48.075Z",
+  "generatedAt": "2026-08-12T22:00:35.983Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
@@ -138,16 +138,16 @@
       "dayHigh": 162,
       "dayLow": 158.6,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 160.199997,
-      "extendedTime": "2026-08-11T15:29:00.000Z",
+      "extendedPrice": 160.800003,
+      "extendedTime": "2026-08-12T15:29:00.000Z",
       "extendedSession": "pre"
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 63455.01,
+      "price": 63386.22,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-12T20:33:23.000Z",
+      "marketTime": "2026-08-12T22:00:13.000Z",
       "marketState": null,
       "previousClose": 63551.875,
       "dayHigh": 64345.8,
@@ -189,8 +189,8 @@
       "dayHigh": 2.91,
       "dayLow": 2.895,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 2.9,
-      "extendedTime": "2026-08-11T15:29:00.000Z",
+      "extendedPrice": 2.905,
+      "extendedTime": "2026-08-12T15:29:00.000Z",
       "extendedSession": "pre"
     },
     "CVX": {
@@ -228,20 +228,20 @@
       "dayHigh": 130,
       "dayLow": 126.7,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 127.5,
-      "extendedTime": "2026-08-11T14:59:00.000Z",
+      "extendedPrice": 129.300003,
+      "extendedTime": "2026-08-12T14:59:00.000Z",
       "extendedSession": "pre"
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 1882.98,
+      "price": 1875.31,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-12T20:33:24.000Z",
+      "marketTime": "2026-08-12T22:00:12.000Z",
       "marketState": null,
       "previousClose": 1881.37353515625,
       "dayHigh": 1920.3209,
-      "dayLow": 1876.3932,
+      "dayLow": 1876.3002,
       "source": "Yahoo Finance (chart API)"
     },
     "G5EN.ST": {
@@ -255,8 +255,8 @@
       "dayHigh": 65.8,
       "dayLow": 61.5,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 68.800003,
-      "extendedTime": "2026-08-11T15:29:00.000Z",
+      "extendedPrice": 62.599998,
+      "extendedTime": "2026-08-12T15:29:00.000Z",
       "extendedSession": "pre"
     },
     "GOOGL": {
@@ -657,14 +657,14 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.5818,
+      "price": 9.5748,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-12T20:33:42.000Z",
+      "marketTime": "2026-08-12T22:00:31.000Z",
       "marketState": null,
       "previousClose": 9.517069816589355,
-      "dayHigh": 9.5919,
-      "dayLow": 9.4867,
+      "dayHigh": 9.5841,
+      "dayLow": 9.5574,
       "source": "Yahoo Finance (chart API)"
     },
     "WFC": {
@@ -714,8 +714,8 @@
       "dayHigh": 335.1,
       "dayLow": 324.5,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 335.100006,
-      "extendedTime": "2026-08-11T14:59:00.000Z",
+      "extendedPrice": 329.200012,
+      "extendedTime": "2026-08-12T14:59:00.000Z",
       "extendedSession": "pre"
     },
     "^GSPC": {
@@ -723,7 +723,7 @@
       "price": 7748.5,
       "currency": "USD",
       "exchange": "SNP",
-      "marketTime": "2026-08-12T20:20:01.000Z",
+      "marketTime": "2026-08-12T20:36:53.000Z",
       "marketState": null,
       "previousClose": 7728.2001953125,
       "dayHigh": 7766.01,
@@ -735,7 +735,7 @@
       "price": 26588.488,
       "currency": "USD",
       "exchange": "Nasdaq GIDS",
-      "marketTime": "2026-08-12T20:33:46.000Z",
+      "marketTime": "2026-08-12T21:15:59.000Z",
       "marketState": null,
       "previousClose": 26445.44921875,
       "dayHigh": 26688.24,
