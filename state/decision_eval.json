@@ -1,25 +1,25 @@
 {
- "generatedAt": "2026-08-13T07:13:30.157Z",
+ "generatedAt": "2026-08-13T14:16:30.758Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 104,
-  "measurable": 104,
+  "decisions": 110,
+  "measurable": 110,
   "missing": 0,
-  "pending": 79
+  "pending": 85
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
     "n": 25,
-    "meanAlphaPct": 1.13,
+    "meanAlphaPct": 1.08,
     "medianAlphaPct": 1.33,
-    "meanPct": 1.99,
-    "beatIndexPct": 64
+    "meanPct": 2.04,
+    "beatIndexPct": 60
    },
    "byAction": {
     "KÖP": {
@@ -51,10 +51,10 @@
     },
     "AVVAKTA": {
      "n": 15,
-     "meanAlphaPct": 0.57,
-     "medianAlphaPct": 1.04,
-     "meanPct": 1.24,
-     "beatIndexPct": 66.67
+     "meanAlphaPct": 0.5,
+     "medianAlphaPct": 0.7,
+     "meanPct": 1.32,
+     "beatIndexPct": 60
     }
    },
    "byBook": {
@@ -67,10 +67,10 @@
     },
     "us": {
      "n": 17,
-     "meanAlphaPct": 0.31,
-     "medianAlphaPct": 0.7,
-     "meanPct": 1,
-     "beatIndexPct": 58.82
+     "meanAlphaPct": 0.24,
+     "medianAlphaPct": 0.02,
+     "meanPct": 1.08,
+     "beatIndexPct": 52.94
     }
    },
    "byCatalyst": {
@@ -92,19 +92,19 @@
     },
     "order": {
      "n": 4,
-     "meanAlphaPct": 2.74,
+     "meanAlphaPct": 2.78,
      "medianAlphaPct": 2.81,
-     "meanPct": 4.32,
+     "meanPct": 4.56,
      "beatIndexPct": 100,
      "insufficient": true,
      "need": 4
     },
     "other": {
      "n": 7,
-     "meanAlphaPct": 0.06,
-     "medianAlphaPct": 1.04,
-     "meanPct": 0.72,
-     "beatIndexPct": 71.43,
+     "meanAlphaPct": -0.11,
+     "medianAlphaPct": 0.02,
+     "meanPct": 0.77,
+     "beatIndexPct": 57.14,
      "insufficient": true,
      "need": 1
     },
@@ -158,10 +158,10 @@
     },
     "passed": {
      "n": 15,
-     "meanAlphaPct": 0.57,
-     "medianAlphaPct": 1.04,
-     "meanPct": 1.24,
-     "beatIndexPct": 66.67
+     "meanAlphaPct": 0.5,
+     "medianAlphaPct": 0.7,
+     "meanPct": 1.32,
+     "beatIndexPct": 60
     },
     "edgePct": null,
     "verdict": "för tidigt att uttala sig",
@@ -749,9 +749,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.99,
-     "benchPct": 0.57,
-     "alphaPct": 1.42,
+     "pct": 2.92,
+     "benchPct": 1.33,
+     "alphaPct": 1.59,
      "toDate": "2026-08-13"
     }
    }
@@ -766,9 +766,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -3.95,
-     "benchPct": 0.57,
-     "alphaPct": -4.52,
+     "pct": -3.09,
+     "benchPct": 1.33,
+     "alphaPct": -4.42,
      "toDate": "2026-08-13"
     }
    }
@@ -783,9 +783,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.61,
-     "benchPct": 0.57,
-     "alphaPct": 1.04,
+     "pct": 1.06,
+     "benchPct": 1.33,
+     "alphaPct": -0.27,
      "toDate": "2026-08-13"
     }
    }
@@ -1557,6 +1557,66 @@
    "action": "AVVAKTA",
    "catalystType": "regulatory",
    "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "order",
+   "sector": "Halvledare/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Dataanalys/AI-mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "PAYC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "HR-mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Spelmotor/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "TEAM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/samarbete",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "ANET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Natverk/AI-infra",
    "reconstructed": false,
    "fwd": {}
   }
