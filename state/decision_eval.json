@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-13T06:14:03.043Z",
+ "generatedAt": "2026-08-13T07:13:30.157Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 98,
-  "measurable": 98,
+  "decisions": 104,
+  "measurable": 104,
   "missing": 0,
-  "pending": 73
+  "pending": 79
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -1497,6 +1497,66 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Natverk/AI-infra",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "ASSA-B.ST",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "other",
+   "sector": "Sakerhet/passersystem",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "NOVO-B.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Lakemedel/GLP-1",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "PDX.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "SUBC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Offshore/subsea",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Forsvar/maritim",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-13",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Bioteknik",
    "reconstructed": false,
    "fwd": {}
   }
