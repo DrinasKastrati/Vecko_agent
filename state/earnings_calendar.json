@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T06:10:56.137Z",
+  "generatedAt": "2026-08-13T06:13:42.728Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -9,31 +9,11 @@
     "resolved": 53,
     "failed": 0,
     "notApplicable": 4,
-    "upcoming": 7
+    "upcoming": 6
   },
   "upcoming": [
     {
       "tradingDaysAway": 0,
-      "symbol": "CTY1S.HE",
-      "date": "2026-08-12",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": null
-    },
-    {
-      "tradingDaysAway": 0,
-      "symbol": "G5EN.ST",
-      "date": "2026-08-12",
-      "isEstimate": false,
-      "epsConsensus": -0.49167,
-      "epsLow": -0.553,
-      "epsHigh": -0.461,
-      "revenueConsensus": 200400330
-    },
-    {
-      "tradingDaysAway": 1,
       "symbol": "ZEAL.CO",
       "date": "2026-08-13",
       "isEstimate": false,
@@ -43,7 +23,7 @@
       "revenueConsensus": 2418381650
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "BOOZT.ST",
       "date": "2026-08-14",
       "isEstimate": false,
@@ -53,7 +33,7 @@
       "revenueConsensus": 1986500000
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "DFDS.CO",
       "date": "2026-08-14",
       "isEstimate": false,
@@ -63,7 +43,7 @@
       "revenueConsensus": 8203000000
     },
     {
-      "tradingDaysAway": 4,
+      "tradingDaysAway": 3,
       "symbol": "OSSD.ST",
       "date": "2026-08-18",
       "isEstimate": false,
@@ -73,7 +53,7 @@
       "revenueConsensus": 37766670
     },
     {
-      "tradingDaysAway": 10,
+      "tradingDaysAway": 9,
       "symbol": "NVDA",
       "date": "2026-08-26",
       "isEstimate": false,
@@ -81,6 +61,16 @@
       "epsLow": 2.03128,
       "epsHigh": 2.2,
       "revenueConsensus": 91846098240
+    },
+    {
+      "tradingDaysAway": 10,
+      "symbol": "IREN",
+      "date": "2026-08-27",
+      "isEstimate": true,
+      "epsConsensus": -0.455,
+      "epsLow": -0.51,
+      "epsHigh": -0.4,
+      "revenueConsensus": 139650360
     }
   ],
   "all": [
@@ -103,15 +93,6 @@
       "revenueConsensus": 1975597220
     },
     {
-      "symbol": "CTM.ST",
-      "date": "2026-08-11",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": null
-    },
-    {
       "symbol": "CTY1S.HE",
       "date": "2026-08-12",
       "isEstimate": false,
@@ -124,10 +105,10 @@
       "symbol": "G5EN.ST",
       "date": "2026-08-12",
       "isEstimate": false,
-      "epsConsensus": -0.49167,
-      "epsLow": -0.553,
-      "epsHigh": -0.461,
-      "revenueConsensus": 200400330
+      "epsConsensus": 1.16833,
+      "epsLow": 1.107,
+      "epsHigh": 1.199,
+      "revenueConsensus": 203781000
     },
     {
       "symbol": "ZEAL.CO",
@@ -560,6 +541,15 @@
       "epsLow": -0.26,
       "epsHigh": -0.23006,
       "revenueConsensus": 2462000
+    },
+    {
+      "symbol": "CTM.ST",
+      "date": "2026-11-10",
+      "isEstimate": false,
+      "epsConsensus": null,
+      "epsLow": null,
+      "epsHigh": null,
+      "revenueConsensus": null
     }
   ],
   "errors": {},
