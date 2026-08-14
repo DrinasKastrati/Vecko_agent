@@ -234,9 +234,12 @@
       "sourceRef": "Benzinga/CNBC 2026-08-13",
       "price": 508.4997,
       "priceAsOf": "2026-08-14T08:07:15.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-21",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Grind 3 ej provbar: 1 punkt i price_history, RSI(14) kraver 15 (grind 5 av samma skal). Reguljar post-katalysatorkurs 506,395 finns, men reaktionen ar -5,27 pct och intakten missade konsensus.",
+      "decidedBy": "reports/us_daily/us-daglig-260814.md",
+      "decidedAt": "2026-08-14"
     }
   ]
 }
