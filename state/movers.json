@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-08T06:46:47.272Z",
+ "generatedAt": "2026-08-15T06:33:27.060Z",
  "note": "Breddad rörelsedetektion för miss-retrons STEG 1. Rörelsen har REDAN inträffat – detta är bevakningsunderlag, inte köpsignaler.",
  "universeCount": 110,
  "okCount": 107,
@@ -13,55 +13,71 @@
   "dayPct": 6,
   "sessionsWeek": 5
  },
- "asOf": "2026-08-06",
+ "asOf": "2026-08-13",
  "movers": [
   {
    "symbol": "CTM.ST",
-   "lastClose": 4.4,
-   "lastDate": "2026-08-06",
-   "weekPct": 11.96,
-   "dayPct": 1.85,
+   "lastClose": 2.9,
+   "lastDate": "2026-08-13",
+   "weekPct": -34.09,
+   "dayPct": -1.36,
    "trigger": "vecka"
   },
   {
-   "symbol": "NOVO-B.CO",
-   "lastClose": 293.6,
-   "lastDate": "2026-08-06",
-   "weekPct": -11.27,
-   "dayPct": -0.24,
+   "symbol": "VWS.CO",
+   "lastClose": 208,
+   "lastDate": "2026-08-13",
+   "weekPct": 18.08,
+   "dayPct": -1.79,
    "trigger": "vecka"
+  },
+  {
+   "symbol": "STAR-B.ST",
+   "lastClose": 0.1164,
+   "lastDate": "2026-08-13",
+   "weekPct": 17.22,
+   "dayPct": -0.68,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "MAERSK-B.CO",
+   "lastClose": 19035,
+   "lastDate": "2026-08-13",
+   "weekPct": 12.07,
+   "dayPct": 9.37,
+   "trigger": "dag"
+  },
+  {
+   "symbol": "NOKIA.HE",
+   "lastClose": 9.308,
+   "lastDate": "2026-08-13",
+   "weekPct": 11.79,
+   "dayPct": 3.31,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "EMBRAC-B.ST",
+   "lastClose": 72.36,
+   "lastDate": "2026-08-13",
+   "weekPct": 10.41,
+   "dayPct": 7.17,
+   "trigger": "dag"
   },
   {
    "symbol": "G5EN.ST",
-   "lastClose": 69.7,
-   "lastDate": "2026-08-06",
-   "weekPct": 10.63,
-   "dayPct": 0,
+   "lastClose": 62.5,
+   "lastDate": "2026-08-13",
+   "weekPct": -10.33,
+   "dayPct": -0.16,
    "trigger": "vecka"
   },
   {
-   "symbol": "HNSA.ST",
-   "lastClose": 37.84,
-   "lastDate": "2026-08-06",
-   "weekPct": 10.32,
-   "dayPct": 9.94,
-   "trigger": "dag"
-  },
-  {
-   "symbol": "NESTE.HE",
-   "lastClose": 28.41,
-   "lastDate": "2026-08-06",
-   "weekPct": -8.68,
-   "dayPct": -0.21,
+   "symbol": "SAAB-B.ST",
+   "lastClose": 680.1,
+   "lastDate": "2026-08-13",
+   "weekPct": 8.12,
+   "dayPct": 0.79,
    "trigger": "vecka"
-  },
-  {
-   "symbol": "PDX.ST",
-   "lastClose": 134.9,
-   "lastDate": "2026-08-06",
-   "weekPct": -1.53,
-   "dayPct": -7.6,
-   "trigger": "dag"
   }
  ]
 }
