@@ -2,9 +2,15 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-08-02.
-**AKTIV ARBETSKOPIA:** `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31 – arbeta HÄR).
-Tidigare kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` samt den under OneDrive) är utfasade.
+**Senast uppdaterad:** 2026-08-15.
+**TVÅ AKTIVA ARBETSKOPIOR – båda är giltiga och pekar på samma remote:**
+`C:\Users\drini\code\Vecko_agent` (stationär dator) och
+`C:\Users\kastrdri\Git_proj\gitVecko_agent` (laptop). Dren växlar mellan dem.
+Arbeta i den maskinen du sitter vid, men **kör alltid `git pull` FÖRE arbete och `push.bat` EFTER
+sessionen** – den andra kopian ligger annars efter, och skillnaden växer fort eftersom Actions
+committar till main flera gånger per dag (kurser var 30:e minut, rapporter dagligen). Laptopen låg
+94 commits efter när detta skrevs. Den ENDA kopia som är utfasad är den gamla under OneDrive
+(git-lås och CRLF-brus, se avsnitt 7) – gör inga ändringar där.
 
 ---
 
@@ -589,11 +595,16 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
 - **Commit/push sker från Drens dator** – Cowork-sandlådan kan inte pusha (saknar credentials) och
   OneDrive-monteringen blockerar git-lås. Claude skriver filer lokalt, Dren committar/pushar
   (enklast via `push.bat` i repo-roten).
-- ✅ **Klonat utanför OneDrive (2026-07-16):** aktiv arbetskopia var `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
-- ✅ **Ny dator (2026-07-31):** repot klonat till `C:\Users\drini\code\vecko_agent` (gemener i
+- ✅ **Klonat utanför OneDrive (2026-07-16):** laptopens arbetskopia
+  `C:\Users\kastrdri\Git_proj\gitVecko_agent`.
+- ✅ **Andra datorn (2026-07-31):** repot klonat till `C:\Users\drini\code\vecko_agent` (gemener i
   mappnamnet på disk). Node v24 på plats. Auto-push-tasken är registrerad men AVSTÄNGD sedan
   2026-08-02 (se punkt 2 nedan) – pusha manuellt med `push.bat`. Schemaläggningen
   sköts via Drens routines (2026-07-31) – de gamla Cowork scheduled tasks behöver INTE återskapas.
+  **Detta var INTE en migrering.** Fram till 2026-08-15 stod det i denna fil att laptop-kopian var
+  "utfasad", vilket byggde på antagandet att en dator ersatte den andra. Så är det inte: Dren
+  använder båda maskinerna, de har samma remote, och laptop-kopian är fullt giltig. Rutinen är
+  `git pull` före arbete och `push.bat` efter – inte att välja en maskin.
 - ✅ **BYGGT 2026-08-04 – "scouten flaggar men inget händer" är åtgärdat.** Kedjan var bruten
   på tre ställen samtidigt, alla TYSTA: (1) watchlistan fylldes i efterhand ⇒ ingen kurs på
   eventdagen ⇒ grind 1 föll; (2) scoutens fynd fanns bara i prosa ⇒ ingen bok såg dem;
@@ -872,9 +883,10 @@ ta bort skyddet.
 
 ## 8. Var filerna ligger
 Allt ligger nu i repot (branch `main`) enligt strukturen i avsnitt 2 – inga lösa filer utanför.
-Drens AKTIVA lokala arbetskopia: `C:\Users\drini\code\Vecko_agent` (ny dator sedan 2026-07-31).
-Äldre kopior (`C:\Users\kastrdri\Git_proj\gitVecko_agent` och OneDrive-mappen) är utfasade – gör
-inga ändringar där.
+Dren har TVÅ aktiva lokala arbetskopior mot samma remote: `C:\Users\drini\code\Vecko_agent`
+(stationär) och `C:\Users\kastrdri\Git_proj\gitVecko_agent` (laptop). Båda får ändras – synken
+sköts av `git pull` före arbete och `push.bat` efter. Endast den gamla OneDrive-mappen är utfasad
+(se avsnitt 7); gör inga ändringar där.
 
 ---
 
