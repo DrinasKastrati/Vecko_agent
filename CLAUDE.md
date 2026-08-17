@@ -2,7 +2,7 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-08-15.
+**Senast uppdaterad:** 2026-08-17.
 **TVÅ AKTIVA ARBETSKOPIOR – båda är giltiga och pekar på samma remote:**
 `C:\Users\drini\code\Vecko_agent` (stationär dator) och
 `C:\Users\kastrdri\Git_proj\gitVecko_agent` (laptop). Dren växlar mellan dem.
@@ -650,9 +650,66 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   fil som inte motsvarar trädet. Samma regel som `push.bat` följer lokalt. Misslyckas alla tre
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
-- **KVAR (uppdaterad 2026-08-08) – i prioritetsordning:**
-  Driftlistan är tom; allt känt driftfel är åtgärdat (se avklarat ovan). Det som återstår är
-  **strategiarbete efter den externa granskningen** och ligger i **`docs/STRATEGI-ATGARDER.md`**
+- **KVAR (uppdaterad 2026-08-17) – i prioritetsordning:**
+  **DRIFTLISTAN ÄR INTE LÄNGRE TOM. Tre fel i `.github/scripts/fetch-prices.mjs` spärrar
+  kandidatinflödet, och de mäts nu: v34-rotationen 2026-08-17 fällde 21 av 27 kandidater
+  (78 %) på grind 1 eller 2 – alltså på kursförsörjning och inte på omdöme. Grind 4 och 5
+  fällde NOLL, eftersom ingen kandidat kom så långt.** Full mätning med omfång per fel står i
+  `reports/weekly/veckorapport-260817.md`, åtgärdspunkt 1–7. Ordningen nedan är den viktiga:
+  1. **FANTOMPUNKTEN — ta den först.** `updatePriceHistory` daterar punkten efter RUNNERNS
+     väggklocka (`new Date()`), inte efter kursens `marketTime`. En förbörskörning bär
+     föregående sessions stängning och bokför den under dagens datum. 2026-08-17 06:34 UTC
+     hade **59 av 62 serier** en sista punkt identisk med föregående dag; bara de tre
+     dygnet-runt-marknaderna (`BTC-USD`, `ETH-USD`, `USDSEK=X`) hade äkta nya värden.
+     **Det är det enda av de tre felen som får systemet att räkna på PÅHITTADE siffror**, och
+     det träffar exakt RSI/MACD som grind 2 avgörs av: ASSA:s MACD-histogram blev −0,676 på
+     råserien mot −0,287 avdubblerat, och `HEXA-B.ST` BYTTE TECKEN (−0,016 mot korrekta
+     +0,177, alltså en påhittad bearish korsning). Fixen är sex rader: datera mot
+     `(q.marketTime || "").slice(0,10)` med väggklockan som fallback, och byt
+     `arr[arr.length-1]`-jämförelsen mot `findIndex` + `sort` – annars hamnar gårdagens punkt
+     EFTER dagens och serien blir osorterad. **Ingen historikstädning behövs:** felet är
+     övergående, 16:45-cronen skriver över morgonens punkt med den riktiga stängningen, så
+     bara morgonkörningar drabbas – vilket är precis när rotationerna läser filen.
+  2. **SYMBOLER FALLER UR HÄMTNINGEN NÄR VECKORAPPORTEN BYTS.** `collectTickers` anropar
+     `newestWeekly()`, som plockar EXAKT EN rapport (högsta filnamnsnumret). När v33 ersatte
+     v32 den 2026-08-10 slutade **elva symboler med FULL 250-punktshistorik** hämtas:
+     `SAAB-B.ST`, `EMBRAC-B.ST`, `MIPS.ST`, `ELUX-B.ST`, `VOLCAR-B.ST`, `GRK.HE`, `PREC.ST`,
+     `NAS.OL`, `HSHP.OL`, `MORLD.OL`, `ALLEI.ST`. De är inte ofullständiga – de är övergivna.
+     Detta är spegelbilden av punkt 3 och i praktiken värre: SAAB-B.ST (+8,12 %/vecka) och
+     EMBRAC-B.ST (+10,41 % på Q1-rapporten 13/8) var exakt de namn `movers.json` flaggade
+     2026-08-17 och föll ändå på grind 1 – **trots att de hade allt underlag som krävdes för
+     grind 2.** Två nivåer, gör båda: (a) låt `newestWeekly` bli `recentWeeklies(3)` så
+     fönstret är tre rapporter brett; (b) varaktigt – en `collectLiveHistoryTickers(30)` som
+     fortsätter hämta varje symbol med en punkt de senaste 30 dagarna, så övergivna symboler
+     åldras ut av sig själva i stället för omedelbart. Låt den INTE växa obegränsat; det är
+     throttling-risken `config/watchlist.txt` varnar för. **Fel 2 och 3 förstärker varandra:**
+     de elva övergivnas SISTA lagrade punkt är själv en fantom (`SAAB-B.ST` slutar på
+     `["2026-08-10", 633.4]`, identiskt med `["2026-08-07", 633.4]`) – med fel 3 fixat skrivs
+     den punkten inte alls.
+  3. **BACKFILLEN KÖRS ALDRIG AUTOMATISKT.** `state/price_history.json`:s `backfilledAt` står
+     kvar på **2026-08-03T11:05:07Z** medan `generatedAt` uppdateras varje halvtimme.
+     2026-08-17 hade **22 av 81 symboler** färre än 200 stängningar, varav 8 nordiska
+     (`NOVO-B.CO` 8, `PDX.ST` 8, `CTM.ST`/`CTY1S.HE`/`DFDS.CO`/`G5EN.ST`/`NESTE.HE`/`ZEAL.CO`
+     6 var). Det fällde Zealand Pharmas royaltyavtal på 100 MUSD och BÅDA kandidaterna v33
+     lovade att pröva om. **Att lägga en ticker i watchlisten i förväg löser grind 1 men INTE
+     grind 2** – RSI(14) kräver 15 stängningar och MACD ~35, och en ny symbol får en punkt per
+     handelsdag. `backfill-history.mjs` fungerar och tar redan symboler som argument
+     (`… 1y ^OMX`); det som saknas är att någon anropar den. Lägg ett steg i `prices.yml`
+     grindat på 05:00-cronen som plockar symboler med `< 200` punkter och backfillar dem.
+     Skriptets egen merge-regel skyddar: Yahoos stängning vinner för alla dagar utom dagens,
+     och symboler som inte går att hämta lämnas orörda – den raderar aldrig historik.
+  4. **`tests/sim.mjs` är RÖD sedan 2026-08-10 – felet är i TESTET, inte i appen.** Påståendet
+     `kurser: fritextsök filtrerar` (rad 378) hårdkodar söksträngen `"SAAB"` och kräver minst
+     en träff; sedan `SAAB-B.ST` föll ur `prices.json` (punkt 2) finns ingen sådan ticker.
+     142 passerade, 1 föll, verifierat oberoende av rotationen via `git stash` + omkörning.
+     Exakt det anti-mönster avsnitt 3 varnar för – härled söksträngen ur `dash.state` i
+     stället. **Auto-merge-grinden påverkas INTE** (den kör bara `validate-decisions`,
+     `validate-scout-candidates`, `run.mjs` och `theme.mjs`); det är `test.yml` som är röd.
+     Notera att punkt 2:s watchlist-tillägg sannolikt gör testet grönt igen av sig självt vid
+     nästa `prices.yml`-körning – **det gör inte påståendet riktigt**, bara tillfälligt sant.
+
+  Utöver driftlistan återstår **strategiarbete efter den externa granskningen**, som ligger i
+  **`docs/STRATEGI-ATGARDER.md`**
   – fyra punkter, var och en med godkännandekriterium satt i FÖRVÄG. Filen laddas medvetet inte
   automatiskt (samma skäl som `HISTORIK.md`). Kort: (1) grind-funnel över `decisions.json` –
   vilken avkastning hade de som föll på grind X · (2) räkna om regimfiltret som active return
@@ -817,6 +874,29 @@ ta bort skyddet.
   Historiska rapportdatum finns inte i Yahoo (`events=earnings` ger null, `earningsHistory`
   räcker fyra kvartal) → rapportdagar detekteras ur pris + volym, vilket är en PROXY.
   Ändra ingen av dessa regler utan att köra om båda marknaderna på 10y.
+- **RÄKNA ALDRIG RSI/MACD/EMA PÅ `state/price_history.json` UTAN ATT FÖRST AVDUBBLERA SERIEN
+  (fälla, 2026-08-14 och 2026-08-17).** `updatePriceHistory` daterar punkten efter runnerns
+  väggklocka, inte efter kursens `marketTime`, så varje förbörskörning skriver in föregående
+  sessions stängning under DAGENS datum. Måndag 2026-08-17 06:34 UTC bar **59 av 62 serier** en
+  sista punkt identisk med föregående dag. En dubblerad stängning är inte neutral: den förskjuter
+  varje glidande fönster ett steg och pressar EMA-serien mot det upprepade värdet.
+  **Det syns ingenstans** – serien ser komplett ut, rapporten ser normal ut, och siffran är fel
+  åt ett håll som ändrar beslut: `HEXA-B.ST` BYTTE TECKEN på MACD-histogrammet 2026-08-17
+  (−0,016 på råserien mot korrekta +0,177, alltså en påhittad bearish korsning) och ASSA:s
+  histogram blev mer än dubbelt så djupt (−0,676 mot −0,287). Grind 2 i BÅDA rotationsprompterna
+  avgörs av just RSI och MACD. **Tills felet är fixat (KVAR punkt 1 i avsnitt 5b): släng den
+  sista punkten när den upprepar föregående stängning, och skriv i rapporten att värdena är
+  räknade avdubblerat.** Felet är övergående – 16:45-cronen skriver över morgonens punkt med den
+  riktiga stängningen – så det drabbar BARA morgonkörningar, vilket är precis när rotationerna
+  kör. Kontrollera med: äldre datum ska ha 1–2 identiska punkter (äkta oförändrade stängningar),
+  dagens har 59.
+- **EN SYMBOL MED FULL HISTORIK KAN ÄNDÅ SAKNA KURS – kontrollera `prices.json`, inte
+  `price_history.json` (fälla, 2026-08-17).** De två filerna har OLIKA symbolmängder, och
+  historiken behåller symboler som slutat hämtas. `collectTickers` läser bara den SENASTE
+  veckorapporten, så när v33 ersatte v32 föll elva symboler med 250 stängningar ur hämtningen
+  utan att något gick sönder. Symptomet är förvirrande i felsökning: `SAAB-B.ST` har komplett
+  serie, alla indikatorer går att räkna – och kandidaten faller ändå på grind 1. Se KVAR punkt 2
+  i avsnitt 5b. Deras sista lagrade punkt är dessutom en fantom enligt fällan ovan.
 - **`index.html` måste ligga i repo-roten** för att Pages ska servera den på sajtens rot.
 - **EN RÖD "pages build and deployment" ÄR NÄSTAN ALDRIG REPOTS FEL (2026-08-06).** Deployen
   gick från ~10 s till 10 minuter och började faila. Loggen säger vad som händer:
