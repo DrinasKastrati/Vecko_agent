@@ -120,3 +120,40 @@ INTC
 XOM
 CVX
 
+# --- Nyhetsdrivna kandidater v34 (punkt 6b: varje symbol med ett beslut i ---
+# decisions.json ska ga att prissatta, annars blir raden omatbar for alltid.
+# Samtliga fyra foll pa grind 1 (saknades i prices.json) i us-veckorapport-260817
+# och loggades med price: null. Gar FORE taket pa 25 symboler.
+RDDT
+# Reddit – ersatter AvalonBay i S&P 500 fore oppning 2026-08-18 (CNBC 2026-08-13),
+# aktien +11 % pa beskedet. Bekraftad index-katalysator som inte gick att prissatta.
+SMCI
+# Super Micro – Q4 FY26 2026-08-11: EPS 1,70, intakt 11,12 mdr, FY27-guide 65–72 mdr
+# over konsensus, aktien +11,2 %. Veckans starkaste rapportkatalysator, ej prissatt.
+WBD
+# Warner Bros. Discovery – Paramount Skydance har uppfyllt samtliga regulatoriska
+# villkor for att stanga forvarvet, klarering i ~70 lander (PR Newswire 2026-08-14).
+AWK
+# American Water – HSR-fristen utlopt for samgaendet med Essential Utilities
+# (PR Newswire 2026-08-17).
+
+# --- Rapporterar inom 10 handelsdagar (L-5, tillagda 2026-08-17) ---
+# L-5 kraver att varje bolag som veckans radar visar rapportera inom 10 handelsdagar
+# och som saknar rad har laggs till i samma korning, sa att kursserien borjar byggas
+# FORE eventet. Rapportforbudet i punkt 2e galler oforandrat for samtliga.
+# Datumen kommer ur websok 2026-08-17 (CNBC/Kiplinger), INTE ur earnings_calendar.json,
+# som bara kan se symboler prices.yml redan hamtar – resten av universumet ar
+# OKONTROLLERAT och far inte sammanfattas som "inga fler".
+HD
+# Home Depot – Q2 tisdag 2026-08-18 fore oppning.
+TGT
+# Target – onsdag 2026-08-19.
+LOW
+# Lowe's – onsdag 2026-08-19.
+WMT
+# Walmart – torsdag 2026-08-20. Bredaste enskilda avlasningen pa US-konsumtion.
+ROST
+# Ross Stores – torsdag 2026-08-20.
+DE
+# Deere – fredag 2026-08-21.
+
