@@ -56,6 +56,36 @@ HEXA-B.ST
 # case-lista, men den kopplingen bryts nar v33-rapporten ersatter v32:an. Samma skal som KOG.OL
 # tillfordes 2026-08-07.
 
+# Bruttolistan v34 (veckorapport-260817), tillagda 2026-08-17 enligt punkt 6b: varje ticker som
+# fatt en rad i state/decisions.json MASTE hamtas av prices.yml, annars backfillas den aldrig i
+# state/price_history.json och beslutet blir omatbart for alltid i state/decision_eval.json.
+# Detta gar FORE riktmarket pa 25 tickers. Samtliga nio loggades med price: null (grind 1).
+RAP1V.HE
+# Rapala VMC – positiv vinstvarning 2026-08-14 (MFN/GlobeNewswire), helar 12–14 MEUR mot 8,4
+# MEUR 2025. Fonstrets starkaste nordiska katalysator och den ENDA som foll pa enbart grind 1.
+PHO.OL
+NAPA.OL
+NHY.OL
+# Photocure (FDA-omklassning 14/8), Napatech (AI-infraorder 13/8), Norsk Hydro (Alunorte 13/8).
+VWS.CO
+MAERSK-B.CO
+EMBRAC-B.ST
+SAAB-B.ST
+STAR-B.ST
+# Fem rader ur state/movers.json. De fyra forsta ar exakt de bolag L-5 pekar ut: Vestas, Maersk
+# och Embracer rorde sig 10–18 % pa Q2-rapporter som ingen kalla i systemet kunde se i forvag.
+# OBS: EMBRAC-B.ST och SAAB-B.ST har 250 stangningar i price_history men slutade hamtas
+# 2026-08-10 nar v33-rapporten ersatte v32:an som tickerkalla – de ar alltsa INTE nya symboler
+# utan aterinsatta. Se atgardspunkt 2 i veckorapport-260817.
+
+# Namngivna rapporter inom 10 handelsdagar, tillagda 2026-08-17 enligt L-5 (samma mekanik som
+# punkt 6b) sa att kursserien borjar byggas FORE eventet i stallet for efter. Rapportforbudet i
+# punkt 2e galler oforandrat for bada.
+BWO.OL
+# BW Offshore – Q2 2026-presentation 2026-08-24 (MFN 2026-08-17).
+CHECK.ST
+# Checkin.com Group – Q2 2026, webbsandning 2026-08-20 15:00 CEST (MFN 2026-08-14).
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
 # EQNR.OL
