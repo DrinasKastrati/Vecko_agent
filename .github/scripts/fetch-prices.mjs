@@ -60,25 +60,59 @@ export function readJsonFirst(paths){
   try { return JSON.parse(raw); } catch { return null; }
 }
 
-export function newestWeekly(){
-  const dirs = ["reports/weekly", "."];
-  let best = null;
+/* De N NYASTE rapporterna i en katalog, som en enda text.
+
+   VARFÖR N OCH INTE BARA DEN SENASTE (fix 2026-08-17, åtgärdspunkt 2 i
+   veckorapport-260817): tickerkällan var EN fil. När v33-rapporten ersatte
+   v32:an den 2026-08-10 slutade elva symboler hämtas – SAAB-B.ST,
+   EMBRAC-B.ST, MIPS.ST, ELUX-B.ST, VOLCAR-B.ST, GRK.HE, PREC.ST, NAS.OL,
+   HSHP.OL, MORLD.OL och ALLEI.ST – trots att SAMTLIGA hade 250 stängningar i
+   price_history.json. De var inte ofullständiga, de var övergivna. Två av dem
+   flaggades av movers.json samma vecka (SAAB-B.ST +8,12 %, EMBRAC-B.ST
+   +10,41 % på en Q2-rapport som slog konsensus) och föll ändå på grind 1 –
+   systemet kastade bort de symboler som var färdiga samtidigt som det väntade
+   på de som inte var det, och båda felen tystades av att rapporten såg normal ut.
+
+   N = 3 är valt, och medvetet INTE "behåll varje symbol som redan har en
+   serie": tre veckorapporter täcker en bubblares livslängd (watchlist.txt bär
+   regeln 14 handelsdagar) och mängden är BEGRÄNSAD. Den obegränsade varianten
+   växer för alltid, och Yahoo svarar 403 när listan blir för lång – repot har
+   dessutom redan två listor med utgångssemantik och ingen av dem har någonsin
+   rensats. Höj N hellre än att ta bort taket. */
+export function recentReports(dirs, re, n = 3){
+  const found = [];
   for (const d of dirs){
     let files = [];
     try { files = readdirSync(d); } catch { continue; }
     for (const f of files){
-      const m = f.match(/^veckorapport-(\d{6})(?:_\d+)?\.md$/i);
-      if (m && (!best || m[1] > best.key)) best = { key: m[1], path: d + "/" + f };
+      const m = f.match(re);
+      if (m) found.push({ key: m[1], path: d + "/" + f });
     }
   }
-  return best ? readFirst([best.path]) : "";
+  found.sort((a, b) => a.key < b.key ? 1 : a.key > b.key ? -1 : 0);
+  const seen = new Set(), out = [];
+  for (const f of found){
+    if (seen.has(f.key)) continue;      // samma datum i två kataloger – ta den först funna
+    seen.add(f.key);
+    out.push(readFirst([f.path]));
+    if (out.length >= n) break;
+  }
+  return out.join("\n");
 }
+
+const WEEKLY_DIRS = ["reports/weekly", "."];
+const WEEKLY_RE   = /^veckorapport-(\d{6})(?:_\d+)?\.md$/i;
+
+// Kvar för anropare som verkligen vill ha EN rapport. Prisinsamlingen ska
+// använda recentWeeklies() – se motiveringen i recentReports.
+export function newestWeekly(){ return recentReports(WEEKLY_DIRS, WEEKLY_RE, 1); }
+export function recentWeeklies(n = 3){ return recentReports(WEEKLY_DIRS, WEEKLY_RE, n); }
 
 export function collectTickers(){
   const tickers = new Set();
   const portf   = readFirst(["state/portfolj.md", "portfolj.md"]);
   const watch   = readFirst(["config/watchlist.txt", "watchlist.txt"]);
-  const weekly  = newestWeekly();
+  const weekly  = recentWeeklies(3);
   for (const t of extractTickers(portf))  tickers.add(t);
   for (const t of extractTickers(weekly)) tickers.add(t);
   for (const t of extractCaseTickers(weekly)) tickers.add(t);
@@ -170,19 +204,10 @@ export function extendedScope(calendar, candidates, today){
 }
 
 // ---- USA + krypto (scout-routinen) ------------------------------------
-export function newestScout(){
-  const dirs = ["reports/scout", "."];
-  let best = null;
-  for (const d of dirs){
-    let files = [];
-    try { files = readdirSync(d); } catch { continue; }
-    for (const f of files){
-      const m = f.match(/^rapport-(\d{6})(?:_\d+)?\.md$/i);
-      if (m && (!best || m[1] > best.key)) best = { key: m[1], path: d + "/" + f };
-    }
-  }
-  return best ? readFirst([best.path]) : "";
-}
+const SCOUT_DIRS = ["reports/scout", "."];
+const SCOUT_RE   = /^rapport-(\d{6})(?:_\d+)?\.md$/i;
+export function newestScout(){ return recentReports(SCOUT_DIRS, SCOUT_RE, 1); }
+export function recentScouts(n = 3){ return recentReports(SCOUT_DIRS, SCOUT_RE, n); }
 
 // Fångar (TICKER / Börs) ur scout-case: NYSE/NASDAQ -> vanlig symbol,
 // kryptonätverk -> <MYNT>-USD.
@@ -203,20 +228,12 @@ export function extractUsCaseTickers(text){
   return [...out];
 }
 
-// Senaste us-veckorapporten (US-rotationens case) – för prisinsamling.
-export function newestUsWeekly(){
-  const dirs = ["reports/us_weekly", "."];
-  let best = null;
-  for (const d of dirs){
-    let files = [];
-    try { files = readdirSync(d); } catch { continue; }
-    for (const f of files){
-      const m = f.match(/^us-veckorapport-(\d{6})(?:_\d+)?\.md$/i);
-      if (m && (!best || m[1] > best.key)) best = { key: m[1], path: d + "/" + f };
-    }
-  }
-  return best ? readFirst([best.path]) : "";
-}
+// US-veckorapporternas case – samma N-regel som den nordiska boken. US-boken
+// tappar symboler på exakt samma sätt när us-veckorapporten byts.
+const US_WEEKLY_DIRS = ["reports/us_weekly", "."];
+const US_WEEKLY_RE   = /^us-veckorapport-(\d{6})(?:_\d+)?\.md$/i;
+export function newestUsWeekly(){ return recentReports(US_WEEKLY_DIRS, US_WEEKLY_RE, 1); }
+export function recentUsWeeklies(n = 3){ return recentReports(US_WEEKLY_DIRS, US_WEEKLY_RE, n); }
 
 // Plockar US-symboler ur portfolj_us.md:s tabeller (Yahoo-ticker-kolumnen).
 export function extractUsPortfolioTickers(md){
@@ -252,10 +269,10 @@ export function collectUsTickers(){
     if (/^\^?[A-Z]{1,6}$/.test(t) || /^[A-Z0-9]{2,6}-USD$/.test(t) || /^[A-Z]{1,5}\.[A-Z]{1,2}$/.test(t) ||
         /^[A-Z]{6}=X$/.test(t)) set.add(t);
   }
-  for (const t of extractUsCaseTickers(newestScout())) set.add(t);
+  for (const t of extractUsCaseTickers(recentScouts(3))) set.add(t);
   // US-rotationens egna innehav/case (så deras kurser garanterat hämtas):
   for (const t of extractUsPortfolioTickers(readFirst(["state/portfolj_us.md", "portfolj_us.md"]))) set.add(t);
-  for (const t of extractUsCaseTickers(newestUsWeekly())) set.add(t);
+  for (const t of extractUsCaseTickers(recentUsWeeklies(3))) set.add(t);
   for (const t of collectCandidateTickers("us")) set.add(t);
   return [...set];
 }
@@ -314,8 +331,29 @@ export function parseChart(json, sym){
     previousClose: prevCloseFrom(res),
     dayHigh: meta.regularMarketDayHigh ?? null,
     dayLow: meta.regularMarketDayLow ?? null,
+    // VOLYM (nytt 2026-08-17, åtgärdspunkt 4 i veckorapport-260817): delkriteriet
+    // "Volym > 1,5× 20-dagarssnittet" i grind 2 var omätbart för SAMTLIGA 62
+    // tickers, tredje veckan i rad, och likviditetsgolvet 3 MSEK/dag bedömdes på
+    // storleksklass i stället för att räknas. Fältet låg i samma svar hela tiden.
+    // Faller tillbaka på volymserien när meta saknar det: `meta.regularMarketVolume`
+    // finns inte för alla instrument (index rapporterar ingen volym alls).
+    volume: meta.regularMarketVolume ?? lastVolumeFrom(res),
     source: "Yahoo Finance (chart API)"
   };
+}
+
+// Sista icke-tomma volymbaren i chart-svaret. Används bara som reserv när
+// meta.regularMarketVolume saknas – returnerar null i stället för 0, eftersom
+// "ingen volymdata" och "noll omsatta aktier" är olika saker och det senare
+// hade fått ett instrument att se illikvitt ut i grind 2.
+export function lastVolumeFrom(res){
+  const q = res && res.indicators && res.indicators.quote && res.indicators.quote[0];
+  const vols = (q && Array.isArray(q.volume)) ? q.volume : [];
+  for (let i = vols.length - 1; i >= 0; i--){
+    const v = vols[i];
+    if (v != null && !isNaN(Number(v)) && Number(v) > 0) return Number(v);
+  }
+  return null;
 }
 
 /* Förbörs-/efterbörskurs ur ett `interval=1m&includePrePost=true`-svar.
@@ -371,9 +409,14 @@ export async function fetchStooq(sym, fetchImpl = globalThis.fetch){
     const close = parseFloat(c[6]);
     if (isNaN(close) || c[1] === "N/D") return null;
     const mt = (c[1] && c[2]) ? new Date(c[1] + "T" + c[2] + "Z").toISOString() : null;
+    const vol = parseFloat(c[7]);
     return { symbol: sym, price: close, currency: null, exchange: "stooq",
       marketTime: mt, marketState: null, previousClose: null,
-      dayHigh: parseFloat(c[4]) || null, dayLow: parseFloat(c[5]) || null, source: "stooq.com (CSV)" };
+      dayHigh: parseFloat(c[4]) || null, dayLow: parseFloat(c[5]) || null,
+      // Volymen ligger i kolumn 8 (`f=sd2t2ohlcv` begär den redan). > 0 av
+      // samma skäl som i lastVolumeFrom: 0 betyder saknad data hos stooq.
+      volume: (!isNaN(vol) && vol > 0) ? vol : null,
+      source: "stooq.com (CSV)" };
   } catch { return null; }
 }
 
@@ -450,7 +493,10 @@ export async function run(fetchImpl = globalThis.fetch){
           "Använd endast om marketTime är från idag eller senaste handelsdagens stängning. " +
           "'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). " +
           "Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då " +
-          "~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil.",
+          "~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil. " +
+          "'volume' är omsatta enheter i den session marketTime pekar på, null när källan inte " +
+          "ger volym (index rapporterar ingen). 20-dagarssnittet att jämföra mot ligger i " +
+          "state/price_history.json under toppnyckeln 'volumes'.",
     tickerCount: tickers.length,
     okCount,
     extendedCount: extCount,
@@ -459,9 +505,45 @@ export async function run(fetchImpl = globalThis.fetch){
   mkdirSync("state", { recursive: true });
   writeFileSync("state/prices.json", JSON.stringify(out, null, 2) + "\n");
   updatePriceHistory(quotes);
+  updateVolumeHistory(quotes);
   console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade, ` +
               `${extCount} med utökad session.`);
   return out;
+}
+
+/* Datumet en historikpunkt ska bära: KURSENS EGEN SESSION, inte väggklockan.
+
+   VARFÖR (fix 2026-08-17, åtgärdspunkt 3 i veckorapport-260817). Funktionen
+   daterade punkten med `new Date().toISOString().slice(0,10)`, alltså UTC-dagen
+   på runnern. Cronen kör från 05:00 UTC medan Stockholm öppnar 07:00 och New
+   York 13:30 – FÖRE öppning är `q.price` fortfarande föregående stängning, så
+   en punkt daterad "i dag" skrevs med gårdagens värde. Mätt 2026-08-17 06:34
+   UTC bar 59 av 62 serier en sista punkt identisk med föregående dags; bara de
+   marknader som handlas dygnet runt (BTC-USD, ETH-USD, USDSEK=X) hade genuint
+   nya värden.
+
+   En dubblerad stängning är inte neutral för glidande medelvärden – den
+   förskjuter varje fönster ett steg och pressar EMA-serien mot det upprepade
+   värdet. ASSA-B.ST:s MACD-histogram blev −0,676 på råserien mot −0,287 på den
+   avdubblerade, och HEXA-B.ST BYTTE TECKEN, från +0,177 till −0,016: en
+   påhittad bearish korsning i precis den indikator grind 2 avgörs av. Båda
+   rotationerna kör före sin marknads öppning (nordisk 06:40 UTC, US 13:00 UTC),
+   så de läste ALLTID den trasiga svansen.
+
+   Med marketTime-datering blir en förbörskörning ett NO-OP: fredagens kurs
+   skriver om fredagens punkt med samma värde i stället för att uppfinna en
+   måndagspunkt. Punkten mognar sedan till en riktig stängning när
+   stängningskörningen (16:45 UTC nordiskt, 21:10 UTC för USA) skriver sist.
+
+   Ingen tidsstämpel ⇒ INGEN punkt. Samma regel som gäller i hela systemet
+   ("verifierad källa + tidsstämpel"); serien som indikatorerna räknas ur är
+   sista stället där en odaterad kurs hör hemma. Gäller i praktiken bara
+   stooq-reserven, som kan svara utan datum. */
+export function historyDate(q){
+  const mt = q && q.marketTime;
+  if (typeof mt !== "string") return null;
+  const m = mt.match(/^(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : null;
 }
 
 // Rullande prishistorik (max 250 punkter/ticker ≈ 1 år, en per dag).
@@ -469,20 +551,81 @@ export async function run(fetchImpl = globalThis.fetch){
 // används serien till att räkna benchmarkets utveckling över varje affärs EXAKTA hållperiod,
 // och katalysator-horisonterna är nu upp till 6 veckor – med 60 punkter föll äldre affärer
 // tyst ur mätningen (perioden utanför historiken ⇒ alpha = null). Retron läser samma fil.
+// Håll i synk med MAX_POINTS i backfill-history.mjs.
+export const MAX_HISTORY = 250;
+
+/* Skriver [datum, värde] i en stigande serie och returnerar den (kapad).
+
+   Tre fall, i ordning: samma datum som sista punkten ERSÄTTER den (dagens
+   värde uppdateras under sessionen), ett nyare datum läggs till, och ett äldre
+   datum uppdaterar bara en punkt som REDAN FINNS. Det sista är regeln som gör
+   förbörskörningen ofarlig, och den skriver aldrig bakåt: en föråldrad kvot får
+   inte stoppas in mitt i serien, för då blir avståndet mellan två punkter inte
+   längre en handelsdag och varje EMA räknad på indexpositioner blir fel. */
+export function appendPoint(arr, date, value, maxPoints = MAX_HISTORY){
+  if (!Array.isArray(arr) || !date || value == null || isNaN(Number(value))) return arr || [];
+  const v = Number(value);
+  const last = arr.length ? arr[arr.length - 1] : null;
+  if (!last || date > last[0]) arr.push([date, v]);
+  else if (date === last[0]) arr[arr.length - 1] = [date, v];
+  else {
+    for (let i = arr.length - 2; i >= 0; i--){
+      if (arr[i][0] === date){ arr[i] = [date, v]; break; }
+      if (arr[i][0] < date) break;          // datumet finns inte – lämna serien orörd
+    }
+  }
+  return arr.length > maxPoints ? arr.slice(-maxPoints) : arr;
+}
+
 export function updatePriceHistory(quotes){
   const path = "state/price_history.json";
   let hist = { series: {} };
   if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
   hist.series = hist.series || {};
-  const today = new Date().toISOString().slice(0, 10);
+  let noTime = 0;
   for (const [sym, q] of Object.entries(quotes)){
     if (!q || q.error || q.price == null) continue;
-    const arr = hist.series[sym] || (hist.series[sym] = []);
-    if (arr.length && arr[arr.length - 1][0] === today) arr[arr.length - 1] = [today, q.price];
-    else arr.push([today, q.price]);
-    if (arr.length > 250) hist.series[sym] = arr.slice(-250);
+    const d = historyDate(q);
+    if (!d){ noTime++; continue; }
+    hist.series[sym] = appendPoint(hist.series[sym] || [], d, q.price);
   }
   hist.generatedAt = new Date().toISOString();
+  if (noTime) console.log(`  ${noTime} kvot(er) utan marketTime – ingen historikpunkt skriven.`);
+  mkdirSync("state", { recursive: true });
+  writeFileSync(path, JSON.stringify(hist) + "\n");
+  return hist;
+}
+
+/* Rullande VOLYMHISTORIK i en EGEN fil, inte som en nyckel i price_history.json.
+
+   Två skäl, båda mätta. (1) `price_history.json` är 470 kB och hämtas DIREKT av
+   app.js vid varje sidladdning – volymerna hade lagt på ungefär lika mycket
+   igen, och dashboarden använder inte en enda av dem. Det är samma avvägning
+   som fick tredjepartsbiblioteken att laddas lat: startvyn ska inte betala för
+   data den inte läser. (2) Formen `series[sym] = [[datum, stängning], …]` är ett
+   parsningskontrakt som vparse.js, vrender.js, app.js, decision_eval.mjs,
+   movers.mjs och watchdog.mjs alla läser – en punkt som växer till tre element
+   hade krävt en ändring i sex filer.
+
+   Läsaren är grind 2 i rotationsprompterna, som kör mot ett git-checkout och
+   alltså inte betalar någon nätkostnad för filen. Samma form som price_history,
+   så samma hjälpfunktioner fungerar på båda. */
+export function updateVolumeHistory(quotes){
+  const path = "state/volume_history.json";
+  let hist = { series: {} };
+  if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
+  hist.series = hist.series || {};
+  for (const [sym, q] of Object.entries(quotes)){
+    if (!q || q.error || q.volume == null) continue;
+    const d = historyDate(q);
+    if (!d) continue;
+    hist.series[sym] = appendPoint(hist.series[sym] || [], d, q.volume);
+  }
+  hist.generatedAt = new Date().toISOString();
+  hist.note = "Omsatta enheter per handelsdag, [datum, volym]. Samma form som " +
+              "price_history.json. Ligger i EGEN fil därför att dashboarden hämtar " +
+              "price_history.json vid varje sidladdning och inte läser volym. " +
+              "Läsare: delkriteriet 'volym > 1,5× 20-dagarssnittet' i grind 2.";
   mkdirSync("state", { recursive: true });
   writeFileSync(path, JSON.stringify(hist) + "\n");
   return hist;

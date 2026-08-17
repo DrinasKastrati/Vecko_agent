@@ -392,6 +392,59 @@ export function checkEarningsCalendar(opts){
   return problems;
 }
 
+/* KORTA KURSSERIER – grind 2:s tysta spärr (2026-08-17).
+
+   Backfillen fanns sedan 2026-08-03 men anropades av INGEN workflow. Följden var
+   att varje nyinlagd ticker startade på EN punkt och växte en per handelsdag,
+   medan grind 2 kräver 15 (RSI 14) och ~35 (MACD 12,26,9). Ingenting gick
+   sönder: rapporten skrev bara "omätbar" och gick vidare, tre veckorapporter i
+   rad, och 12 av 27 bruttokandidater i v34 föll på exakt det. Backfillen körs nu
+   ur `prices.yml`, men steget har `continue-on-error` – faller Yahoo tystnar det
+   lika ljudlöst som förut. Därför den här kontrollen.
+
+   TVÅ FEL MED OLIKA ÅTGÄRD, alltså två meddelanden. Ett inaktuellt
+   `partialBackfilledAt` betyder att STEGET inte kör (fel i workflowen). Ett
+   färskt fält plus symboler som ändå är korta betyder att HÄMTNINGEN nekas
+   (Yahoo 403/404) – helt olika trådar att dra i.
+
+   Bara symboler som faktiskt hämtas räknas: en symbol som ligger kvar i
+   historiken utan att vara i prices.json är övergiven, vilket är ett annat fel
+   (åtgärdspunkt 2) och skulle annars räknas dubbelt. */
+export function checkShortSeries(opts){
+  const { now, series, quotes, partialBackfilledAt,
+          minPoints = 35, maxAgeHours = 30, tolerated = 2 } = opts || {};
+  const problems = [];
+  if (!series || !quotes) return problems;        // bakåtkompatibelt: var tyst utan data
+
+  const korta = Object.keys(quotes)
+    .filter(s => quotes[s] && !quotes[s].error && quotes[s].price != null)
+    .filter(s => ((series[s] || []).length) < minPoints)
+    .sort((a, b) => ((series[a] || []).length) - ((series[b] || []).length));
+
+  const age = partialBackfilledAt
+    ? (new Date(now) - Date.parse(partialBackfilledAt)) / 3600e3
+    : Infinity;
+
+  if (!isFinite(age) || age > maxAgeHours)
+    problems.push({ key: "backfill-stale", title: "Watchdog: backfillen av korta kursserier kör inte",
+      body: "`state/price_history.json` saknar ett färskt `partialBackfilledAt`" +
+        (partialBackfilledAt ? " (senast " + partialBackfilledAt + ")" : " (fältet finns inte)") +
+        ". Steget \"Backfilla symboler med kort historik\" i `prices.yml` körs på 05:00-cronen och " +
+        "har `continue-on-error`, så det tystnar utan att jobbet blir rött. Just nu har " +
+        korta.length + " hämtade symbol(er) under " + minPoints + " stängningar, vilket gör " +
+        "MACD omätbart för dem i grind 2 – det var så 12 av 27 bruttokandidater föll i v34." });
+  else if (korta.length > tolerated)
+    problems.push({ key: "backfill-refused", title: "Watchdog: " + korta.length +
+        " symbol(er) har kort kursserie trots färsk backfill",
+      body: "Backfillen kördes " + partialBackfilledAt + " men " + korta.length + " hämtade " +
+        "symbol(er) ligger fortfarande under " + minPoints + " stängningar: " +
+        korta.slice(0, 8).map(s => "`" + s + "` (" + ((series[s] || []).length) + ")").join(", ") +
+        (korta.length > 8 ? " m.fl." : "") + ". Steget kör alltså, men Yahoo levererar inte " +
+        "historiken (403/404 per symbol). Nyintroducerade bolag har legitimt kort serie – " +
+        "kontrollera loggen för `backfill-history.mjs` innan något ändras." });
+  return problems;
+}
+
 // Senaste datum i decisions.json som yymmdd, eller null.
 export function latestDecisionYmd(db){
   const rows = (db && db.decisions) || [];
@@ -415,11 +468,13 @@ function main(){
     newsWindow = nf.window || null;   // saknas i filer skrivna före 2026-08-03
   } catch {}
   // Regimfiltrets indexserier: nordisk bok mäts mot ^OMX, US-boken mot ^GSPC.
-  let regimeSeries = null;
+  let regimeSeries = null, histSeries = null, partialBackfilledAt = null;
   try {
     const ph = JSON.parse(readFileSync("state/price_history.json", "utf8"));
     const s = (ph && ph.series) || {};
     regimeSeries = { "^OMX": (s["^OMX"] || []).length, "^GSPC": (s["^GSPC"] || []).length };
+    histSeries = s;
+    partialBackfilledAt = ph.partialBackfilledAt || null;
   } catch {}
   let decisions = null, decisionsDb = null;
   try {
@@ -475,6 +530,8 @@ function main(){
   problems.push(...checkCandidatePrice({ candidatesDb, quotes: priceQuotes }));
   problems.push(...checkEarningsCalendar({ now, generatedAt: earningsCalAt }));
   problems.push(...checkAnalysisQueue({ queueDb, now: now.toISOString() }));
+  problems.push(...checkShortSeries({ now, series: histSeries, quotes: priceQuotes,
+    partialBackfilledAt }));
 
   const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);
   const wkUs     = readLatest("reports/us_weekly", /^us-veckorapport-\d{6}\.md$/);

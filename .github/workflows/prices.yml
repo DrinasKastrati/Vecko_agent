@@ -49,6 +49,27 @@ jobs:
         run: node .github/scripts/earnings-calendar.mjs
       - name: Hämta kurser
         run: node .github/scripts/fetch-prices.mjs
+      # Backfill av symboler med KORT serie. Löser åtgärdspunkt 1 i
+      # veckorapport-260817: backfill-history.mjs fanns sedan 2026-08-03 men
+      # anropades av INGEN workflow, så en nyinlagd ticker startade på 1 punkt
+      # och växte en per handelsdag. Grind 2 kräver 15 punkter (RSI) och ~35
+      # (MACD), alltså tre veckor innan en färsk kandidat går att poängsätta –
+      # 12 av 27 bruttokandidater i v34 föll på just det.
+      #
+      # EFTER hämtningen, inte före: symboler som kommer in via rapporter,
+      # kandidatfilen eller rapportkalendern finns då redan i price_history med
+      # sin första punkt, och backfillens collectSymbols läser bara historiken
+      # + watchlists. Körs den före missas de ett dygn.
+      #
+      # Bara på 05:00-cronen (och manuellt): historik för gamla dagar ändras
+      # inte var halvtimme, och varje symbol kostar ett eget Yahoo-anrop.
+      # Skriptet har eget tak per körning (40 symboler, kortast serie först) och
+      # rör aldrig `backfilledAt` i detta läge. Faller den ska INTE
+      # kursbevakningen falla med den.
+      - name: Backfilla symboler med kort historik
+        if: github.event.schedule == '0 5 * * 1-5' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        run: node .github/scripts/backfill-history.mjs --missing=200 1y
       # Beslutsutvärderingen är en REN FUNKTION av decisions.json + price_history.json
       # och hör därför hemma direkt efter hämtningen: den färska historiken är precis
       # det som gör ett tidigare beslut moget att mäta. LLM-fritt, ingen nätåtkomst,
@@ -67,7 +88,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/prices.json state/price_history.json state/decision_eval.json state/earnings_calendar.json state/scout_candidates.json
+          git add state/prices.json state/price_history.json state/volume_history.json state/decision_eval.json state/earnings_calendar.json state/scout_candidates.json
           if git diff --cached --quiet; then
             echo "Inga kursandringar - hoppar over commit."
           else

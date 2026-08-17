@@ -20,6 +20,30 @@
    Kör:  node .github/scripts/backfill-history.mjs          (1 år, alla symboler)
          node .github/scripts/backfill-history.mjs 2y       (annat spann)
          node .github/scripts/backfill-history.mjs 1y ^OMX  (bara vissa symboler)
+         node .github/scripts/backfill-history.mjs --missing=200 1y
+                                            (bara symboler med kort serie)
+
+   --missing-LÄGET (2026-08-17, åtgärdspunkt 1 i veckorapport-260817):
+   Sista raden i huvudet ovan – "Därefter räcker den löpande hämtningen" – höll
+   inte. Skriptet anropades av INGEN workflow, så det som skrevs som en
+   engångsåtgärd blev en engångsåtgärd: `backfilledAt` stod kvar på
+   2026-08-03T11:05:07Z i fjorton dagar medan varje NY ticker startade på EN
+   punkt och växte en per handelsdag. Grind 2 kräver 15 punkter (RSI 14) och
+   ~35 (MACD 12,26,9), alltså tre veckor innan en färsk kandidat ens går att
+   poängsätta – och 12 av 27 bruttokandidater i v34 föll på exakt det, däribland
+   veckans näst starkaste katalysator. Att lägga en ticker i watchlisten i
+   förväg löser grind 1 men INTE grind 2.
+
+   Läget körs nu dagligen ur prices.yml (05:00-cronen). Det väljer symbolerna
+   med KORTAST serie först, eftersom en serie på 1 punkt blockerar allt medan
+   en på 190 bara blockerar EMA200, och det har ett tak per körning så att en
+   bred watchlist-utökning inte kan förvandla hämtningen till hundratals
+   Yahoo-anrop.
+
+   Läget skriver `partialBackfilledAt`, ALDRIG `backfilledAt`. Det senare är
+   signalen "hela universumet är fyllt en gång" och läses av rapporterna som
+   färskhetsmått; låter man en delkörning röra det maskeras att en full backfill
+   aldrig gjorts. Två fält, två betydelser.
 
    MERGE-REGEL: Yahoos STÄNGNING vinner för alla dagar utom dagens. Befintliga
    punkter är skrivna av pris-hämtaren under dagen och är alltså intradagsvärden
@@ -69,6 +93,43 @@ export function mergeSeries(existing, fetched, today, maxPoints = MAX_POINTS){
   return merged.length > maxPoints ? merged.slice(-maxPoints) : merged;
 }
 
+/* Yahoo chart-json -> [[datum, volym], …]. Samma form som candlesToSeries, så
+   mergeSeries kan återanvändas rakt av.
+
+   Varför volymen backfyllas och inte bara samlas framåt: delkriteriet i grind 2
+   är "volym > 1,5× 20-dagarssnittet". Utan backfill finns inget snitt att
+   jämföra mot förrän om tjugo handelsdagar, alltså är kriteriet omätbart lika
+   länge till – och det har redan varit omätbart i tre veckorapporter.
+
+   Nollvolymer filtreras bort. En stängd handelsdag ger 0 hos Yahoo, och en nolla
+   som ingår i ett snitt drar det nedåt så att nästa dag ser ut som ett
+   volymutbrott den inte är. */
+export function candlesToVolumes(json){
+  const r = json && json.chart && json.chart.result && json.chart.result[0];
+  if (!r || !r.timestamp || !r.indicators || !r.indicators.quote) return [];
+  const vol = (r.indicators.quote[0] || {}).volume || [];
+  const out = [];
+  for (let i = 0; i < r.timestamp.length; i++){
+    const v = vol[i];
+    if (v == null || isNaN(v) || Number(v) <= 0) continue;
+    out.push([new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10), Number(v)]);
+  }
+  return out;
+}
+
+/* Symboler vars serie är KORTARE än `minPoints`, kortast först.
+
+   En symbol som saknas helt i historiken räknas som 0 punkter och hamnar därför
+   först – det är precis de nyinlagda tickers läget finns för. `cap` begränsar
+   en körning; resten tas nästa dag, eftersom listan sorteras om varje gång och
+   de kortaste alltid går först. */
+export function shortSeries(historySeries, symbols, minPoints, cap = 40){
+  const rows = (symbols || []).map(s => ({ sym: s, n: ((historySeries || {})[s] || []).length }))
+                              .filter(r => r.n < minPoints);
+  rows.sort((a, b) => a.n - b.n || (a.sym < b.sym ? -1 : a.sym > b.sym ? 1 : 0));
+  return rows.slice(0, cap).map(r => r.sym);
+}
+
 // Symboler att backfylla: allt filen redan känner till + båda watchlists.
 export function collectSymbols(historySeries, watchlistTexts){
   const out = new Set(Object.keys(historySeries || {}));
@@ -89,54 +150,100 @@ async function fetchSeries(sym, range){
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA } });
     if (!res.ok) return { error: "HTTP " + res.status };
-    return { series: candlesToSeries(await res.json()) };
+    const json = await res.json();
+    return { series: candlesToSeries(json), volumes: candlesToVolumes(json) };
   } catch (e){ return { error: String(e && e.message || e) }; }
 }
 
 async function main(){
-  const range = process.argv[2] || "1y";
-  const only = process.argv.slice(3).filter(Boolean);
+  const args = process.argv.slice(2).filter(Boolean);
+  const missingArg = args.find(a => a === "--missing" || a.startsWith("--missing="));
+  const rest  = args.filter(a => a !== missingArg);
+  const range = rest[0] || "1y";
+  const only  = rest.slice(1);
+  // --missing utan värde = 200 punkter, alltså EMA200-golvet: det är den
+  // längsta indikator systemet faktiskt kör (regimfiltret, MA200 i båda böckerna).
+  const minPoints = missingArg
+    ? (parseInt(String(missingArg).split("=")[1], 10) || 200)
+    : null;
   const path = "state/price_history.json";
+
+  const volPath = "state/volume_history.json";
 
   let hist = { series: {} };
   if (existsSync(path)){ try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
   hist.series = hist.series || {};
 
+  // Volymerna ligger i en EGEN fil – se motiveringen i fetch-prices.mjs
+  // (price_history.json hämtas av dashboarden vid varje sidladdning).
+  let vol = { series: {} };
+  if (existsSync(volPath)){ try { vol = JSON.parse(readFileSync(volPath, "utf8")); } catch {} }
+  vol.series = vol.series || {};
+
   const wl = [];
   for (const f of ["config/watchlist.txt", "config/watchlist_us.txt"])
     if (existsSync(f)) wl.push(readFileSync(f, "utf8"));
 
-  const symbols = only.length ? only : collectSymbols(hist.series, wl);
+  const candidates = only.length ? only : collectSymbols(hist.series, wl);
+  const symbols = minPoints ? shortSeries(hist.series, candidates, minPoints) : candidates;
   const today = new Date().toISOString().slice(0, 10);
-  console.log(`Backfyller ${symbols.length} symboler (${range})…`);
+  if (minPoints)
+    console.log(`Backfyller ${symbols.length} av ${candidates.length} symboler ` +
+                `(< ${minPoints} punkter, kortast först, ${range})…`);
+  else
+    console.log(`Backfyller ${symbols.length} symboler (${range})…`);
+  if (!symbols.length){ console.log("Inget att göra – alla serier är tillräckligt långa."); }
 
-  let ok = 0, fail = 0, added = 0;
+  let ok = 0, fail = 0, added = 0, volAdded = 0;
   const failed = [];
   for (const sym of symbols){
     const before = (hist.series[sym] || []).length;
+    const volBefore = (vol.series[sym] || []).length;
     const r = await fetchSeries(sym, range);
     if (r.error || !r.series.length){
       fail++; failed.push(sym + " (" + (r.error || "tom serie") + ")");
       console.log(`  ${sym}: MISSLYCKADES – ${r.error || "tom serie"} (behåller ${before} befintliga)`);
     } else {
       hist.series[sym] = mergeSeries(hist.series[sym], r.series, today);
+      // Volymen hämtas ur SAMMA svar – inget extra anrop. Tom volymserie
+      // (index rapporterar ingen volym) lämnar nyckeln orörd i stället för att
+      // skriva en tom lista som ser ut som utebliven data.
+      if (r.volumes && r.volumes.length){
+        vol.series[sym] = mergeSeries(vol.series[sym], r.volumes, today);
+        volAdded += vol.series[sym].length - volBefore;
+      }
       const after = hist.series[sym].length;
       added += after - before;
       ok++;
-      console.log(`  ${sym}: ${before} → ${after} punkter`);
+      console.log(`  ${sym}: ${before} → ${after} punkter` +
+                  (r.volumes && r.volumes.length ? `, volym ${volBefore} → ${vol.series[sym].length}` : ""));
     }
     await new Promise(r2 => setTimeout(r2, 350));   // artigt tempo mot Yahoo
   }
 
   hist.generatedAt = new Date().toISOString();
-  hist.backfilledAt = new Date().toISOString();
+  // Se huvudet: delkörningar rör ALDRIG backfilledAt, som betyder "hela
+  // universumet fyllt en gång" och läses som färskhetsmått av rapporterna.
+  if (minPoints) hist.partialBackfilledAt = new Date().toISOString();
+  else           hist.backfilledAt        = new Date().toISOString();
   mkdirSync("state", { recursive: true });
   writeFileSync(path, JSON.stringify(hist) + "\n");
+  if (volAdded || Object.keys(vol.series).length){
+    vol.generatedAt = new Date().toISOString();
+    writeFileSync(volPath, JSON.stringify(vol) + "\n");
+  }
 
   const langd = Object.values(hist.series).map(a => a.length);
   const minst = Math.min(...langd), median = langd.slice().sort((a, b) => a - b)[langd.length >> 1];
-  console.log(`\nSkrev ${path}: ${ok} hämtade, ${fail} misslyckade, +${added} punkter.`);
+  console.log(`\nSkrev ${path}: ${ok} hämtade, ${fail} misslyckade, +${added} punkter, ` +
+              `+${volAdded} volympunkter.`);
   console.log(`Serielängder: kortast ${minst}, median ${median}, längst ${Math.max(...langd)}.`);
+  // Grind 2:s golv, uttryckt i symboler. Det är den siffra veckorapporten
+  // rapporterar, så skriv den här i stället för att låta den räknas för hand.
+  for (const [krav, vad] of [[15, "RSI(14)"], [35, "MACD(12,26,9)"], [200, "EMA200/regimfilter"]]){
+    const n = langd.filter(l => l < krav).length;
+    console.log(`  ${n} symbol(er) under ${krav} punkter ⇒ ${vad} omätbart för dem.`);
+  }
   if (failed.length) console.log("Misslyckade symboler: " + failed.join(", "));
   // Regimfiltret är hela poängen med körningen – säg rakt ut om det går att köra nu.
   for (const b of ["^OMX", "^GSPC"]){

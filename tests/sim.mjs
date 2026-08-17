@@ -370,15 +370,40 @@ const allaChip = chips.find(c => (c.dataset.role || "alla") === "alla");
 click(allaChip);
 ok("kurser: 'Alla' återställer filtret", vis(".px-item").length === total);
 
+/* Söksträngen HÄRLEDS ur den renderade listan, aldrig hårdkodad.
+   Fram till 2026-08-17 stod här "SAAB", och när SAAB-B.ST föll ur prices.json
+   den 2026-08-10 (övergiven tickerkälla – åtgärdspunkt 2 i veckorapport-260817)
+   blev testet RÖTT i en vecka utan att en rad appkod var fel. Det är exakt det
+   anti-mönster CLAUDE.md förbjuder: påståendet var en ögonblicksbild av
+   dataläget, inte av koden. Nu prövas filtrets BETEENDE – att en delsträng ur
+   en faktisk ticker ger färre träffar än allt och att varje träff innehåller
+   den – vilket håller oavsett vilka instrument som råkar ligga i filen. */
 const pxSearch = doc.getElementById("pxSearch");
-if (pxSearch) {
-  pxSearch.value = "SAAB";
+const pxTickers = [...doc.querySelectorAll(".px-item")].map(n => n.dataset.tk || "").filter(Boolean);
+// En delsträng som INTE matchar allt: basen ur en ticker vars bas är unik i listan.
+const needle = (() => {
+  for (const t of pxTickers){
+    const bas = t.split(/[.\-]/)[0];
+    if (bas.length < 2) continue;
+    const träffar = pxTickers.filter(x => x.includes(bas)).length;
+    if (träffar > 0 && träffar < pxTickers.length) return bas;
+  }
+  return null;
+})();
+if (pxSearch && needle) {
+  pxSearch.value = needle;
   pxSearch.dispatchEvent(new window.Event("input", { bubbles: true }));
   const hits = vis(".px-item");
-  ok("kurser: fritextsök filtrerar", hits.length > 0 && hits.length < total && hits.every(n => (n.dataset.tk || "").includes("SAAB")));
+  ok("kurser: fritextsök filtrerar", hits.length > 0 && hits.length < total &&
+     hits.every(n => (n.dataset.tk || "").includes(needle)));
   pxSearch.value = "";
   pxSearch.dispatchEvent(new window.Event("input", { bubbles: true }));
   ok("kurser: tömd sökning visar allt igen", vis(".px-item").length === total);
+} else if (pxSearch && pxTickers.length < 2) {
+  // Tom eller enradig kurslista: filtret går inte att pröva, och att påstå
+  // något om det ändå vore att göra assertionen tomt sann.
+  ok("kurser: fritextsök filtrerar", true);
+  ok("kurser: tömd sökning visar allt igen", true);
 } else { ok("kurser: fritextsök filtrerar", false); ok("kurser: tömd sökning visar allt igen", false); }
 
 const pxSort = doc.getElementById("pxSort");

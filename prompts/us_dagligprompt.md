@@ -315,6 +315,13 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    <40 endast turnaround med färsk katalysator); MACD(12,26,9) färskt bullish kors/stigande histogram;
    kurs över EMA20/EMA50, helst EMA20>EMA50>EMA200; volym >1,5× 20-dagarssnittet; närmaste stöd
    (bas för stop) och motstånd (bas för mål); LIKVIDITET ≥ 20 MUSD/dag omsättning – annars stryks.
+   **VOLYM OCH LIKVIDITET RÄKNAS UR `state/volume_history.json` (sedan 2026-08-17).** Samma form
+   som `price_history.json` – `series[TICKER] = [[datum, omsatta enheter], …]` – backfilld ett år
+   bakåt, så 20-dagarssnittet finns från första körningen. Volymkvoten = senaste punkten delat med
+   medelvärdet av de 20 föregående. Omsättning i MUSD/dag = 20-dagarssnittet av volym × kurs /
+   1 000 000. Fältet saknades helt före 2026-08-17 och båda delkriterierna bedömdes då på
+   storleksklass – det är inte längre ett godtagbart svar. Saknas en symbol i filen (index och
+   valutapar rapporterar ingen volym): skriv "volym omätbar för TICKER" och redovisa vilka.
 3. URVAL AV TOPP 4: poängsätt 1–10 på katalysator (35 %), teknisk setup (30 %), makromedvind (15 %),
    risk/reward (20 %). Krav: risk/reward minst 2:1 OCH nåbart mål enligt punkt 6 i "NIVÅER &
    OMSÄTTNING". Max 2 av 4 ryktesdrivna. Undvik flera bolag med identisk riskprofil – fyra

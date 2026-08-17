@@ -129,6 +129,22 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   (`collectCandidateTickers`), vilket ersätter handpåläggningen i `config/watchlist_us.txt`.
   En kandidat med `priceSession` `"pre"`/`"post"` får BEDÖMAS men aldrig direktköpas –
   köpet läggs som villkorad Pending-plan med entry mot reguljär session.
+- **`state/volume_history.json` – GENERERAD (ny 2026-08-17). Redigera aldrig för hand.**
+  Samma form som `price_history.json` (`series[TICKER] = [[datum, omsatta enheter], …]`), skriven av
+  `fetch-prices.mjs:updateVolumeHistory` och backfilld av `backfill-history.mjs`. **Varför en EGEN
+  fil och inte en nyckel i `price_history.json`:** den filen är 470 kB och hämtas DIREKT av `app.js`
+  vid varje sidladdning – volymerna hade lagt på ungefär lika mycket igen för data dashboarden inte
+  läser en rad av. Samma avvägning som fick tredjepartsbiblioteken att laddas lat. Dessutom är
+  `series[sym] = [[datum, stängning], …]` ett parsningskontrakt som `vparse.js`, `vrender.js`,
+  `app.js`, `decision_eval.mjs`, `movers.mjs` och `watchdog.mjs` alla läser; en punkt som växer till
+  tre element hade krävt en ändring i sex filer. **Varför filen finns:** delkriteriet "volym > 1,5×
+  20-dagarssnittet" i grind 2 var omätbart för SAMTLIGA 62 tickers i tre veckorapporter i rad
+  (260803, 260810, 260817), och likviditetsgolvet (3 MSEK/dag nordiskt, 20 MUSD/dag i USA) bedömdes
+  på storleksklass i stället för att räknas – `prices.json` hade inget volymfält, trots att Yahoo
+  levererade det i samma svar hela tiden. Läsaren är punkt 2 i BÅDA rotationsprompterna. **0 är inte
+  volymdata:** en nolla i ett 20-dagarssnitt drar snittet nedåt så att nästa dag ser ut som ett
+  volymutbrott den inte är – därför filtreras nollor bort och `volume` blir `null`, inte 0. Index och
+  valutapar rapporterar ingen volym alls och saknar därför nyckel; det är normalt, inte ett fel.
 - **`state/earnings_calendar.json` – GENERERAD av `.github/scripts/earnings-calendar.mjs`,
   körs i `prices.yml` på 05:00-cronen. Redigera aldrig för hand.** Löser att watchlistan
   fylldes i EFTERHAND: PLTR saknade rad i `watchlist_us.txt`, fick därför ingen kurs, föll
@@ -287,6 +303,20 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   `analysis-queue-done` och utesluts ur ålderslarmet, annars hade svaret blivit "kör arbetaren"
   på en analys som redan fanns. Samma ticker med ANNAN `requestedAt` är en legitim ombegäran
   (NVO finns tre gånger i `done`) och larmar aldrig.
+  (4) **Backfillen av korta kursserier (`checkShortSeries`, 2026-08-17).** `backfill-history.mjs`
+  skrevs 2026-08-03 som en engångsåtgärd och blev det: **ingen workflow anropade det.**
+  `backfilledAt` stod stilla i 14 dagar medan varje NY ticker startade på EN punkt och växte en per
+  handelsdag – och grind 2 kräver 15 (RSI 14) respektive ~35 (MACD 12,26,9). Ingenting gick sönder;
+  rapporten skrev bara "omätbar" och gick vidare, tre veckor i rad, och **12 av 27 bruttokandidater
+  i v34 föll på grind 2 enbart för att serien var för kort**. Att lägga en ticker i watchlisten i
+  förväg löser grind 1 men INTE grind 2. Skriptet körs nu dagligen ur `prices.yml`
+  (`--missing=200`, 05:00-cronen, kortast serie först, tak 40 symboler per körning), men steget har
+  `continue-on-error` och kan tystna lika ljudlöst som förut – därav kontrollen. **Den skiljer två
+  fel med olika åtgärd:** ett inaktuellt `partialBackfilledAt` betyder att STEGET inte kör (fel i
+  workflowen), ett färskt fält plus symboler som ändå är korta betyder att HÄMTNINGEN nekas
+  (Yahoo 403/404). **`--missing`-läget rör ALDRIG `backfilledAt`** – det fältet betyder "hela
+  universumet fyllt en gång" och läses som färskhetsmått av rapporterna; låter man en delkörning
+  skriva det maskeras att en full backfill aldrig gjorts. Två fält, två betydelser.
 - **INTRADAG-KORSNINGAR: `alerts.mjs:evalSignals` MÅSTE läsa `dayHigh`/`dayLow` (fix 2026-08-07).**
   Funktionen läste bara `q.price`. Monitorn mäter en gång i timmen, så varje nivå som handlades
   genom MELLAN två mätpunkter var osynlig – för stop-loss, målkurs OCH pending-entry. Saabs
@@ -475,6 +505,15 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   Verifiera alltid en ändring i BÅDA lägena: exportera en commit med fyllda böcker
   (`git archive <sha> | tar -x -C <mapp>`), bygg om dess `dashboard.json` och kör sim.mjs där
   också – annars är det lätt att göra ett påstående tomt sant.
+  **Den sista hårdkodningen togs bort 2026-08-17.** Påståendet `kurser: fritextsök filtrerar` skrev
+  in söksträngen `"SAAB"` i Kurser-vyns fritextfält, och när `SAAB-B.ST` föll ur `prices.json` den
+  2026-08-10 (övergiven tickerkälla, se avsnitt 6) blev `test.yml` RÖD i en vecka utan att en rad
+  appkod var fel. Söksträngen HÄRLEDS numera ur den renderade listan: basen ur en faktisk ticker
+  som matchar några men inte alla rader. Går filtret inte att pröva (tom eller enradig kurslista)
+  passerar testet medvetet – **att påstå något om ett filter som inte kan köras är att göra
+  assertionen tomt sann**, vilket är samma fel som hårdkodningen fast tystare. Notera att SAAB-B.ST
+  återinsattes i watchlisten 2026-08-17, så den gamla assertionen blev grön av sig själv; det gjorde
+  den inte riktig.
 - **`test.yml` INSTALLERAR jsdom (sedan 2026-08-07) – ta aldrig bort det steget.** Fram till dess
   körde CI `npm install` aldrig, och tre sviter hoppade tyst över sig själva UTAN att faila:
   `theme.mjs` DEL B (34 test), `tests/data.mjs` (36 test, avslutade direkt med exit 0) och
@@ -832,10 +871,41 @@ odaterade kurser och avstår (korrekt) från beslut. **Fixen är byggd OCH aktiv
 `prices.yml` + `fetch-prices.mjs` kör på GitHubs runner (fri nätåtkomst), hämtar Yahoos chart-API
 (med **stooq-fallback**) och skriver en tidsstämplad `state/prices.json` (+ rullande
 `price_history.json`). Routinen/scouten/analysen läser den filen → verifierad tidsstämpel finns.
-`fetch-prices.mjs` samlar tickers ur `state/portfolj.md`, senaste vecko-/scout-rapportens case,
-samt `config/watchlist.txt` (nordiskt) och `config/watchlist_us.txt` (USA/krypto: symbol,
+`fetch-prices.mjs` samlar tickers ur `state/portfolj.md`, **de TRE senaste** vecko-/scout-rapporternas
+case, samt `config/watchlist.txt` (nordiskt) och `config/watchlist_us.txt` (USA/krypto: symbol,
 `^INDEX`, `<MYNT>-USD`). Sänk ALDRIG verifieringskravet – lösningen är pålitliga priser, inte att
 ta bort skyddet.
+
+**TRE och inte EN rapport, sedan 2026-08-17 (`recentReports`).** Källan var `newestWeekly()`, alltså
+en enda fil, och när v33-rapporten ersatte v32:an den 2026-08-10 slutade elva symboler hämtas –
+`SAAB-B.ST`, `EMBRAC-B.ST`, `MIPS.ST`, `ELUX-B.ST`, `VOLCAR-B.ST`, `GRK.HE`, `PREC.ST`, `NAS.OL`,
+`HSHP.OL`, `MORLD.OL`, `ALLEI.ST`. Samtliga hade 250 stängningar i `price_history.json`; de var inte
+ofullständiga, de var **övergivna**. Två av dem flaggades av `movers.json` samma vecka (SAAB-B.ST
++8,12 %, EMBRAC-B.ST +10,41 % på en Q2-rapport som slog konsensus) och föll ändå på grind 1.
+Systemet kastade bort de symboler som var färdiga samtidigt som det väntade på de som inte var det,
+och båda felen tystades av att rapporten såg normal ut. **N = 3 är medvetet valt före "behåll varje
+symbol som redan har en serie":** tre veckorapporter täcker en bubblares livslängd och mängden är
+BEGRÄNSAD, medan den obegränsade varianten växer för alltid och Yahoo svarar 403 när listan blir
+för lång. Höj N hellre än att ta bort taket. Gäller `recentWeeklies`, `recentScouts` och
+`recentUsWeeklies` – US-boken tappade symboler på exakt samma sätt.
+
+**HISTORIKPUNKTEN DATERAS UR `marketTime`, ALDRIG UR VÄGGKLOCKAN (fix 2026-08-17).**
+`updatePriceHistory` använde `new Date().toISOString().slice(0,10)`, alltså UTC-dagen på runnern.
+Cronen kör från 05:00 UTC medan Stockholm öppnar 07:00 och New York 13:30 – **före öppning är
+`q.price` fortfarande föregående stängning**, så en punkt daterad "i dag" skrevs med gårdagens
+värde. Mätt 2026-08-17 06:34 UTC bar **59 av 62 serier** en sista punkt identisk med föregående
+dags; bara de marknader som handlas dygnet runt (BTC-USD, ETH-USD, USDSEK=X) hade nya värden.
+En dubblerad stängning är inte neutral för glidande medelvärden – den förskjuter varje fönster ett
+steg: ASSA-B.ST:s MACD-histogram blev −0,676 på råserien mot −0,287 på den avdubblerade, och
+`HEXA-B.ST` **bytte tecken** (+0,177 → −0,016), alltså en påhittad bearish korsning i precis den
+indikator grind 2 avgörs av. Båda rotationerna kör före sin marknads öppning (nordisk 06:40 UTC,
+US 13:00 UTC) och läste därför **alltid** den trasiga svansen. Med marketTime-datering blir en
+förbörskörning ett NO-OP. Två regler i `appendPoint` som inte får luckras upp: samma datum
+ERSÄTTER punkten (dagens värde mognar till en riktig stängning när 16:45/21:10-körningen skriver
+sist), och ett äldre datum uppdaterar bara en punkt som REDAN finns – **serien skrivs aldrig
+bakåt**, för då är avståndet mellan två punkter inte längre en handelsdag och varje EMA räknad på
+indexpositioner blir fel. **Ingen tidsstämpel ⇒ ingen punkt** (gäller i praktiken bara
+stooq-reserven).
 
 ---
 

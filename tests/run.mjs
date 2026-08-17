@@ -602,6 +602,44 @@ ok("analyskö: tröskeln går att sätta",
   WD.checkAnalysisQueue({ queueDb: kö("SAAB.ST", "2026-08-01T00:00:00Z"), now: "2026-08-07T12:00:00Z", maxAgeDays: 3 })
     .some(p => p.key === "analysis-queue"));
 
+/* ---- korta kursserier / backfillen (2026-08-17) -------------------------
+   Backfillen anropades av ingen workflow i 14 dagar och NÅGONTING larmade
+   aldrig: rapporten skrev bara "omätbar". Steget har `continue-on-error`, så
+   det kan tystna igen exakt lika ljudlöst. Två fel, två åtgärder. */
+const kortQ = { "A.ST": { price: 1 }, "B.ST": { price: 1 }, "C.ST": { price: 1 }, "D.ST": { price: 1 } };
+const p35 = n => new Array(n).fill(["2026-01-01", 1]);
+ok("kort serie: uteblivet partialBackfilledAt larmar att STEGET inte kör", (() => {
+  const p = WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ,
+    series: { "A.ST": p35(1) }, partialBackfilledAt: null });
+  return p.length === 1 && p[0].key === "backfill-stale";
+})());
+ok("kort serie: färsk backfill + korta serier larmar att HÄMTNINGEN nekas", (() => {
+  const p = WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ,
+    series: { "A.ST": p35(1), "B.ST": p35(2), "C.ST": p35(3), "D.ST": p35(4) },
+    partialBackfilledAt: "2026-08-17T05:10:00Z" });
+  return p.length === 1 && p[0].key === "backfill-refused" && p[0].body.includes("`A.ST` (1)");
+})());
+ok("kort serie: färsk backfill och långa serier är tyst",
+  WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ,
+    series: { "A.ST": p35(250), "B.ST": p35(250), "C.ST": p35(250), "D.ST": p35(250) },
+    partialBackfilledAt: "2026-08-17T05:10:00Z" }).length === 0);
+// Nyintroducerade bolag har legitimt kort serie – ett par ska inte larma.
+ok("kort serie: enstaka korta serier tolereras",
+  WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ,
+    series: { "A.ST": p35(1), "B.ST": p35(2), "C.ST": p35(250), "D.ST": p35(250) },
+    partialBackfilledAt: "2026-08-17T05:10:00Z" }).length === 0);
+/* En ÖVERGIVEN symbol (åtgärdspunkt 2) ligger i historiken utan att hämtas.
+   Räknas den här blir samma fel rapporterat av två kontroller. */
+ok("kort serie: symboler som inte hämtas räknas inte",
+  WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: { "A.ST": { error: "fel" } },
+    series: { "A.ST": p35(1), "GAMMAL.ST": p35(1) },
+    partialBackfilledAt: "2026-08-17T05:10:00Z" }).length === 0);
+ok("kort serie: saknad data är tyst (bakåtkompatibelt)",
+  WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", series: null, quotes: null }).length === 0);
+ok("kort serie: oläsbart partialBackfilledAt larmar (åldern kan inte mätas)",
+  WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ, series: { "A.ST": p35(1) },
+    partialBackfilledAt: "inte-ett-datum" }).some(p => p.key === "backfill-stale"));
+
 /* En pending-post som ALLTID legat kvar trots att analysen är gjord är ett
    ANNAT fel än en glömd begäran, och har en annan åtgärd: posten ska bort, inte
    arbetaren köras. SAAB.ST låg så i 24 dygn – analysen skrevs 2026-07-14T00:06
@@ -815,6 +853,114 @@ ok("prices.json märks med schemaVersion så läsaren kan se om previousClose ä
 ok("parseChart använder rätt previousClose",
   FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 100, previousClose: 99, chartPreviousClose: 80 } }] } }, "X")
     .previousClose === 99);
+
+/* ---- FANTOMPUNKTEN (åtgärdspunkt 3 i veckorapport-260817) --------------
+   Historikpunkten daterades med runnerns UTC-dag. Cronen kör från 05:00 UTC,
+   Stockholm öppnar 07:00 och New York 13:30 – före öppning är kursen
+   FÖREGÅENDE stängning, så en punkt daterad "i dag" fick gårdagens värde.
+   59 av 62 serier bar en sådan dubblett 2026-08-17 06:34 UTC, och en dubblerad
+   stängning förskjuter varje EMA-fönster ett steg: HEXA-B.ST:s MACD-histogram
+   BYTTE TECKEN (+0,177 -> −0,016). Båda rotationerna kör före öppning. */
+ok("historyDate tar datumet ur marketTime",
+  FP.historyDate({ marketTime: "2026-08-14T15:29:31.000Z" }) === "2026-08-14");
+ok("historyDate ger null utan tidsstämpel – ingen odaterad punkt i serien",
+  FP.historyDate({ marketTime: null }) === null && FP.historyDate({}) === null &&
+  FP.historyDate(null) === null && FP.historyDate({ marketTime: "skräp" }) === null);
+ok("förbörskörning skapar INGEN ny punkt (fredagens kurs på måndag morgon)", (() => {
+  const arr = [["2026-08-13", 360.5], ["2026-08-14", 356.9]];
+  const d = FP.historyDate({ marketTime: "2026-08-14T15:29:31.000Z" });   // fredag
+  const out = FP.appendPoint(arr, d, 356.9);
+  return out.length === 2 && out[1][0] === "2026-08-14" && out[1][1] === 356.9;
+})());
+ok("dagens punkt MOGNAR till stängning i stället för att dubbleras", (() => {
+  const arr = [["2026-08-14", 356.9]];
+  FP.appendPoint(arr, "2026-08-17", 354.8);    // intradag
+  const out = FP.appendPoint(arr, "2026-08-17", 353.0);   // stängningskörningen
+  return out.length === 2 && out[1][0] === "2026-08-17" && out[1][1] === 353.0;
+})());
+ok("appendPoint skriver ALDRIG bakåt in i mitten av serien", (() => {
+  const arr = [["2026-08-14", 1], ["2026-08-17", 2]];
+  const out = FP.appendPoint(arr, "2026-08-15", 9);       // datumet finns inte
+  return out.length === 2 && out[0][0] === "2026-08-14" && out[1][0] === "2026-08-17";
+})());
+ok("appendPoint uppdaterar ett äldre datum som REDAN finns", (() => {
+  const arr = [["2026-08-13", 1], ["2026-08-14", 2], ["2026-08-17", 3]];
+  const out = FP.appendPoint(arr, "2026-08-14", 99);
+  return out.length === 3 && out[1][1] === 99;
+})());
+ok("appendPoint kapar till maxPoints och behåller de SENASTE",
+  (() => { const o = FP.appendPoint([["2026-01-01", 1], ["2026-01-02", 2]], "2026-01-03", 3, 2);
+           return o.length === 2 && o[0][0] === "2026-01-02" && o[1][0] === "2026-01-03"; })());
+ok("appendPoint tål skräp", FP.appendPoint([], null, 1).length === 0 &&
+   FP.appendPoint([], "2026-01-01", null).length === 0 &&
+   FP.appendPoint([], "2026-01-01", NaN).length === 0);
+ok("updatePriceHistory daterar ur marketTime, inte ur väggklockan", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  const i = src.indexOf("export function updatePriceHistory");
+  const body = src.slice(i, src.indexOf("\n}", i));
+  return /historyDate\(q\)/.test(body) && !/new Date\(\)\.toISOString\(\)\.slice\(0, 10\)/.test(body);
+})());
+
+/* ---- VOLYM (åtgärdspunkt 4) -------------------------------------------
+   Delkriteriet "volym > 1,5× 20-dagarssnittet" i grind 2 var omätbart för
+   samtliga tickers i tre veckorapporter. Fältet låg i samma svar hela tiden. */
+ok("parseChart tar med volym",
+  FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 10, regularMarketVolume: 12345 } }] } }, "X").volume === 12345);
+ok("parseChart faller tillbaka på volymserien när meta saknar fältet",
+  FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 10 },
+    indicators: { quote: [{ volume: [100, 0, null, 250] }] } }] } }, "X").volume === 250);
+ok("parseChart ger volume null när ingen volym finns (index)",
+  FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 10 } }] } }, "X").volume === null);
+// 0 är INTE volymdata: en nolla i ett 20-dagarssnitt drar snittet nedåt och
+// får nästa dag att se ut som ett volymutbrott den inte är.
+ok("lastVolumeFrom skiljer nollvolym från saknad volym",
+  FP.lastVolumeFrom({ indicators: { quote: [{ volume: [0, 0] }] } }) === null &&
+  FP.lastVolumeFrom(null) === null);
+ok("prices.json dokumenterar volymfältet i note", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  return /'volume' är omsatta enheter/.test(src);
+})());
+ok("updateVolumeHistory export", typeof FP.updateVolumeHistory === "function");
+/* Volymerna ligger i EGEN fil. price_history.json är 470 kB och hämtas direkt
+   av app.js vid VARJE sidladdning; volymserien hade lagt på ungefär lika mycket
+   för data dashboarden inte läser en rad av. Samma avvägning som fick
+   tredjepartsbiblioteken att laddas lat. Skriver någon tillbaka volymen i
+   price_history.json ska det här testet falla. */
+ok("volymhistoriken hamnar INTE i price_history.json", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  const i = src.indexOf("export function updatePriceHistory");
+  const body = src.slice(i, src.indexOf("\n}", i));
+  return !/volume/i.test(body) && /state\/volume_history\.json/.test(src);
+})());
+ok("prices.yml committar volume_history.json – annars försvinner filen", (() => {
+  const y = readFileSync(resolve(root, ".github/workflows/prices.yml"), "utf8");
+  return /git add[^\n]*state\/volume_history\.json/.test(y);
+})());
+
+/* ---- ÖVERGIVNA SYMBOLER (åtgärdspunkt 2) -----------------------------
+   Tickerkällan var EN veckorapport. När v33 ersatte v32 slutade elva symboler
+   med 250 stängningar var att hämtas; två av dem var veckans faktiska rörelser
+   (SAAB-B.ST +8,12 %, EMBRAC-B.ST +10,41 %) och föll ändå på grind 1. */
+ok("prisinsamlingen läser fler än EN veckorapport", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  return /const weekly\s*=\s*recentWeeklies\(3\)/.test(src) &&
+         /extractUsCaseTickers\(recentScouts\(3\)\)/.test(src) &&
+         /extractUsCaseTickers\(recentUsWeeklies\(3\)\)/.test(src);
+})());
+ok("recentWeeklies(1) är exakt newestWeekly()", FP.recentWeeklies(1) === FP.newestWeekly());
+ok("recentWeeklies(3) täcker minst lika mycket text som den senaste rapporten",
+  FP.recentWeeklies(3).length >= FP.newestWeekly().length);
+ok("recentReports tål en katalog som inte finns",
+  FP.recentReports(["finns/inte/alls"], /^x-(\d{6})\.md$/, 3) === "");
+// Strukturell invariant, inte ett datum: eftersom listan är nyast-först måste
+// texten för N=1 vara ett PREFIX av texten för N=2. Påståendet håller oavsett
+// vilka rapporter som råkar ligga i katalogen.
+ok("recentReports ger nyast först", (() => {
+  const re = /^veckorapport-(\d{6})(?:_\d+)?\.md$/i;
+  const one = FP.recentReports(["reports/weekly"], re, 1);
+  const two = FP.recentReports(["reports/weekly"], re, 2);
+  return one.length > 0 && two.startsWith(one);
+})());
 
 // ---- US-rotation (egen USD-bok) ----
 ok("parseFilename us_daily", VP.parseFilename("us-daglig-260717.md").type === "us_daily");
@@ -1756,6 +1902,49 @@ ok("mergeSeries sorterar och kapar till de SENASTE punkterna", (() => {
 ok("collectSymbols slår ihop historik och watchlists, hoppar kommentarer", (() => {
   const s = BF.collectSymbols({ "AAA.ST": [] }, ["# kommentar\nBBB.ST\n\n  CCC.OL  \n"]);
   return s.length === 3 && s.includes("AAA.ST") && s.includes("BBB.ST") && s.includes("CCC.OL");
+})());
+
+/* ---- --missing-läget (åtgärdspunkt 1 i veckorapport-260817) -------------
+   Skriptet var skrivet som en engångsåtgärd och blev det: ingen workflow
+   anropade det, så `backfilledAt` stod stilla i 14 dagar medan varje ny ticker
+   startade på EN punkt. 12 av 27 bruttokandidater i v34 föll på grind 2 enbart
+   för att serien var för kort. */
+ok("shortSeries väljer bara serier under golvet, kortast först", (() => {
+  const h = { A: new Array(5).fill([0, 0]), B: new Array(1).fill([0, 0]), C: new Array(250).fill([0, 0]) };
+  const s = BF.shortSeries(h, ["A", "B", "C"], 200);
+  return s.length === 2 && s[0] === "B" && s[1] === "A";
+})());
+ok("shortSeries räknar en symbol som saknas helt som 0 punkter", (() => {
+  const s = BF.shortSeries({ A: new Array(9).fill([0, 0]) }, ["A", "NY.ST"], 200);
+  return s[0] === "NY.ST";            // nyinlagd ticker går först
+})());
+ok("shortSeries respekterar taket per körning", (() => {
+  const syms = Array.from({ length: 60 }, (_, i) => "S" + i);
+  return BF.shortSeries({}, syms, 200).length === 40 &&
+         BF.shortSeries({}, syms, 200, 5).length === 5;
+})());
+ok("shortSeries tål skräp", BF.shortSeries(null, null, 200).length === 0);
+ok("candlesToVolumes plockar volym och hoppar nollor/hål", (() => {
+  const j = { chart: { result: [{ timestamp: [1753912800, 1753999200, 1754085600],
+    indicators: { quote: [{ volume: [5000, 0, null] }] } }] } };
+  const v = BF.candlesToVolumes(j);
+  return v.length === 1 && v[0][1] === 5000;
+})());
+ok("candlesToVolumes tål skräp", BF.candlesToVolumes(null).length === 0 &&
+   BF.candlesToVolumes({ chart: { result: [{}] } }).length === 0);
+/* Hela poängen med punkt 1 var att fixen saknade ANROPARE. Ett skript som
+   ingen workflow kör är samma tysta fel som `digest.yml` hade: ingenting blir
+   rött, workflow-listan är bara tom. */
+ok("prices.yml anropar backfillen – annars fylls korta serier aldrig", (() => {
+  const y = readFileSync(resolve(root, ".github/workflows/prices.yml"), "utf8");
+  return /backfill-history\.mjs\s+--missing/.test(y);
+})());
+// Två fält, två betydelser: `backfilledAt` = hela universumet fyllt en gång,
+// och en delkörning får inte maskera att det aldrig gjorts.
+ok("--missing-läget rör aldrig backfilledAt", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/backfill-history.mjs"), "utf8");
+  return /if \(minPoints\) hist\.partialBackfilledAt/.test(src) &&
+         /else\s+hist\.backfilledAt/.test(src);
 })());
 /* REGRESSIONSVAKT: benchmarken måste ha djup nog för regimfiltret. Utan den
    här assertionen kan filen tunnas ut igen utan att någon märker det – och då

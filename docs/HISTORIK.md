@@ -7,6 +7,62 @@ eller en backtest-siffra – nuläget och de bindande reglerna står kvar i `CLA
 
 ## 5. Nuläge — vad som är gjort (allt live i repot)
 
+- ✅ 2026-08-17 (Priskedjan: fyra fel som veckorapport-260817 namngav, alla TYSTA, alla åtgärdade):
+  gemensam diagnos – varje fel gjorde grind 2 omätbar utan att något gick sönder någonstans, och
+  rapporten kunde inte skilja "datat saknas" från "kandidaten höll inte".
+  **(1) Fantompunkten i `price_history.json` (åtgärdspunkt 3, ÅTERKOMMANDE 260814 + 260817).**
+  `updatePriceHistory` daterade punkten med `new Date().toISOString().slice(0,10)`, alltså UTC-dagen
+  på runnern. Cronen kör från 05:00 UTC medan Stockholm öppnar 07:00 och New York 13:30 – före
+  öppning är kursen FÖREGÅENDE stängning, så en punkt daterad "i dag" fick gårdagens värde. Mätt
+  2026-08-17 06:34 UTC bar **59 av 62 serier** en sista punkt identisk med föregående dags; bara
+  BTC-USD, ETH-USD och USDSEK=X (dygnet-runt-handel) hade nya värden. Effekten är inte kosmetisk:
+  en dubblerad stängning förskjuter varje glidande fönster ett steg, ASSA-B.ST:s MACD-histogram
+  blev −0,676 mot korrekta −0,287 och `HEXA-B.ST` **bytte tecken** (+0,177 → −0,016), alltså en
+  påhittad bearish korsning i den indikator grind 2 avgörs av. Båda rotationerna kör före sin
+  marknads öppning och läste därför alltid den trasiga svansen. Fixen daterar punkten ur kursens
+  egen `marketTime` (`historyDate`) och skriver den via `appendPoint`, som ersätter samma datum,
+  lägger till nyare och **aldrig skriver bakåt** in i mitten av en serie. Mätt utfall på verklig
+  data: fantompunkter 40 → 3, och de tre kvarvarande är genuina oförändrade kurser, inte dubbletter.
+  Ingen migrering behövdes – samtliga befintliga fantompunkter skrivs över av kvällens
+  stängningskörning (16:45 resp. 21:10 UTC).
+  **(2) Övergivna symboler (åtgärdspunkt 2, NY och allvarlig).** Tickerkällan var `newestWeekly()`,
+  alltså EN fil. När v33-rapporten ersatte v32:an 2026-08-10 slutade elva symboler hämtas – samtliga
+  med 250 stängningar i historiken. De var inte ofullständiga, de var övergivna, och två av dem
+  (SAAB-B.ST +8,12 %, EMBRAC-B.ST +10,41 %) var veckans faktiska rörelser och föll ändå på grind 1.
+  Systemet kastade bort de symboler som var färdiga samtidigt som det väntade på de som inte var
+  det. `recentReports(dirs, re, n)` läser nu de TRE senaste vecko-/scout-/us-veckorapporterna.
+  N = 3 är valt före "behåll varje symbol som har en serie" därför att tre rapporter täcker en
+  bubblares livslängd och mängden är BEGRÄNSAD – den obegränsade varianten växer för alltid och
+  Yahoo svarar 403 när tickerlistan blir för lång.
+  **(3) Backfillen anropades av ingen (åtgärdspunkt 1, ÅTERKOMMANDE tredje veckan).**
+  `backfill-history.mjs` skrevs 2026-08-03 med orden "Därefter räcker den löpande hämtningen" och
+  lades aldrig in i en workflow. `backfilledAt` stod stilla i 14 dagar medan varje ny ticker
+  startade på EN punkt; grind 2 kräver 15 (RSI) och ~35 (MACD), så **12 av 27 bruttokandidater i
+  v34 föll på grind 2 enbart för att serien var för kort** – däribland veckans näst starkaste
+  katalysator. Nytt `--missing=N`-läge körs dagligen ur `prices.yml` (05:00-cronen, kortast serie
+  först, tak 40 symboler/körning) och skriver `partialBackfilledAt`, **aldrig** `backfilledAt` –
+  två fält, två betydelser, annars maskerar en delkörning att en full backfill saknas. Verifierat
+  isolerat: `RAP1V.HE` gick 1 → 249 punkter i en körning, alltså direkt mätbar i stället för om
+  tre veckor. `watchdog.mjs:checkShortSeries` larmar när läget tystnar, och skiljer "steget kör
+  inte" (inaktuellt `partialBackfilledAt`) från "Yahoo nekar" (färskt fält, korta serier kvar).
+  **(4) Volymfältet saknades (åtgärdspunkt 4, ÅTERKOMMANDE tredje gången).** `parseChart` läste
+  bara `meta` och plockade aldrig volymen, trots att Yahoo levererade den i samma svar. Följden var
+  att 1 av 5 delkriterier i grind 2 aldrig kunde prövas för någon ticker, och att likviditetsgolvet
+  bedömdes på storleksklass. `prices.json` bär nu `volume`, och historiken ligger i **en egen fil**,
+  `state/volume_history.json` – inte som en nyckel i `price_history.json`, som är 470 kB och hämtas
+  direkt av `app.js` vid varje sidladdning för data dashboarden inte läser en rad av. Backfillen
+  fyller volymserien ur samma Yahoo-svar utan extra anrop, så 20-dagarssnittet finns från första
+  körningen: `RAP1V.HE` visade 91 894 mot ett snitt på 27 334, alltså 3,4× – kriteriet hade passerat
+  för just den kandidat rapporten kallade veckans starkaste. Nollvolymer filtreras bort (`null`,
+  inte 0) eftersom en nolla i ett snitt får nästa dag att se ut som ett utbrott den inte är.
+  **Prompterna uppdaterade i samma svep** (punkt 2 i båda rotationsprompterna) – en fil ingen
+  läser är samma återvändsgränd som scoutens prosa var före kandidatkanalen.
+  **Sidoeffekt: `tests/sim.mjs` fritextsök-assertion avhårdkodad.** Den skrev in `"SAAB"` och blev
+  röd i en vecka när symbolen föll ur `prices.json` – felet var i testet, inte i appen, exakt det
+  anti-mönster CLAUDE.md förbjuder. Söksträngen härleds nu ur den renderade listan.
+  **Totalt:** 785 gröna i `tests/run.mjs` (från 748), 140 i `theme.mjs`, 143 i `sim.mjs`, 36 i
+  `data.mjs` med hämtningsbudgeten oförändrad på 29 av 30.
+
 - ✅ 2026-08-03 (Urvalet blev MÄTBART; nyhetsfönstret i handelsdagar; watchdogen bevakar den nya
   tysta spärren): tre saker som alla följer av samma diagnos – systemet mätte sig själv flitigt men
   mätte inte det som avgör om det fungerar.
