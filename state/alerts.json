@@ -1,12 +1,24 @@
 {
-  "generatedAt": "2026-08-18T07:37:28.195Z",
-  "checkedAt": "2026-08-18T11:24:15.381Z",
+  "generatedAt": "2026-08-18T14:32:35.300Z",
+  "checkedAt": "2026-08-18T14:32:35.300Z",
   "watched": [
     "NVDA",
     "SPY",
     "MU"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "MU",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 950,
+      "price": 957.206,
+      "currency": "USD",
+      "marketTime": "2026-08-18T14:32:33.000Z",
+      "basis": "intraday",
+      "hitPrice": 947.58
+    }
+  ],
   "history": [
     {
       "ticker": "ASSA-B.ST",
