@@ -3935,6 +3935,159 @@
       "catalystType": "other",
       "sector": "Halvledare/AI-infra",
       "reason": "Passerar alla fem grindar (ref: stop 485, mal 578, R/R 2,16, tak 32,2 pct). RANKAD UNDER PA OMDOME: katalysatorn ar en obligationsemission 14/8 = finansiering ej efterfragan, och NVDA-korrelation."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "ASSA-B.ST",
+      "action": "SÄLJ",
+      "price": 351.9,
+      "currency": "SEK",
+      "weight": 0.25,
+      "entry": 363.75,
+      "stop": 352,
+      "target": 395,
+      "rr": 2.66,
+      "catalystType": "other",
+      "sector": "Sakerhet/lassystem",
+      "rsi": 49,
+      "horizonDays": 20,
+      "holdDays": 5,
+      "outcomePct": -3.26,
+      "benchPct": -1.19,
+      "alphaPct": -2.07,
+      "realizedRr": -1.01,
+      "reason": "STOP-LOSS BRUTEN: 351,90 (marketTime 17/8 15:29:48Z) under stoppen 352,00, dayLow 351,50. alerts.json aktiv SALJ-signal. Kapitalet till sleeven."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 484.75,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering. Okad 25 pct -> 100 pct av ASSA-forsaljningen; omviktning ar enda tillatna skalet att rora sleeven i LAGE B. Ingen stop, ingen malkurs."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "RAP1V.HE",
+      "action": "AVVAKTA",
+      "price": 1.54,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "turnaround",
+      "sector": "Sport/fiskeutrustning",
+      "rsi": 85.7,
+      "reason": "Prissatt bubblare provad (punkt 4): faller pa punkt 2e binar handelse H1 20/8 (2 dagar, isEstimate false) OCH grind 2 - likviditet ca 30 300 EUR/dag mot golvet 3 MSEK, RSI 85,7."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "ZEAL.CO",
+      "action": "AVVAKTA",
+      "price": 314.6,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 51.1,
+      "reason": "Grind 2 nu MATBAR (247 punkter efter backfillen 18/8): 314,60 under EMA20 316,18 och EMA200 365,98, MACD-hist 3,155->1,771->0,317 fallande, volym 1,49x mot kravet 1,5x."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 347.8,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 62.2,
+      "reason": "Grind 3: ingen ny handelse i Saipem7-fusionen i fonstret (HSR ute 31/7). Tekniken bast pa listan: RSI 62,2, MACD-hist 2,770 stigande, EMA20>50>200, 6m +37,7 pct."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KOG.OL",
+      "action": "AVVAKTA",
+      "price": 328.4,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Forsvar/maritim",
+      "rsi": 64.2,
+      "reason": "Grind 3: ingen egen fars katalysator i fonstret. RSI ned 72,2->64,2 men punkt 0a-varningen kvarstar: 20d +18,5 pct mot 6m -10,9 pct, och MACD-hist viker 4,403->3,795."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 41.9,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 64.7,
+      "reason": "Grind 3: +6,99 pct 17/8 utan namngiven kalla - varken news_feed.json eller webbsok ger en bekraftad handelse. En oforklarad rorelse som redan intraffat jagas aldrig."
     }
   ]
 }
