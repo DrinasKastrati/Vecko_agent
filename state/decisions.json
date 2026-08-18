@@ -4088,6 +4088,195 @@
       "sector": "Bioteknik",
       "rsi": 64.7,
       "reason": "Grind 3: +6,99 pct 17/8 utan namngiven kalla - varken news_feed.json eller webbsok ger en bekraftad handelse. En oforklarad rorelse som redan intraffat jagas aldrig."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NVDA",
+      "action": "BEHÅLL",
+      "price": 225.01,
+      "currency": "USD",
+      "weight": 0.25,
+      "entry": 220.48,
+      "stop": 211,
+      "target": 256,
+      "rr": 3.7,
+      "catalystType": "order",
+      "sector": "Halvledare/AI",
+      "rsi": 62.9,
+      "reason": "Tes intakt, stop/mal ej korsade (17/8 224,86-227,92). +2,05 pct mot entry, relativ styrka -0,07 pct mot S&P -0,52 pct. 13F 14/8 styrker SpaceX-relationen. Rapport 26/8 avgors senast 24/8."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 772.67,
+      "currency": "USD",
+      "weight": 0.75,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 75 pct: inget aktiekop/-salj kraver omviktning - enda tillatna skalet i LAGE B. -0,08 pct mot entry. Sleeven bar tre fjardedelar av boken i en session ned 0,52 pct."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "AVVAKTA",
+      "price": 1011.75,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Halvledare/minne",
+      "rsi": 59.5,
+      "reason": "Villkorad plan <= 950,00 EJ TRIGGAD: kursen gick at fel hall, +4,13 pct till 1011,75 (17/8 20:00Z), dagslagsta 995,26 ar 4,76 pct over nivan. Ligger kvar t.o.m. 21/8. Katalysator obruten."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "CVX",
+      "action": "AVVAKTA",
+      "price": 202.7,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "macro",
+      "sector": "Energi",
+      "rsi": 66.9,
+      "reason": "Scout-kandidat 260818-CVX: GRIND 4 (nabarhetstaket). Tekniskt stop 191,50 (-5,53 pct) kraver mal >= 11,05 pct; ex-utdelning 1,78 USD (0,88 pct) 19/8 ger krav 11,93 pct mot tak 11,88 pct (20 d)."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 506,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Halvledare/AI",
+      "rsi": 51.9,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - rankad under av OMDOMESSKAL (obligationsemission, AI-compute halva boken), inte pa saknad kurs. Teknik nu matbar: MACD-hist +2,607."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMAT",
+      "action": "AVVAKTA",
+      "price": 535.31,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledarutrustning",
+      "rsi": 50.1,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - skalet var grind 3, inte saknad kurs. Backfillen har kort: 250 punkter, RSI 50,1 nu matbar. +5,71 pct 17/8."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PLTR",
+      "action": "AVVAKTA",
+      "price": 172.55,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/AI",
+      "rsi": 66.7,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - skalet var grind 2 (katalysator 7 handelsdagar bakat), inte saknad kurs. MACD-hist fallande 4,753->4,023->3,182."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PAYC",
+      "action": "AVVAKTA",
+      "price": 214.19,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/HR",
+      "rsi": 72.6,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - skalet var grind 2 (katalysator 9 handelsdagar bakat). RSI 72,6 nara 75-taket, MACD-hist fallande."
+    },
+    {
+      "date": "2026-08-18",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "U",
+      "action": "AVVAKTA",
+      "price": 45.45,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "turnaround",
+      "sector": "Mjukvara/spel",
+      "rsi": 80.3,
+      "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - skalet var grind 2 (katalysator 8 handelsdagar bakat). Med matbar teknik faller den nu aven pa grind 3: RSI 80,3 > 75."
     }
   ]
 }
