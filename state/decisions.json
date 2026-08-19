@@ -4404,6 +4404,114 @@
       "sector": "Bioteknik",
       "rsi": 64.1,
       "reason": "Grind 3: pastadd handelse 18/8 (forsta kommersiella Idefirix-patienten i Australien) gar EJ att verifiera via lank - fem kalldomaner EGRESS_BLOCKED. Rorelsen +6,99 pct kom 17/8, dagen fore."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NVDA",
+      "action": "BEHÅLL",
+      "price": 219.74,
+      "currency": "USD",
+      "weight": 0.25,
+      "entry": 220.48,
+      "stop": 211,
+      "target": 256,
+      "rr": 3.7,
+      "catalystType": "order",
+      "sector": "Halvledare/AI",
+      "rsi": 56.6,
+      "horizonDays": 25,
+      "reason": "Tes intakt, stop/mal ej korsade (18/8 218,69-221,64). -0,34 pct mot entry. Forsta sessionen med relativ SVAGHET: -2,34 pct mot S&P -0,69 (Jefferies AMD-not). Rapport 26/8, 5 handelsdagar."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "KÖP",
+      "price": 950,
+      "currency": "USD",
+      "weight": 0.25,
+      "entry": 950,
+      "stop": 895,
+      "target": 1088,
+      "rr": 2.51,
+      "catalystType": "regulatory",
+      "sector": "Halvledare/minne",
+      "rsi": 52.1,
+      "horizonDays": 20,
+      "reason": "Pending v34 TRIGGAD: villkor <= 950,00 korsat 18/8 reguljart (dagslagsta 926,64, stangning 940,76), alerts.json basis price. Fyllnad till limitnivan 950,00. Tes intakt: senatsfristen 21/8 kvar."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XOM",
+      "action": "KÖP",
+      "price": 165.56,
+      "currency": "USD",
+      "weight": 0.125,
+      "entry": 165.56,
+      "stop": 157.28,
+      "target": 182.12,
+      "rr": 2,
+      "catalystType": "macro",
+      "sector": "Energi",
+      "rsi": 71.8,
+      "horizonDays": 20,
+      "reason": "Scout 260819-XOM promotad: alla fem grindar. Stop 157,28 (-5,00 pct) strax under basen 158,61-161,46 (10-17/8), mal +10,00 pct mot tak 11,44 pct, R/R 2,00. Ben 1 av 2 (punkt 4a)."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "HD",
+      "action": "AVVAKTA",
+      "price": 337.49,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Detaljhandel/bygg",
+      "rsi": 46.8,
+      "reason": "Scout 260819-HD avvisad pa tekniska filtret: kurs under EMA20 342,05, EMA50 338,50 och EMA200 353,30, MACD-hist -1,21 fallande, RSI 46,8. LOW sankte FY-guiden 19/8, forbors -3,13 pct."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 767.45,
+      "currency": "USD",
+      "weight": 0.375,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven minskad 75 -> 37,5 pct for att finansiera MU 25 pct och XOM ben 1 12,5 pct - enda tillatna skalet i LAGE B. -0,75 pct mot entry 773,26. Filtreras bort ur urvalsstatistiken."
     }
   ]
 }

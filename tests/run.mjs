@@ -1345,7 +1345,17 @@ ok("evaluate tål tom beslutslogg", (() => {
   const r = DE.evaluate({ decisions: [] }, { series: {} }, { horizons: [5], minN: 8 });
   return r.counts.decisions === 0 && r.byHorizon[5].selectionEdge.insufficient === true;
 })());
-// Den riktiga filen ska gå att utvärdera utan att kasta, och aldrig uttala sig i dag.
+// Den riktiga filen ska gå att utvärdera utan att kasta, och antingen tiga eller tala – aldrig
+// något däremellan.
+// OBS 2 (2026-08-19): assertionen krävde fram till i dag dessutom `selectionEdge.insufficient
+// === true`, alltså "uttalar sig inte i dag". Det var samma sorts påstående om DATALÄGET som
+// missingSymbols-kravet nedan: underlaget passerade minN (8 mätbara KÖP-rader vid 5 dagars
+// horisont) den 2026-08-19 och fältet slutade då vara `insufficient` – vilket är exakt vad
+// decision_eval.mjs är BYGGD att göra när loggen mognar. Testet blev alltså rött av att systemet
+// fungerade, och eftersom tests/run.mjs ligger i auto-merge-grinden blockerade det varje rapport
+// från att nå main. Invarianten som faktiskt hör till koden är att fältet ANTINGEN skriver
+// `insufficient` UTAN tal, ELLER ett tal med både verdict och tillräckligt n i båda grupperna –
+// aldrig en siffra utan underlag och aldrig tystnad när underlaget räcker.
 // OBS: assertionen krävde tidigare missingSymbols.length === 0, vilket var ett påstående om
 // DATALÄGET och inte om koden. Punkt 6b i rotationsprompterna kräver uttryckligen att en kandidat
 // som föll på saknad kurs loggas med price: null OCH läggs i watchlisten – tickern har då per
@@ -1358,8 +1368,11 @@ ok("evaluate mot repots faktiska filer", (() => {
   const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
   const ph = JSON.parse(readFileSync(resolve(root, "state/price_history.json"), "utf8"));
   const r = DE.evaluate(db, ph);
-  return r.counts.decisions > 0 && r.byHorizon[5].selectionEdge.insufficient === true &&
-         Array.isArray(r.missingSymbols);
+  const e = r.byHorizon[5].selectionEdge;
+  const tiger = e.insufficient === true && e.edgePct == null;
+  const talar = e.insufficient !== true && typeof e.edgePct === "number" &&
+                typeof e.verdict === "string" && e.bought.n >= r.minN && e.passed.n >= r.minN;
+  return r.counts.decisions > 0 && (tiger !== talar) && Array.isArray(r.missingSymbols);
 })());
 ok("varje omätbar ticker ligger i en watchlist (punkt 6b)", (() => {
   const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
