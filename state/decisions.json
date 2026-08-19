@@ -4277,6 +4277,133 @@
       "sector": "Mjukvara/spel",
       "rsi": 80.3,
       "reason": "Prissatt bubblare, LAGE B punkt 4: ingen plan. Villkor (1) faller - skalet var grind 2 (katalysator 8 handelsdagar bakat). Med matbar teknik faller den nu aven pa grind 3: RSI 80,3 > 75."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 481.1,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 100 pct: inget aktiekop/-salj kraver omviktning - enda tillatna skalet i LAGE B. -2,73 pct mot entry 494,60. Fyra tomma platser ligger i index till v35-rotationen 24/8."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "RAP1V.HE",
+      "action": "AVVAKTA",
+      "price": 1.565,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "turnaround",
+      "sector": "Sport/fiskeutrustning",
+      "rsi": 86.7,
+      "reason": "Villkorad bubblar-plan punkt 4 provad: villkor 4 faller pa grind 2 - omsattning ca 0,46 MSEK/dag mot golvet 3, RSI 86,7. Punkt 2e sparrar ocksa: H1 20/8, 1 handelsdag, isEstimate false."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "ZEAL.CO",
+      "action": "AVVAKTA",
+      "price": 311.6,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 49.4,
+      "reason": "Grind 2 forsamrad: MACD-hist har vant NEGATIVT 0,317 -> -0,876, linjen 6,956 under signalen 7,831. Kurs 311,60 under EMA20 315,74, 14,7 pct under EMA200. Volymkvot 1,05x mot kravet 1,5x."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 347.4,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 61.8,
+      "reason": "Grind 3: ingen ny daterbar handelse i Saipem7-fusionen i fonstret (HSR ute 31/7, 13 handelsdagar bakat). Tekniken listans basta fjarde veckan: RSI 61,8, MACD-hist 2,760, 6m +37,5 pct."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KOG.OL",
+      "action": "AVVAKTA",
+      "price": 325.4,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Forsvar/maritim",
+      "rsi": 61.5,
+      "reason": "Grind 3: noll traffar pa Kongsberg i news_feed.json, ingen egen fars katalysator. RSI ned 64,2->61,5 men 0a-varningen kvarstar: 20d +17,6 pct mot 6m -11,7 pct, MACD-hist viker 3,795->2,977."
+    },
+    {
+      "date": "2026-08-19",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 41.74,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 64.1,
+      "reason": "Grind 3: pastadd handelse 18/8 (forsta kommersiella Idefirix-patienten i Australien) gar EJ att verifiera via lank - fem kalldomaner EGRESS_BLOCKED. Rorelsen +6,99 pct kom 17/8, dagen fore."
     }
   ]
 }
