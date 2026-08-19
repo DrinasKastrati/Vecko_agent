@@ -275,8 +275,11 @@
       "price": 165.56,
       "priceAsOf": "2026-08-18T20:04:40.000Z",
       "priceSession": "regular",
-      "status": "new",
-      "expiresAt": "2026-08-26"
+      "status": "promoted",
+      "expiresAt": "2026-08-26",
+      "decisionReason": "Passerar alla fem grindar: kurs 165,56 verifierad reguljar, katalysator 18/8, RSI 71,8 <= 75, mal +10,00 pct (>= 8, tak 11,44 pct vid 20 d), R/R 2,00. Ben 1 12,5 pct kopt, ben 2 limit <= 160,00.",
+      "decidedBy": "reports/us_daily/us-daglig-260819.md",
+      "decidedAt": "2026-08-19"
     },
     {
       "id": "260819-HD",
@@ -292,8 +295,11 @@
       "price": 337.49,
       "priceAsOf": "2026-08-18T20:00:03.000Z",
       "priceSession": "regular",
-      "status": "new",
-      "expiresAt": "2026-08-26"
+      "status": "rejected",
+      "expiresAt": "2026-08-26",
+      "decisionReason": "Tekniska filtret (punkt 2): kurs 337,49 under EMA20 342,05, EMA50 338,50 och EMA200 353,30, MACD-hist -1,21 fallande, RSI 46,8 < 50. LOW sankte FY-guiden 19/8 - read-through punkterad.",
+      "decidedBy": "reports/us_daily/us-daglig-260819.md",
+      "decidedAt": "2026-08-19"
     }
   ]
 }
