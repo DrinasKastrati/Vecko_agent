@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-19T05:25:47.944Z",
+  "generatedAt": "2026-08-20T05:26:03.390Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -9,31 +9,11 @@
     "resolved": 74,
     "failed": 1,
     "notApplicable": 4,
-    "upcoming": 12
+    "upcoming": 10
   },
   "upcoming": [
     {
       "tradingDaysAway": 0,
-      "symbol": "LOW",
-      "date": "2026-08-19",
-      "isEstimate": false,
-      "epsConsensus": 4.22417,
-      "epsLow": 4.0698,
-      "epsHigh": 4.29,
-      "revenueConsensus": 26109203170
-    },
-    {
-      "tradingDaysAway": 0,
-      "symbol": "TGT",
-      "date": "2026-08-19",
-      "isEstimate": false,
-      "epsConsensus": 2.33743,
-      "epsLow": 2.11,
-      "epsHigh": 2.6139,
-      "revenueConsensus": 26137150520
-    },
-    {
-      "tradingDaysAway": 1,
       "symbol": "CHECK.ST",
       "date": "2026-08-20",
       "isEstimate": false,
@@ -43,7 +23,7 @@
       "revenueConsensus": null
     },
     {
-      "tradingDaysAway": 1,
+      "tradingDaysAway": 0,
       "symbol": "DE",
       "date": "2026-08-20",
       "isEstimate": false,
@@ -53,7 +33,7 @@
       "revenueConsensus": 10731542210
     },
     {
-      "tradingDaysAway": 1,
+      "tradingDaysAway": 0,
       "symbol": "RAP1V.HE",
       "date": "2026-08-20",
       "isEstimate": false,
@@ -63,7 +43,7 @@
       "revenueConsensus": null
     },
     {
-      "tradingDaysAway": 1,
+      "tradingDaysAway": 0,
       "symbol": "ROST",
       "date": "2026-08-20",
       "isEstimate": false,
@@ -73,7 +53,7 @@
       "revenueConsensus": 6153361420
     },
     {
-      "tradingDaysAway": 1,
+      "tradingDaysAway": 0,
       "symbol": "WMT",
       "date": "2026-08-20",
       "isEstimate": false,
@@ -83,7 +63,7 @@
       "revenueConsensus": 186824595550
     },
     {
-      "tradingDaysAway": 3,
+      "tradingDaysAway": 2,
       "symbol": "BWO.OL",
       "date": "2026-08-24",
       "isEstimate": false,
@@ -93,7 +73,7 @@
       "revenueConsensus": null
     },
     {
-      "tradingDaysAway": 4,
+      "tradingDaysAway": 3,
       "symbol": "NAPA.OL",
       "date": "2026-08-25",
       "isEstimate": false,
@@ -103,7 +83,7 @@
       "revenueConsensus": 38350000
     },
     {
-      "tradingDaysAway": 5,
+      "tradingDaysAway": 4,
       "symbol": "NVDA",
       "date": "2026-08-26",
       "isEstimate": false,
@@ -113,7 +93,7 @@
       "revenueConsensus": 91936931570
     },
     {
-      "tradingDaysAway": 6,
+      "tradingDaysAway": 5,
       "symbol": "IREN",
       "date": "2026-08-27",
       "isEstimate": false,
@@ -123,7 +103,7 @@
       "revenueConsensus": 139650360
     },
     {
-      "tradingDaysAway": 10,
+      "tradingDaysAway": 9,
       "symbol": "AVGO",
       "date": "2026-09-02",
       "isEstimate": false,
@@ -153,31 +133,13 @@
       "revenueConsensus": 1975597220
     },
     {
-      "symbol": "HD",
-      "date": "2026-08-18",
-      "isEstimate": false,
-      "epsConsensus": 3.95643,
-      "epsLow": 3.84,
-      "epsHigh": 4.06,
-      "revenueConsensus": 42751465220
-    },
-    {
-      "symbol": "OSSD.ST",
-      "date": "2026-08-18",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": 36300000
-    },
-    {
       "symbol": "LOW",
       "date": "2026-08-19",
       "isEstimate": false,
-      "epsConsensus": 4.22417,
-      "epsLow": 4.0698,
-      "epsHigh": 4.29,
-      "revenueConsensus": 26109203170
+      "epsConsensus": 3.12985,
+      "epsLow": 2.95,
+      "epsHigh": 3.3,
+      "revenueConsensus": 22683626050
     },
     {
       "symbol": "TGT",
@@ -639,6 +601,15 @@
       "revenueConsensus": 1871466670
     },
     {
+      "symbol": "OSSD.ST",
+      "date": "2026-11-03",
+      "isEstimate": true,
+      "epsConsensus": null,
+      "epsLow": null,
+      "epsHigh": null,
+      "revenueConsensus": 36300000
+    },
+    {
       "symbol": "SMCI",
       "date": "2026-11-03",
       "isEstimate": true,
@@ -799,6 +770,15 @@
       "epsLow": -11.7,
       "epsHigh": -5.1,
       "revenueConsensus": 140360000
+    },
+    {
+      "symbol": "HD",
+      "date": "2026-11-17",
+      "isEstimate": false,
+      "epsConsensus": 3.95643,
+      "epsLow": 3.84,
+      "epsHigh": 4.06,
+      "revenueConsensus": 42751465220
     }
   ],
   "errors": {
