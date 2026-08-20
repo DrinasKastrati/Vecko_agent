@@ -4640,6 +4640,155 @@
       "sector": "Bioteknik",
       "rsi": 63.9,
       "reason": "Grind 3: sokt direkt mot Cision/GlobeNewswire/Marketscreener/Yahoo - inget pressmeddelande daterat 18/8 finns. Noll HNSA-poster i news_feed. Rorelsen +6,99 pct kom 17/8, dagen fore."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NVDA",
+      "action": "BEHÅLL",
+      "price": 217.56,
+      "weight": 0.25,
+      "entry": 220.48,
+      "stop": 211,
+      "target": 256,
+      "rr": 3.7,
+      "catalystType": "order",
+      "sector": "Halvledare/AI",
+      "rsi": 54.2,
+      "horizonDays": 25,
+      "reason": "Tes intakt, stop/mal ej korsade (19/8 216,76-222,87, 2,66 pct till stoppen). -1,32 pct mot entry. ANDRA sessionen med relativ svaghet, MACD-hist +1,203 -> +0,583. Rapport 26/8, 4 handelsdagar."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "BEHÅLL",
+      "price": 937.105,
+      "weight": 0.25,
+      "entry": 950,
+      "stop": 895,
+      "target": 1088,
+      "rr": 2.51,
+      "catalystType": "regulatory",
+      "sector": "Minne/halvledare",
+      "rsi": 51.8,
+      "horizonDays": 20,
+      "reason": "BINART EVENT 1 handelsdag bort (senatsfristen 21/8) - halls genom: fristen AR tesen, svarsfrist ej myndighetsbeslut, risken prissatt av stoppen. Stopavstand 4,49 pct < dagsrorelsen 5,35 pct."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XOM",
+      "action": "BEHÅLL",
+      "price": 164.77,
+      "weight": 0.125,
+      "entry": 165.56,
+      "stop": 157.28,
+      "target": 182.12,
+      "rr": 2,
+      "catalystType": "macro",
+      "sector": "Energi",
+      "rsi": 69.5,
+      "horizonDays": 20,
+      "reason": "Tes starkt: Brent 91,3-91,6 pa tre veckors hogsta 19/8, US-offensiv mot Iran 20/8. -0,48 pct mot entry efter utbrottets +2,54 pct. Enda innehavet med STIGANDE MACD-hist (+0,535 -> +0,583)."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "TGT",
+      "action": "AVVAKTA",
+      "price": 159,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Detaljhandel",
+      "rsi": 71.5,
+      "reason": "Scout 260820-TGT PROMOTAD, alla fem grindar. Hela positionen 25 pct som limit <= 153,00 (punkt 4a: +4,28 pct pa katalysatordagen + WMT-rapport 20/8). Stop 145,00, mal 174,42, R/R 2,68, tak 15,77."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "COIN",
+      "action": "AVVAKTA",
+      "price": 160.2,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "macro",
+      "sector": "Kryptobors",
+      "rsi": 53.8,
+      "reason": "Scout 260820-COIN avvisad: hogst EN promotion per korning, lagre R/R an TGT samma dag (2,00 mot 2,68). Dartill 23,6 pct under EMA200, inverterad EMA-stapel, volymkvot omatbar (4 punkter)."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MSTR",
+      "action": "AVVAKTA",
+      "price": 104.25,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "macro",
+      "sector": "Bitcoin-treasury",
+      "rsi": 55.7,
+      "reason": "Scout 260820-MSTR avvisad pa tekniska filtret: kurs 104,25 under EMA50 105,38, 35,2 pct under EMA200. Samma rot-katalysator som COIN (punkt 3) plus mNAV-risk. Volymkvot omatbar (4 punkter)."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 769.06,
+      "weight": 0.375,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 37,5 pct: dagens enda nya position (TGT) ar VILLKORAD och binder inget kapital forran den triggar. -0,54 pct mot entry. Gar till 0 pct om bade XOM ben 2 och TGT fylls."
     }
   ]
 }

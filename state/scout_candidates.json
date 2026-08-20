@@ -315,11 +315,11 @@
       "price": 160.2,
       "priceAsOf": "2026-08-19T20:00:01.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-27",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260820.md",
+      "decidedAt": "2026-08-20",
+      "decisionReason": "Hogst EN promotion per korning: lagre R/R an promotad kandidat samma dag, 2,00 (stop 152,00, mal 176,61) mot TGT 2,68. Dartill 23,6 pct under EMA200, inverterad stapel, volymkvot omatbar."
     },
     {
       "id": "260820-TGT",
@@ -335,11 +335,11 @@
       "price": 159,
       "priceAsOf": "2026-08-19T20:04:56.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "promoted",
       "expiresAt": "2026-08-27",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260820.md",
+      "decidedAt": "2026-08-20",
+      "decisionReason": "Alla fem grindar: kurs 159,00 verifierad reguljar, katalysator 19/8 (Q2 slog + hojd guide), RSI 71,5, mal +14,00 pct (tak 15,77 vid 25 d), R/R 2,68. Kopet som limit <= 153,00 enligt punkt 4a."
     },
     {
       "id": "260820-MSTR",
@@ -355,11 +355,11 @@
       "price": 104.25,
       "priceAsOf": "2026-08-19T20:00:01.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-08-27",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260820.md",
+      "decidedAt": "2026-08-20",
+      "decisionReason": "Tekniska filtret (punkt 2): kurs 104,25 UNDER EMA50 105,38. Dartill 35,2 pct under EMA200 160,77, samma rot-katalysator som COIN (punkt 3), mNAV-risk ovanpa spot. Volymkvot omatbar."
     }
   ]
 }
