@@ -4512,6 +4512,134 @@
       "sector": "Indexsleeve",
       "rsi": null,
       "reason": "Sleeven minskad 75 -> 37,5 pct for att finansiera MU 25 pct och XOM ben 1 12,5 pct - enda tillatna skalet i LAGE B. -0,75 pct mot entry 773,26. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 481.3,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 46.3,
+      "reason": "Sleeven oforandrad 100 pct: inget aktiekop/-salj kraver omviktning - enda tillatna skalet i LAGE B. +0,04 pct pa dagen, -2,69 pct mot entry 494,60. Fyra tomma platser till v35 24/8."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "RAP1V.HE",
+      "action": "AVVAKTA",
+      "price": 1.56,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "turnaround",
+      "sector": "Sport/fiskeutrustning",
+      "rsi": 85.4,
+      "reason": "Punkt 2e: H1 rapporteras I DAG (tradingDaysAway 0, isEstimate false). Grind 2 nu raknat: 20d-snitt 36 192 aktier x 1,560 EUR = 0,056 MEUR/dag mot golvet 3 MSEK. RSI 85,4."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "ticker": "ZEAL.CO",
+      "action": "AVVAKTA",
+      "price": 321.4,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 54.7,
+      "reason": "L-4: serien 6 -> 249 punkter efter backfillen, fullt avgorande mojligt. Grind 2 faller: MACD-hist -1,023 (fran -0,876), 11,9 pct under EMA200, volymkvot 1,05x. Katalysator 6 dagar bak."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 341.2,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 56.1,
+      "reason": "Grind 3: noll traffar pa Subsea 7/Saipem i news_feed.json, HSR-fristen ute 31/7 (14 handelsdagar bak). Tekniken fortsatt listans basta men vikande: RSI 56,1, MACD-hist 2,200."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KOG.OL",
+      "action": "AVVAKTA",
+      "price": 321.3,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Forsvar/maritim",
+      "rsi": 57.9,
+      "reason": "Grind 3: noll traffar pa Kongsberg i news_feed.json, ingen egen fars katalysator. RSI ned 61,5 -> 57,9, MACD-hist viker fjarde sessionen 2,977 -> 1,993. 20d +13,9 mot 6m -14,6 pct."
+    },
+    {
+      "date": "2026-08-20",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 41.7,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 63.9,
+      "reason": "Grind 3: sokt direkt mot Cision/GlobeNewswire/Marketscreener/Yahoo - inget pressmeddelande daterat 18/8 finns. Noll HNSA-poster i news_feed. Rorelsen +6,99 pct kom 17/8, dagen fore."
     }
   ]
 }
