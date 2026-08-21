@@ -360,6 +360,46 @@
       "decidedBy": "reports/us_daily/us-daglig-260820.md",
       "decidedAt": "2026-08-20",
       "decisionReason": "Tekniska filtret (punkt 2): kurs 104,25 UNDER EMA50 105,38. Dartill 35,2 pct under EMA200 160,77, samma rot-katalysator som COIN (punkt 3), mNAV-risk ovanpa spot. Volymkvot omatbar."
+    },
+    {
+      "id": "260821-DE",
+      "date": "2026-08-21",
+      "ticker": "DE",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-08-20",
+      "confirmed": true,
+      "thesis": "Fiskal Q3 beat-and-raise 20/8 fore oppning: EPS 5,10 vs 4,69, intakt 12,61 mdr (+5 pct) vs ~10,81 mdr, hojd nedre FY26-guide. C&F +18 pct bar kvartalet; Production & Precision Ag -6 pct (karnan i nedcykel). +6,94 pct pa dagen -> sträckt, bevakning.",
+      "sourceRef": "Investing.com/Bloomberg/Deere 2026-08-20",
+      "price": 620.94,
+      "priceAsOf": "2026-08-20T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-08-28",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "260821-MU",
+      "date": "2026-08-21",
+      "ticker": "MU",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "regulatory",
+      "catalystDate": "2026-08-17",
+      "confirmed": false,
+      "thesis": "AI-minne/HBM-tema + policymedvind (17/8: Trump-adm mot att Apple koper kinesiskt minne CXMT/YMTC). HBM salt t.o.m. 2026, DC-intakt +150 pct, 3 leverantorer. EJ enskilt bekraftat bolagsevent -> tematisk/momentum, bevakning. Rapport 29/9 binar (punkt 8). Kurs av fran 17/8-hogsta ~1011.",
+      "sourceRef": "TradingKey/FXLeaders/MarketWatch 2026-08-17",
+      "price": 974.33,
+      "priceAsOf": "2026-08-20T20:00:01.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-08-28",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
