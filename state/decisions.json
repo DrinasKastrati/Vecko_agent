@@ -4789,6 +4789,135 @@
       "sector": "Indexsleeve",
       "rsi": null,
       "reason": "Sleeven oforandrad 37,5 pct: dagens enda nya position (TGT) ar VILLKORAD och binder inget kapital forran den triggar. -0,54 pct mot entry. Gar till 0 pct om bade XOM ben 2 och TGT fylls."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 484.25,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 51,
+      "reason": "Sleeven oforandrad 100 pct: inget aktiekop/-salj kraver omviktning - enda tillatna skalet i LAGE B. +0,61 pct pa dagen, -2,09 pct mot entry 494,60. Fyra tomma platser till v35 24/8."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "RAP1V.HE",
+      "action": "AVVAKTA",
+      "price": 1.605,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Sport/fiskeutrustning",
+      "rsi": 87.3,
+      "reason": "Punkt 2e slapper nu (H1 publicerad 20/8) men grind 2 stryker: 20d-snitt 37 345 aktier x 1,605 EUR = 0,060 MEUR/dag, ca 0,66 MSEK mot golvet 3. RSI 87,3. Volymkvot 5,21x racker inte."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "ticker": "ZEAL.CO",
+      "action": "AVVAKTA",
+      "price": 314.6,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 50.7,
+      "reason": "Grind 3: katalysatorn (royaltyavtal 12/8) ligger 7 handelsdagar bak, utanfor femdagarsfonstret. Grind 2 forsamras vidare: MACD-hist -1,565 (fran -1,023), 13,7 pct under EMA200, volymkvot 1,00x."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 342.2,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 56.8,
+      "reason": "Grind 3: noll traffar pa Subsea 7/Saipem i news_feed.json (10 av 10 handelsdagar), HSR-fristen ute 31/7. Tekniken fortsatt listans basta men viker tredje sessionen: MACD-hist 2,200 -> 1,779."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KOG.OL",
+      "action": "AVVAKTA",
+      "price": 321.1,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Forsvar/maritim",
+      "rsi": 57.8,
+      "reason": "Grind 3: noll traffar pa Kongsberg i news_feed.json, ingen egen fars katalysator. MACD-hist viker femte sessionen 1,993 -> 1,201. Punkt 0a: 20d +10,0 pct mot 6 man -14,7 pct."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 40.64,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 59.7,
+      "reason": "Grind 3 uppfylld i dag (SEC-DRS for ADS-notering, MFN 21/8 05:00 UTC) men grind 1 faller: enda verifierade kursen ar torsdagens stangning, alltsa FORE beskedet. L-4: provas om nasta korning."
     }
   ]
 }
