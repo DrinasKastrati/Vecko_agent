@@ -4918,6 +4918,133 @@
       "sector": "Bioteknik",
       "rsi": 59.7,
       "reason": "Grind 3 uppfylld i dag (SEC-DRS for ADS-notering, MFN 21/8 05:00 UTC) men grind 1 faller: enda verifierade kursen ar torsdagens stangning, alltsa FORE beskedet. L-4: provas om nasta korning."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NVDA",
+      "action": "BEHÅLL",
+      "price": 216.85,
+      "weight": 0.25,
+      "entry": 220.48,
+      "stop": 211,
+      "target": 256,
+      "rr": 3.7,
+      "catalystType": "order",
+      "sector": "Halvledare/AI",
+      "rsi": 53.4,
+      "horizonDays": 25,
+      "reason": "Tes intakt, stop/mal ej korsade (20/8 215,66-219,86). -1,65 pct mot entry. Relativ STYRKA -0,33 mot S&P -0,87. Men stopavstand 2,70 pct = 1,35 dagsrorelser, bokens mest utsatta. Rapport 26/8."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "BEHÅLL",
+      "price": 974.33,
+      "weight": 0.25,
+      "entry": 950,
+      "stop": 895,
+      "target": 1088,
+      "rr": 2.51,
+      "catalystType": "regulatory",
+      "sector": "Minne/halvledare",
+      "rsi": 55.1,
+      "horizonDays": 20,
+      "reason": "BINART EVENT I DAG (senatsfristen 21/8) - halls genom: fristen AR tesen, svarsfrist ej myndighetsbeslut, risken prissatt av stoppen. +3,97 pct i gar; stopavstand nu 8,14 pct = 1,60 dagsrorelser."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XOM",
+      "action": "BEHÅLL",
+      "price": 166.15,
+      "weight": 0.125,
+      "entry": 165.56,
+      "stop": 157.28,
+      "target": 182.12,
+      "rr": 2,
+      "catalystType": "macro",
+      "sector": "Energi",
+      "rsi": 71.2,
+      "horizonDays": 20,
+      "reason": "Tes starkt: Brent mot 92 pa Hormuz, +6 pct pa veckan. +0,84 pct mot index -0,87 pct, ater over entry. Enda innehavet med STIGANDE MACD-hist andra dagen (+0,583 -> +0,639). Stop 4,3 dagsrorelser bort."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "DE",
+      "action": "AVVAKTA",
+      "price": 620.94,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Lantbruksmaskiner",
+      "rsi": 55.3,
+      "reason": "Scout 260821-DE avvisad pa sparr (e) ingen ledig plats: sleeven 37,5 pct helt reserverad av XOM ben 2 och TGT, alla fyra platser tagna. Sparr a-d passerade. Volymkvot 3,14x MATT."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "AVVAKTA",
+      "price": 974.33,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Minne/halvledare",
+      "rsi": 55.1,
+      "reason": "Scout 260821-MU avvisad pa sparr (a) obekraftad katalysator: confirmed=false, tematisk/momentum utan enskilt bolagsevent. MU ar dessutom redan innehav 25 pct (sparr e)."
+    },
+    {
+      "date": "2026-08-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 762.6,
+      "weight": 0.375,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 37,5 pct: inget aktiekop/-salj i dag, enda tillatna skalet att rora den i LAGE B. -1,38 pct mot entry. Helt reserverad av XOM ben 2 och TGT. Filtreras bort ur urvalsstatistiken."
     }
   ]
 }
