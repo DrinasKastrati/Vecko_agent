@@ -63,6 +63,10 @@ Skriv "Inga utvärderingsbara idéer denna vecka." om underlag saknas.]
 
 **Träffbild:** [snittutfall idéer vs valda case samma period; andel idéer över/under ±5 %]
 **Svit:** [t.ex. "Idéflödet slog de valda casen 1 vecka i rad (3 krävs för lärdomskandidat)" – en enskild vecka är brus]
+**Urvalsmätning (STEG 3e):** [`counts`; `selectionEdge` (köpta vs avvisade, eller "för tidigt" +
+antal rader som fattas); starkaste/svagaste `byCatalyst` utan `insufficient`; `missingSymbols`.
+Avsluta med ETT av två – antingen en lärdomskandidat, eller raden
+"Ingen lärdom ur urvalsmätningen: `<skäl a/b/c>`". Tystnad är ett brott mot STEG 3e punkt 5.]
 
 ## Diskvalificerade kandidater
 [Rörelser som granskats men INTE är missar: systemet ägde dem, hade dem som pending/bubblare

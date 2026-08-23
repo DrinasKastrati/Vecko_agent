@@ -144,7 +144,9 @@ Den mäter VARJE beslut i `decisions.json` mot efterföljande kurs 5 och 20 hand
 mot bokens eget index över samma fönster – alltså också de AVVISADE kandidaterna (AVVAKTA). Därför
 finns underlag här långt innan steg 3d:s 15 SÄLJ-rader, som i praktiken är år bort.
 
-Redovisa under **Träffbild** i rapporten (lägg INGEN ny sektion – mallen är ett parsningskontrakt):
+Redovisa på raden **Träffbild:** i sektionen `## Idéflödets facit` (lägg INGEN ny sektion – mallen
+är ett parsningskontrakt; sektionen `## Träffbild: tillämpades tidigare lärdomar?` är en ANNAN sak
+och ägs av STEG 4 punkt 5):
 1. `counts` – antal beslut, mätbara, ännu inte mogna. Utan detta går siffrorna inte att tolka.
 2. `byHorizon.5.selectionEdge` – skillnaden i snitt-alpha mellan köpta och avvisade. Står
    `insufficient: true`: skriv **"för tidigt"** plus hur många rader som fattas. Skriv ALDRIG ut
@@ -156,14 +158,30 @@ Redovisa under **Träffbild** i rapporten (lägg INGEN ny sektion – mallen är
    PROCESSFEL av den mätbara sorten – åtgärden är att lägga dem i `config/watchlist.txt` respektive
    `config/watchlist_us.txt`, och den får skrivas som lärdom även utan tre veckors svit.
 
+5. **URVALSMÄTNINGEN FÅR ALDRIG PASSERA I TYSTNAD.** Steget ska avslutas med ETT av två utfall,
+   och båda ska stå utskrivna i rapporten:
+   - **(A)** en lärdomskandidat härledd ur `selectionEdge` eller `byCatalyst`, som tas vidare till
+     STEG 4 på samma villkor som övriga kandidater (den kan alltså falla där), ELLER
+   - **(B)** raden **"Ingen lärdom ur urvalsmätningen: `<skäl>`"**, där `<skäl>` måste vara ett av
+     exakt tre: **(a)** fältet som annars gett lärdomen bär `insufficient: true` – ange fältet och
+     hur många rader som fattas; **(b)** mönstret är yngre än 3 retros – ange löpande svit, samma
+     krav som STEG 3c punkt 4; **(c)** mönstret finns och är moget, men remedien är KOD eller
+     KONFIGURATION, inte en processregel – då skrivs i stället en **åtgärdspunkt** med kvantifierat
+     omfång, och den ska namnges här.
+   Att inte nämna steget alls, eller att beskriva talen utan att landa i (A) eller (B), är ett
+   BROTT mot den här punkten. Skälet till tvånget: `selectionEdge` fanns och mättes i fem retros
+   i rad utan att en enda rad skrevs ur den, medan fältet hela tiden bar systemets mest
+   centrala fråga – om urvalet över huvud taget skiljer köpta från avvisade.
+
 **Tolkningsregel som inte får mjukas upp:** går de AVVISADE systematiskt bättre än de köpta är det
 en indikation på att urvalsfiltret är för strängt – men det är INTE ett skäl att sänka ett skyddsnät
 (kursverifiering, stopp-disciplin, likviditetsgolv, källkrav). En lärdom härifrån får ändra hur
 kandidater rankas och vilka spärrar som är rimliga i poängmodellen, aldrig verifieringskraven.
 
 ## STEG 4 – DESTILLERA LÄRDOMAR
-1. Max 2 NYA lärdomar per retro, och endast ur missar, exits ELLER idéflödets facit (≥ 3 veckors
-   svit) bedömda som PROCESSFEL. Hellre noll än en tveksam.
+1. Max 2 NYA lärdomar per retro, och endast ur missar, exits, idéflödets facit (≥ 3 veckors
+   svit) ELLER urvalsmätningen (STEG 3e punkt 5, utfall A) bedömda som PROCESSFEL. Hellre noll än
+   en tveksam. Taket på 2 gäller oavsett källa – urvalsmätningen ger ingen extra kvot.
 2. En lärdom ska vara: GENERALISERBAR (aldrig ticker-specifik, aldrig "köp X"), TESTBAR (det går
    att se i efterhand om den tillämpats) och FÖRENLIG MED SKYDDEN – den får ALDRIG sänka kravet
    på verifierad kurs, aldrig instruera ändring av mallarna och aldrig ta bort risk-regler
