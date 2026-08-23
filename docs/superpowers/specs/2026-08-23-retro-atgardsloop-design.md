@@ -95,6 +95,16 @@ en ny defekt får en post, en som återkommer får `lastSeen` uppdaterat och `we
 sandlåda utan credentials), och en beräkning ur `firstSeen` skulle då räkna upp en punkt som
 ingen faktiskt observerat. Räknaren ska mäta antalet retros som SETT punkten.
 
+**Undantag: första ifyllningen räknar bakåt.** Startade varje punkt på `weeksOpen: 1` skulle en
+defekt som redan varit öppen i veckor få tre veckors NY tystnad innan tröskeln nås – och det är
+just de punkterna som är mest brådskande. Backfilldefekten var dokumenterad i sju rapporter när
+mekanismen byggdes; med en ren start hade den larmat först 2026-09-12 i stället för 2026-08-29.
+Vid den enda körning där filen skapas sätts därför `weeksOpen` till antalet distinkta ISO-veckor
+defekten är dokumenterad i `reports/`, och `firstSeen` till den tidigaste rapporten. Tre spärrar:
+det sker en enda gång; varje bakåtdaterad punkt ska namnge sina källrapporter i retro-rapporten;
+och går antalet inte att belägga sätts `weeksOpen: 1` – aldrig en gissning uppåt, som skulle
+larma för tidigt och urholka tröskeln.
+
 Filen märks **inte** `-merge` i `.gitattributes`: en skrivare, en gång i veckan, samma som
 `lessons.md`. `decision_eval.json` och `dashboard.json` är märkta för att de har två skrivare.
 
@@ -127,9 +137,9 @@ Bakåtkompatibel: saknas filen eller `items` är watchdogen tyst, som övriga ch
   ligger på 29. Taket ska sprängas av ett medvetet val, inte som sidoeffekt av den här
   mekanismen. Larmet går via issue och e-post, som watchdogens övriga fynd.
 - **Ingen automatisk konsolidering ur rapport-markdown.** Se "Varför inte parsa rapporterna".
-- **Ingen retroaktiv ifyllning** av de punkter som redan ligger öppna. Första retron efter
-  driftsättning fyller filen ur veckans egna rapporter; äldre historik hämtas ur git om den
-  behövs.
+- **Ingen handskriven seedning av filen.** Retron äger den och skapar den vid första körningen
+  (2026-08-29). Att fylla den för hand skulle lägga state i en fil vars hela idé är en enda
+  skrivare.
 
 ## Testning
 

@@ -235,6 +235,19 @@ mätte hur länge en punkt varit öppen. Den här filen gör punkten räknebar; 
 fortsätter skriva åtgärdspunkter i prosa precis som förut – du konsoliderar dem en gång i veckan.
 
 1. Läs `state/action_items.json` (saknas den: skapa den med `{ "generatedAt": …, "items": [] }`).
+1b. **FÖRSTA IFYLLNINGEN RÄKNAR BAKÅT – gäller ENDAST den körning där filen skapas.** Startade
+   varje punkt på `weeksOpen: 1` skulle en defekt som redan varit öppen i veckor få tre veckors
+   NY tystnad innan tröskeln nås – och just de punkterna är de mest brådskande. Backfilldefekten
+   var dokumenterad i sju rapporter när mekanismen byggdes.
+   Vid första ifyllningen, per öppen punkt: gå bakåt i `reports/` och räkna i hur många DISTINKTA
+   ISO-veckor defekten är dokumenterad (samma fil/fält, oavsett rubrikformulering). Sätt
+   `weeksOpen` till det antalet och `firstSeen` till datumet för den TIDIGASTE rapporten som bär
+   den. `lastSeen` är alltid dagens datum.
+   Tre spärrar: bakåträkningen görs **en enda gång** – därefter gäller punkt 2 och 4 utan
+   undantag; varje bakåtdaterad punkt ska namnge sina källrapporter i retro-rapporten, annars är
+   siffran ett påstående utan underlag; och går veckoantalet inte att belägga ur rapporterna
+   sätts `weeksOpen: 1` – gissa aldrig uppåt, ett för högt tal larmar för tidigt och urholkar
+   tröskeln.
 2. Gå igenom veckans samtliga åtgärdspunkter – dina egna och de i rotationernas och scoutens
    rapporter. Per punkt:
    - **Ny defekt** → ny post med stabilt `id` i kebab-case (ASCII, inga å/ä/ö – id:t blir
