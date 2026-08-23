@@ -410,6 +410,52 @@ export function checkEarningsCalendar(opts){
    Bara symboler som faktiskt hämtas räknas: en symbol som ligger kvar i
    historiken utan att vara i prices.json är övergiven, vilket är ett annat fel
    (åtgärdspunkt 2) och skulle annars räknas dubbelt. */
+/* ÅTGÄRDSPUNKTER SOM LIGGER KVAR (2026-08-23). L-3 gör en datadefekt SYNLIG
+   men inte ÅTGÄRDAD: punkterna staplades i prosa vecka efter vecka.
+   Backfilldefekten rapporterades SJU gånger utan att något larmade – den
+   självläkte av kalendertid, inte av åtgärd. Ingenting mätte hur länge en
+   punkt varit öppen, för det enda spåret var ordet "ÅTERKOMMANDE" i löptext
+   under sex olika rubrikvarianter.
+
+   `state/action_items.json` gör punkten räknebar; den här checken gör den
+   hörbar. Miss-retron är enda skrivaren (STEG 5), samma modell som
+   lessons.md.
+
+   ETT PROBLEM PER PUNKT, med nyckel `action-item-<id>`. Det är avgörande:
+   nyckeln hamnar i issue-sync:ens HTML-kommentar, så ett issue per defekt
+   öppnas vid tröskeln och STÄNGS av sig självt när retron sätter `resolved`.
+   En samlad "5 punkter öppna"-titel hade återskapat exakt den dedupe-bugg
+   issue-sync byggdes för att lösa – antalet i titeln ändras 5 -> 3 och läses
+   som ett nytt problem.
+
+   Tröskeln 3 speglar L-3:s eget ÅTERKOMMANDE-begrepp (två tidigare rapporter)
+   plus en veckas marginal. Saknas filen eller fältet är checken TYST, som
+   watchdogens övriga bakåtkompatibla kontroller. */
+export function checkRecurringActionItems(opts){
+  const { itemsDb, threshold = 3 } = opts || {};
+  const problems = [];
+  const items = itemsDb && itemsDb.items;
+  if (!Array.isArray(items)) return problems;
+
+  for (const it of items){
+    if (!it || it.status !== "open") continue;
+    if (!Number.isInteger(it.weeksOpen) || it.weeksOpen < threshold) continue;
+    problems.push({
+      key: "action-item-" + it.id,
+      title: `Watchdog: åtgärdspunkt öppen ${it.weeksOpen} veckor – ${it.title}`,
+      body: "Punkten `" + it.id + "` i `state/action_items.json` har varit öppen i **" +
+        it.weeksOpen + " veckor** (först sedd " + it.firstSeen + ", senast bekräftad " +
+        it.lastSeen + ").\n\n" +
+        "**Berör:** " + (it.file ? "`" + it.file + "`" : "ingen enskild fil") +
+        "\n**Omfång:** " + it.scope + "\n\n" +
+        "L-3 gör defekten synlig men inte åtgärdad – en punkt som beskrivs varje vecka utan att " +
+        "stängas slutar bli läst. Åtgärda den, eller sätt `status: \"resolved\"` med `resolvedBy` " +
+        "i filen om den inte längre gäller; issuet stängs då av sig självt vid nästa körning."
+    });
+  }
+  return problems;
+}
+
 export function checkShortSeries(opts){
   const { now, series, quotes, partialBackfilledAt,
           minPoints = 35, maxAgeHours = 30, tolerated = 2 } = opts || {};
@@ -485,6 +531,9 @@ function main(){
   try { candidatesDb = JSON.parse(readFileSync("state/scout_candidates.json", "utf8")); } catch {}
   let queueDb = null;
   try { queueDb = JSON.parse(readFileSync("state/analysis_queue.json", "utf8")); } catch {}
+  // Saknas filen förblir den null och checken är tyst – mekanismen är ny (2026-08-23).
+  let actionItemsDb = null;
+  try { actionItemsDb = JSON.parse(readFileSync("state/action_items.json", "utf8")); } catch {}
   let priceQuotes = null;
   try { priceQuotes = JSON.parse(readFileSync("state/prices.json", "utf8")).quotes || null; } catch {}
   let earningsCalAt = null;
@@ -532,6 +581,7 @@ function main(){
   problems.push(...checkAnalysisQueue({ queueDb, now: now.toISOString() }));
   problems.push(...checkShortSeries({ now, series: histSeries, quotes: priceQuotes,
     partialBackfilledAt }));
+  problems.push(...checkRecurringActionItems({ itemsDb: actionItemsDb }));
 
   const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);
   const wkUs     = readLatest("reports/us_weekly", /^us-veckorapport-\d{6}\.md$/);

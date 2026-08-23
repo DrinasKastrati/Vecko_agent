@@ -62,6 +62,8 @@ jobs:
           fi
       - name: Validera scout-kandidaterna (schema + kursverifieringskrav)
         run: node .github/scripts/validate-scout-candidates.mjs
+      - name: Validera atgardspunkterna (schema + unika id)
+        run: node .github/scripts/validate-action-items.mjs
       - name: Syntaxkontrollera alla JS-moduler
         run: |
           node --check assets/vparse.js
@@ -79,5 +81,6 @@ jobs:
           node --check .github/scripts/backtest.mjs
           node --check .github/scripts/validate-decisions.mjs
           node --check .github/scripts/validate-scout-candidates.mjs
+          node --check .github/scripts/validate-action-items.mjs
           node --check .github/scripts/backtest-earnings.mjs
           node --check .github/scripts/earnings-calendar.mjs

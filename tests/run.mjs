@@ -2963,5 +2963,79 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   })());
 }
 
+/* ---- ÅTGÄRDSLOOPEN (2026-08-23) -----------------------------------------
+   `state/action_items.json` gör en åtgärdspunkt räknebar. Före den låg
+   defekter kvar i prosa – backfill-punkten rapporterades SJU gånger utan att
+   något larmade, för ingenting mätte hur länge en punkt varit öppen.
+   Se docs/superpowers/specs/2026-08-23-retro-atgardsloop-design.md */
+{
+  const AI = await mod(".github/scripts/validate-action-items.mjs");
+  const WDa = await mod(".github/scripts/watchdog.mjs");
+
+  const bas = {
+    id: "backfill-price-history",
+    title: "price_history.json backfillas inte för nyupptagna symboler",
+    file: "state/price_history.json", scope: "7 kandidater, 94 serier",
+    firstSeen: "2026-08-08", lastSeen: "2026-08-22", weeksOpen: 3,
+    status: "open", resolvedAt: null, resolvedBy: null
+  };
+  const löst = Object.assign({}, bas, {
+    status: "resolved", resolvedAt: "2026-08-23", resolvedBy: "prices.yml kör nu backfillen"
+  });
+
+  ok("åtgärdspunkt: giltig öppen post accepteras", AI.validateItem(bas, 0).length === 0);
+  ok("åtgärdspunkt: giltig löst post accepteras", AI.validateItem(löst, 0).length === 0);
+
+  const dålig = över => AI.validateItem(Object.assign({}, bas, över), 0).length > 0;
+  ok("åtgärdspunkt: id måste vara kebab-case", dålig({ id: "Backfill_Price" }));
+  ok("åtgärdspunkt: tomt id avvisas", dålig({ id: "" }));
+  ok("åtgärdspunkt: tom title avvisas", dålig({ title: "   " }));
+  ok("åtgärdspunkt: scope krävs – L-3 kräver kvantifierat omfång", dålig({ scope: "" }));
+  ok("åtgärdspunkt: file får vara null", AI.validateItem(Object.assign({}, bas, { file: null }), 0).length === 0);
+  ok("åtgärdspunkt: okänd status avvisas", dålig({ status: "kanske" }));
+  ok("åtgärdspunkt: trasigt datum avvisas", dålig({ firstSeen: "22 aug" }));
+  ok("åtgärdspunkt: lastSeen före firstSeen avvisas", dålig({ lastSeen: "2026-08-01" }));
+  ok("åtgärdspunkt: weeksOpen måste vara heltal >= 1", dålig({ weeksOpen: 0 }));
+  ok("åtgärdspunkt: weeksOpen får inte vara decimal", dålig({ weeksOpen: 2.5 }));
+  ok("åtgärdspunkt: öppen post får inte bära resolvedAt", dålig({ resolvedAt: "2026-08-23" }));
+  ok("åtgärdspunkt: löst post utan resolvedAt avvisas",
+     AI.validateItem(Object.assign({}, löst, { resolvedAt: null }), 0).length > 0);
+  ok("åtgärdspunkt: löst post utan resolvedBy avvisas",
+     AI.validateItem(Object.assign({}, löst, { resolvedBy: null }), 0).length > 0);
+  ok("åtgärdspunkt: icke-objekt avvisas", AI.validateItem(null, 0).length > 0);
+
+  ok("åtgärdslista: dubbletter av id avvisas",
+     AI.validateDb({ items: [bas, Object.assign({}, bas, { title: "annan" })] }).length > 0);
+  ok("åtgärdslista: unika id accepteras",
+     AI.validateDb({ items: [bas, Object.assign({}, bas, { id: "movers-efterslapning" })] }).length === 0);
+  ok("åtgärdslista: saknad fil är inget fel – mekanismen är ny",
+     AI.validateDb(null).length === 0);
+  ok("åtgärdslista: items måste vara en array", AI.validateDb({ items: {} }).length > 0);
+
+  // Watchdogen. Tröskeln 3 speglar L-3:s ÅTERKOMMANDE (två tidigare rapporter) + en veckas marginal.
+  const wd = items => WDa.checkRecurringActionItems({ itemsDb: { items } });
+  ok("watchdog: punkt under tröskeln är tyst", wd([Object.assign({}, bas, { weeksOpen: 2 })]).length === 0);
+  ok("watchdog: punkt PÅ tröskeln larmar", wd([bas]).length === 1);
+  ok("watchdog: punkt över tröskeln larmar", wd([Object.assign({}, bas, { weeksOpen: 9 })]).length === 1);
+  ok("watchdog: löst punkt larmar aldrig, oavsett weeksOpen",
+     wd([Object.assign({}, löst, { weeksOpen: 12 })]).length === 0);
+  ok("watchdog: ett problem PER punkt – aldrig en samlad titel med antal",
+     wd([bas, Object.assign({}, bas, { id: "movers-efterslapning", weeksOpen: 5 })]).length === 2);
+  ok("watchdog: nyckeln är action-item-<id> så issue-sync kan stänga per punkt",
+     wd([bas])[0].key === "action-item-backfill-price-history");
+  ok("watchdog: titeln bär punktens egen text, inte ett antal",
+     wd([bas])[0].title.includes(bas.title));
+  ok("watchdog: brödtexten bär omfånget", wd([bas])[0].body.includes("7 kandidater, 94 serier"));
+  ok("watchdog: egen tröskel går att sätta",
+     WDa.checkRecurringActionItems({ itemsDb: { items: [Object.assign({}, bas, { weeksOpen: 2 })] },
+                                     threshold: 2 }).length === 1);
+  ok("watchdog: saknad fil är tyst", WDa.checkRecurringActionItems({ itemsDb: null }).length === 0);
+  ok("watchdog: tom lista är tyst", wd([]).length === 0);
+  ok("watchdog: items som inte är array är tyst",
+     WDa.checkRecurringActionItems({ itemsDb: { items: "nej" } }).length === 0);
+  ok("watchdog: post utan weeksOpen är tyst, inte kastar",
+     wd([{ id: "x", status: "open" }]).length === 0);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

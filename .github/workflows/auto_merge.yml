@@ -83,6 +83,14 @@ jobs:
               FAIL=1
               continue
             fi
+            # Atgardsloopen. Filen skrivs av miss-retron; ett uppfunnet status-varde
+            # eller ett dubblerat id gor watchdogens larm tyst utan att nagot blir rott.
+            if ! node .github/scripts/validate-action-items.mjs; then
+              echo "::error::validate-action-items.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+              git reset --hard origin/main
+              FAIL=1
+              continue
+            fi
             if ! node tests/run.mjs; then
               echo "::error::tests/run.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
               git reset --hard origin/main

@@ -64,6 +64,23 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   `[TECKNA]`). `templates/analys_mall.md` är därmed URKOPPLAD – ingen prompt läser den längre.
 - `prompts/START.md` – korta laddare som routinerna pekar på; prompttexten klistras aldrig in.
 - `state/lessons.md` – skrivs ENDAST av miss-retron.
+- **`state/action_items.json` – ÅTGÄRDSLOOPEN (ny 2026-08-23), skrivs ENDAST av miss-retron
+  (STEG 5).** L-3 gör en datadefekt SYNLIG men inte ÅTGÄRDAD, och punkterna staplades i prosa:
+  backfilldefekten rapporterades **sju gånger** utan att något larmade och självläkte till slut av
+  kalendertid i stället för av åtgärd. 2026-08-23 bar `veckorapport-260817` sju ÅTERKOMMANDE-
+  märkningar. Ordet står i löptext under sex olika rubrikvarianter och veckoräkningen är text
+  ("ÅTERKOMMANDE, tredje veckan") – **regexa det aldrig**, det är samma tysta felklass som
+  mekanismen avskaffar: fyra prompter formulerar rubrikerna fritt och en omskrivning tystar larmet
+  utan att något blir rött. `watchdog.mjs:checkRecurringActionItems` larmar på
+  `status: "open" && weeksOpen >= 3`, **ett problem per punkt** med nyckel `action-item-<id>` –
+  aldrig en samlad titel med antal, det återskapar dedupe-buggen `issue-sync.mjs` byggdes för att
+  lösa. Därför måste `id` vara stabilt och ASCII-kebab-case; ändras det öppnas ett andra issue för
+  samma defekt. **`weeksOpen` räknas av retron, inte ur datum** – en retro kan hoppas över, och en
+  beräkning ur `firstSeen` hade räknat upp en punkt ingen observerat. Validatorn
+  `validate-action-items.mjs` körs i `test.yml` OCH i auto-merge-grinden. Saknad fil är INGET fel
+  (mekanismen är ny) och watchdogen är då tyst. Medvetet INTE i dashboarden: `tests/data.mjs`
+  kräver ≤ 30 hämtningar och ligger på 29 – taket ska sprängas av ett medvetet val, inte som
+  sidoeffekt. Designen står i `docs/superpowers/specs/2026-08-23-retro-atgardsloop-design.md`.
 - **Miss-retron får sedan 2026-08-23 lägga en BEVAKNINGSRAD i `config/watchlist*.txt`
   (`miss_retro.md` STEG 4b).** Fram till dess förbjöd RAPPORTKRAV punkt 4 det kategoriskt
   ("retron genererar inte case"), vilket gjorde retron till en analys utan hand: den var enda
