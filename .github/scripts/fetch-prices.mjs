@@ -12,7 +12,38 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
 // med mellanslag ("BAHN B.ST") – klassaktier ska skrivas med bindestreck (BAHN-B.ST).
 // Efterledet tillåter upp till 6 tecken så att ETF:er som XACT-OMXS30.ST
 // (indexsleeven) fångas, inte bara klassbokstäver som SAAB-B.ST.
-const TICKER_RE = /\b[A-Z0-9]{2,6}(?:-[A-Z0-9]{1,6})?\.(?:ST|OL|CO|HE)\b/gi;
+//
+// Bindestrecksgruppen upprepas (`*`, inte `?`, sedan 2026-08-23). Med `?`
+// tilläts exakt ETT led, och en symbol med två – IMP-A-SDB.ST – matchade då
+// från `\b` framför SISTA ledet och gav `SDB.ST`, en ticker som inte finns.
+// Ingen kurs gick förlorad (den riktiga raden kom från watchlisten), men varje
+// hämtning la en död symbol i prices.json:s `errors`, och det är just det
+// fältet watchdogen larmar på.
+const TICKER_RE = /\b[A-Z0-9]{2,6}(?:-[A-Z0-9]{1,6})*\.(?:ST|OL|CO|HE)\b/gi;
+
+/* SYMBOLER SOM BEVISLIGEN INTE FINNS HOS NÅGON KÄLLA.
+
+   Prosan är en tickerkälla: `collectTickers` kör `extractTickers` över
+   portfolj.md och de tre senaste veckorapporterna. Följden är att en död ticker
+   ÅTERUPPSTÅR så fort någon skriver om den. SAAB.ST togs bort ur watchlisten
+   2026-08-02 just för att den inte existerar (bolaget handlas som SAAB-B.ST) –
+   och låg ändå i prices.json 2026-08-21 med fel, eftersom veckorapport-260817
+   NÄMNER den i en varning om att den inte finns. Varningen återskapade
+   symbolen.
+
+   Listan är avsiktligt minimal och får bara innehålla symboler som är
+   OBSERVERADE med fel i prices.json och vars riktiga motsvarighet är känd.
+   Lägg ALDRIG hit en symbol som bara misslyckats tillfälligt (BIOT.ST,
+   DOMETIC.ST och ICA.ST failar i movers-hämtningen men är riktiga bolag) –
+   då döljer listan ett hämtningsfel i stället för att avslöja det. */
+export const KNOWN_MISSING = new Set([
+  "SAAB.ST",   // Saab AB handlas som SAAB-B.ST. Felskriven i analyskön 2026-07-14.
+  "SDB.ST"     // Trunkerad svans av IMP-A-SDB.ST, se TICKER_RE ovan.
+]);
+
+export function dropKnownMissing(tickers){
+  return tickers.filter(t => !KNOWN_MISSING.has(t));
+}
 
 // ---- pure helpers (testbara) ------------------------------------------
 export function extractTickers(text){
@@ -122,7 +153,7 @@ export function collectTickers(){
     if (t && !t.startsWith("#") && /^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)) tickers.add(t);
   }
   for (const t of collectCandidateTickers("nordic")) tickers.add(t);
-  return [...tickers].sort();
+  return dropKnownMissing([...tickers].sort());
 }
 
 /* Symboler som RAPPORTERAR SNART, ur state/earnings_calendar.json.
@@ -274,7 +305,7 @@ export function collectUsTickers(){
   for (const t of extractUsPortfolioTickers(readFirst(["state/portfolj_us.md", "portfolj_us.md"]))) set.add(t);
   for (const t of extractUsCaseTickers(recentUsWeeklies(3))) set.add(t);
   for (const t of collectCandidateTickers("us")) set.add(t);
-  return [...set];
+  return dropKnownMissing([...set]);
 }
 
 // FÖREGÅENDE STÄNGNING – hämtas ur SERIEN, inte ur chartPreviousClose.

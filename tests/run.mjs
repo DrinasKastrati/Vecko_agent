@@ -3037,5 +3037,39 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      wd([{ id: "x", status: "open" }]).length === 0);
 }
 
+/* ---- SPÖKTICKERS (2026-08-23) -------------------------------------------
+   state/prices.json bar 2026-08-21 två symboler som INTE finns på Yahoo:
+   SDB.ST (regexen trunkerade IMP-A-SDB.ST vid näst sista bindestrecket) och
+   SAAB.ST (borttagen ur watchlisten 2026-08-02 men NÄMND i veckorapport-260817,
+   och prosan är en tickerkälla). Ingen kurs gick förlorad – båda de riktiga
+   symbolerna hämtades – men varje körning la en död rad i `errors`, och det är
+   just det fältet man larmar på. */
+{
+  ok("ticker: flerledad klassticker trunkeras inte längre",
+     FP.extractTickers("Watchlisten utökad: IMP-A-SDB.ST enligt L-2.").includes("IMP-A-SDB.ST"));
+  ok("ticker: trunkerad svans uppstår inte",
+     !FP.extractTickers("Watchlisten utökad: IMP-A-SDB.ST enligt L-2.").includes("SDB.ST"));
+  // Regressionsvakt: de format som fungerade FÖRE fixen måste fungera efter.
+  const alla = FP.extractTickers("SAAB-B.ST XACT-OMXS30.ST NOVO-B.CO BICO.ST NOKIA.HE KOG.OL");
+  ok("ticker: enledad klassticker oförändrad", alla.includes("SAAB-B.ST"));
+  ok("ticker: ETF med långt efterled oförändrad", alla.includes("XACT-OMXS30.ST"));
+  ok("ticker: samtliga fyra börssuffix oförändrade",
+     ["NOVO-B.CO", "BICO.ST", "NOKIA.HE", "KOG.OL"].every(t => alla.includes(t)));
+  ok("ticker: bas under 2 tecken plockas fortfarande inte (BAHN B.ST-fällan)",
+     !FP.extractTickers("BAHN B.ST").includes("B.ST"));
+
+  // Denylistan. En död ticker som NÄMNS i en rapport får inte återuppstå.
+  ok("spökticker: SAAB.ST är känd som obefintlig", FP.KNOWN_MISSING.has("SAAB.ST"));
+  ok("spökticker: filtreras bort ur en lista",
+     !FP.dropKnownMissing(["SAAB-B.ST", "SAAB.ST", "BICO.ST"]).includes("SAAB.ST"));
+  ok("spökticker: riktiga symboler passerar orörda",
+     FP.dropKnownMissing(["SAAB-B.ST", "SAAB.ST", "BICO.ST"]).join() === "SAAB-B.ST,BICO.ST");
+  ok("spökticker: tom lista går igenom", FP.dropKnownMissing([]).length === 0);
+  ok("spökticker: den riktiga klasstickern får ALDRIG hamna på listan",
+     !FP.KNOWN_MISSING.has("SAAB-B.ST") && !FP.KNOWN_MISSING.has("IMP-A-SDB.ST"));
+  ok("spökticker: nordiska insamlingen filtrerar", !FP.collectTickers().includes("SAAB.ST"));
+  ok("spökticker: US-insamlingen filtrerar", !FP.collectUsTickers().includes("SAAB.ST"));
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
