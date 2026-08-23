@@ -64,6 +64,19 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   `[TECKNA]`). `templates/analys_mall.md` är därmed URKOPPLAD – ingen prompt läser den längre.
 - `prompts/START.md` – korta laddare som routinerna pekar på; prompttexten klistras aldrig in.
 - `state/lessons.md` – skrivs ENDAST av miss-retron.
+- **Miss-retron får sedan 2026-08-23 lägga en BEVAKNINGSRAD i `config/watchlist*.txt`
+  (`miss_retro.md` STEG 4b).** Fram till dess förbjöd RAPPORTKRAV punkt 4 det kategoriskt
+  ("retron genererar inte case"), vilket gjorde retron till en analys utan hand: den var enda
+  instans som såg missarna, och kunde inte göra något åt dem. Effekten åt andra hållet är mätt –
+  de gånger en ticker låg i watchlisten I FÖRVÄG blev den mätbar och ibland vald (RAP1V.HE, TGT,
+  DE i v34). **Fyra spärrar som inte får luckras upp:** bara kategori **A** (utanför universum)
+  och **D** (signal filtrerad) – aldrig **B**/**C**, där systemet redan bedömt bolaget och en
+  senare inlyftning ENBART är facit-bias; katalysatorn måste vara bekräftad och daterad; retron
+  LÄGGER TILL, aldrig tar bort (hygienen ägs av rotationerna); **max 3 rader per retro**, eftersom
+  listan annars växer monotont – den gick 24 → 41 rader på en vecka i v33 och varje rad kostar
+  API-anrop var 30:e minut. En watchlist-rad är bevakning: den ger verifierad kurs och kursserie,
+  inget mer. Grindarna och urvalet är OFÖRÄNDRADE, och retron får fortfarande aldrig röra Pending,
+  `scout_candidates.json` eller `decisions.json`.
 - `state/news_feed.json` – PRIMÄR nyhetskälla för alla tre routinerna, inte ett komplement.
   **Fönstret mäts i HANDELSDAGAR (10), inte timmar – sedan 2026-08-03.** Det var 48 timmar, vilket
   kollapsade över helgen: måndag 05:58 UTC låg fredagens sista hämtning 55 timmar bakåt och rensades
