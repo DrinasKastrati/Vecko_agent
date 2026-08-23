@@ -100,6 +100,24 @@ BAVA.CO
 # Bavarian Nordic – HOJD helarsprognos 2026 plus nytt aterkopsprogram om upp till 750 MDKK
 # (MFN 2026-08-21 05:44/05:48 UTC), catalystType earnings respektive buyback, confirmed.
 
+# Täckningshålet ur retro-260822 Miss 1, tillagda 2026-08-23 enligt miss_retro.md STEG 4b
+# (kategori A – utanför universum, bekräftad och daterad katalysator, max 3 rader per retro).
+# Samtliga tre rapporterade Q2 den 19–20/8 med rapportdatum offentliggjorda i FÖRVÄG och rörde
+# sig 11–25 %, men finns inte i config/universe_nordic_movers.txt (128 symboler), inte i
+# prices.json och inte i earnings_calendar.json – de var alltså osynliga i hela flödet, och
+# rörelserna kunde bara beläggas via Placera.se, aldrig mot repots egen data. Detta är ANDRA
+# veckan i rad samma hål (v33: Vestas, Embracer, Maersk). Raderna är BEVAKNING, inte case:
+# de ger verifierad kurs och en kursserie så att nästa rörelse blir mätbar. Urvalet och de fem
+# grindarna är oförändrade. Åtgärdspunkt 1 i retro-260822 (utöka movers-universumet) står kvar –
+# de här tre raderna lagar inte hålet, bara de tre namn vi redan vet om.
+# OBS: tickerformaten är hämtade ur retro-260822 och EJ verifierade mot Yahoo. Måndagens
+# prices.json är kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
+BICO.ST
+KABE-B.ST
+KAR.ST
+# Bico Group (Q2 2026-08-19, rapportdatum bekräftat mot bico.com IR), KABE Group (Q2 2026-08-20,
+# rörelseresultat +90 %) och Karnov Group (Q2 2026-08-20). catalystType earnings för alla tre.
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
 # EQNR.OL
