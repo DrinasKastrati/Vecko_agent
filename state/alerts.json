@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-19T13:43:04.388Z",
-  "checkedAt": "2026-08-24T11:27:41.787Z",
+  "generatedAt": "2026-08-24T13:51:06.333Z",
+  "checkedAt": "2026-08-24T13:51:06.333Z",
   "watched": [
     "NVDA",
     "MU",
@@ -8,7 +8,19 @@
     "SPY",
     "TGT"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "NVDA",
+      "type": "SÄLJ",
+      "reason": "stop-loss träffad",
+      "level": 211,
+      "price": 209.38,
+      "currency": "USD",
+      "marketTime": "2026-08-24T13:51:03.000Z",
+      "basis": "price",
+      "hitPrice": 209.38
+    }
+  ],
   "history": [
     {
       "ticker": "MU",
