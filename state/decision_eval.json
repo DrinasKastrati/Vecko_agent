@@ -1,25 +1,25 @@
 {
- "generatedAt": "2026-08-21T20:15:45.535Z",
+ "generatedAt": "2026-08-24T07:50:54.207Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 216,
-  "measurable": 216,
+  "decisions": 243,
+  "measurable": 243,
   "missing": 0,
-  "pending": 93
+  "pending": 92
  },
  "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
-    "n": 123,
-    "meanAlphaPct": 1.35,
-    "medianAlphaPct": 1.37,
-    "meanPct": 0.91,
-    "beatIndexPct": 60.98
+    "n": 151,
+    "meanAlphaPct": 0.95,
+    "medianAlphaPct": 1.12,
+    "meanPct": 0.74,
+    "beatIndexPct": 58.28
    },
    "byAction": {
     "KÖP": {
@@ -39,27 +39,27 @@
      "need": 5
     },
     "BEHÅLL": {
-     "n": 11,
-     "meanAlphaPct": 0.16,
-     "medianAlphaPct": -1.73,
-     "meanPct": -0.15,
-     "beatIndexPct": 27.27
+     "n": 12,
+     "meanAlphaPct": 0.12,
+     "medianAlphaPct": -1.63,
+     "meanPct": -0.1,
+     "beatIndexPct": 25
     },
     "AVVAKTA": {
-     "n": 101,
-     "meanAlphaPct": 1.32,
-     "medianAlphaPct": 1.4,
-     "meanPct": 0.78,
-     "beatIndexPct": 64.36
+     "n": 128,
+     "meanAlphaPct": 0.87,
+     "medianAlphaPct": 1.25,
+     "meanPct": 0.61,
+     "beatIndexPct": 60.94
     }
    },
    "byBook": {
     "nordic": {
-     "n": 56,
-     "meanAlphaPct": 1.87,
-     "medianAlphaPct": 2.04,
-     "meanPct": 1.21,
-     "beatIndexPct": 62.5
+     "n": 84,
+     "meanAlphaPct": 0.99,
+     "medianAlphaPct": 1.25,
+     "meanPct": 0.8,
+     "beatIndexPct": 57.14
     },
     "us": {
      "n": 67,
@@ -71,11 +71,11 @@
    },
    "byCatalyst": {
     "earnings": {
-     "n": 49,
-     "meanAlphaPct": 1.19,
+     "n": 57,
+     "meanAlphaPct": 1.07,
      "medianAlphaPct": 0.7,
-     "meanPct": 0.79,
-     "beatIndexPct": 53.06
+     "meanPct": 0.84,
+     "beatIndexPct": 54.39
     },
     "macro": {
      "n": 5,
@@ -87,54 +87,50 @@
      "need": 3
     },
     "order": {
-     "n": 13,
-     "meanAlphaPct": 2.53,
-     "medianAlphaPct": 2.02,
-     "meanPct": 2.48,
-     "beatIndexPct": 69.23
+     "n": 15,
+     "meanAlphaPct": 1.15,
+     "medianAlphaPct": 1.5,
+     "meanPct": 1.2,
+     "beatIndexPct": 60
     },
     "other": {
-     "n": 35,
-     "meanAlphaPct": -0.91,
-     "medianAlphaPct": -0.55,
-     "meanPct": -1.33,
-     "beatIndexPct": 48.57
+     "n": 47,
+     "meanAlphaPct": -0.66,
+     "medianAlphaPct": 0.02,
+     "meanPct": -0.78,
+     "beatIndexPct": 51.06
     },
     "regulatory": {
+     "n": 8,
+     "meanAlphaPct": 2.17,
+     "medianAlphaPct": 4.06,
+     "meanPct": 1.67,
+     "beatIndexPct": 75
+    },
+    "buyback": {
+     "n": 8,
+     "meanAlphaPct": 4.77,
+     "medianAlphaPct": 5.76,
+     "meanPct": 4.3,
+     "beatIndexPct": 87.5
+    },
+    "ma_rumor": {
      "n": 6,
-     "meanAlphaPct": 4.51,
-     "medianAlphaPct": 5.09,
-     "meanPct": 3.59,
-     "beatIndexPct": 100,
+     "meanAlphaPct": -0.13,
+     "medianAlphaPct": 0.18,
+     "meanPct": -0.34,
+     "beatIndexPct": 50,
      "insufficient": true,
      "need": 2
     },
-    "buyback": {
-     "n": 7,
-     "meanAlphaPct": 4.94,
-     "medianAlphaPct": 6.1,
-     "meanPct": 4.29,
-     "beatIndexPct": 85.71,
-     "insufficient": true,
-     "need": 1
-    },
-    "ma_rumor": {
-     "n": 4,
-     "meanAlphaPct": 0.79,
-     "medianAlphaPct": 1.16,
-     "meanPct": 0.09,
-     "beatIndexPct": 75,
-     "insufficient": true,
-     "need": 4
-    },
     "turnaround": {
-     "n": 4,
-     "meanAlphaPct": 4.97,
-     "medianAlphaPct": 4.99,
-     "meanPct": 3.86,
-     "beatIndexPct": 100,
+     "n": 5,
+     "meanAlphaPct": 3.96,
+     "medianAlphaPct": 3.66,
+     "meanPct": 3.22,
+     "beatIndexPct": 80,
      "insufficient": true,
-     "need": 4
+     "need": 3
     }
    },
    "selectionEdge": {
@@ -147,14 +143,14 @@
      "beatIndexPct": 62.5
     },
     "passed": {
-     "n": 101,
-     "meanAlphaPct": 1.32,
-     "medianAlphaPct": 1.4,
-     "meanPct": 0.78,
-     "beatIndexPct": 64.36
+     "n": 128,
+     "meanAlphaPct": 0.87,
+     "medianAlphaPct": 1.25,
+     "meanPct": 0.61,
+     "beatIndexPct": 60.94
     },
-    "edgePct": 0.58,
-    "verdict": "ingen skillnad utöver brus mellan köpta och avvisade"
+    "edgePct": 1.03,
+    "verdict": "urvalet skiljer köpta från avvisade i rätt riktning"
    }
   },
   "20": {
@@ -2447,7 +2443,14 @@
    "catalystType": "other",
    "sector": "Sakerhet/tilltrade",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.37,
+     "benchPct": 0.76,
+     "alphaPct": -0.39,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2457,7 +2460,14 @@
    "catalystType": "turnaround",
    "sector": "Sportfiskeutrustning",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.65,
+     "benchPct": 0.76,
+     "alphaPct": -0.11,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2467,7 +2477,14 @@
    "catalystType": "other",
    "sector": "Biotek",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.56,
+     "benchPct": 0.76,
+     "alphaPct": 0.8,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2477,7 +2494,14 @@
    "catalystType": "regulatory",
    "sector": "Diagnostik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -6.43,
+     "benchPct": 0.76,
+     "alphaPct": -7.19,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2487,7 +2511,14 @@
    "catalystType": "order",
    "sector": "Natverkshardvara",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -9.3,
+     "benchPct": 0.76,
+     "alphaPct": -10.06,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2497,7 +2528,14 @@
    "catalystType": "other",
    "sector": "Aluminium",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 3.88,
+     "benchPct": 0.76,
+     "alphaPct": 3.12,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2507,7 +2545,14 @@
    "catalystType": "earnings",
    "sector": "Telekomutrustning",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -10.04,
+     "benchPct": 0.76,
+     "alphaPct": -10.8,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2517,7 +2562,14 @@
    "catalystType": "earnings",
    "sector": "Vindkraft",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.37,
+     "benchPct": 0.76,
+     "alphaPct": 0.61,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2527,7 +2579,14 @@
    "catalystType": "earnings",
    "sector": "Container/logistik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 2.08,
+     "benchPct": 0.76,
+     "alphaPct": 1.32,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2537,7 +2596,14 @@
    "catalystType": "earnings",
    "sector": "Spelutveckling",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.35,
+     "benchPct": 0.76,
+     "alphaPct": -0.41,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2547,7 +2613,14 @@
    "catalystType": "other",
    "sector": "Forsvar",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -4.73,
+     "benchPct": 0.76,
+     "alphaPct": -5.49,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2557,7 +2630,14 @@
    "catalystType": "other",
    "sector": "Spelutveckling",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -9.4,
+     "benchPct": 0.76,
+     "alphaPct": -10.16,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2567,7 +2647,14 @@
    "catalystType": "other",
    "sector": "Medicinteknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -0.17,
+     "benchPct": 0.76,
+     "alphaPct": -0.93,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2577,7 +2664,14 @@
    "catalystType": "other",
    "sector": "Spelutveckling",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.78,
+     "benchPct": 0.76,
+     "alphaPct": 1.02,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2587,7 +2681,14 @@
    "catalystType": "earnings",
    "sector": "Lakemedel",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 3.28,
+     "benchPct": 0.76,
+     "alphaPct": 2.52,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2597,7 +2698,14 @@
    "catalystType": "buyback",
    "sector": "Spelutveckling",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 4.34,
+     "benchPct": 0.76,
+     "alphaPct": 3.58,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2607,7 +2715,14 @@
    "catalystType": "ma_rumor",
    "sector": "Offshore/subsea",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -2.42,
+     "benchPct": 0.76,
+     "alphaPct": -3.17,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2617,7 +2732,14 @@
    "catalystType": "order",
    "sector": "Forsvar",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -4.84,
+     "benchPct": 0.76,
+     "alphaPct": -5.6,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2627,7 +2749,14 @@
    "catalystType": "regulatory",
    "sector": "Biotek",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -1.72,
+     "benchPct": 0.76,
+     "alphaPct": -2.48,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2637,7 +2766,14 @@
    "catalystType": "other",
    "sector": "Spelutveckling",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 2.54,
+     "benchPct": 0.76,
+     "alphaPct": 1.78,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2647,7 +2783,14 @@
    "catalystType": "other",
    "sector": "Matteknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.05,
+     "benchPct": 0.76,
+     "alphaPct": 4.29,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2657,7 +2800,14 @@
    "catalystType": "other",
    "sector": "Skog/massa",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 3.72,
+     "benchPct": 0.76,
+     "alphaPct": 2.97,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2667,7 +2817,14 @@
    "catalystType": "other",
    "sector": "Spel/betting",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.11,
+     "benchPct": 0.76,
+     "alphaPct": -0.65,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2677,7 +2834,14 @@
    "catalystType": "earnings",
    "sector": "E-handel",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 9.67,
+     "benchPct": 0.76,
+     "alphaPct": 8.91,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2687,7 +2851,14 @@
    "catalystType": "earnings",
    "sector": "Medicinteknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -4.64,
+     "benchPct": 0.76,
+     "alphaPct": -5.4,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2697,7 +2868,14 @@
    "catalystType": "earnings",
    "sector": "Fardor/logistik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 6.88,
+     "benchPct": 0.76,
+     "alphaPct": 6.13,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2707,7 +2885,14 @@
    "catalystType": "ma_rumor",
    "sector": "Fastigheter",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0,
+     "benchPct": 0.76,
+     "alphaPct": -0.76,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -2717,7 +2902,14 @@
    "catalystType": "other",
    "sector": "Raffinaderi/fornybart",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.3,
+     "benchPct": 0.76,
+     "alphaPct": 4.55,
+     "toDate": "2026-08-24"
+    }
+   }
   },
   {
    "date": "2026-08-17",
@@ -3366,6 +3558,276 @@
    "action": "AVVAKTA",
    "catalystType": "regulatory",
    "sector": "Minne/halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Vaccin/bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "KAR.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Juridisk information",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "SKA-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Bygg och projektutveckling",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "MGN.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Datacenter/fornybart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "ODF.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kemikalietankfart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "HAYPP.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "E-handel nikotinprodukter",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "EVO.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Speltjanster/live casino",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "ORK.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Konsumentvaror",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "IMP-A-SDB.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "BICO.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Bioteknikverktyg",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "MAERSK-B.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Sjofart/container",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "BOOZT.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "E-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "STAR-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Spelutveckling",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "RAP1V.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Sportfiskeutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "ZEAL.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Forsvar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "NOVO-B.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "KABE-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Husvagnar/husbilar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "CHECK.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Programvara/identitet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "NESTE.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Raffinaderi/fornybart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "PDX.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Spelutveckling",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "SUBC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Offshore/energiservice",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "SAAB-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Forsvar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "EMBRAC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Spelutveckling",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "VWS.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Vindkraft",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-24",
+   "ticker": "BWO.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Offshore FPSO",
    "reconstructed": false,
    "fwd": {}
   }
