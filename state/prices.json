@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-24T05:35:16.663Z",
+  "generatedAt": "2026-08-24T06:37:51.530Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil. 'volume' är omsatta enheter i den session marketTime pekar på, null när källan inte ger volym (index rapporterar ingen). 20-dagarssnittet att jämföra mot ligger i state/price_history.json under toppnyckeln 'volumes'.",
-  "tickerCount": 97,
-  "okCount": 97,
+  "tickerCount": 98,
+  "okCount": 98,
   "extendedCount": 3,
   "quotes": {
     "AAPL": {
@@ -217,15 +217,15 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 76992.1,
+      "price": 77285.11,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-24T05:34:48.000Z",
+      "marketTime": "2026-08-24T06:37:21.000Z",
       "marketState": null,
       "previousClose": 77083.4140625,
       "dayHigh": 77727.62,
       "dayLow": 76838.73,
-      "volume": 32450121728,
+      "volume": 31841935360,
       "source": "Yahoo Finance (chart API)"
     },
     "BWO.OL": {
@@ -376,15 +376,15 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 2443.98,
+      "price": 2449.8,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-24T05:34:50.000Z",
+      "marketTime": "2026-08-24T06:37:23.000Z",
       "marketState": null,
       "previousClose": 2424.251220703125,
       "dayHigh": 2465.2148,
       "dayLow": 2429.1355,
-      "volume": 18262009856,
+      "volume": 17950945280,
       "source": "Yahoo Finance (chart API)"
     },
     "G5EN.ST": {
@@ -658,6 +658,19 @@
       "dayHigh": 23.95,
       "dayLow": 22.9,
       "volume": 135816,
+      "source": "Yahoo Finance (chart API)"
+    },
+    "MRVL": {
+      "symbol": "MRVL",
+      "price": 237.04,
+      "currency": "USD",
+      "exchange": "NasdaqGS",
+      "marketTime": "2026-08-21T20:00:01.000Z",
+      "marketState": null,
+      "previousClose": 251.00999450683594,
+      "dayHigh": 252.52,
+      "dayLow": 233.28,
+      "volume": 25526600,
       "source": "Yahoo Finance (chart API)"
     },
     "MSFT": {
@@ -1123,10 +1136,10 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.4721,
+      "price": 9.4711,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-24T05:35:11.000Z",
+      "marketTime": "2026-08-24T06:37:47.000Z",
       "marketState": null,
       "previousClose": 9.47488021850586,
       "dayHigh": 9.4782,
