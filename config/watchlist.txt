@@ -117,6 +117,30 @@ KABE-B.ST
 KAR.ST
 # Bico Group (Q2 2026-08-19, rapportdatum bekräftat mot bico.com IR), KABE Group (Q2 2026-08-20,
 # rörelseresultat +90 %) och Karnov Group (Q2 2026-08-20). catalystType earnings för alla tre.
+# UTFALL 2026-08-24: samtliga tre fick verifierad kurs i prices.json och poängsattes fullt ut i
+# v35-rotationen – tickerformaten var alltså rätt. Bevakningsraderna gjorde vad de skulle.
+
+# Bruttolistan v35 (veckorapport-260824), tillagda 2026-08-24 enligt punkt 6b: varje ticker som
+# fått en rad i state/decisions.json MÅSTE hämtas av prices.yml, annars backfillas den aldrig i
+# state/price_history.json och beslutet blir omätbart för alltid i state/decision_eval.json.
+# Detta går FÖRE riktmärket på 25 tickers. Samtliga sex loggades med price: null (grind 1) och
+# är därmed veckans HELA grind 1-bortfall – 6 av 27 bruttokandidater.
+SKA-B.ST
+# Skanska B – datacenterkontrakt utanför Prag, CZK 2,1 mdr ≈ 930 MSEK (MFN + PR Newswire
+# 2026-08-24 05:30/05:48 UTC), catalystType order, confirmed.
+MGN.OL
+# Magnora ASA – nätanslutningsavtal för Magnora Data Centers projekt i Hämeenlinna utanför
+# Helsingfors (MFN 2026-08-24 05:00 UTC), catalystType order, confirmed.
+ODF.OL
+# Odfjell SE – 2Q26 "A strong financial result" (MFN 2026-08-20 18:00 UTC), catalystType earnings.
+HAYPP.ST
+# Haypp Group – refinansieringsavtal (MFN 2026-08-24 05:45 UTC), catalystType other.
+EVO.ST
+ORK.OL
+# Evolution (+9,11 % på veckan) och Orkla (−6,69 % på dagen) – två rader ur state/movers.json som
+# saknade verifierad kurs och därför föll på grind 1 utan att kunna poängsättas alls.
+# OBS: tickerformaten är standardformer men EJ verifierade mot Yahoo. Tisdagens prices.json är
+# kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
 
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
