@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-24T08:06:27.343Z",
+ "generatedAt": "2026-08-24T10:06:37.117Z",
  "feeds": {
   "globenewswire": "fel: This operation was aborted – båda försöken",
   "globenewswire-earnings": "fel: This operation was aborted – båda försöken",
@@ -8,7 +8,7 @@
   "sec-8k": "40 poster",
   "fed-press": "20 poster"
  },
- "count": 898,
+ "count": 902,
  "window": {
   "tradingDays": 10,
   "oldest": "2026-08-10",
@@ -17,9 +17,9 @@
   "tradingDaysCovered": 10,
   "missingDays": [],
   "perDay": {
-   "2026-08-24": 60,
+   "2026-08-24": 63,
    "2026-08-23": 11,
-   "2026-08-22": 8,
+   "2026-08-22": 9,
    "2026-08-21": 90,
    "2026-08-20": 93,
    "2026-08-19": 91,
@@ -34,36 +34,336 @@
    "2026-08-10": 1
   },
   "perSource": {
-   "prnewswire": 300,
    "mfn": 322,
-   "sec-8k": 271,
+   "prnewswire": 300,
+   "sec-8k": 275,
    "fed-press": 5
   }
  },
  "items": [
   {
+   "t": "Paxman (Q2 Review): Strong report boosts confidence in the outlook",
+   "u": "https://mfn.se/a/redeye/paxman-q2-review-strong-report-boosts-confidence-in-the-outlook",
+   "d": "2026-08-24T10:08:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "AVTECH (Q2 Review): Share overshoot on partial LATAM loss",
+   "u": "https://mfn.se/a/redeye/avtech-q2-review-share-overshoot-on-partial-latam-loss",
+   "d": "2026-08-24T10:07:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "AI Avatars Go Practical: Wizstar Takes #1 on Product Hunt",
+   "u": "https://www.prnewswire.com/news-releases/ai-avatars-go-practical-wizstar-takes-1-on-product-hunt-302858201.html",
+   "d": "2026-08-24T10:03:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Anderson &amp; Vreeland Launches Innovative AVantage Liquid Resin Laboratory",
+   "u": "https://www.prnewswire.com/news-releases/anderson--vreeland-launches-innovative-avantage-liquid-resin-laboratory-302856942.html",
+   "d": "2026-08-24T10:02:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "CommLoan Launches New Platform Experience and Better Lending Matching Powered By Borrower Priority Intelligence",
+   "u": "https://www.prnewswire.com/news-releases/commloan-launches-new-platform-experience-and-better-lending-matching-powered-by-borrower-priority-intelligence-302857752.html",
+   "d": "2026-08-24T10:02:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "8-K - Artificial Intelligence Technology Solutions Inc. (0001498148) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1498148/000106299326004561/0001062993-26-004561-index.htm",
+   "d": "2026-08-24T10:01:32.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Cytek Biosciences, Inc. (0001831915) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1831915/000119312526361705/0001193125-26-361705-index.htm",
+   "d": "2026-08-24T10:01:23.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "TAT defines The Year of Transformation as Thailand's 2027 tourism direction",
+   "u": "https://www.prnewswire.com/news-releases/tat-defines-the-year-of-transformation-as-thailands-2027-tourism-direction-302858200.html",
+   "d": "2026-08-24T10:01:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "8-K - Fortress Private Lending Fund (0002012139) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/2012139/000119312526361673/0001193125-26-361673-index.htm",
+   "d": "2026-08-24T10:00:26.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "Grow Therapy Launches a National Campaign Reframing Therapy as a Practice for Progress",
+   "u": "https://www.prnewswire.com/news-releases/grow-therapy-launches-a-national-campaign-reframing-therapy-as-a-practice-for-progress-302857598.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Metal Supermarkets Announces Recipients of 5th Annual Trade School Scholarship",
+   "u": "https://www.prnewswire.com/news-releases/metal-supermarkets-announces-recipients-of-5th-annual-trade-school-scholarship-302857482.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Galaxea AI Demonstrated Full‑Stack Capabilities and Embodied AI Generalization at its WRC 2026 \"Productivity Awakening\" Exhibition",
+   "u": "https://www.prnewswire.com/news-releases/galaxea-ai-demonstrated-fullstack-capabilities-and-embodied-ai-generalization-at-its-wrc-2026-productivity-awakening-exhibition-302857784.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "LB Capital Announces Planned $30 Million Institutional Capital Raise to Support Expansion of Litigation Finance Platform",
+   "u": "https://www.prnewswire.com/news-releases/lb-capital-announces-planned-30-million-institutional-capital-raise-to-support-expansion-of-litigation-finance-platform-302857355.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Ecovyst Announces Chief Financial Officer Transition",
+   "u": "https://www.prnewswire.com/news-releases/ecovyst-announces-chief-financial-officer-transition-302857789.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Monster Energy's Reinier Defeats Roman Dolidze via TKO in UFC Light Heavyweight Debut at UFC Fight Night in Sacramento",
+   "u": "https://www.prnewswire.com/news-releases/monster-energys-reinier-defeats-roman-dolidze-via-tko-in-ufc-light-heavyweight-debut-at-ufc-fight-night-in-sacramento-302857845.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "The AmeriFlex Group® Launches AI-Enabled Scout Program to Identify Advisors Approaching Succession",
+   "u": "https://www.prnewswire.com/news-releases/the-ameriflex-group-launches-ai-enabled-scout-program-to-identify-advisors-approaching-succession-302857751.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Robo.ai Inc. Reports First Half 2026 Financial Results",
+   "u": "https://www.prnewswire.com/news-releases/roboai-inc-reports-first-half-2026-financial-results-302858141.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "SU Group Secures Exclusive Macao Rights for Award-Winning Robotic Infrastructure Inspection Solution",
+   "u": "https://www.prnewswire.com/news-releases/su-group-secures-exclusive-macao-rights-for-award-winning-robotic-infrastructure-inspection-solution-302858197.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "PK Companies Unites Inspection Services Under PK Technical &amp; Inspection",
+   "u": "https://www.prnewswire.com/news-releases/pk-companies-unites-inspection-services-under-pk-technical--inspection-302854275.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Property Taxes Up $743.8 Million; Homeowners Hit Again",
+   "u": "https://www.prnewswire.com/news-releases/property-taxes-up-743-8-million-homeowners-hit-again-302857928.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Robo.ai Inc. Reports First Half 2026 Financial Results",
+   "u": "https://www.prnewswire.com/news-releases/roboai-inc-reports-first-half-2026-financial-results-302858139.html",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "KBR’s PureSAF® Technology Selected by KMG-Aero and KFP for the First SAF Plant in Kazakhstan",
+   "u": "https://mfn.se/one/a/kbr/kbrs-puresaf-r-technology-selected-by-kmg-aero-and-kfp-for-the-first-saf-plant-in-kazakhstan-c8fe309e",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Citycon Oyj: Johdon liiketoimet - G City",
+   "u": "https://mfn.se/cis/a/citycon/citycon-oyj-johdon-liiketoimet-g-city-e9f50bf0",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Citycon Oyj: Managers' Transactions - G City",
+   "u": "https://mfn.se/cis/a/citycon/citycon-oyj-managers-transactions-g-city-1a23fd72",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "aXichem AB: aXichems VD Torsten Helsing presenterar rapport för andra kvartalet 2026 i en direktsänd webbkonferens",
+   "u": "https://mfn.se/cis/a/axichem/axichem-ab-axichems-vd-torsten-helsing-presenterar-rapport-for-andra-kvartalet-2026-i-en-direktsand-webbkonferens-273af05c",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "aXichem AB: aXichem's CEO Torsten Helsing Presents the Report for the Second Quarter 2026 in a Live Web Conference",
+   "u": "https://mfn.se/cis/a/axichem/axichem-ab-axichems-ceo-torsten-helsing-presents-the-report-for-the-second-quarter-2026-in-a-live-web-conference-02bb7f7e",
+   "d": "2026-08-24T10:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Form 8.5 (EPT/RI)-Gamma Communications Plc",
+   "u": "https://mfn.se/one/a/investec/form-8-5-ept-ri-gamma-communications-plc-4babd84e",
+   "d": "2026-08-24T09:59:09.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Delårsrapport for 1. halvår 2026",
+   "u": "https://mfn.se/one/a/fast-ejendom-danmark/delarsrapport-for-1-halvar-2026-7f122e49",
+   "d": "2026-08-24T09:56:19.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Aktieanalys på SciBase - Investeringar i USA banar väg för volymtillväxt",
+   "u": "https://mfn.se/a/analyst-group/aktieanalys-pa-scibase-investeringar-i-usa-banar-vag-for-volymtillvaxt",
+   "d": "2026-08-24T09:52:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "X Financial Reports Second Quarter 2026 Unaudited Financial Results",
+   "u": "https://www.prnewswire.com/news-releases/x-financial-reports-second-quarter-2026-unaudited-financial-results-302857650.html",
+   "d": "2026-08-24T09:50:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Ralentissement de la croissance des arriérés non hypothécaires au T2 : Les propriétaires ontariens demeurent néanmoins sous pression",
+   "u": "https://mfn.se/one/a/equifax/ralentissement-de-la-croissance-des-arrieres-non-hypothecaires-au-t2-les-proprietaires-ontariens-demeurent-neanmoins-sous-pression-25ee55ba",
+   "d": "2026-08-24T09:45:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Non-Mortgage Delinquency Growth Slows in Second Quarter, but Ontario Homeowners Remain Under Pressure",
+   "u": "https://mfn.se/one/a/equifax/non-mortgage-delinquency-growth-slows-in-second-quarter-but-ontario-homeowners-remain-under-pressure-fa6e8e6e",
+   "d": "2026-08-24T09:45:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "VIM Energy Systems får order på batteripark på Balkan - vinner nytt pilotprojekt i Kosovo till ett värde av 16 MSEK",
+   "u": "https://mfn.se/beq/a/vimab-group/vim-energy-systems-far-order-pa-batteripark-pa-balkan-vinner-nytt-pilotprojekt-i-kosovo-till-ett-varde-av-16-msek-73f65d45",
+   "d": "2026-08-24T09:42:43.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "VIM Energy Systems receives order for battery park in the Balkans - wins new pilot project in Kosovo worth SEK 16 million",
+   "u": "https://mfn.se/beq/a/vimab-group/vim-energy-systems-receives-order-for-battery-park-in-the-balkans-wins-new-pilot-project-in-kosovo-worth-sek-16-million-e27bf810",
+   "d": "2026-08-24T09:42:43.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "BlueNord: Minutes from Extraordinary General Meeting - Merger Plan with Vår Energi Approved",
+   "u": "https://www.prnewswire.com/news-releases/bluenord-minutes-from-extraordinary-general-meeting--merger-plan-with-var-energi-approved-302858188.html",
+   "d": "2026-08-24T09:40:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "2026/38 – Aktietilbagekøbsprogram i Flügger group A/S: Transaktioner i henhold til aktietilbagekøbsprogram",
+   "u": "https://mfn.se/nir/a/flugger-group/2026-38-aktietilbagekobsprogram-i-flugger-group-a-s-transaktioner-i-henhold-til-aktietilbagekobsprogram-5cde509f",
+   "d": "2026-08-24T09:35:48.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "European Commission grants orphan designation for Lundbeck's investigational anti-ACTH monoclonal antibody asedebart for Cushing's syndrome of endogenous origin",
+   "u": "https://www.prnewswire.com/news-releases/european-commission-grants-orphan-designation-for-lundbecks-investigational-anti-acth-monoclonal-antibody-asedebart-for-cushings-syndrome-of-endogenous-origin-302858186.html",
+   "d": "2026-08-24T09:35:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "CB&amp;I secures new Côte d'Ivoire operations and maintenance contract",
+   "u": "https://www.prnewswire.com/news-releases/cbi-secures-new-cote-divoire-operations-and-maintenance-contract-302858187.html",
+   "d": "2026-08-24T09:35:00.000Z",
+   "src": "prnewswire"
+  },
+  {
+   "t": "Form 8.5 (EPT/RI)-Advanced Medical Solutions Group plc",
+   "u": "https://mfn.se/one/a/investec/form-8-5-ept-ri-advanced-medical-solutions-group-plc-8ef56dee",
+   "d": "2026-08-24T09:34:23.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Form 8.5 (EPT/RI)-Gooch & Housego plc",
+   "u": "https://mfn.se/one/a/investec/form-8-5-ept-ri-gooch-and-housego-plc-b2f45c61",
+   "d": "2026-08-24T09:32:32.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Ascelia (Q2 review): All eyes on September meeting",
+   "u": "https://mfn.se/a/redeye/ascelia-q2-review-all-eyes-on-september-meeting",
+   "d": "2026-08-24T09:28:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Initiator Pharma (Q2 Review): Strengthened patent protection ahead of Phase II readout",
+   "u": "https://mfn.se/a/redeye/initiator-pharma-q2-review-strengthened-patent-protection-ahead-of-phase-ii-readout",
+   "d": "2026-08-24T09:27:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Cheffelo (Q2 Review): Every Ingredient Rising to the Occasion",
+   "u": "https://mfn.se/a/redeye/cheffelo-q2-review-every-ingredient-rising-to-the-occasion",
+   "d": "2026-08-24T09:26:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Intervacc (Q2 Review): Key catalysts nearing",
+   "u": "https://mfn.se/a/redeye/intervacc-q2-review-key-catalysts-nearing",
+   "d": "2026-08-24T09:26:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Ásar hf. - Tilkynning um framkvæmd endurkaupaáætlunar",
+   "u": "https://mfn.se/one/a/siminn/asar-hf-tilkynning-um-framkvaemd-endurkaupaaaetlunar-41e531f2",
+   "d": "2026-08-24T09:25:40.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Ferroamp (Q2 Review): Commercial momentum strengthens, profitability remains the key",
+   "u": "https://mfn.se/a/redeye/ferroamp-q2-review-commercial-momentum-strengthens-profitability-remains-the-key",
+   "d": "2026-08-24T09:25:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Transaktioner i henhold til aktietilbagekøbsprogram",
+   "u": "https://mfn.se/one/a/a-p-moller-maersk/transaktioner-i-henhold-til-aktietilbagekobsprogram-2ecf6a40",
+   "d": "2026-08-24T09:24:54.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Transactions in connection with share buy-back program",
+   "u": "https://mfn.se/one/a/a-p-moller-maersk/transactions-in-connection-with-share-buy-back-program-dca4c10d",
+   "d": "2026-08-24T09:24:54.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Catella (Q2 Review): Half the market capitalisation is asset backing",
+   "u": "https://mfn.se/a/redeye/catella-q2-review-half-the-market-capitalisation-is-asset-backing",
+   "d": "2026-08-24T09:24:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Neola Medical (Q2 Review): Funding secured, focus shifts to 2027 studies",
+   "u": "https://mfn.se/a/redeye/neola-medical-q2-review-funding-secured-focus-shifts-to-2027-studies",
+   "d": "2026-08-24T09:23:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Nova Klúbburinn hf. - Uppgjör 2. ársfjórðungs 2026 verður birt eftir lokun markaða á morgun, 25. ágúst",
+   "u": "https://mfn.se/one/a/nova-klubburinn/nova-klubburinn-hf-uppgjor-2-arsfjordungs-2026-verdur-birt-eftir-lokun-markada-a-morgun-25-agust-6275586c",
+   "d": "2026-08-24T09:17:35.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Aktieanalys på Orthex - Uppvisar stark pricing power",
+   "u": "https://mfn.se/a/analyst-group/aktieanalys-pa-orthex-uppvisar-stark-pricing-power",
+   "d": "2026-08-24T09:06:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Déclaration hebdomadaire des transactions sur actions propres du 17 août 2026 au 21 août 2026",
+   "u": "https://mfn.se/one/a/nexans/declaration-hebdomadaire-des-transactions-sur-actions-propres-du-17-aout-2026-au-21-aout-2026-4f847463",
+   "d": "2026-08-24T09:00:00.000Z",
+   "src": "mfn"
+  },
+  {
    "t": "First German GHG trade initiated on Argus Open Markets platform",
    "u": "https://www.prnewswire.com/news-releases/first-german-ghg-trade-initiated-on-argus-open-markets-platform-302857341.html",
    "d": "2026-08-24T08:06:00.000Z",
    "src": "prnewswire"
-  },
-  {
-   "t": "Sparebanken Møre - Contemplating new subordinated NOK Tier 2 bond issue",
-   "u": "https://mfn.se/ob/a/sparebanken-more/sparebanken-more-contemplating-new-subordinated-nok-tier-2-bond-issue-fe96bc73",
-   "d": "2026-08-24T08:03:43.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Sparebanken Møre - Vurderer utstedelse av nytt ansvarlig lån i norske kroner",
-   "u": "https://mfn.se/ob/a/sparebanken-more/sparebanken-more-vurderer-utstedelse-av-nytt-ansvarlig-lan-i-norske-kroner-eea63f62",
-   "d": "2026-08-24T08:03:43.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Alzinova: Diagnostics readout next, partner process delayed – Q2 review",
-   "u": "https://mfn.se/a/carnegie/alzinova-diagnostics-readout-next-partner-process-delayed-q2-review",
-   "d": "2026-08-24T08:02:00.000Z",
-   "src": "mfn"
   },
   {
    "t": "Jungbunzlauer améliore son score EcoVadis et se maintient parmi les 2 % des meilleures entreprises au monde",
@@ -96,114 +396,6 @@
    "src": "prnewswire"
   },
   {
-   "t": "International Petroleum Corporation Announces Results of Normal Course Issuer Bid",
-   "u": "https://mfn.se/one/a/international-petroleum/international-petroleum-corporation-announces-results-of-normal-course-issuer-bid-01e97df9",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Aktietilbagekøb i Danske Bank: Transaktioner i uge 34",
-   "u": "https://mfn.se/one/a/danske-bank/aktietilbagekob-i-danske-bank-transaktioner-i-uge-34-81482729",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Danske Bank share buy-back programme: transactions in week 34",
-   "u": "https://mfn.se/one/a/danske-bank/danske-bank-share-buy-back-programme-transactions-in-week-34-d5e608de",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "First Patient Treated in PIONEER-1 Registrational Trial of Privosegtor for Optic Neuritis",
-   "u": "https://mfn.se/one/a/oculis-holding/first-patient-treated-in-pioneer-1-registrational-trial-of-privosegtor-for-optic-neuritis-39f6b22e",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Fyrsti sjúklingurinn fær meðferð í PIONEER-1 skráningarrannsókninni á Privosegtor við sjóntaugabólgu",
-   "u": "https://mfn.se/one/a/oculis-holding/fyrsti-sjuklingurinn-faer-medferd-i-pioneer-1-skraningarrannsokninni-a-privosegtor-vid-sjontaugabolgu-3f3b123e",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "First Patient Treated in PIONEER-1 Registrational Trial of Privosegtor for Optic Neuritis",
-   "u": "https://mfn.se/one/a/oculis-holding/first-patient-treated-in-pioneer-1-registrational-trial-of-privosegtor-for-optic-neuritis-33a3fb3a",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "International Petroleum Corporation Announces Results of Normal Course Issuer Bid",
-   "u": "https://mfn.se/one/a/international-petroleum/international-petroleum-corporation-announces-results-of-normal-course-issuer-bid-4b7dc016",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Ovaro Kiinteistösijoitus Oyj – Johdon liiketoimet – Raimo Pesola",
-   "u": "https://mfn.se/ind/a/ovaro-kiinteistosijoitus/ovaro-kiinteistosijoitus-oyj-johdon-liiketoimet-raimo-pesola-75eacf0e",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Envar Publishing announces its first signed game",
-   "u": "https://mfn.se/a/envar/envar-publishing-announces-its-first-signed-game",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Envar Publishing skriver avtal för första spelet",
-   "u": "https://mfn.se/a/envar/envar-publishing-skriver-avtal-for-forsta-spelet",
-   "d": "2026-08-24T08:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "NKR: Transactions carried out under the buy-back program",
-   "u": "https://mfn.se/ob/a/nekkar/nkr-transactions-carried-out-under-the-buy-back-program-51e55f7a",
-   "d": "2026-08-24T07:59:29.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Magnora ASA: Invitation to Q2 and half-year 2026 presentation",
-   "u": "https://mfn.se/ob/a/magnora/magnora-asa-invitation-to-q2-and-half-year-2026-presentation-52a6dd84",
-   "d": "2026-08-24T07:59:27.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Transactions carried out under the buy-back program",
-   "u": "https://mfn.se/nir/a/nekkar/transactions-carried-out-under-the-buy-back-program-29b7ad10",
-   "d": "2026-08-24T07:59:23.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Magnora ASA: Invitation to Q2 and half-year 2026 presentation",
-   "u": "https://mfn.se/nir/a/magnora/magnora-asa-invitation-to-q2-and-half-year-2026-presentation-11ef6df2",
-   "d": "2026-08-24T07:59:10.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Sjóvá: Reglubundin tilkynning um kaup á eigin bréfum í samræmi við endurkaupaáætlun",
-   "u": "https://mfn.se/one/a/sjova-almennar-tryggingar/sjova-reglubundin-tilkynning-um-kaup-a-eigin-brefum-i-samraemi-vid-endurkaupaaaetlun-1c82a4e9",
-   "d": "2026-08-24T07:57:39.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Finansmarknadsminister Niklas Wykman gästar Bitcoinpodden: &#34;Vi har ingenting emot bitcoin&#34;",
-   "u": "https://mfn.se/cis/a/greenmerc/finansmarknadsminister-niklas-wykman-gastar-bitcoinpodden-vi-har-ingenting-emot-bitcoin-0f9c12b1",
-   "d": "2026-08-24T07:53:17.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Transactions in connection with share buyback programme",
-   "u": "https://mfn.se/one/a/iss/transactions-in-connection-with-share-buyback-programme-4ee23f74",
-   "d": "2026-08-24T07:45:51.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Finansinspektionen: Flaggningsmeddelande i Pierce Group AB (publ)",
-   "u": "https://mfn.se/cis/a/fi-se/finansinspektionen-flaggningsmeddelande-i-pierce-group-ab-publ-e1840cbf",
-   "d": "2026-08-24T07:41:37.000Z",
-   "src": "mfn"
-  },
-  {
    "t": "MacGregor extends Horizon gangway to floating-to-floating personnel transfer",
    "u": "https://www.prnewswire.com/news-releases/macgregor-extends-horizon-gangway-to-floating-to-floating-personnel-transfer-302858109.html",
    "d": "2026-08-24T07:26:00.000Z",
@@ -216,12 +408,6 @@
    "src": "prnewswire"
   },
   {
-   "t": "Ocean Sun: Invitation to webcast of second quarter and half year 2026 results",
-   "u": "https://mfn.se/ob/a/ocean-sun/ocean-sun-invitation-to-webcast-of-second-quarter-and-half-year-2026-results-e60fc0dc",
-   "d": "2026-08-24T07:18:55.000Z",
-   "src": "mfn"
-  },
-  {
    "t": "Scania to showcase its broad marine offering at SMM 2026",
    "u": "https://www.prnewswire.com/news-releases/scania-to-showcase-its-broad-marine-offering-at-smm-2026-302858105.html",
    "d": "2026-08-24T07:15:00.000Z",
@@ -231,174 +417,6 @@
    "t": "Share buybacks in Ericsson during the period August 17 - August 21, 2026",
    "u": "https://www.prnewswire.com/news-releases/share-buybacks-in-ericsson-during-the-period-august-17---august-21-2026-302858100.html",
    "d": "2026-08-24T07:06:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Share buybacks in Ericsson during the period August 17 - August 21, 2026",
-   "u": "https://www.prnewswire.com/news-releases/share-buybacks-in-ericsson-during-the-period-august-17---august-21-2026-302858096.html",
-   "d": "2026-08-24T07:02:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Buyback of Class B shares in Essity during week 34, 2026",
-   "u": "https://mfn.se/cis/a/essity/buyback-of-class-b-shares-in-essity-during-week-34-2026-8047e52d",
-   "d": "2026-08-24T07:01:31.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Återköp av aktier av serie B i Essity under vecka 34, 2026",
-   "u": "https://mfn.se/cis/a/essity/aterkop-av-aktier-av-serie-b-i-essity-under-vecka-34-2026-81dcdf41",
-   "d": "2026-08-24T07:01:31.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "ImmunoForge Selected for the Ministry of SMEs and Startups' 'Global TIPS R&amp;D' Program… \"Expansion of the LMT Platform\"",
-   "u": "https://www.prnewswire.com/news-releases/immunoforge-selected-for-the-ministry-of-smes-and-startups-global-tips-rd-program-expansion-of-the-lmt-platform-302858094.html",
-   "d": "2026-08-24T07:01:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corinex stellt Grid Intelligence Node vor: präzise Transparenz über den tatsächlichen Netzzustand im Niederspannungsnetz",
-   "u": "https://www.prnewswire.com/news-releases/corinex-stellt-grid-intelligence-node-vor-prazise-transparenz-uber-den-tatsachlichen-netzzustand-im-niederspannungsnetz-302857770.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corinex Launches Grid Intelligence Node to Reveal the True State of the Low-Voltage Grid",
-   "u": "https://www.prnewswire.com/news-releases/corinex-launches-grid-intelligence-node-to-reveal-the-true-state-of-the-low-voltage-grid-302857768.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Emerson's Advanced Measurement Instrumentation Selected by Equinor to Optimize Operations, Accelerate Development",
-   "u": "https://www.prnewswire.com/news-releases/emersons-advanced-measurement-instrumentation-selected-by-equinor-to-optimize-operations-accelerate-development-302857353.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corinex Launches Grid Intelligence Node to Reveal the True State of the Low-Voltage Grid",
-   "u": "https://www.prnewswire.com/news-releases/corinex-launches-grid-intelligence-node-to-reveal-the-true-state-of-the-low-voltage-grid-302857767.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corinex lanza el Nodo de Inteligencia de Red para revelar el verdadero estado de la red de baja tensión",
-   "u": "https://www.prnewswire.com/news-releases/corinex-lanza-el-nodo-de-inteligencia-de-red-para-revelar-el-verdadero-estado-de-la-red-de-baja-tension-302857771.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "From Data to Doorsteps: How Kim Lundgren Associates Is Helping Local Governments Make Climate Action Personal",
-   "u": "https://www.prnewswire.com/news-releases/from-data-to-doorsteps-how-kim-lundgren-associates-is-helping-local-governments-make-climate-action-personal-302856442.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corinex lance le « Grid Intelligence Node » pour révéler l'état réel du réseau basse tension",
-   "u": "https://www.prnewswire.com/news-releases/corinex-lance-le--grid-intelligence-node--pour-reveler-letat-reel-du-reseau-basse-tension-302857769.html",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "H. Lundbeck A/S: European Commission grants orphan designation for Lundbeck's investigational anti-ACTH monoclonal antibody asedebart for Cushing's syndrome of endogenous origin",
-   "u": "https://mfn.se/cis/a/lundbeck/h-lundbeck-a-s-european-commission-grants-orphan-designation-for-lundbecks-investigational-anti-acth-monoclonal-antibody-asedebart-for-cushings-syndrome-of-endogenous-origin-f5a5b7ca",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Statement by the board of directors of Evolution AB (publ) regarding the mandatory cash offer from Candle Lake Limited",
-   "u": "https://mfn.se/a/evolution/statement-by-the-board-of-directors-of-evolution-ab-publ-regarding-the-mandatory-cash-offer-from-candle-lake-limited",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Uttalande från styrelsen för Evolution AB (publ) avseende det kontanta budpliktsbudet från Candle Lake Limited",
-   "u": "https://mfn.se/a/evolution/uttalande-fran-styrelsen-for-evolution-ab-publ-avseende-det-kontanta-budpliktsbudet-fran-candle-lake-limited",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Sleep Cycle AB (publ) invites you to a presentation of the second quarter of 2026",
-   "u": "https://mfn.se/a/sleep-cycle/sleep-cycle-ab-publ-invites-you-to-a-presentation-of-the-second-quarter-of-2026",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Byhmgard invites investors to an open meeting on its latest quarterly report and ongoing rights issue",
-   "u": "https://mfn.se/a/byhmgard/byhmgard-invites-investors-to-an-open-meeting-on-its-latest-quarterly-report-and-ongoing-rights-issue",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Sleep Cycle AB (publ) bjuder in till presentation av det andra kvartalet 2026",
-   "u": "https://mfn.se/a/sleep-cycle/sleep-cycle-ab-publ-bjuder-in-till-presentation-av-det-andra-kvartalet-2026",
-   "d": "2026-08-24T07:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "UWM Holdings Corporation Sued for Securities Law Violations - Contact the DJS Law Group to Discuss Your Rights - UWMC",
-   "u": "https://www.prnewswire.com/news-releases/uwm-holdings-corporation-sued-for-securities-law-violations---contact-the-djs-law-group-to-discuss-your-rights--uwmc-302857945.html",
-   "d": "2026-08-24T06:56:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "EquipmentShare.com Inc. Sued for Securities Law Violations - Contact the DJS Law Group to Discuss Your Rights - EQPT",
-   "u": "https://www.prnewswire.com/news-releases/equipmentsharecom-inc-sued-for-securities-law-violations---contact-the-djs-law-group-to-discuss-your-rights--eqpt-302857938.html",
-   "d": "2026-08-24T05:55:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "GPGI, Inc. Sued for Securities Law Violations - Contact the DJS Law Group to Discuss Your Rights - GPGI",
-   "u": "https://www.prnewswire.com/news-releases/gpgi-inc-sued-for-securities-law-violations---contact-the-djs-law-group-to-discuss-your-rights--gpgi-302857918.html",
-   "d": "2026-08-24T05:54:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "The 2nd TMElive International Music Awards concluded, bringing together 34 Chinese and international acts to deliver a phenomenal global music celebration",
-   "u": "https://www.prnewswire.com/news-releases/the-2nd-tmelive-international-music-awards-concluded-bringing-together-34-chinese-and-international-acts-to-deliver-a-phenomenal-global-music-celebration-302858069.html",
-   "d": "2026-08-24T05:54:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Photronics, Inc. Sued for Securities Law Violations - Contact the DJS Law Group to Discuss Your Rights - PLAB",
-   "u": "https://www.prnewswire.com/news-releases/photronics-inc-sued-for-securities-law-violations---contact-the-djs-law-group-to-discuss-your-rights--plab-302857915.html",
-   "d": "2026-08-24T05:52:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Planet Fitness, Inc. Sued for Securities Law Violations - Contact the DJS Law Group to Discuss Your Rights - PLNT",
-   "u": "https://www.prnewswire.com/news-releases/planet-fitness-inc-sued-for-securities-law-violations---contact-the-djs-law-group-to-discuss-your-rights--plnt-302857931.html",
-   "d": "2026-08-24T05:51:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Insulet Corporation Investor Alert: Contact SBS by August 31, 2026 for Opportunity to Lead Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/insulet-corporation-investor-alert-contact-sbs-by-august-31-2026-for-opportunity-to-lead-securities-fraud-lawsuit-302857914.html",
-   "d": "2026-08-24T05:51:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Planet Fitness, Inc. Investor Alert: Contact SBS by September 14, 2026 for Opportunity to Lead Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/planet-fitness-inc-investor-alert-contact-sbs-by-september-14-2026-for-opportunity-to-lead-securities-fraud-lawsuit-302857908.html",
-   "d": "2026-08-24T05:49:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Genius Group Limited Investor Alert: Contact SBS by August 28, 2026 for Opportunity to Lead Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/genius-group-limited-investor-alert-contact-sbs-by-august-28-2026-for-opportunity-to-lead-securities-fraud-lawsuit-302857904.html",
-   "d": "2026-08-24T05:48:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Skanska to build datacenter near Prague, Czechia, for CZK 2.1 billion, about SEK 930M",
-   "u": "https://www.prnewswire.com/news-releases/skanska-to-build-datacenter-near-prague-czechia-for-czk-2-1-billion-about-sek-930m-302858068.html",
-   "d": "2026-08-24T05:48:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Hub Group, Inc. Investor Alert: Contact SBS by August 28, 2026 for Opportunity to Lead Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/hub-group-inc-investor-alert-contact-sbs-by-august-28-2026-for-opportunity-to-lead-securities-fraud-lawsuit-302857903.html",
-   "d": "2026-08-24T05:47:00.000Z",
    "src": "prnewswire"
   },
   {
@@ -514,6 +532,18 @@
    "u": "https://mfn.se/one/a/cemat/no-9-2026-cemat-a-s-raises-its-financial-guidance-for-2026-82b02ae7",
    "d": "2026-08-22T10:13:34.000Z",
    "src": "mfn"
+  },
+  {
+   "t": "8-K - Super League Enterprise, Inc. (0001621672) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1621672/000143774926028769/0001437749-26-028769-index.htm",
+   "d": "2026-08-22T01:42:00.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Roman DBDR Acquisition Corp. II (0002032528) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/2032528/000110465926099769/0001104659-26-099769-index.htm",
+   "d": "2026-08-21T22:23:17.000Z",
+   "src": "sec-8k"
   },
   {
    "t": "8-K - Peraso Inc. (0000890394) (Filer)",
@@ -717,12 +747,6 @@
    "t": "8-K - Dragonfly Energy Holdings Corp. (0001847986) (Filer)",
    "u": "https://www.sec.gov/Archives/edgar/data/1847986/000149315226039715/0001493152-26-039715-index.htm",
    "d": "2026-08-21T21:00:29.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - authID Inc. (0001534154) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1534154/000121390026092659/0001213900-26-092659-index.htm",
-   "d": "2026-08-21T21:00:26.000Z",
    "src": "sec-8k"
   },
   {
