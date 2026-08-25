@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-24T14:40:49.350Z",
-  "checkedAt": "2026-08-25T11:26:30.610Z",
+  "generatedAt": "2026-08-25T13:49:48.442Z",
+  "checkedAt": "2026-08-25T13:49:48.442Z",
   "watched": [
     "NVDA",
     "MU",
@@ -14,12 +14,14 @@
       "type": "SÄLJ",
       "reason": "stop-loss träffad",
       "level": 211,
-      "price": 208.48,
+      "price": 214.15,
       "currency": "USD",
-      "marketTime": "2026-08-24T20:00:00.000Z",
-      "basis": "price",
-      "hitPrice": 208.48
-    },
+      "marketTime": "2026-08-25T13:49:45.000Z",
+      "basis": "intraday",
+      "hitPrice": 210.11
+    }
+  ],
+  "history": [
     {
       "ticker": "MU",
       "type": "SÄLJ",
@@ -29,10 +31,9 @@
       "currency": "USD",
       "marketTime": "2026-08-24T20:00:01.000Z",
       "basis": "intraday",
-      "hitPrice": 887.605
-    }
-  ],
-  "history": [
+      "hitPrice": 887.605,
+      "expiredAt": "2026-08-25T13:49:48.442Z"
+    },
     {
       "ticker": "MU",
       "type": "KÖP",
