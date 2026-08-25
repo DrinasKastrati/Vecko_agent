@@ -300,6 +300,20 @@ export function convergenceTest(rows, horizon, cal, cfg = CONVERGENCE){
   return res;
 }
 
+// Ett uttalande som klarar radgaten men vilar på för få oberoende mätfönster ska
+// bära det i samma objekt. Verdict lämnas orörd — frontenden och testerna läser
+// den — men clusterCaveat gör att ingen läser siffran som ett svar.
+export function withClusterCaveat(res, rows, horizon, cal, minClusters = MIN_CLUSTERS){
+  const c = independentClusters(rows.filter(r => r.fwd && r.fwd[horizon] &&
+    r.fwd[horizon].alphaPct !== null).map(r => r.date), horizon, cal);
+  res.effectiveN = c;
+  if (!res.insufficient && c < minClusters){
+    res.clusterCaveat = "vilar på " + c + " oberoende mätfönster av " + minClusters +
+      " — behandla som riktning, inte som svar";
+  }
+  return res;
+}
+
 // Beslut som inte KAN mätas: tickern saknas i price_history.json. Det är en
 // åtgärdslista, inte en felnotis – saknas symbolen är beslutet omätbart för alltid,
 // eftersom historiken bara backfillas för symboler som hämtas.
@@ -340,7 +354,11 @@ export function evaluate(decisionsDb, priceHistory, opts = {}){
       byAction: groupBy(scored, r => r.action, h, minN),
       byBook: groupBy(scored, r => r.book, h, minN),
       byCatalyst: groupBy(scored, r => r.catalystType, h, minN),
-      selectionEdge: selectionEdge(scored, h, minN),
+      // selectionEdge gateas på RADANTAL av historiska skäl (frontenden och
+      // testerna bygger på det). Blocken bär den verkliga osäkerheten, så
+      // caveat-fältet följer med uttalandet i stället för att motsäga det.
+      selectionEdge: withClusterCaveat(
+        selectionEdge(scored, h, minN), scored, h, cal, opts.minClusters || MIN_CLUSTERS),
       // Nedan gateas på ANTALET OBEROENDE MÄTFÖNSTER, inte på radantalet.
       clustered: clusteredSummary(scored, h, cal, opts.minClusters || MIN_CLUSTERS),
       poolAlpha: poolAlpha(scored, h, cal, opts.minClusters || MIN_CLUSTERS),

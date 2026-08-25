@@ -817,7 +817,7 @@
     const edgeSub = edge
       ? (edge.insufficient
           ? "behöver " + (edge.need.bought || 0) + " fler köpta, " + (edge.need.passed || 0) + " fler avvisade"
-          : edge.verdict)
+          : (edge.clusterCaveat ? edge.clusterCaveat : edge.verdict))
       : "";
     const head = `<div class="stat-grid">
       ${cell("Mätbara beslut", String(ev.counts.measurable) + " / " + ev.counts.decisions,
