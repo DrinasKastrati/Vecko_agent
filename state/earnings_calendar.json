@@ -1,29 +1,19 @@
 {
-  "generatedAt": "2026-08-24T05:34:45.104Z",
+  "generatedAt": "2026-08-25T05:28:30.488Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 84,
-    "resolved": 78,
-    "failed": 2,
+    "requested": 91,
+    "resolved": 84,
+    "failed": 3,
     "notApplicable": 4,
     "upcoming": 5
   },
   "upcoming": [
     {
       "tradingDaysAway": 0,
-      "symbol": "BWO.OL",
-      "date": "2026-08-24",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": null
-    },
-    {
-      "tradingDaysAway": 1,
       "symbol": "NAPA.OL",
       "date": "2026-08-25",
       "isEstimate": false,
@@ -33,17 +23,17 @@
       "revenueConsensus": 38350000
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "NVDA",
       "date": "2026-08-26",
       "isEstimate": false,
-      "epsConsensus": 2.08869,
+      "epsConsensus": 2.09161,
       "epsLow": 2.05,
-      "epsHigh": 2.2,
-      "revenueConsensus": 92069370090
+      "epsHigh": 2.23,
+      "revenueConsensus": 92176624640
     },
     {
-      "tradingDaysAway": 3,
+      "tradingDaysAway": 2,
       "symbol": "IREN",
       "date": "2026-08-27",
       "isEstimate": false,
@@ -53,7 +43,17 @@
       "revenueConsensus": 140746760
     },
     {
-      "tradingDaysAway": 7,
+      "tradingDaysAway": 2,
+      "symbol": "MRVL",
+      "date": "2026-08-27",
+      "isEstimate": false,
+      "epsConsensus": 0.92986,
+      "epsLow": 0.88,
+      "epsHigh": 0.95707,
+      "revenueConsensus": 2708720140
+    },
+    {
+      "tradingDaysAway": 6,
       "symbol": "AVGO",
       "date": "2026-09-02",
       "isEstimate": false,
@@ -64,6 +64,15 @@
     }
   ],
   "all": [
+    {
+      "symbol": "SKA-B.ST",
+      "date": "2026-07-17",
+      "isEstimate": false,
+      "epsConsensus": 4.66333,
+      "epsLow": 4.42,
+      "epsHigh": 5.01,
+      "revenueConsensus": 46380000000
+    },
     {
       "symbol": "HNSA.ST",
       "date": "2026-07-22",
@@ -86,10 +95,10 @@
       "symbol": "DE",
       "date": "2026-08-20",
       "isEstimate": false,
-      "epsConsensus": 4.10742,
+      "epsConsensus": 4.08565,
       "epsLow": 3.73427,
       "epsHigh": 4.55,
-      "revenueConsensus": 10456273330
+      "revenueConsensus": 10436523330
     },
     {
       "symbol": "RAP1V.HE",
@@ -122,10 +131,10 @@
       "symbol": "NVDA",
       "date": "2026-08-26",
       "isEstimate": false,
-      "epsConsensus": 2.08869,
+      "epsConsensus": 2.09161,
       "epsLow": 2.05,
-      "epsHigh": 2.2,
-      "revenueConsensus": 92069370090
+      "epsHigh": 2.23,
+      "revenueConsensus": 92176624640
     },
     {
       "symbol": "IREN",
@@ -135,6 +144,15 @@
       "epsLow": -0.51,
       "epsHigh": -0.4,
       "revenueConsensus": 140746760
+    },
+    {
+      "symbol": "MRVL",
+      "date": "2026-08-27",
+      "isEstimate": false,
+      "epsConsensus": 0.92986,
+      "epsLow": 0.88,
+      "epsHigh": 0.95707,
+      "revenueConsensus": 2708720140
     },
     {
       "symbol": "AVGO",
@@ -216,6 +234,15 @@
       "epsLow": 0.05,
       "epsHigh": 0.08165,
       "revenueConsensus": 5046902840
+    },
+    {
+      "symbol": "EVO.ST",
+      "date": "2026-10-23",
+      "isEstimate": false,
+      "epsConsensus": 1.33522,
+      "epsLow": 1.3,
+      "epsHigh": 1.38,
+      "revenueConsensus": 529825530
     },
     {
       "symbol": "HEXA-B.ST",
@@ -320,7 +347,7 @@
       "symbol": "MSFT",
       "date": "2026-10-28",
       "isEstimate": true,
-      "epsConsensus": 4.72092,
+      "epsConsensus": 4.72455,
       "epsLow": 4.43,
       "epsHigh": 4.83363,
       "revenueConsensus": 90668190940
@@ -365,10 +392,10 @@
       "symbol": "COIN",
       "date": "2026-10-29",
       "isEstimate": true,
-      "epsConsensus": -0.14152,
+      "epsConsensus": -0.13858,
       "epsLow": -0.59,
       "epsHigh": 0.95,
-      "revenueConsensus": 1157238070
+      "revenueConsensus": 1155260020
     },
     {
       "symbol": "KOG.OL",
@@ -386,7 +413,7 @@
       "epsConsensus": 12.63,
       "epsLow": 12.63,
       "epsHigh": 12.63,
-      "revenueConsensus": 129273220
+      "revenueConsensus": 129109530
     },
     {
       "symbol": "NESTE.HE",
@@ -446,10 +473,10 @@
       "symbol": "CVX",
       "date": "2026-10-30",
       "isEstimate": true,
-      "epsConsensus": 4.64116,
+      "epsConsensus": 4.62697,
       "epsLow": 3.61,
       "epsHigh": 5.50969,
-      "revenueConsensus": 56255953390
+      "revenueConsensus": 57223828390
     },
     {
       "symbol": "XOM",
@@ -569,13 +596,22 @@
       "revenueConsensus": 72909305380
     },
     {
+      "symbol": "ODF.OL",
+      "date": "2026-11-04",
+      "isEstimate": false,
+      "epsConsensus": 0.44667,
+      "epsLow": 0.37,
+      "epsHigh": 0.58,
+      "revenueConsensus": 290950000
+    },
+    {
       "symbol": "PAYC",
       "date": "2026-11-04",
       "isEstimate": true,
-      "epsConsensus": 2.76989,
-      "epsLow": 2.40226,
+      "epsConsensus": 2.79398,
+      "epsLow": 2.42,
       "epsHigh": 3.09,
-      "revenueConsensus": 535188860
+      "revenueConsensus": 535792600
     },
     {
       "symbol": "U",
@@ -630,6 +666,24 @@
       "epsLow": -0.07,
       "epsHigh": 0.23,
       "revenueConsensus": 8800055280
+    },
+    {
+      "symbol": "HAYPP.ST",
+      "date": "2026-11-06",
+      "isEstimate": false,
+      "epsConsensus": null,
+      "epsLow": null,
+      "epsHigh": null,
+      "revenueConsensus": 1198957970
+    },
+    {
+      "symbol": "ORK.OL",
+      "date": "2026-11-06",
+      "isEstimate": true,
+      "epsConsensus": 1.70828,
+      "epsLow": 1.55,
+      "epsHigh": 2,
+      "revenueConsensus": 17737093260
     },
     {
       "symbol": "CTM.ST",
@@ -706,17 +760,17 @@
     {
       "symbol": "BAVA.CO",
       "date": "2026-11-13",
-      "isEstimate": true,
+      "isEstimate": false,
       "epsConsensus": 5.3,
       "epsLow": 5.3,
       "epsHigh": 5.3,
-      "revenueConsensus": 1679000000
+      "revenueConsensus": 1662333330
     },
     {
       "symbol": "HD",
       "date": "2026-11-17",
       "isEstimate": false,
-      "epsConsensus": 3.84353,
+      "epsConsensus": 3.84253,
       "epsLow": 3.71,
       "epsHigh": 3.98009,
       "revenueConsensus": 42758442840
@@ -725,10 +779,10 @@
       "symbol": "LOW",
       "date": "2026-11-18",
       "isEstimate": false,
-      "epsConsensus": 2.88914,
+      "epsConsensus": 2.88358,
       "epsLow": 2.82,
       "epsHigh": 3.12,
-      "revenueConsensus": 22389756320
+      "revenueConsensus": 22395833240
     },
     {
       "symbol": "TGT",
@@ -742,11 +796,11 @@
     {
       "symbol": "IMP-A-SDB.ST",
       "date": "2026-11-19",
-      "isEstimate": true,
-      "epsConsensus": -0.08443,
-      "epsLow": -0.08443,
-      "epsHigh": -0.08443,
-      "revenueConsensus": 855500
+      "isEstimate": false,
+      "epsConsensus": -0.08,
+      "epsLow": -0.08,
+      "epsHigh": -0.08,
+      "revenueConsensus": 1000000
     },
     {
       "symbol": "ROST",
@@ -769,6 +823,7 @@
   ],
   "errors": {
     "KABE-B.ST": "inget rapportdatum i svaret",
+    "MGN.OL": "inget rapportdatum i svaret",
     "STAR-B.ST": "inget rapportdatum i svaret"
   },
   "notApplicable": {
