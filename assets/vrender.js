@@ -807,6 +807,8 @@
     const B = ev.byHorizon || {};
     const at = (h, key) => (B[h] && B[h].byAction && B[h].byAction[key]) || null;
     const edge = (B[h1] && B[h1].selectionEdge) || null;
+    const clus = (B[h1] && B[h1].clustered) || null;
+    const conv = (B[h1] && B[h1].convergence) || null;
     const pct = v => v == null ? "–" : signPct(v);
     const mature = ev.counts.measurable - ev.counts.pending;
     const cell = (label, val, cls, sub, tip) =>
@@ -831,8 +833,21 @@
         "Skillnaden i snitt-alpha mellan de köpta och de avvisade kandidaterna. Positivt = urvalet skilde dem i rätt riktning. Detta är den enda mätningen som inte kräver stängda affärer.")}
       ${cell("Köpta som slog index", at(h1, "KÖP") && at(h1, "KÖP").beatIndexPct != null
           ? at(h1, "KÖP").beatIndexPct + " %" : "–",
-        "", at(h1, "KÖP") ? "n = " + at(h1, "KÖP").n : "",
+        "", at(h1, "KÖP")
+          ? "n = " + at(h1, "KÖP").n + (at(h1, "KÖP").insufficient ? " – brus" : "")
+          : "",
         "Andel köpbeslut vars kurs gick bättre än bokens index över " + h1 + " handelsdagar.")}
+      ${cell("Oberoende mätfönster", clus ? String(clus.effectiveN) : "–",
+        clus && clus.insufficient ? "neg" : "",
+        clus ? clus.n + " rader på " + clus.nDates + " datum" : "",
+        "Beslut inom samma mätfönster delar marknadsrörelse och är INTE oberoende observationer. "
+        + "Det är den här siffran, inte radantalet, som avgör om något får utläsas ur tabellen nedan.")}
+      ${cell("Konvergenstest", conv ? conv.decision : "–",
+        conv && conv.decision === "konvergera mot indexsleeven" ? "neg" : "",
+        conv ? (conv.reason || "") : "",
+        "Tröskeln är deklarerad i förväg (STRATEGI.md 10.6): når urvalsedgen inte "
+        + (conv && conv.declared ? "+" + conv.declared.minEdgePct + " pp på " + conv.declared.minClusters : "tröskeln på ")
+        + " oberoende mätfönster ska boken konvergera mot indexsleeven. Det utfallet är godkänt, inte ett fel.")}
     </div>`;
     const order = ["KÖP", "AVVAKTA", "BEHÅLL", "SÄLJ"];
     const rows = order.filter(k => at(h1, k) || at(h2, k)).map(k => {

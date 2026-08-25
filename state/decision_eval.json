@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-25T20:53:17.391Z",
+ "generatedAt": "2026-08-25T23:14:37.040Z",
  "horizons": [
   5,
   20
@@ -146,7 +146,81 @@
      "beatIndexPct": 58.75
     },
     "edgePct": 1.33,
-    "verdict": "urvalet skiljer köpta från avvisade i rätt riktning"
+    "verdict": "urvalet skiljer köpta från avvisade i rätt riktning",
+    "effectiveN": 5,
+    "clusterCaveat": "vilar på 5 oberoende mätfönster av 8 — behandla som riktning, inte som svar"
+   },
+   "clustered": {
+    "n": 186,
+    "nDates": 17,
+    "effectiveN": 5,
+    "meanAlphaPct": 0.61,
+    "clusterMeanAlphaPct": 2.29,
+    "medianAlphaPct": 0.93,
+    "beatIndexPct": 55.91,
+    "insufficient": true,
+    "need": 3,
+    "reason": "för få oberoende mätfönster (5 av 8); radantalet 186 är inte oberoende observationer"
+   },
+   "poolAlpha": {
+    "horizon": 5,
+    "n": 186,
+    "nDates": 17,
+    "effectiveN": 5,
+    "meanAlphaPct": 0.61,
+    "clusterMeanAlphaPct": 2.29,
+    "medianAlphaPct": 0.93,
+    "beatIndexPct": 55.91,
+    "insufficient": true,
+    "need": 3,
+    "reason": "för få oberoende mätfönster (5 av 8); radantalet 186 är inte oberoende observationer",
+    "verdict": "för tidigt att uttala sig"
+   },
+   "holdRule": {
+    "horizon": 5,
+    "held": {
+     "n": 14,
+     "nDates": 10,
+     "effectiveN": 3,
+     "meanAlphaPct": -0.59,
+     "clusterMeanAlphaPct": -0.62,
+     "medianAlphaPct": -1.74,
+     "beatIndexPct": 21.43,
+     "insufficient": true,
+     "need": 5,
+     "reason": "för få oberoende mätfönster (3 av 8); radantalet 14 är inte oberoende observationer"
+    },
+    "pool": {
+     "n": 160,
+     "nDates": 12,
+     "effectiveN": 3,
+     "meanAlphaPct": 0.57,
+     "clusterMeanAlphaPct": 1.21,
+     "medianAlphaPct": 1.12,
+     "beatIndexPct": 58.75,
+     "insufficient": true,
+     "need": 5,
+     "reason": "för få oberoende mätfönster (3 av 8); radantalet 160 är inte oberoende observationer"
+    },
+    "gapPct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "held": 5,
+     "pool": 5
+    }
+   },
+   "convergence": {
+    "horizon": 5,
+    "declared": {
+     "minClusters": 20,
+     "minEdgePct": 0.5
+    },
+    "boughtClusters": 4,
+    "passedClusters": 3,
+    "edgePct": 1.33,
+    "decision": "avvakta",
+    "reason": "inte moget: 4/20 KÖP-fönster, 3/20 AVVAKTA-fönster"
    }
   },
   "20": {
@@ -317,7 +391,80 @@
     "need": {
      "bought": 6,
      "passed": 8
+    },
+    "effectiveN": 1
+   },
+   "clustered": {
+    "n": 3,
+    "nDates": 3,
+    "effectiveN": 1,
+    "meanAlphaPct": 7.73,
+    "clusterMeanAlphaPct": 7.73,
+    "medianAlphaPct": 4.18,
+    "beatIndexPct": 100,
+    "insufficient": true,
+    "need": 7,
+    "reason": "för få oberoende mätfönster (1 av 8); radantalet 3 är inte oberoende observationer"
+   },
+   "poolAlpha": {
+    "horizon": 20,
+    "n": 3,
+    "nDates": 3,
+    "effectiveN": 1,
+    "meanAlphaPct": 7.73,
+    "clusterMeanAlphaPct": 7.73,
+    "medianAlphaPct": 4.18,
+    "beatIndexPct": 100,
+    "insufficient": true,
+    "need": 7,
+    "reason": "för få oberoende mätfönster (1 av 8); radantalet 3 är inte oberoende observationer",
+    "verdict": "för tidigt att uttala sig"
+   },
+   "holdRule": {
+    "horizon": 20,
+    "held": {
+     "n": 0,
+     "nDates": 0,
+     "effectiveN": 0,
+     "meanAlphaPct": null,
+     "clusterMeanAlphaPct": null,
+     "medianAlphaPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8,
+     "reason": "för få oberoende mätfönster (0 av 8); radantalet 0 är inte oberoende observationer"
+    },
+    "pool": {
+     "n": 0,
+     "nDates": 0,
+     "effectiveN": 0,
+     "meanAlphaPct": null,
+     "clusterMeanAlphaPct": null,
+     "medianAlphaPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8,
+     "reason": "för få oberoende mätfönster (0 av 8); radantalet 0 är inte oberoende observationer"
+    },
+    "gapPct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "held": 8,
+     "pool": 8
     }
+   },
+   "convergence": {
+    "horizon": 20,
+    "declared": {
+     "minClusters": 20,
+     "minEdgePct": 0.5
+    },
+    "boughtClusters": 1,
+    "passedClusters": 0,
+    "edgePct": null,
+    "decision": "avvakta",
+    "reason": "inte moget: 1/20 KÖP-fönster, 0/20 AVVAKTA-fönster"
    }
   }
  },
