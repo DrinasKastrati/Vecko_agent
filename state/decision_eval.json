@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-21T20:15:45.535Z",
+ "generatedAt": "2026-08-25T23:04:23.401Z",
  "horizons": [
   5,
   20
@@ -155,6 +155,78 @@
     },
     "edgePct": 0.58,
     "verdict": "ingen skillnad utöver brus mellan köpta och avvisade"
+   },
+   "clustered": {
+    "n": 123,
+    "nDates": 15,
+    "effectiveN": 5,
+    "meanAlphaPct": 1.35,
+    "clusterMeanAlphaPct": 2.7,
+    "medianAlphaPct": 1.37,
+    "beatIndexPct": 60.98,
+    "insufficient": true,
+    "need": 3,
+    "reason": "för få oberoende mätfönster (5 av 8); radantalet 123 är inte oberoende observationer"
+   },
+   "poolAlpha": {
+    "horizon": 5,
+    "n": 123,
+    "nDates": 15,
+    "effectiveN": 5,
+    "meanAlphaPct": 1.35,
+    "clusterMeanAlphaPct": 2.7,
+    "medianAlphaPct": 1.37,
+    "beatIndexPct": 60.98,
+    "insufficient": true,
+    "need": 3,
+    "reason": "för få oberoende mätfönster (5 av 8); radantalet 123 är inte oberoende observationer",
+    "verdict": "för tidigt att uttala sig"
+   },
+   "holdRule": {
+    "horizon": 5,
+    "held": {
+     "n": 11,
+     "nDates": 8,
+     "effectiveN": 2,
+     "meanAlphaPct": 0.16,
+     "clusterMeanAlphaPct": 0.03,
+     "medianAlphaPct": -1.73,
+     "beatIndexPct": 27.27,
+     "insufficient": true,
+     "need": 6,
+     "reason": "för få oberoende mätfönster (2 av 8); radantalet 11 är inte oberoende observationer"
+    },
+    "pool": {
+     "n": 101,
+     "nDates": 10,
+     "effectiveN": 2,
+     "meanAlphaPct": 1.32,
+     "clusterMeanAlphaPct": 1.58,
+     "medianAlphaPct": 1.4,
+     "beatIndexPct": 64.36,
+     "insufficient": true,
+     "need": 6,
+     "reason": "för få oberoende mätfönster (2 av 8); radantalet 101 är inte oberoende observationer"
+    },
+    "gapPct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "held": 6,
+     "pool": 6
+    }
+   },
+   "convergence": {
+    "horizon": 5,
+    "declared": {
+     "minClusters": 20,
+     "minEdgePct": 0.5
+    },
+    "boughtClusters": 4,
+    "passedClusters": 2,
+    "edgePct": 0.58,
+    "decision": "avvakta",
+    "reason": "inte moget: 4/20 KÖP-fönster, 2/20 AVVAKTA-fönster"
    }
   },
   "20": {
@@ -326,6 +398,78 @@
      "bought": 6,
      "passed": 8
     }
+   },
+   "clustered": {
+    "n": 3,
+    "nDates": 3,
+    "effectiveN": 1,
+    "meanAlphaPct": 7.73,
+    "clusterMeanAlphaPct": 7.73,
+    "medianAlphaPct": 4.18,
+    "beatIndexPct": 100,
+    "insufficient": true,
+    "need": 7,
+    "reason": "för få oberoende mätfönster (1 av 8); radantalet 3 är inte oberoende observationer"
+   },
+   "poolAlpha": {
+    "horizon": 20,
+    "n": 3,
+    "nDates": 3,
+    "effectiveN": 1,
+    "meanAlphaPct": 7.73,
+    "clusterMeanAlphaPct": 7.73,
+    "medianAlphaPct": 4.18,
+    "beatIndexPct": 100,
+    "insufficient": true,
+    "need": 7,
+    "reason": "för få oberoende mätfönster (1 av 8); radantalet 3 är inte oberoende observationer",
+    "verdict": "för tidigt att uttala sig"
+   },
+   "holdRule": {
+    "horizon": 20,
+    "held": {
+     "n": 0,
+     "nDates": 0,
+     "effectiveN": 0,
+     "meanAlphaPct": null,
+     "clusterMeanAlphaPct": null,
+     "medianAlphaPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8,
+     "reason": "för få oberoende mätfönster (0 av 8); radantalet 0 är inte oberoende observationer"
+    },
+    "pool": {
+     "n": 0,
+     "nDates": 0,
+     "effectiveN": 0,
+     "meanAlphaPct": null,
+     "clusterMeanAlphaPct": null,
+     "medianAlphaPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8,
+     "reason": "för få oberoende mätfönster (0 av 8); radantalet 0 är inte oberoende observationer"
+    },
+    "gapPct": null,
+    "verdict": "för tidigt att uttala sig",
+    "insufficient": true,
+    "need": {
+     "held": 8,
+     "pool": 8
+    }
+   },
+   "convergence": {
+    "horizon": 20,
+    "declared": {
+     "minClusters": 20,
+     "minEdgePct": 0.5
+    },
+    "boughtClusters": 1,
+    "passedClusters": 0,
+    "edgePct": null,
+    "decision": "avvakta",
+    "reason": "inte moget: 1/20 KÖP-fönster, 0/20 AVVAKTA-fönster"
    }
   }
  },

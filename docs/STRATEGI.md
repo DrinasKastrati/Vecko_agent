@@ -1,6 +1,6 @@
 # Strategin i Vecko_agent — komplett beskrivning för extern granskning
 
-**Version:** 2026-08-08 · **Ägare:** Dren · **Status:** skarp drift med riktiga pengar sedan 2026-08-10.
+**Version:** 2026-08-26 · **Ägare:** Dren · **Status:** skarp drift med riktiga pengar sedan 2026-08-10.
 
 Detta dokument är SJÄLVBÄRANDE: det ska gå att läsa och granska utan tillgång till repot.
 Det beskriver vad strategin gör, varför varje regel finns, vad som är MÄTT och vad som bara är
@@ -316,6 +316,34 @@ medvetet inte in.
    skriver "otillräckligt" + hur många rader som fattas).
    Varför detta finns: stängda affärer växer med ~1/månad, beslutsrader med ~10–15/vecka. Det är
    den enda mätningen av urvalet som inte kräver stängda affärer.
+
+   **2a. Effektiv stickprovsstorlek — radantalet ljuger.** Beslut som fattas samma dag, eller
+   inom mätfönstrets längd från varandra, delar marknadsrörelse och är inte oberoende
+   observationer. Vid granskningen 2026-08-26 låg **123 mätbara rader på 15 datum, vilket blir
+   5 icke-överlappande femdagarsfönster**. Ett medelvärde räknat som om raderna vore oberoende
+   såg ungefär fem gånger starkare ut än materialet bär.
+   Därför gäller: `decision_eval.mjs` räknar `effectiveN` = antal block vars mätfönster inte
+   överlappar, och **varje nytt uttalande gateas på blocken, inte på raderna** (`MIN_CLUSTERS`,
+   för närvarande 8). Fältet redovisar `n`, `nDates` och `effectiveN` bredvid varandra, och
+   `clusterMeanAlphaPct` (ovägt medel per datum) bredvid `meanAlphaPct` (per rad) — skiljer de
+   sig åt är besluten ojämnt fördelade i tiden, och det är i sig en varning.
+
+   **2b. Två skilda hypoteser, inte en.** Frågan i avsnitt 2 gäller **grindarna**, men samma
+   tabell besvarar lätt en helt annan fråga — om **kandidatflödet** hittar namn som rör sig.
+   Ett system kan ha ett bra flöde och värdelösa grindar, eller tvärtom.
+   - `poolAlpha` — bär kandidatflödet? Alla rader, oavsett beslut.
+   - `selectionEdge` — bär de fem grindarna? KÖP mot AVVAKTA.
+
+   Endast den andra säger något om urvalsprocessen. Vid granskningen 2026-08-26 var
+   pool-alphan positiv medan urvalsedgen låg på +0,58 pp (KÖP n=8) — alltså brus. Om det
+   mönstret består ligger värdet i kandidatgenereringen, och då ska arbetet läggas där.
+
+   **2c. Hållregeln mäts separat.** BEHÅLL är den enda åtgärd som är ett **aktivt val** snarare
+   än ett icke-val. `holdRule` jämför BEHÅLL-radernas alpha mot kandidatpoolens. Hållregeln
+   antogs ur backtest där argumentet var omsättningskostnad, inte urvalskvalitet; går innehaven
+   systematiskt sämre än poolen betalas kostnadsbesparingen med sämre innehav. Vid granskningen
+   2026-08-26: BEHÅLL +0,16 % medel, **−1,73 % median, 27 % över index (n=11)** — för lite för
+   ett uttalande, men fel riktning och därför under bevakning.
 3. **Realiserad R/R** loggas vid varje SÄLJ (faktiskt utfall / planerat stoppavstånd). Efter
    ~20 affärer visar fältet om målen systematiskt är för optimistiska — den vanligaste tysta
    felkällan i den här sortens strategi.
@@ -327,8 +355,23 @@ medvetet inte in.
    faller samma spärr gång på gång på namn som sedan stiger är spärren felkalibrerad. Ett
    enskilt avvisat namn som gick upp är däremot facit-bias, inte en miss.
 
-**Nuvarande statistisk styrka: mycket låg.** 2 stängda affärer totalt. Poängvikterna
-(35/30/15/20) kan inte kalibreras förrän ≥ 15 SÄLJ-rader finns.
+6. **Konvergenstestet — tröskeln för avsnitt 2, deklarerad i förväg.** Utan en tröskel satt
+   innan datan finns går frågan "tillför urvalet något?" att svara ja på hur länge som helst
+   genom att vänta på en bra månad. Kravet står därför i kod (`CONVERGENCE` i
+   `decision_eval.mjs`) av samma skäl som kombinationstestet i 9.3 fick sitt krav satt i förväg:
+
+   > När urvalsedgen vilar på **minst 20 icke-överlappande mätfönster i både KÖP- och
+   > AVVAKTA-gruppen** och då **inte når +0,5 procentenheter**, ska boken konvergera mot
+   > indexsleeven.
+
+   Utfallet är **godkänt enligt avsnitt 2 — det är inte ett fel**. Fältet `convergence` skriver
+   ut `avvakta`, `fortsätt aktivt urval` eller `konvergera mot indexsleeven` med skäl och hur
+   långt underlaget räcker. Läge 2026-08-26: 4 av 20 KÖP-fönster, 2 av 20 AVVAKTA-fönster.
+   Tröskelvärdena 20 och 0,5 är satta av Dren och får ändras bara enligt avsnitt 12.
+
+**Nuvarande statistisk styrka: mycket låg.** 2 stängda affärer totalt, och **5 oberoende
+mätfönster** i beslutsutvärderingen. Poängvikterna (35/30/15/20) kan inte kalibreras förrän
+≥ 15 SÄLJ-rader finns.
 
 ---
 
@@ -338,6 +381,9 @@ Dessa är redan identifierade internt — en granskning är mest värd om den g�
 
 1. **Ingen mätning stödjer att katalysatorurvalet skapar alpha.** Hela premissen i avsnitt 2 är
    ännu obesvarad. Backtestet mäter en momentum-proxy, inte den faktiska urvalsregeln.
+   Sedan 2026-08-26 finns en **fördeklarerad tröskel** (avsnitt 10.6) för när frågan ska
+   avgöras i stället för att förbli öppen, och mätningen gateas på **oberoende mätfönster**
+   i stället för radantal (10.2a). Läget: 5 av 8 fönster — för tidigt för varje uttalande.
 2. **Poängvikterna är godtyckliga.** 35/30/15/20 är satt på magkänsla och är ännu inte
    kalibrerbart.
 3. **Poängsättningen görs av en språkmodell** ur nyheter och teknisk data. Reproducerbarheten
@@ -372,6 +418,9 @@ Dessa är redan identifierade internt — en granskning är mest värd om den g�
 - Universumsbredden (kräver omkörning av breddtestet + en urvalsregel som skärps med bredden).
 - Stoppnivåer, lookback och hålltid (kräver omkörning av out-of-sample- och kombinationsavsnitten).
 - Att böckerna redovisas separat, var och en mot sitt eget index.
+- **Konvergenströskeln** (20 fönster / +0,5 pp, avsnitt 10.6) och gaten på oberoende
+  mätfönster (`MIN_CLUSTERS`). Att sänka någon av dem efter att ha sett utfallet är precis det
+  fel som fördeklarationen finns för att förhindra.
 
 ---
 

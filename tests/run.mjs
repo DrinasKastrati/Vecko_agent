@@ -1322,6 +1322,114 @@ ok("selectionEdge kallar små skillnader brus", (() => {
   const e = DE.selectionEdge([...mkRows("KÖP", 2, 8), ...mkRows("AVVAKTA", 1.5, 8)], 5, 8);
   return /brus/.test(e.verdict);
 })());
+// ---- effektiv stickprovsstorlek ----
+// Poängen: radantalet ljuger när besluten klumpar ihop sig i tiden. Testerna
+// låser fast att blockräkningen ser klumpen och att uttalandena gateas på den.
+const dagar = (...ds) => ds.map(d => "2026-07-" + String(d).padStart(2, "0"));
+const kal = DE.calendarIndex(serie(1, Array(40).fill(100)));
+const mkDated = (action, alpha, ds) => ds.map(d =>
+  ({ action, date: d, fwd: { 5: { pct: alpha, benchPct: 0, alphaPct: alpha } } }));
+
+ok("independentClusters: samma datum är ett block", (() => {
+  return DE.independentClusters(dagar(1, 1, 1, 1), 5, kal) === 1;
+})());
+ok("independentClusters: överlappande fönster slås ihop", (() => {
+  // 1, 2, 3 ligger inom fem handelsdagar av varandra -> ett enda block
+  return DE.independentClusters(dagar(1, 2, 3), 5, kal) === 1;
+})());
+ok("independentClusters: fönster som inte överlappar räknas var för sig", (() => {
+  return DE.independentClusters(dagar(1, 6, 11), 5, kal) === 3;
+})());
+ok("independentClusters tål saknad kalender", (() => {
+  // utan kalender används kalenderdagar; 1 och 20 kan omöjligt överlappa
+  return DE.independentClusters(dagar(1, 20), 5, null) === 2;
+})());
+ok("independentClusters på tomt underlag är noll", DE.independentClusters([], 5, kal) === 0);
+
+ok("clusteredSummary skiljer radantal från effektiv n", (() => {
+  const s = DE.clusteredSummary(mkDated("KÖP", 2, dagar(1, 1, 1, 1, 1)), 5, kal, 8);
+  return s.n === 5 && s.nDates === 1 && s.effectiveN === 1 && s.insufficient === true;
+})());
+ok("clusteredSummary uttalar sig när blocken räcker", (() => {
+  const ds = dagar(1, 6, 11, 16, 21, 26, 31);
+  const s = DE.clusteredSummary(mkDated("KÖP", 2, ds), 5, kal, 5);
+  return s.effectiveN === 7 && !s.insufficient && s.meanAlphaPct === 2;
+})());
+ok("clusteredSummary: clusterMeanAlphaPct viktar per datum, inte per rad", (() => {
+  // ett datum med fyra svaga rader, ett datum med en stark: radmedel dras mot
+  // det svaga, blockmedel behandlar datumen lika. Skillnaden är själva varningen.
+  const rows = [...mkDated("KÖP", 0, dagar(1, 1, 1, 1)), ...mkDated("KÖP", 10, dagar(20))];
+  const s = DE.clusteredSummary(rows, 5, kal, 1);
+  return s.meanAlphaPct === 2 && s.clusterMeanAlphaPct === 5;
+})());
+
+// ---- kandidatflöde vs urval: två skilda hypoteser ----
+ok("poolAlpha gateas på block, inte på rader", (() => {
+  const p = DE.poolAlpha(mkDated("AVVAKTA", 3, dagar(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)), 5, kal, 8);
+  return p.insufficient === true && p.n === 10 && p.effectiveN === 1;
+})());
+ok("poolAlpha ser ett kandidatflöde som slår index", (() => {
+  const p = DE.poolAlpha(mkDated("AVVAKTA", 3, dagar(1, 6, 11, 16, 21)), 5, kal, 5);
+  return !p.insufficient && /kandidatflödet slår index/.test(p.verdict);
+})());
+ok("poolAlpha kallar litet flöde för oskiljbart", (() => {
+  const p = DE.poolAlpha(mkDated("AVVAKTA", 0.1, dagar(1, 6, 11, 16, 21)), 5, kal, 5);
+  return /skiljer sig inte/.test(p.verdict);
+})());
+
+// ---- hållregeln ----
+ok("holdRuleCheck kräver block i båda grupperna", (() => {
+  const rows = [...mkDated("BEHÅLL", 0, dagar(1)), ...mkDated("AVVAKTA", 2, dagar(1, 6, 11, 16, 21))];
+  const r = DE.holdRuleCheck(rows, 5, kal, 5);
+  return r.insufficient === true && r.need.held === 4;
+})());
+ok("holdRuleCheck larmar när innehaven går sämre än poolen", (() => {
+  const ds = dagar(1, 6, 11, 16, 21);
+  const rows = [...mkDated("BEHÅLL", -1, ds), ...mkDated("AVVAKTA", 2, ds)];
+  const r = DE.holdRuleCheck(rows, 5, kal, 5);
+  return r.gapPct === -3 && /felkalibrerad/.test(r.verdict);
+})());
+ok("holdRuleCheck ger hållregeln rätt när innehaven bär", (() => {
+  const ds = dagar(1, 6, 11, 16, 21);
+  const rows = [...mkDated("BEHÅLL", 4, ds), ...mkDated("AVVAKTA", 1, ds)];
+  const r = DE.holdRuleCheck(rows, 5, kal, 5);
+  return r.gapPct === 3 && /bär/.test(r.verdict);
+})());
+
+// ---- konvergenstestet (STRATEGI.md avsnitt 2) ----
+ok("convergenceTest avvaktar på omoget underlag", (() => {
+  const rows = [...mkDated("KÖP", 5, dagar(1)), ...mkDated("AVVAKTA", 0, dagar(1))];
+  const c = DE.convergenceTest(rows, 5, kal, { minClusters: 20, minEdgePct: 0.5 });
+  return c.decision === "avvakta" && /inte moget/.test(c.reason);
+})());
+ok("convergenceTest säger konvergera när edgen uteblir på moget underlag", (() => {
+  const ds = dagar(1, 6, 11, 16, 21);
+  const rows = [...mkDated("KÖP", 1, ds), ...mkDated("AVVAKTA", 1, ds)];
+  const c = DE.convergenceTest(rows, 5, kal, { minClusters: 5, minEdgePct: 0.5 });
+  return c.decision === "konvergera mot indexsleeven" && c.edgePct === 0;
+})());
+ok("convergenceTest låter aktivt urval fortsätta när tröskeln nås", (() => {
+  const ds = dagar(1, 6, 11, 16, 21);
+  const rows = [...mkDated("KÖP", 3, ds), ...mkDated("AVVAKTA", 1, ds)];
+  const c = DE.convergenceTest(rows, 5, kal, { minClusters: 5, minEdgePct: 0.5 });
+  return c.decision === "fortsätt aktivt urval" && c.edgePct === 2;
+})());
+ok("convergenceTest bär med sig den deklarerade tröskeln", (() => {
+  const c = DE.convergenceTest([], 5, kal);
+  return c.declared.minClusters === DE.CONVERGENCE.minClusters &&
+         c.declared.minEdgePct === DE.CONVERGENCE.minEdgePct;
+})());
+
+// evaluate ska exponera de nya blocken utan att röra de gamla nycklarna
+ok("evaluate exponerar clustered/poolAlpha/holdRule/convergence", (() => {
+  const db = { decisions: [
+    { date: "2026-07-01", ticker: "X.ST", book: "nordic", action: "KÖP", catalystType: "order" }
+  ] };
+  const r = DE.evaluate(db, { series: { "X.ST": upp, "^OMX": upp } }, { horizons: [5], minN: 8 });
+  const b = r.byHorizon[5];
+  return b.all && b.selectionEdge && b.clustered && b.poolAlpha && b.holdRule && b.convergence;
+})());
+
 // Hela körningen: indexsleeven ska bort, saknade tickers ska bli en åtgärdslista.
 ok("evaluate filtrerar bort indexsleeven", (() => {
   const db = { decisions: [
