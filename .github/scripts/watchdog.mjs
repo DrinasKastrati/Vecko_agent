@@ -94,6 +94,32 @@ export function checkStale(opts){
           "nordiska tickerna och därför per konstruktion inte kan hitta en miss utanför dem." });
   }
 
+  // `asOf` ÄR INTE `generatedAt` (fix 2026-08-26). Kontrollen ovan mäter att KÖRNINGEN blev av;
+  // den säger ingenting om vilken dags stängningar filen faktiskt bär. Lördagscronen
+  // ("0 6 * * 6") har levererat i tid varje vecka OCH ändå burit torsdagens data: 2026-08-22
+  // stod `generatedAt` 2026-08-22T06:34:35Z med `asOf` 2026-08-20, medan sista handelsdag var
+  // fredagen 2026-08-21. Följden är att en nordisk vinnare som toppar först på fredagen per
+  // konstruktion aldrig kan synas i missdetektionen. Defekten är rapporterad minst fem gånger
+  // i retro-/veckorapporterna utan att något larmade – därför att ingen kontroll läste fältet.
+  // Tröskeln är 2 dygn mellan `asOf` och `generatedAt`. Den är mätt, inte gissad: en
+  // lördagskörning som bär FREDAGENS stängning ger 1,27 dygn, och det verkliga felfallet
+  // 2026-08-22 (torsdagens stängning) gav 2,27. Ett tredje dygn hade släppt igenom precis
+  // det utfall kontrollen finns för. KÄND FALSKPOSITIV: är fredagen en helgdag är torsdagens
+  // stängning korrekt och larmet obefogat – texten säger därför vad som ska kontrolleras
+  // i stället för att påstå att något är trasigt. Watchdogen är tyst på helger
+  // (checkStale returnerar tidigt), så larmet kommer måndagen efter körningen.
+  if (opts.moversAsOf && opts.moversGeneratedAt){
+    const a = Date.parse(opts.moversAsOf), g = Date.parse(opts.moversGeneratedAt);
+    if (!isNaN(a) && !isNaN(g) && (g - a) > 2 * 24 * 3600 * 1000)
+      problems.push({ key: "movers-asof", title: "Watchdog: movers.json bär för gamla stängningar",
+        body: "`state/movers.json` har `asOf` `" + opts.moversAsOf + "` men `generatedAt` `" +
+          opts.moversGeneratedAt + "` – alltså mer än 3 dygn mellan datat och körningen. " +
+          "Actionen kör i tid, men på en för gammal session: en rörelse som toppar på den " +
+          "sista handelsdagen före körningen kan då aldrig synas i miss-retrons primära " +
+          "missdetektion. Åtgärd: utöka fönstret i `movers.mjs` eller flytta lördagscronen " +
+          "senare på dygnet." });
+  }
+
   // Nyhetsflödet: news.yml kör varannan timme vardagar, så >6 h = actionen är nere.
   if ("newsGeneratedAt" in opts){
     const nt = opts.newsGeneratedAt ? Date.parse(opts.newsGeneratedAt) : NaN;
@@ -491,6 +517,47 @@ export function checkShortSeries(opts){
   return problems;
 }
 
+/* VOLYMBACKFILLEN (ny 2026-08-26).
+
+   Ingenting läste `state/volume_history.json` – varken watchdogen eller något test –
+   och därför kunde urvalsbuggen i `backfill-history.mjs` ligga kvar i veckor: skriptet
+   valde symboler på PRISSERIENS längd, så när prisserierna väl var fulla plockades ingen
+   symbol alls och volymserien frös där den råkade stå. Mätt 2026-08-26: 59 av 111 symboler
+   hade ≥ 200 kurspunkter och < 21 volympunkter. Symptomet var tyst på det sätt som är dyrast –
+   rapporten skrev "omätbar" på delkriteriet och gick vidare, sex veckor i rad.
+
+   Kontrollen mäter det som faktiskt betyder något: hur många HÄMTADE symboler som saknar
+   underlag för ett 20-dagarssnitt. Index och valutapar utesluts – de har strukturellt ingen
+   volym (Yahoo svarar 0) och skulle annars ligga kvar som ett permanent larm.
+
+   `tolerated` är generöst satt: en nyintroducerad ticker har legitimt kort volymserie i
+   några dygn, och taket i backfillen är 40 symboler per körning. */
+export function checkVolumeBackfill(opts){
+  const { volumeSeries, quotes, minPoints = 21, tolerated = 8 } = opts || {};
+  const problems = [];
+  if (!volumeSeries || !quotes) return problems;   // bakåtkompatibelt: var tyst utan data
+
+  const korta = Object.keys(quotes)
+    .filter(s => quotes[s] && !quotes[s].error && quotes[s].price != null)
+    .filter(s => !/^\^|=X$/.test(s))
+    .filter(s => ((volumeSeries[s] || []).length) < minPoints)
+    .sort((a, b) => ((volumeSeries[a] || []).length) - ((volumeSeries[b] || []).length));
+
+  if (korta.length > tolerated)
+    problems.push({ key: "volume-backfill", title: "Watchdog: " + korta.length +
+        " symbol(er) saknar underlag för volymsnittet",
+      body: "`state/volume_history.json` har färre än " + minPoints + " punkter för " +
+        korta.length + " hämtade symbol(er): " +
+        korta.slice(0, 8).map(s => "`" + s + "` (" + ((volumeSeries[s] || []).length) + ")").join(", ") +
+        (korta.length > 8 ? " m.fl." : "") + ". Delkriteriet \"volym > 1,5× 20-dagarssnittet\" i " +
+        "grind 2 och det RÄKNADE likviditetsgolvet går därför inte att pröva för dem – de " +
+        "bedöms på storleksklass i stället för att räknas. Kontrollera att steget " +
+        "\"Backfilla symboler med kort historik\" i `prices.yml` kör och att " +
+        "`collectShortSymbols` väljer på BÅDA serierna (fixad 2026-08-26; urvalet gick " +
+        "tidigare bara på prisseriens längd, vilket gjorde 59 av 111 symboler oåtkomliga)." });
+  return problems;
+}
+
 // Senaste datum i decisions.json som yymmdd, eller null.
 export function latestDecisionYmd(db){
   const rows = (db && db.decisions) || [];
@@ -538,8 +605,16 @@ function main(){
   try { priceQuotes = JSON.parse(readFileSync("state/prices.json", "utf8")).quotes || null; } catch {}
   let earningsCalAt = null;
   try { earningsCalAt = JSON.parse(readFileSync("state/earnings_calendar.json", "utf8")).generatedAt || null; } catch {}
-  let moversAt = null;
-  try { moversAt = JSON.parse(readFileSync("state/movers.json", "utf8")).generatedAt || null; } catch {}
+  let moversAt = null, moversAsOf = null;
+  try {
+    const mv = JSON.parse(readFileSync("state/movers.json", "utf8"));
+    moversAt = mv.generatedAt || null;
+    moversAsOf = mv.asOf || null;     // DATANS dag – inte körningens, se checkStale
+  } catch {}
+  // Volymserien ligger i en EGEN fil (se fetch-prices.mjs). Ingen kontroll läste den
+  // förrän 2026-08-26, vilket är hela skälet till att urvalsbuggen kunde ligga kvar.
+  let volumeSeries = null;
+  try { volumeSeries = JSON.parse(readFileSync("state/volume_history.json", "utf8")).series || null; } catch {}
   let alertsAt = null;
   try {
     const a = JSON.parse(readFileSync("state/alerts.json", "utf8"));
@@ -564,6 +639,7 @@ function main(){
     latestDecisionDate: decisions,
     alertsCheckedAt: alertsAt,
     moversGeneratedAt: moversAt,
+    moversAsOf,
     newsGeneratedAt: newsGen,
     newsWindow,
     regimeSeries
@@ -581,6 +657,7 @@ function main(){
   problems.push(...checkAnalysisQueue({ queueDb, now: now.toISOString() }));
   problems.push(...checkShortSeries({ now, series: histSeries, quotes: priceQuotes,
     partialBackfilledAt }));
+  problems.push(...checkVolumeBackfill({ volumeSeries, quotes: priceQuotes }));
   problems.push(...checkRecurringActionItems({ itemsDb: actionItemsDb }));
 
   const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);

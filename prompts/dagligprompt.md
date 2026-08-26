@@ -187,7 +187,7 @@ nedan kommer ur den ombyggda motorn – tidigare formuleringar i den här filen 
 4. Skapa rapportfilen för DAGENS datum: måndagar i mappen `reports/weekly/` döpt "veckorapport-yymmdd.md", övriga handelsdagar i mappen `reports/daily/` döpt "daglig-yymmdd.md". Exempel: `reports/daily/daglig-260714.md`. Finns filen för dagens datum redan (t.ex. vid omkörning): skriv över/uppdatera DEN filen – skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
 5. Committa och pusha rapportfilen OCH den uppdaterade `state/portfolj.md` DIREKT till standardbranchen (main). Skapa absolut INTE ny branch, pull request eller fork.
 6. WATCHLIST-HYGIEN: håll `config/watchlist.txt` fokuserad (riktmärke ≤ 25 tickers). Ta bort tickers som varken är innehav, pending, bubblare eller nämnts i rapporterna de senaste 14 handelsdagarna. Ta ALDRIG bort aktiva innehav eller pending-planer.
-6b. VARJE TICKER DU FATTAT ETT BESLUT OM SKA IN I WATCHLISTEN – ÄVEN AVVAKTA (sedan 2026-08-03). Skriver du en rad i `state/decisions.json` för en ticker som inte hämtas av `prices.yml` blir beslutet **omätbart för alltid**: `state/price_history.json` backfillas bara för symboler som hämtas, så det finns ingen kurs att jämföra beslutet mot i efterhand. `.github/scripts/decision_eval.mjs` mäter varje beslut – inklusive de avvisade – mot efterföljande kurs och mot index, och de avvisade kandidaterna är hela det kontrafaktiska underlaget: går de systematiskt bättre än de köpta är urvalsfiltret för strängt. Det är den enda mätningen av urvalet som inte kräver stängda affärer (de är 2 st, och statistiken kräver 15). Kontrollera `missingSymbols` i `state/decision_eval.json` – står din ticker där, lägg den i watchlisten. Detta går FÖRE riktmärket på 25 tickers.
+6b. VARJE TICKER DU FATTAT ETT BESLUT OM SKA IN I WATCHLISTEN – ÄVEN AVVAKTA (sedan 2026-08-03). Skriver du en rad i `state/decisions.json` för en ticker som inte hämtas av `prices.yml` blir beslutet **omätbart för alltid**: `state/price_history.json` backfillas bara för symboler som hämtas, så det finns ingen kurs att jämföra beslutet mot i efterhand. `.github/scripts/decision_eval.mjs` mäter varje beslut – inklusive de avvisade – mot efterföljande kurs och mot index, och de avvisade kandidaterna är hela det kontrafaktiska underlaget: går de systematiskt bättre än de köpta är urvalsfiltret för strängt. Det är den enda mätningen av urvalet som inte kräver stängda affärer (de är 3 st sedan skarp start, och statistiken kräver 15 SÄLJ-rader). Kontrollera `missingSymbols` i `state/decision_eval.json` – står din ticker där, lägg den i watchlisten. Detta går FÖRE riktmärket på 25 tickers.
 7. DATUM & FILNAMN: verifiera dagens FAKTISKA datum (t.ex. via `date`-kommandot) innan filnamnet skapas – fel datum ger dubbletter och trasig sortering i dashboarden.
 8. OM PUSH MISSLYCKAS (Cowork-sandlådan saknar ofta git-credentials): committa lokalt om det går, annars lämna filerna korrekt skrivna och avsluta med en notis om att Dren publicerar med `push.bat`. Fastna ALDRIG i upprepade push-försök.
 
@@ -311,6 +311,13 @@ Varje körning SKA appenda en rad per beslut till `decisions`-arrayen i `state/d
    köpta är urvalsfiltret för strängt. Rotationen 2026-08-03 hade 16 bruttokandidater men loggade
    3 rader; med hela listan växer underlaget ~5× snabbare, och det är den enda mätningen av urvalet
    som inte kräver stängda affärer.
+   **CITERAR DU ETT TAL UR `state/decision_eval.json` I RAPPORTEN: bär `effectiveN` i samma
+   mening.** Rader från samma dag delar marknadsrörelse och är inte oberoende observationer –
+   191 mätbara rader låg 2026-08-26 på 18 datum, alltså 5 icke-överlappande femtdagarsfönster, och
+   ett medelvärde räknat per rad såg ungefär fem gånger starkare ut än materialet bär. Skriv
+   "+1,38 pp (n=8 rader, 5 av 8 oberoende mätfönster)", aldrig bara "+1,38 pp". Bär fältet
+   `clusterCaveat` är talet en RIKTNING, inte ett svar. Ett tal utan angivet oberoendeantagande
+   är ofärdigt.
    **Kandidater som föll på att kursen inte kunde verifieras SKA också loggas**, med `price: null`
    (validatorn tillåter det) och spärren i `reason`. Det SÄNKER INTE kursverifieringskravet – raden
    dokumenterar tvärtom att inget kursbaserat beslut fattades, precis som punkt 4 i KRAV PÅ FÄRSK

@@ -108,15 +108,29 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   pris-jobbet (`prices.yml`) direkt efter hämtningen. Märkt `-merge` i `.gitattributes`. Redigera
   aldrig för hand. **Varför den finns:** backtestet visar att skelettet inte tillför avkastning över
   indexsleeven ⇒ edgen måste komma ur katalysatorurvalet, och ingenting mätte urvalet.
-  `computeTradeStats` kräver STÄNGDA affärer (2 st) och retrons beslutsstatistik kräver 15 SÄLJ-rader
-  – år bort. Den här filen mäter i stället VARJE rad i `decisions.json` mot efterföljande kurs 5/20
-  handelsdagar framåt och mot bokens index (^OMX/^GSPC) över samma fönster, **inklusive de AVVISADE
-  (AVVAKTA)**. De avvisade är hela poängen: de är det kontrafaktiska underlaget, och underlaget växer
-  med ~10–15 rader/vecka i stället för ~1/månad. Två regler som inte får luckras upp: (1) ett omoget
+  `computeTradeStats` kräver STÄNGDA affärer (3 st per 2026-08-26) och retrons beslutsstatistik kräver
+  15 SÄLJ-rader – år bort. Den här filen mäter i stället VARJE rad i `decisions.json` mot efterföljande
+  kurs 5/20 handelsdagar framåt och mot bokens index (^OMX/^GSPC) över samma fönster, **inklusive de
+  AVVISADE (AVVAKTA)**. De avvisade är hela poängen: de är det kontrafaktiska underlaget, och underlaget
+  växer med ~10–15 rader/vecka i stället för ~1/månad. Tre regler som inte får luckras upp: (1) ett omoget
   beslut räknas ALDRIG som noll – det drar alla medelvärden mot mitten, det ska utelämnas; (2) inget
-  uttalande under `minN` (8) mätpunkter – fältet skriver `insufficient` + hur många rader som fattas.
+  uttalande under `minN` (8) mätpunkter – fältet skriver `insufficient` + hur många rader som fattas;
+  (3) **RADANTALET ÄR INTE STICKPROVSSTORLEKEN (sedan 2026-08-25).**
   Skriptet skriver bara vid FAKTISK ändring (`generatedAt` jämförs inte), annars gav det ~48 tomma
   commits per dygn.
+  **Om regel (3) – den dyraste feltypen i repot, och den enda som såg helt frisk ut.** Beslut fattade
+  samma dag, eller inom mätfönstrets längd från varandra, delar marknadsrörelse och är INTE oberoende
+  observationer. 2026-08-26 låg 191 mätbara rader på 18 datum, vilket blir **5 icke-överlappande
+  femdagarsfönster** – ett medelvärde räknat som om raderna vore oberoende såg ungefär fem gånger
+  starkare ut än materialet bär. `independentClusters()` räknar `effectiveN` = antal block vars
+  mätfönster inte överlappar, och `MIN_CLUSTERS` (8) gatear `clustered`, `poolAlpha` och `holdRule`.
+  **`selectionEdge` gatear däremot fortfarande på RADANTAL** (frontenden och testerna bygger på
+  `verdict`); den bär i stället `clusterCaveat` + `effectiveN`, och `renderDecisionEval` färgar
+  aldrig ett edge-tal som vilar på för få fönster. Läser du siffran någon annanstans: **`effectiveN`
+  avgör om den får uttalas, aldrig `n`.** `clusterMeanAlphaPct` (ovägt medel per datum) står bredvid
+  `meanAlphaPct` (per rad) – skiljer de sig är besluten ojämnt fördelade i tiden, vilket i sig är en
+  varning. Konvergenströskeln (`CONVERGENCE`, 20 fönster / +0,5 pp) är deklarerad i kod INNAN datan
+  finns; sänk den aldrig efter att ha sett utfallet. Full motivering i `docs/STRATEGI.md` avsnitt 10.2a.
 - **`state/scout_candidates.json` – BRYGGAN SCOUT → BÖCKERNA (ny 2026-08-04).** Scouten
   producerade prosa som ingen bok läste: Palantir flaggades i rapport-260801, -260802 och
   -260803 inför sin rapport 3/8 AMC, boken kunde varken se, avfärda eller köpa kandidaten,
@@ -211,7 +225,10 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   skarp period och ingenting annat. **`decisions.json` och `decision_eval.json` nollställdes
   INTE och får aldrig nollställas i efterhand:** de mäter om URVALET slår index, vilket är
   oberoende av om pengarna var riktiga, och de är det enda underlag som växer i meningsfull takt
-  (~10–15 rader/vecka mot `minN` 8 och retrons krav på 15 SÄLJ-rader). Av samma skäl loggades
+  (~10–15 rader/vecka mot retrons krav på 15 SÄLJ-rader). **Räkna aldrig den takten mot `minN` 8** –
+  rader per vecka landar till stor del på SAMMA datum och blir därför ett fåtal oberoende
+  mätfönster; det är `effectiveN` mot `MIN_CLUSTERS` som avgör (se `decision_eval.json` ovan).
+  Av samma skäl loggades
   INGA SÄLJ-rader för AMZN eller indexsleevarna när böckerna tömdes – de affärerna gjordes
   aldrig, och ett fiktivt utfall hade förgiftat just den mätningen. Snittet markeras därför i
   den här filen och inte i beslutsloggen; validatorns `action`-enum tillåter ändå bara
@@ -719,13 +736,20 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   fil som inte motsvarar trädet. Samma regel som `push.bat` följer lokalt. Misslyckas alla tre
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
-- **KVAR (uppdaterad 2026-08-17) – i prioritetsordning:**
-  **DRIFTLISTAN ÄR INTE LÄNGRE TOM. Tre fel i `.github/scripts/fetch-prices.mjs` spärrar
-  kandidatinflödet, och de mäts nu: v34-rotationen 2026-08-17 fällde 21 av 27 kandidater
-  (78 %) på grind 1 eller 2 – alltså på kursförsörjning och inte på omdöme. Grind 4 och 5
-  fällde NOLL, eftersom ingen kandidat kom så långt.** Full mätning med omfång per fel står i
-  `reports/weekly/veckorapport-260817.md`, åtgärdspunkt 1–7. Ordningen nedan är den viktiga:
-  1. **FANTOMPUNKTEN — ta den först.** `updatePriceHistory` daterar punkten efter RUNNERNS
+- **KVAR (uppdaterad 2026-08-26) – i prioritetsordning:**
+  **DRIFTLISTAN ÄR NÄSTAN TÖMD, OCH DET ÄR MÄTT.** Kandidatinflödet spärrades 2026-08-17 av tre
+  fel i `.github/scripts/fetch-prices.mjs`: v34-rotationen fällde 21 av 27 kandidater (78 %) på
+  grind 1 eller 2, alltså på kursförsörjning och inte på omdöme, och grind 4/5 fällde NOLL. I v35
+  (2026-08-24) föll 17 av 27 (63 %) på grind 1/2 och **tre kandidater nådde grind 4 för första
+  gången** – funneln stoppar numera på geometri i stället för på saknad data. **Punkt 1, 3 och 4
+  nedan är AVKLARADE och verifierade 2026-08-26** (mätningarna står kvar som facit, inte som
+  arbete); kvar är **2b**, **5** och **6**.
+  1. ✅ **AVKLARAD – FANTOMPUNKTEN.** Fixad 2026-08-17, verifierad 2026-08-26: **1 av 112 serier**
+     upprepar sin föregående stängning (mot 59 av 62), och den enda är en äkta oförändrad
+     stängning. `historyDate()` daterar ur `marketTime`, `appendPoint()` skriver aldrig bakåt.
+     **Avdubblera inte längre** – se fällan i avsnitt 7, som stod kvar med den gamla
+     workarounden till 2026-08-26. Historiken nedan är bakgrund:
+     `updatePriceHistory` daterade punkten efter RUNNERNS
      väggklocka (`new Date()`), inte efter kursens `marketTime`. En förbörskörning bär
      föregående sessions stängning och bokför den under dagens datum. 2026-08-17 06:34 UTC
      hade **59 av 62 serier** en sista punkt identisk med föregående dag; bara de tre
@@ -733,13 +757,14 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      **Det är det enda av de tre felen som får systemet att räkna på PÅHITTADE siffror**, och
      det träffar exakt RSI/MACD som grind 2 avgörs av: ASSA:s MACD-histogram blev −0,676 på
      råserien mot −0,287 avdubblerat, och `HEXA-B.ST` BYTTE TECKEN (−0,016 mot korrekta
-     +0,177, alltså en påhittad bearish korsning). Fixen är sex rader: datera mot
-     `(q.marketTime || "").slice(0,10)` med väggklockan som fallback, och byt
-     `arr[arr.length-1]`-jämförelsen mot `findIndex` + `sort` – annars hamnar gårdagens punkt
-     EFTER dagens och serien blir osorterad. **Ingen historikstädning behövs:** felet är
-     övergående, 16:45-cronen skriver över morgonens punkt med den riktiga stängningen, så
-     bara morgonkörningar drabbas – vilket är precis när rotationerna läser filen.
-  2. **SYMBOLER FALLER UR HÄMTNINGEN NÄR VECKORAPPORTEN BYTS.** `collectTickers` anropar
+     +0,177, alltså en påhittad bearish korsning). **Ingen historikstädning behövdes:** felet var
+     övergående, 16:45-cronen skrev över morgonens punkt med den riktiga stängningen, så
+     bara morgonkörningar drabbades – vilket är precis när rotationerna läser filen.
+  2. **DELVIS AVKLARAD – SYMBOLER FALLER UR HÄMTNINGEN NÄR VECKORAPPORTEN BYTS.**
+     **(a) är GJORD** – `newestWeekly()` är ersatt av `recentWeeklies(3)` i `collectTickers`
+     (`fetch-prices.mjs:140,146`), och gäller även `recentScouts`/`recentUsWeeklies`.
+     **(b) ÅTERSTÅR och är den varaktiga fixen** – se punkt 5 nedan för den mätta effekten.
+     Bakgrund: `collectTickers` anropade
      `newestWeekly()`, som plockar EXAKT EN rapport (högsta filnamnsnumret). När v33 ersatte
      v32 den 2026-08-10 slutade **elva symboler med FULL 250-punktshistorik** hämtas:
      `SAAB-B.ST`, `EMBRAC-B.ST`, `MIPS.ST`, `ELUX-B.ST`, `VOLCAR-B.ST`, `GRK.HE`, `PREC.ST`,
@@ -747,35 +772,35 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      Detta är spegelbilden av punkt 3 och i praktiken värre: SAAB-B.ST (+8,12 %/vecka) och
      EMBRAC-B.ST (+10,41 % på Q1-rapporten 13/8) var exakt de namn `movers.json` flaggade
      2026-08-17 och föll ändå på grind 1 – **trots att de hade allt underlag som krävdes för
-     grind 2.** Två nivåer, gör båda: (a) låt `newestWeekly` bli `recentWeeklies(3)` så
-     fönstret är tre rapporter brett; (b) varaktigt – en `collectLiveHistoryTickers(30)` som
-     fortsätter hämta varje symbol med en punkt de senaste 30 dagarna, så övergivna symboler
-     åldras ut av sig själva i stället för omedelbart. Låt den INTE växa obegränsat; det är
-     throttling-risken `config/watchlist.txt` varnar för. **Fel 2 och 3 förstärker varandra:**
-     de elva övergivnas SISTA lagrade punkt är själv en fantom (`SAAB-B.ST` slutar på
-     `["2026-08-10", 633.4]`, identiskt med `["2026-08-07", 633.4]`) – med fel 3 fixat skrivs
-     den punkten inte alls.
-  3. **BACKFILLEN KÖRS ALDRIG AUTOMATISKT.** `state/price_history.json`:s `backfilledAt` står
-     kvar på **2026-08-03T11:05:07Z** medan `generatedAt` uppdateras varje halvtimme.
-     2026-08-17 hade **22 av 81 symboler** färre än 200 stängningar, varav 8 nordiska
-     (`NOVO-B.CO` 8, `PDX.ST` 8, `CTM.ST`/`CTY1S.HE`/`DFDS.CO`/`G5EN.ST`/`NESTE.HE`/`ZEAL.CO`
-     6 var). Det fällde Zealand Pharmas royaltyavtal på 100 MUSD och BÅDA kandidaterna v33
-     lovade att pröva om. **Att lägga en ticker i watchlisten i förväg löser grind 1 men INTE
-     grind 2** – RSI(14) kräver 15 stängningar och MACD ~35, och en ny symbol får en punkt per
-     handelsdag. `backfill-history.mjs` fungerar och tar redan symboler som argument
-     (`… 1y ^OMX`); det som saknas är att någon anropar den. Lägg ett steg i `prices.yml`
-     grindat på 05:00-cronen som plockar symboler med `< 200` punkter och backfillar dem.
-     Skriptets egen merge-regel skyddar: Yahoos stängning vinner för alla dagar utom dagens,
-     och symboler som inte går att hämta lämnas orörda – den raderar aldrig historik.
-  4. **`tests/sim.mjs` är RÖD sedan 2026-08-10 – felet är i TESTET, inte i appen.** Påståendet
-     `kurser: fritextsök filtrerar` (rad 378) hårdkodar söksträngen `"SAAB"` och kräver minst
-     en träff; sedan `SAAB-B.ST` föll ur `prices.json` (punkt 2) finns ingen sådan ticker.
-     142 passerade, 1 föll, verifierat oberoende av rotationen via `git stash` + omkörning.
-     Exakt det anti-mönster avsnitt 3 varnar för – härled söksträngen ur `dash.state` i
-     stället. **Auto-merge-grinden påverkas INTE** (den kör bara `validate-decisions`,
-     `validate-scout-candidates`, `run.mjs` och `theme.mjs`); det är `test.yml` som är röd.
-     Notera att punkt 2:s watchlist-tillägg sannolikt gör testet grönt igen av sig självt vid
-     nästa `prices.yml`-körning – **det gör inte påståendet riktigt**, bara tillfälligt sant.
+     grind 2.**
+  3. ✅ **AVKLARAD – BACKFILLEN KÖRS AUTOMATISKT.** Steget ligger i `prices.yml:72`
+     (`backfill-history.mjs --missing=200 1y`, 05:00-cronen, `continue-on-error`), och
+     `watchdog.mjs:checkShortSeries` larmar när det tystnar. Verifierat 2026-08-26:
+     `partialBackfilledAt` 2026-08-26T05:31:39Z, **1 av 112 serier** under 200 punkter (mot
+     22 av 81 den 2026-08-17). `backfilledAt` står kvar på 2026-08-03T11:05:07Z, vilket är
+     AVSIKTLIGT – `--missing`-läget rör aldrig det fältet, det betyder "hela universumet fyllt
+     en gång". Två fält, två betydelser.
+  4. ✅ **AVKLARAD – `tests/sim.mjs` är GRÖN.** Söksträngen härleds numera ur `dash.state`
+     i stället för den hårdkodade `"SAAB"`. Körda 2026-08-26: `run.mjs` **850 passed, 0 failed**,
+     `theme.mjs` **140/0**, `sim.mjs` **143/0**.
+  5. **VOLYMBACKFILLEN ÄR STRUKTURELLT OÅTKOMLIG – 59 symboler (mätt 2026-08-26).**
+     `backfill-history.mjs` väljer symboler med `shortSeries(hist.series, …)`, alltså på
+     **prisseriens** längd. Nu när prisserierna är fulla plockas ingen symbol alls, och
+     volymserien släpar kvar: **59 av 111 symboler har ≥ 200 prispunkter och < 21 volympunkter**
+     och kan därför aldrig nås av `--missing=200`. Följden är att delkriteriet "volym > 1,5×
+     20-dagarssnittet" i grind 2 och det RÄKNADE likviditetsgolvet är omätbara för dem –
+     rapporterat sex gånger utan att något larmade, eftersom `watchdog.mjs` inte läste
+     `volume_history.json` alls. **Åtgärdat 2026-08-26:** urvalet tar numera hänsyn till BÅDA
+     serierna (`collectShortSymbols`), och `checkVolumeBackfill` larmar. Kvar för Dren: se till
+     att det faktiskt fyller på i skarp drift – takten är 40 symboler per dygn, så ~2 dygn.
+  6. **ÅTGÄRDSLOOPEN HAR ALDRIG KÖRT.** `state/action_items.json` finns inte: mekanismen
+     byggdes 2026-08-23, dagen EFTER den sista retron (2026-08-22), och nästa retro är
+     lördagen 2026-08-29. Det är inte ett fel – `checkRecurringActionItems` är tyst på saknad
+     fil per design – men räknaren tickar under tiden. Tre defekter låg 2026-08-26 på 4–6
+     rapporteringar utan att något larmade: `movers.json`:s `asOf` (åtgärdad i watchdogen
+     2026-08-26), volymbackfillen (punkt 5) och de två döda GlobeNewswire-flödena (kräver
+     handpåläggning, se `MANUAL.md`). **Kontrollera efter 2026-08-29** att filen skapas och att
+     punkterna får stabila ASCII-kebab-case-`id`.
 
   Utöver driftlistan återstår **strategiarbete efter den externa granskningen**, som ligger i
   **`docs/STRATEGI-ATGARDER.md`**
@@ -872,8 +897,12 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      regimen som AV (strängare riktning vid osäkerhet). **Regeln gör INTE att skelettet slår index**
      – den gör det mindre dåligt med halverad drawdown. Ändra inte tillbaka utan att köra om
      avsnitt 4 och 6 i backtestet.
-  5. **Statistiken är fortfarande brus:** 2 stängda affärer. Retrons beslutsstatistik kräver
-     ≥ 15 SÄLJ-rader i `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
+  5. **Statistiken är fortfarande brus:** **3 stängda affärer** sedan skarp start (ASSA-B.ST
+     2026-08-18, NVDA + MU 2026-08-25 – samtliga på stop, ingen på mål), 6 SÄLJ-rader totalt
+     varav 3 från pappersperioden. Retrons beslutsstatistik kräver ≥ 15 SÄLJ-rader i
+     `decisions.json` innan poängvikterna (35/30/15/20) kan kalibreras mot data.
+     **Beslutsutvärderingen är den snabbare vägen och har sin egen gate:** `effectiveN` låg på
+     **5 av 8** oberoende mätfönster 2026-08-26 – radantalet (191) säger ingenting.
      Beslutslogg-rutan i Avkastning visar hur långt det är kvar.
 - ✅ **Daglig digest (2026-08-07): byggd sedan 2026-07-31, men körde ALDRIG förrän nu.**
   `digest.yml` triggade bara på `push` mot main, och rapporterna når main via `auto_merge.yml`
@@ -974,22 +1003,26 @@ stooq-reserven).
   Historiska rapportdatum finns inte i Yahoo (`events=earnings` ger null, `earningsHistory`
   räcker fyra kvartal) → rapportdagar detekteras ur pris + volym, vilket är en PROXY.
   Ändra ingen av dessa regler utan att köra om båda marknaderna på 10y.
-- **RÄKNA ALDRIG RSI/MACD/EMA PÅ `state/price_history.json` UTAN ATT FÖRST AVDUBBLERA SERIEN
-  (fälla, 2026-08-14 och 2026-08-17).** `updatePriceHistory` daterar punkten efter runnerns
-  väggklocka, inte efter kursens `marketTime`, så varje förbörskörning skriver in föregående
-  sessions stängning under DAGENS datum. Måndag 2026-08-17 06:34 UTC bar **59 av 62 serier** en
-  sista punkt identisk med föregående dag. En dubblerad stängning är inte neutral: den förskjuter
-  varje glidande fönster ett steg och pressar EMA-serien mot det upprepade värdet.
-  **Det syns ingenstans** – serien ser komplett ut, rapporten ser normal ut, och siffran är fel
-  åt ett håll som ändrar beslut: `HEXA-B.ST` BYTTE TECKEN på MACD-histogrammet 2026-08-17
-  (−0,016 på råserien mot korrekta +0,177, alltså en påhittad bearish korsning) och ASSA:s
-  histogram blev mer än dubbelt så djupt (−0,676 mot −0,287). Grind 2 i BÅDA rotationsprompterna
-  avgörs av just RSI och MACD. **Tills felet är fixat (KVAR punkt 1 i avsnitt 5b): släng den
-  sista punkten när den upprepar föregående stängning, och skriv i rapporten att värdena är
-  räknade avdubblerat.** Felet är övergående – 16:45-cronen skriver över morgonens punkt med den
-  riktiga stängningen – så det drabbar BARA morgonkörningar, vilket är precis när rotationerna
-  kör. Kontrollera med: äldre datum ska ha 1–2 identiska punkter (äkta oförändrade stängningar),
-  dagens har 59.
+- **FANTOMPUNKTEN ÄR FIXAD 2026-08-17 – AVDUBBLERA INTE LÄNGRE (uppdaterad 2026-08-26).**
+  **RÄKNA RSI/MACD/EMA PÅ RÅSERIEN.** Historisk bakgrund: `updatePriceHistory` daterade tidigare
+  punkten efter runnerns väggklocka i stället för efter kursens `marketTime`, så varje
+  förbörskörning skrev in föregående sessions stängning under DAGENS datum. Måndag 2026-08-17
+  06:34 UTC bar **59 av 62 serier** en sista punkt identisk med föregående dag. En dubblerad
+  stängning är inte neutral: den förskjuter varje glidande fönster ett steg. `HEXA-B.ST` BYTTE
+  TECKEN på MACD-histogrammet den dagen (−0,016 på råserien mot korrekta +0,177, alltså en
+  påhittad bearish korsning) och ASSA:s histogram blev mer än dubbelt så djupt (−0,676 mot
+  −0,287). Grind 2 i BÅDA rotationsprompterna avgörs av just RSI och MACD.
+  **Fixen ligger i koden:** `fetch-prices.mjs:historyDate()` daterar ur `marketTime` och
+  returnerar `null` utan tidsstämpel; `appendPoint()` ersätter samma datum, lägger till nyare och
+  skriver ALDRIG bakåt. Verifierat 2026-08-26: **1 av 112 serier** upprepar sin föregående
+  stängning, mot 59 av 62 den 2026-08-17 – och den enda är en äkta oförändrad stängning.
+  **DEN GAMLA WORKAROUNDEN ("släng den sista punkten när den upprepar föregående stängning")
+  STOD KVAR HÄR TILL 2026-08-26 OCH FÖRSTÖR NU DATA:** den raderar en äkta oförändrad stängning
+  och gör serien ett steg kortare än marknaden. Följ den inte, och skriv inte längre i rapporten
+  att värdena är räknade avdubblerat – `veckorapport-260824` slutade göra det, korrekt.
+  **Kontrollera hellre än att anta**, med samma mått som ovan: andelen serier vars sista punkt är
+  lika med näst sista. 1–3 av ~110 är normalt (äkta oförändrade stängningar); ett tal i
+  50-procentsklassen betyder att dateringen regresserat och att fixen ska letas i `historyDate`.
 - **EN SYMBOL MED FULL HISTORIK KAN ÄNDÅ SAKNA KURS – kontrollera `prices.json`, inte
   `price_history.json` (fälla, 2026-08-17).** De två filerna har OLIKA symbolmängder, och
   historiken behåller symboler som slutat hämtas. `collectTickers` läser bara den SENASTE

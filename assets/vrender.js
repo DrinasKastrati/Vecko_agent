@@ -828,9 +828,17 @@
         "", ev.counts.pending + " väntar på " + h1 + " handelsdagar",
         "Ett beslut kan mätas först när kurshistoriken sträcker sig " + h1 + " handelsdagar framåt. Omogna beslut räknas ALDRIG som nollresultat – det skulle dra alla medelvärden mot mitten.")}
       ${cell("Urvalsedge " + h1 + " dgr", edgeVal,
-        edge && !edge.insufficient ? (edge.edgePct > 0 ? "pos" : edge.edgePct < 0 ? "neg" : "") : "",
+        // FÄRGEN GATEAS PÅ OBEROENDE MÄTFÖNSTER, INTE PÅ RADANTAL (2026-08-26).
+        // selectionEdge gatear på radantal av historiska skäl – frontenden och testerna
+        // läser `verdict`, och den lämnas orörd. Men ett grönt tal LÄSES som ett svar,
+        // och det var precis den avläsningen som gjorde radantalsfelet dyrt: 191 rader
+        // på 18 datum är 5 oberoende femdagarsfönster, alltså ~5× svagare än talet ser ut.
+        // Bär uttalandet en clusterCaveat är siffran en RIKTNING – då färgas den inte,
+        // och underraden säger varför. Rutan "Oberoende mätfönster" bredvid bär färgen.
+        edge && !edge.insufficient && !edge.clusterCaveat
+          ? (edge.edgePct > 0 ? "pos" : edge.edgePct < 0 ? "neg" : "") : "",
         edgeSub,
-        "Skillnaden i snitt-alpha mellan de köpta och de avvisade kandidaterna. Positivt = urvalet skilde dem i rätt riktning. Detta är den enda mätningen som inte kräver stängda affärer.")}
+        "Skillnaden i snitt-alpha mellan de köpta och de avvisade kandidaterna. Positivt = urvalet skilde dem i rätt riktning. Detta är den enda mätningen som inte kräver stängda affärer. Talet färgas först när det vilar på tillräckligt många OBEROENDE mätfönster – radantalet räcker inte.")}
       ${cell("Köpta som slog index", at(h1, "KÖP") && at(h1, "KÖP").beatIndexPct != null
           ? at(h1, "KÖP").beatIndexPct + " %" : "–",
         "", at(h1, "KÖP")

@@ -13,7 +13,15 @@
 - Valuta: **USD**. All P/L, entry, stop, mål och ackumulerad avkastning räknas i USD/procent.
 
 ## Strategi (samma ramverk som nordiska rotationen, egen bok)
-- Normalt 2 aktier viktade 50/50, roteras varje vecka (måndag = full rotation).
+- **Upp till 4 aktier à platt 25 %**, plus indexsleeven (`SPY`) som bär allt oallokerat kapital.
+  Omprövas varje vecka (måndag = full rotation); BEHÅLL är standardvalet och positioner säljs
+  inte automatiskt. Färre än 4 godkända case är ett korrekt utfall – tomma platser går till
+  sleeven, aldrig till kassa.
+  *(Rättelse 2026-08-26: raden sa "Normalt 2 aktier viktade 50/50", vilket strategin övergav
+  2026-08-02 (4 à 25 %) respektive 2026-08-08 (platt vikt, conviction-bandet borttaget). Den
+  styrande prompten `prompts/us_dagligprompt.md` har sagt 4 à 25 % hela tiden – men enligt
+  lärdom **L-6** ska en spärr citeras ordagrant ur den fil den påstås komma ur, och den här
+  filen hade då citerat en övergiven regel som auktoritet.)*
 - Dagligt beslut per aktie: KÖP / SÄLJ / BEHÅLL (AVVAKTA om kurs ej kan verifieras).
 - Körs FÖRE US-öppning (~15:00 CET / ~09:30 ET-open). Pre-market och gårdagens
   efterhandelsrörelser (after-hours) ska ALLTID vägas in – se prompten.

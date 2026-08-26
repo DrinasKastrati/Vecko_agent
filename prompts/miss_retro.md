@@ -150,10 +150,31 @@ finns underlag här långt innan steg 3d:s 15 SÄLJ-rader, som i praktiken är �
 Redovisa på raden **Träffbild:** i sektionen `## Idéflödets facit` (lägg INGEN ny sektion – mallen
 är ett parsningskontrakt; sektionen `## Träffbild: tillämpades tidigare lärdomar?` är en ANNAN sak
 och ägs av STEG 4 punkt 5):
+0. **RADANTALET ÄR INTE STICKPROVSSTORLEKEN – detta gäller ALLA siffror i steget.** Beslut som
+   fattas samma dag, eller inom mätfönstrets längd från varandra, delar marknadsrörelse och är
+   INTE oberoende observationer: 2026-08-26 låg 191 mätbara rader på 18 datum, alltså **5**
+   icke-överlappande femdagarsfönster. **Varje tal du citerar ur filen ska bära sitt `effectiveN`
+   i samma mening som talet** – "+1,38 pp (n=8 rader, 5 av 8 oberoende mätfönster)", aldrig
+   "+1,38 pp". Läs `byHorizon.5.clustered` för `n`, `nDates` och `effectiveN`. Skiljer sig
+   `clusterMeanAlphaPct` från `meanAlphaPct` är besluten ojämnt fördelade i tiden, och **det är i
+   sig värt en rad i rapporten**. Ett tal utan angivet oberoendeantagande är ofärdigt och får
+   aldrig bli en lärdom.
 1. `counts` – antal beslut, mätbara, ännu inte mogna. Utan detta går siffrorna inte att tolka.
 2. `byHorizon.5.selectionEdge` – skillnaden i snitt-alpha mellan köpta och avvisade. Står
    `insufficient: true`: skriv **"för tidigt"** plus hur många rader som fattas. Skriv ALDRIG ut
-   en edge-siffra som fältet inte ger.
+   en edge-siffra som fältet inte ger. **Bär fältet `clusterCaveat` är siffran en RIKTNING, inte
+   ett svar** – det fältet finns därför att `selectionEdge` gatear på radantal av historiska skäl
+   medan blocken bär den verkliga osäkerheten. Citera caveaten ordagrant bredvid talet.
+2b. `byHorizon.5.poolAlpha` och `byHorizon.5.holdRule` – **två skilda hypoteser.** `poolAlpha`
+   svarar på om KANDIDATFLÖDET hittar namn som rör sig; `selectionEdge` på om GRINDARNA skiljer
+   köpta från avvisade. Ett system kan ha bra flöde och värdelösa grindar, eller tvärtom – blanda
+   dem aldrig. `holdRule` mäter BEHÅLL-radernas alpha mot poolens: går innehaven systematiskt
+   sämre betalas omsättningsbesparingen med sämre innehav. Båda gatear på oberoende mätfönster
+   och skriver `insufficient` med skäl när underlaget inte räcker; respektera det.
+2c. `byHorizon.5.convergence` – **den fördeklarerade tröskeln** (20 oberoende mätfönster i BÅDA
+   grupperna, +0,5 pp). Redovisa `decision` och `reason` ordagrant. Tröskeln får ALDRIG föreslås
+   sänkt i en lärdom: den är satt innan datan fanns, och att justera den efter att ha sett
+   utfallet är precis det fel fördeklarationen finns för att förhindra.
 3. `byHorizon.5.byCatalyst` – vilka katalysatortyper som gett positiv alpha. Grupper med
    `insufficient` är BRUS och får inte bli lärdom.
 4. `missingSymbols` – tickers vi fattat beslut om som saknar kurshistorik. De är **omätbara för

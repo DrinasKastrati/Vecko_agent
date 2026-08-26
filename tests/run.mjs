@@ -640,6 +640,70 @@ ok("kort serie: oläsbart partialBackfilledAt larmar (åldern kan inte mätas)",
   WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ, series: { "A.ST": p35(1) },
     partialBackfilledAt: "inte-ett-datum" }).some(p => p.key === "backfill-stale"));
 
+/* ---- volymbackfillen (ny kontroll 2026-08-26) ---------------------------
+   INGEN kontroll och inget test läste `volume_history.json`, och det var hela
+   skälet till att urvalsbuggen kunde ligga kvar i sex veckor: rapporten skrev
+   "omätbar" på delkriteriet och gick vidare. */
+const volQ = Object.fromEntries(
+  Array.from({ length: 12 }, (_, i) => ["S" + i + ".ST", { price: 1 }]));
+ok("volymbackfill: många symboler utan 20-dagarsunderlag larmar", (() => {
+  const p = WD.checkVolumeBackfill({ quotes: volQ, volumeSeries: {} });
+  return p.length === 1 && p[0].key === "volume-backfill" && /12 symbol/.test(p[0].title);
+})());
+ok("volymbackfill: fulla volymserier är tyst", (() => {
+  const v = Object.fromEntries(Object.keys(volQ).map(s => [s, p35(250)]));
+  return WD.checkVolumeBackfill({ quotes: volQ, volumeSeries: v }).length === 0;
+})());
+// Nyintroducerade tickers har legitimt kort volymserie i några dygn.
+ok("volymbackfill: ett fåtal korta tolereras", (() => {
+  const v = Object.fromEntries(Object.keys(volQ).map(s => [s, p35(250)]));
+  delete v["S0.ST"]; delete v["S1.ST"];
+  return WD.checkVolumeBackfill({ quotes: volQ, volumeSeries: v }).length === 0;
+})());
+ok("volymbackfill: index och valutapar räknas ALDRIG som korta", (() => {
+  const q = { ...volQ, "^OMX": { price: 1 }, "USDSEK=X": { price: 1 } };
+  const v = Object.fromEntries(Object.keys(volQ).map(s => [s, p35(250)]));
+  return WD.checkVolumeBackfill({ quotes: q, volumeSeries: v }).length === 0;
+})());
+ok("volymbackfill: symboler som inte hämtas räknas inte", (() => {
+  const q = { "A.ST": { error: "fel" }, "B.ST": { price: null } };
+  return WD.checkVolumeBackfill({ quotes: q, volumeSeries: {} }).length === 0;
+})());
+ok("volymbackfill: saknad data är tyst (bakåtkompatibelt)",
+  WD.checkVolumeBackfill({ quotes: null, volumeSeries: null }).length === 0);
+
+/* ---- movers: asOf är INTE generatedAt (fix 2026-08-26) ------------------
+   Lördagscronen levererade i tid varje vecka OCH bar ändå torsdagens data:
+   2026-08-22 stod generatedAt 2026-08-22 med asOf 2026-08-20, medan sista
+   handelsdag var fredagen 2026-08-21. En nordisk vinnare som toppar på fredagen
+   kan då per konstruktion aldrig synas. Rapporterat minst fem gånger; ingen
+   kontroll läste fältet. */
+/* OBS: `now` måste vara en VARDAG. checkStale returnerar tyst på helger, och
+   movers.yml kör lördagar – kontrollen görs alltså på måndagen därpå, mot de
+   `asOf`/`generatedAt` som ligger kvar i filen. */
+ok("movers: färsk körning på för gammal session larmar", (() => {
+  const p = WD.checkStale({ now: "2026-08-24T08:00:00Z",       // måndag
+    moversGeneratedAt: "2026-08-22T06:34:35Z", moversAsOf: "2026-08-18" });
+  return p.some(x => x.key === "movers-asof");
+})());
+ok("movers: lördagskörning med fredagens stängning är tyst",
+  !WD.checkStale({ now: "2026-08-24T08:00:00Z",
+    moversGeneratedAt: "2026-08-22T06:34:35Z", moversAsOf: "2026-08-21" })
+   .some(x => x.key === "movers-asof"));
+ok("movers: asOf-kontrollen är tyst utan fältet (bakåtkompatibelt)",
+  !WD.checkStale({ now: "2026-08-24T08:00:00Z", moversGeneratedAt: "2026-08-22T06:34:35Z" })
+   .some(x => x.key === "movers-asof"));
+ok("movers: de två kontrollerna är oberoende – asOf larmar inte på gammal körning",
+  !WD.checkStale({ now: "2026-09-10T08:00:00Z",
+    moversGeneratedAt: "2026-08-22T06:34:35Z", moversAsOf: "2026-08-21" })
+   .some(x => x.key === "movers-asof"));
+// Det verkliga fallet 2026-08-22: körningen var i tid, datat var två dygn gammalt.
+ok("movers: det faktiska utfallet 2026-08-22 fångas", (() => {
+  const p = WD.checkStale({ now: "2026-08-24T08:00:00Z",
+    moversGeneratedAt: "2026-08-22T06:34:35Z", moversAsOf: "2026-08-20" });
+  return p.some(x => x.key === "movers-asof");
+})());
+
 /* En pending-post som ALLTID legat kvar trots att analysen är gjord är ett
    ANNAT fel än en glömd begäran, och har en annan åtgärd: posten ska bort, inte
    arbetaren köras. SAAB.ST låg så i 24 dygn – analysen skrevs 2026-07-14T00:06
@@ -819,6 +883,66 @@ ok("extractUsCaseTickers nasdaq", FP.extractUsCaseTickers("Case 1: NVIDIA (NVDA 
 ok("parseChart price", FP.parseChart({ chart: { result: [{ meta: { regularMarketPrice: 10, currency: "USD", regularMarketTime: 1700000000 } }] } }, "X").price === 10);
 ok("updatePriceHistory export", typeof FP.updatePriceHistory === "function");
 ok("fetchStooq export", typeof FP.fetchStooq === "function");
+
+/* ---- 0 är inte volymdata (fix 2026-08-26) --------------------------------
+   Filtret fanns i stooq-grenen men INTE i Yahoo-grenen, som är den primära.
+   En nolla i ett 20-dagarssnitt drar snittet nedåt så att NÄSTA dag ser ut som
+   ett volymutbrott den inte är – och det är precis grind 2:s delkriterium som
+   läser serien. Mätt 2026-08-26 bar ^OMX och USDSEK=X 8 av 8 nollpunkter.
+   Saknad volym ska bli INGEN PUNKT: en lucka är ärlig, en nolla är ett
+   påstående om att inget omsattes. */
+ok("volymskrivningen filtrerar bort nollor", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
+  const fn = src.slice(src.indexOf("export function updateVolumeHistory"));
+  return /if \(!\(Number\(q\.volume\) > 0\)\) continue;/.test(fn.slice(0, 2000));
+})());
+
+/* ---- övergivna symboler: lastSeen (fix 2026-08-26) -----------------------
+   `recentWeeklies(3)` breddade fönstret men botade symptomet: en symbol som
+   faller ur ALLA källor slutar hämtas mitt i en 250-punktsserie, och faller då
+   på grind 1 trots att den har allt grind 2 kräver. `lastSeen` uppdateras BARA
+   av källor – aldrig av en hämtning – annars blir villkoret cirkulärt och
+   listan växer monotont. */
+ok("updateLastSeen stämplar källsymboler med dagens datum", (() => {
+  const h = { series: {} };
+  const s = FP.updateLastSeen(h, ["A.ST", "B.ST"], "2026-08-26");
+  return s["A.ST"] === "2026-08-26" && s["B.ST"] === "2026-08-26";
+})());
+ok("updateLastSeen seedar en okänd symbol ur SISTA HISTORIKPUNKTEN, inte ur i dag", (() => {
+  const h = { series: { "GAMMAL.ST": [["2026-07-31", 10]] } };
+  const s = FP.updateLastSeen(h, [], "2026-08-26");
+  return s["GAMMAL.ST"] === "2026-07-31";   // annars får den 30 NYA dygns nådetid
+})());
+ok("updateLastSeen skriver INTE över ett befintligt datum med historikpunkten", (() => {
+  const h = { series: { "A.ST": [["2026-07-01", 1]] }, lastSeen: { "A.ST": "2026-08-20" } };
+  return FP.updateLastSeen(h, [], "2026-08-26")["A.ST"] === "2026-08-20";
+})());
+ok("collectLiveHistoryTickers behåller symboler inom nådetiden", (() => {
+  const s = FP.collectLiveHistoryTickers({ "A.ST": "2026-08-20" }, "2026-08-26", 30);
+  return s.length === 1 && s[0] === "A.ST";
+})());
+ok("collectLiveHistoryTickers åldrar ut en symbol som fallit ur alla källor", (() => {
+  const s = FP.collectLiveHistoryTickers({ "DÖD.ST": "2026-06-01" }, "2026-08-26", 30);
+  return s.length === 0;
+})());
+ok("collectLiveHistoryTickers har ett tak och tar nyast först", (() => {
+  const m = {}; for (let i = 0; i < 80; i++) m["S" + i + ".ST"] = "2026-08-26";
+  m["GAMMAL.ST"] = "2026-08-01";
+  const s = FP.collectLiveHistoryTickers(m, "2026-08-26", 30, 10);
+  return s.length === 10 && !s.includes("GAMMAL.ST");
+})());
+/* TAKET GÄLLER TILLSKOTTET, INTE HELA MÄNGDEN. Källsymbolerna är ~106 och
+   stämplas med dagens datum – utan `exclude` fyller de varje tak och trycker ut
+   precis de övergivna symboler fixen finns för. Mätt: tillskottet blev 0 av 8. */
+ok("collectLiveHistoryTickers räknar inte källsymboler mot taket", (() => {
+  const m = { "A.ST": "2026-08-26", "B.ST": "2026-08-26", "ÖVERGIVEN.ST": "2026-08-03" };
+  const s = FP.collectLiveHistoryTickers(m, "2026-08-26", 30, 2, ["A.ST", "B.ST"]);
+  return s.length === 1 && s[0] === "ÖVERGIVEN.ST";
+})());
+ok("collectLiveHistoryTickers tål skräp",
+  FP.collectLiveHistoryTickers(null, "2026-08-26").length === 0 &&
+  FP.collectLiveHistoryTickers({ "A.ST": "skräp" }, "2026-08-26").length === 0 &&
+  FP.collectLiveHistoryTickers({ "A.ST": "2026-08-26" }, "skräp").length === 0);
 ok("collectUsTickers plockar upp valutaparet", FP.collectUsTickers().includes("USDSEK=X"));
 ok("collectUsTickers plockar upp US-sleeven", FP.collectUsTickers().includes("SPY"));
 ok("collectTickers plockar upp nordiska sleeven", FP.collectTickers().includes("XACT-OMXS30.ST"));
@@ -1516,6 +1640,29 @@ ok("renderDecisionEval visar edge när underlaget räcker", (() => {
   return /\+5\.00 %/.test(html) && /rätt riktning/.test(html) && /Avvisade/.test(html) &&
          /75 %/.test(html) && !/brus/.test(html.slice(0, html.indexOf("Raderna med")));
 })());
+/* FÄRGEN GATEAS PÅ OBEROENDE MÄTFÖNSTER (2026-08-26). `selectionEdge` gatear på
+   RADANTAL av historiska skäl, och radantalet ljuger: 191 rader på 18 datum är
+   5 oberoende femdagarsfönster. Ett grönt tal läses som ett svar – bär uttalandet
+   en `clusterCaveat` ska siffran stå ofärgad och underraden säga varför. */
+ok("renderDecisionEval färgar INTE en edge som vilar på för få mätfönster", (() => {
+  const bas = { counts: { decisions: 20, measurable: 20, missing: 0, pending: 0 }, minN: 2,
+    horizons: [5, 20], missingSymbols: [],
+    byHorizon: { 5: { byAction: {}, selectionEdge: { edgePct: 5, verdict: "rätt riktning",
+      effectiveN: 5, clusterCaveat: "vilar på 5 oberoende mätfönster av 8 — behandla som riktning, inte som svar" } },
+      20: { byAction: {} } } };
+  const html = VR.renderDecisionEval(bas);
+  const cell = html.slice(html.indexOf("Urvalsedge"), html.indexOf("Urvalsedge") + 400);
+  return /\+5\.00 %/.test(cell) && /behandla som riktning/.test(cell) &&
+         !/stat-v pos/.test(cell);
+})());
+ok("renderDecisionEval färgar edgen när den vilar på tillräckligt många fönster", (() => {
+  const bas = { counts: { decisions: 20, measurable: 20, missing: 0, pending: 0 }, minN: 2,
+    horizons: [5, 20], missingSymbols: [],
+    byHorizon: { 5: { byAction: {}, selectionEdge: { edgePct: 5, verdict: "rätt riktning", effectiveN: 12 } },
+      20: { byAction: {} } } };
+  const cell = VR.renderDecisionEval(bas);
+  return /stat-v pos/.test(cell.slice(cell.indexOf("Urvalsedge"), cell.indexOf("Urvalsedge") + 400));
+})());
 ok("renderDecisionEval listar omätbara tickers som åtgärd", (() => {
   const ev = { counts: { decisions: 1, measurable: 0, missing: 1, pending: 0 }, minN: 8,
     horizons: [5, 20], missingSymbols: ["SAKNAS.ST"], byHorizon: { 5: {}, 20: {} } };
@@ -2045,6 +2192,47 @@ ok("shortSeries respekterar taket per körning", (() => {
          BF.shortSeries({}, syms, 200, 5).length === 5;
 })());
 ok("shortSeries tål skräp", BF.shortSeries(null, null, 200).length === 0);
+
+/* ---- volymurvalet (fix 2026-08-26) --------------------------------------
+   Urvalet gick BARA på prisseriens längd. När prisserierna väl var fulla
+   plockades ingen symbol alls, och volymserien frös: 59 av 111 symboler hade
+   ≥ 200 kurspunkter och < 21 volympunkter och var permanent oåtkomliga.
+   Delkriteriet "volym > 1,5× 20-dagarssnittet" i grind 2 var omätbart för dem
+   i sex veckor utan att något larmade. */
+const lång = new Array(250).fill(["2026-01-01", 1]);
+ok("collectShortSymbols väljer en symbol med full prisserie men tom volymserie", (() => {
+  const s = BF.collectShortSymbols({ "A.ST": lång }, {}, ["A.ST"], 200);
+  return s.length === 1 && s[0] === "A.ST";
+})());
+ok("collectShortSymbols lämnar en symbol som har BÅDA serierna", (() => {
+  const v = new Array(30).fill(["2026-01-01", 1000]);
+  return BF.collectShortSymbols({ "A.ST": lång }, { "A.ST": v }, ["A.ST"], 200).length === 0;
+})());
+/* Index och valutapar svarar 0 på volym hos Yahoo och blir därför ALDRIG längre.
+   Räknas de som "kort volymserie" äter de dygnets tak för alltid. */
+ok("collectShortSymbols hoppar över index och valutapar", (() => {
+  const h = { "^OMX": lång, "USDSEK=X": lång, "BTC-USD": lång };
+  const s = BF.collectShortSymbols(h, {}, ["^OMX", "USDSEK=X", "BTC-USD"], 200);
+  return s.length === 1 && s[0] === "BTC-USD";     // krypto HAR äkta volym
+})());
+/* Prisbrist före volymbrist: MA200 är regimfiltrets spärr för HELA boken,
+   volymen bara ett delkriterium. */
+ok("collectShortSymbols rankar prisbrist före volymbrist", (() => {
+  const h = { "KORT.ST": new Array(3).fill(["2026-01-01", 1]), "VOL.ST": lång };
+  const s = BF.collectShortSymbols(h, { "VOL.ST": [] }, ["VOL.ST", "KORT.ST"], 200);
+  return s[0] === "KORT.ST" && s[1] === "VOL.ST";
+})());
+ok("collectShortSymbols respekterar taket", (() => {
+  const syms = Array.from({ length: 60 }, (_, i) => "S" + i + ".ST");
+  return BF.collectShortSymbols({}, {}, syms, 200).length === 40 &&
+         BF.collectShortSymbols({}, {}, syms, 200, 21, 5).length === 5;
+})());
+ok("collectShortSymbols tål skräp", BF.collectShortSymbols(null, null, null, 200).length === 0);
+// REGRESSIONSVAKT: anroparen måste faktiskt använda den nya funktionen.
+ok("--missing-läget väljer på BÅDA serierna", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/backfill-history.mjs"), "utf8");
+  return /collectShortSymbols\(hist\.series,\s*vol\.series/.test(src);
+})());
 ok("candlesToVolumes plockar volym och hoppar nollor/hål", (() => {
   const j = { chart: { result: [{ timestamp: [1753912800, 1753999200, 1754085600],
     indicators: { quote: [{ volume: [5000, 0, null] }] } }] } };

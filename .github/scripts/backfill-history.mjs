@@ -130,6 +130,46 @@ export function shortSeries(historySeries, symbols, minPoints, cap = 40){
   return rows.slice(0, cap).map(r => r.sym);
 }
 
+/* Instrument som STRUKTURELLT saknar volym: index (^OMX, ^GSPC, ^IXIC) och
+   valutapar (USDSEK=X). Yahoo svarar 0 för dem, inte null – de får därför aldrig
+   räknas som "kort volymserie", annars äter de hela dygnets tak för alltid utan
+   att någonsin bli längre. Krypto (BTC-USD) har äkta volym och ingår. */
+export const VOLUMELESS = /^\^|=X$/;
+
+/* Symboler att backfylla, med hänsyn till BÅDA serierna (fix 2026-08-26).
+
+   BUGGEN: urvalet gick uteslutande på prisseriens längd. När prisserierna väl
+   var fulla plockades ingen symbol alls, och volymserien frös i det läge den
+   råkade ha. Mätt 2026-08-26: **59 av 111 symboler hade ≥ 200 prispunkter och
+   < 21 volympunkter** och var därmed permanent oåtkomliga för `--missing=200`.
+   Följden var att delkriteriet "volym > 1,5× 20-dagarssnittet" i grind 2 och det
+   RÄKNADE likviditetsgolvet var omätbara för dem – rapporterat sex gånger i
+   retro-/veckorapporterna utan att något larmade, eftersom watchdogen inte läste
+   volume_history.json alls.
+
+   `minVolPoints` är 21 och inte högre därför att det är precis vad ett
+   20-dagarssnitt kräver. Ett högre tak hade fått symboler vars källa bara har ett
+   par veckors volym att väljas om varje dygn i all evighet. En vald symbol får
+   ändå hela året i samma anrop – tröskeln styr VEM som väljs, inte hur mycket som
+   hämtas.
+
+   Prisbrist rankas alltid FÖRE volymbrist: MA200 i `price_history.json` är
+   regimfiltrets spärr för hela boken, medan volymen bara är ett delkriterium. */
+export function collectShortSymbols(priceSeries, volumeSeries, symbols,
+                                    minPoints, minVolPoints = 21, cap = 40){
+  const rows = [];
+  for (const sym of symbols || []){
+    const pn = ((priceSeries  || {})[sym] || []).length;
+    const vn = ((volumeSeries || {})[sym] || []).length;
+    const priceShort = pn < minPoints;
+    const volShort   = !VOLUMELESS.test(sym) && vn < minVolPoints;
+    if (!priceShort && !volShort) continue;
+    rows.push({ sym, rank: priceShort ? pn : minPoints + vn });
+  }
+  rows.sort((a, b) => a.rank - b.rank || (a.sym < b.sym ? -1 : a.sym > b.sym ? 1 : 0));
+  return rows.slice(0, cap).map(r => r.sym);
+}
+
 // Symboler att backfylla: allt filen redan känner till + båda watchlists.
 export function collectSymbols(historySeries, watchlistTexts){
   const out = new Set(Object.keys(historySeries || {}));
@@ -185,11 +225,14 @@ async function main(){
     if (existsSync(f)) wl.push(readFileSync(f, "utf8"));
 
   const candidates = only.length ? only : collectSymbols(hist.series, wl);
-  const symbols = minPoints ? shortSeries(hist.series, candidates, minPoints) : candidates;
+  const symbols = minPoints
+    ? collectShortSymbols(hist.series, vol.series, candidates, minPoints)
+    : candidates;
   const today = new Date().toISOString().slice(0, 10);
   if (minPoints)
     console.log(`Backfyller ${symbols.length} av ${candidates.length} symboler ` +
-                `(< ${minPoints} punkter, kortast först, ${range})…`);
+                `(< ${minPoints} kurspunkter ELLER < 21 volympunkter, ` +
+                `kortast först, ${range})…`);
   else
     console.log(`Backfyller ${symbols.length} symboler (${range})…`);
   if (!symbols.length){ console.log("Inget att göra – alla serier är tillräckligt långa."); }

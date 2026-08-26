@@ -487,10 +487,76 @@ export async function fetchExtended(sym, fetchImpl = globalThis.fetch){
   return null;
 }
 
+/* ---- ÖVERGIVNA SYMBOLER (fix 2026-08-26) ------------------------------
+
+   `recentWeeklies(3)` (2026-08-17) breddade fönstret från en veckorapport till
+   tre, men botade bara symptomet: en symbol som faller ur ALLA källor slutar
+   fortfarande hämtas i samma sekund, mitt i en 250-punktsserie. 2026-08-26 låg
+   8 symboler med levande historik utanför `prices.json` – de hade allt underlag
+   grind 2 kräver och föll ändå på grind 1, vilket är exakt det förvirrande
+   symptomet fällan i CLAUDE.md avsnitt 7 beskriver.
+
+   MEKANISMEN: `lastSeen[sym]` är datumet symbolen senast fanns i en KÄLLA
+   (portfölj, watchlist, de tre senaste rapporterna, kandidatkön, rapport-
+   kalendern). En symbol fortsätter hämtas i 30 dygn efter det, och åldras sedan
+   ut av sig själv.
+
+   VARFÖR INTE "behåll varje symbol som har en färsk historikpunkt": den regeln
+   är cirkulär. Att hämta symbolen SKAPAR en färsk punkt, så villkoret uppfyller
+   sig självt och listan växer monotont för alltid – precis den throttling-risk
+   `config/watchlist.txt` varnar för. `lastSeen` uppdateras BARA av källor,
+   aldrig av en hämtning, och det är hela skillnaden.
+
+   MIGRERING: en symbol utan `lastSeen` seedas ur sin sista historikpunkt, inte
+   ur dagens datum. De övergivna får därmed sin verkliga ålder och rätt kvarvarande
+   nådetid i stället för 30 nya dygn.
+
+   `cap` gäller ENBART tillskottet, alltså symboler som INTE redan ligger i en
+   källa. Ett tak på hela mängden hade varit meningslöst i praktiken och farligt i
+   det enda fall som räknas: källsymbolerna är ~106 och stämplas med dagens datum,
+   så de fyller varje rimligt tak och trycker ut exakt de övergivna som fixen finns
+   för. Sorteringen är nyast först, så det som faller bort är det som ändå var på
+   väg att åldras ut. */
+export function updateLastSeen(hist, sourceTickers, today){
+  const seen = hist.lastSeen || {};
+  for (const [sym, arr] of Object.entries(hist.series || {}))
+    if (!seen[sym] && Array.isArray(arr) && arr.length) seen[sym] = arr[arr.length - 1][0];
+  for (const t of sourceTickers || []) seen[t] = today;
+  hist.lastSeen = seen;
+  return seen;
+}
+
+export function collectLiveHistoryTickers(lastSeen, today, days = 30, cap = 30, exclude = []){
+  const t = Date.parse(today);
+  if (isNaN(t)) return [];
+  const skip = new Set(exclude || []);
+  return Object.entries(lastSeen || {})
+    .filter(([sym, d]) => {
+      if (skip.has(sym)) return false;          // hämtas ändå – ska inte äta taket
+      const p = Date.parse(d);
+      return !isNaN(p) && (t - p) / 86400000 <= days;
+    })
+    .sort((a, b) => (a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : (a[0] < b[0] ? -1 : 1)))
+    .slice(0, cap)
+    .map(r => r[0]);
+}
+
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch){
-  const tickers = [...new Set([...collectTickers(), ...collectUsTickers(),
-                               ...collectEarningsTickers()])].sort();
+  const sourceTickers = [...new Set([...collectTickers(), ...collectUsTickers(),
+                                     ...collectEarningsTickers()])].sort();
+  // Symboler som nyligen VAR i en källa hämtas vidare under sin nådetid – annars
+  // dör en 250-punktsserie i samma sekund rapporten den nämndes i rullar ut.
+  let liveTickers = [];
+  try {
+    const ph = JSON.parse(readFileSync("state/price_history.json", "utf8"));
+    const idag = new Date().toISOString().slice(0, 10);
+    const seen = updateLastSeen(ph, sourceTickers, idag);
+    liveTickers = collectLiveHistoryTickers(seen, idag, 30, 30, sourceTickers);
+    mkdirSync("state", { recursive: true });
+    writeFileSync("state/price_history.json", JSON.stringify(ph) + "\n");
+  } catch { /* saknas filen är det första körningen – källorna räcker */ }
+  const tickers = [...new Set([...sourceTickers, ...liveTickers])].sort();
   // Utökad session hämtas bara för symboler med en rapport inom räckhåll.
   const today = new Date().toISOString().slice(0, 10);
   const scope = new Set(extendedScope(
@@ -647,7 +713,20 @@ export function updateVolumeHistory(quotes){
   if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
   hist.series = hist.series || {};
   for (const [sym, q] of Object.entries(quotes)){
-    if (!q || q.error || q.volume == null) continue;
+    if (!q || q.error) continue;
+    // 0 ÄR INTE VOLYMDATA (fix 2026-08-26). Filtret fanns i stooq-grenen
+    // (`vol > 0 ? vol : null`) men INTE i Yahoo-grenen, som är den primära:
+    // `meta.regularMarketVolume ?? lastVolumeFrom(res)` släppte igenom nollan
+    // rakt in i serien. En nolla i ett 20-dagarssnitt drar snittet nedåt så att
+    // NÄSTA dag ser ut som ett volymutbrott den inte är – och det är exakt
+    // delkriteriet "volym > 1,5× 20-dagarssnittet" i grind 2 som läser serien.
+    // Mätt 2026-08-26: `^OMX` och `USDSEK=X` bar 8 av 8 nollpunkter, alltså
+    // instrument som strukturellt saknar volym. Ingen AKTIE var drabbad ännu,
+    // så felet hade inte hunnit ändra ett beslut – men en handelsstoppad dag
+    // eller en tunn session hade räckt. Saknad volym ska bli INGEN PUNKT, inte
+    // en nolla: en lucka är ärlig, en nolla är ett påstående om att inget
+    // omsattes.
+    if (!(Number(q.volume) > 0)) continue;
     const d = historyDate(q);
     if (!d) continue;
     hist.series[sym] = appendPoint(hist.series[sym] || [], d, q.volume);

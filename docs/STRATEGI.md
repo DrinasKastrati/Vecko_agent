@@ -317,9 +317,16 @@ medvetet inte in.
    Varför detta finns: stängda affärer växer med ~1/månad, beslutsrader med ~10–15/vecka. Det är
    den enda mätningen av urvalet som inte kräver stängda affärer.
 
+   > **Om siffrorna i det här avsnittet.** `state/decision_eval.json` skrivs om var 30:e minut av
+   > pris-jobbet, så varje tal nedan är en **avläsning vid en tidpunkt**, inte ett fast värde.
+   > Alla är avlästa ur `generatedAt` **2026-08-26T09:32:12Z** om inget annat sägs. En tidigare
+   > version av det här dokumentet bar avläsningar som redan var förlegade samma dygn de skrevs
+   > (bl.a. urvalsedge +0,58 pp mot faktiska +1,38, och BEHÅLL +0,16 % mot faktiska −0,59 %) —
+   > jämför alltid mot filen innan ett tal citeras vidare.
+
    **2a. Effektiv stickprovsstorlek — radantalet ljuger.** Beslut som fattas samma dag, eller
    inom mätfönstrets längd från varandra, delar marknadsrörelse och är inte oberoende
-   observationer. Vid granskningen 2026-08-26 låg **123 mätbara rader på 15 datum, vilket blir
+   observationer. Vid avläsningen låg **191 mätbara rader på 18 datum, vilket blir
    5 icke-överlappande femdagarsfönster**. Ett medelvärde räknat som om raderna vore oberoende
    såg ungefär fem gånger starkare ut än materialet bär.
    Därför gäller: `decision_eval.mjs` räknar `effectiveN` = antal block vars mätfönster inte
@@ -334,16 +341,21 @@ medvetet inte in.
    - `poolAlpha` — bär kandidatflödet? Alla rader, oavsett beslut.
    - `selectionEdge` — bär de fem grindarna? KÖP mot AVVAKTA.
 
-   Endast den andra säger något om urvalsprocessen. Vid granskningen 2026-08-26 var
-   pool-alphan positiv medan urvalsedgen låg på +0,58 pp (KÖP n=8) — alltså brus. Om det
-   mönstret består ligger värdet i kandidatgenereringen, och då ska arbetet läggas där.
+   Endast den andra säger något om urvalsprocessen. Vid avläsningen var pool-alphan positiv
+   (+0,56 % per rad, +2,10 % per datum) medan urvalsedgen låg på **+1,38 pp** (KÖP n=8 rader,
+   `effectiveN` **5** av 8 krävda fönster). **Talet är en riktning, inte ett svar** — filens
+   `verdict` säger "rätt riktning" därför att den gaten går på radantal av historiska skäl, men
+   `clusterCaveat` står bredvid och dashboarden färgar därför inte talet. Om mönstret består
+   ligger värdet i kandidatgenereringen, och då ska arbetet läggas där.
 
    **2c. Hållregeln mäts separat.** BEHÅLL är den enda åtgärd som är ett **aktivt val** snarare
    än ett icke-val. `holdRule` jämför BEHÅLL-radernas alpha mot kandidatpoolens. Hållregeln
    antogs ur backtest där argumentet var omsättningskostnad, inte urvalskvalitet; går innehaven
-   systematiskt sämre än poolen betalas kostnadsbesparingen med sämre innehav. Vid granskningen
-   2026-08-26: BEHÅLL +0,16 % medel, **−1,73 % median, 27 % över index (n=11)** — för lite för
-   ett uttalande, men fel riktning och därför under bevakning.
+   systematiskt sämre än poolen betalas kostnadsbesparingen med sämre innehav. Vid avläsningen:
+   BEHÅLL **−0,59 % medel, −1,74 % median, 21,4 % över index (n=14 rader, `effectiveN` 3)** mot
+   poolens +0,52 % medel och 58,2 % över index — för lite för ett uttalande, men fel riktning i
+   varje dimension och därför under bevakning. Riktningen har dessutom **förvärrats** sedan
+   föregående avläsning samma dygn (då +0,16 % medel och 27 % över index).
 3. **Realiserad R/R** loggas vid varje SÄLJ (faktiskt utfall / planerat stoppavstånd). Efter
    ~20 affärer visar fältet om målen systematiskt är för optimistiska — den vanligaste tysta
    felkällan i den här sortens strategi.
@@ -366,12 +378,14 @@ medvetet inte in.
 
    Utfallet är **godkänt enligt avsnitt 2 — det är inte ett fel**. Fältet `convergence` skriver
    ut `avvakta`, `fortsätt aktivt urval` eller `konvergera mot indexsleeven` med skäl och hur
-   långt underlaget räcker. Läge 2026-08-26: 4 av 20 KÖP-fönster, 2 av 20 AVVAKTA-fönster.
+   långt underlaget räcker. Läge vid avläsningen: **4 av 20 KÖP-fönster, 3 av 20 AVVAKTA-fönster**.
    Tröskelvärdena 20 och 0,5 är satta av Dren och får ändras bara enligt avsnitt 12.
 
-**Nuvarande statistisk styrka: mycket låg.** 2 stängda affärer totalt, och **5 oberoende
-mätfönster** i beslutsutvärderingen. Poängvikterna (35/30/15/20) kan inte kalibreras förrän
-≥ 15 SÄLJ-rader finns.
+**Nuvarande statistisk styrka: mycket låg.** **3 stängda affärer** sedan den skarpa starten
+2026-08-10 — ASSA-B.ST (2026-08-18, −3,26 %), NVDA och MU (båda 2026-08-25, −4,30 % respektive
+−5,79 %) — och **5 oberoende mätfönster** i beslutsutvärderingen. Samtliga tre stängdes på stop,
+ingen på mål. Beslutsloggen bär 6 SÄLJ-rader totalt, varav 3 från pappersperioden; poängvikterna
+(35/30/15/20) kan inte kalibreras förrän ≥ 15 finns.
 
 ---
 
@@ -383,7 +397,10 @@ Dessa är redan identifierade internt — en granskning är mest värd om den g�
    ännu obesvarad. Backtestet mäter en momentum-proxy, inte den faktiska urvalsregeln.
    Sedan 2026-08-26 finns en **fördeklarerad tröskel** (avsnitt 10.6) för när frågan ska
    avgöras i stället för att förbli öppen, och mätningen gateas på **oberoende mätfönster**
-   i stället för radantal (10.2a). Läget: 5 av 8 fönster — för tidigt för varje uttalande.
+   i stället för radantal (10.2a). Läget vid avläsningen: **5 av 8 fönster** — för tidigt för
+   varje uttalande. Undantaget är `selectionEdge`, som av historiska skäl fortfarande gatear på
+   radantal; den bär i stället `clusterCaveat`, och dashboarden färgar aldrig ett edge-tal som
+   vilar på för få fönster (fix 2026-08-26).
 2. **Poängvikterna är godtyckliga.** 35/30/15/20 är satt på magkänsla och är ännu inte
    kalibrerbart.
 3. **Poängsättningen görs av en språkmodell** ur nyheter och teknisk data. Reproducerbarheten
@@ -404,8 +421,13 @@ Dessa är redan identifierade internt — en granskning är mest värd om den g�
 8. **Ingen korrelationsmätning mellan de två böckerna.** Allokeringssplitten görs kvalitativt.
 9. **Slippage och partiella fills modelleras inte.** Systemet lägger inga ordrar; roboten
    noterar den verifierade kurs den såg, inte det pris som faktiskt betalades.
-10. **Känd inkonsistens i konfigurationen:** US-bokens preferensfil beskriver fortfarande
-    "normalt 2 aktier viktade 50/50" medan den styrande prompten säger 4 à 25 %. Prompten gäller.
+10. ~~**Känd inkonsistens i konfigurationen:** US-bokens preferensfil beskriver fortfarande
+    "normalt 2 aktier viktade 50/50" medan den styrande prompten säger 4 à 25 %.~~
+    **RÄTTAD 2026-08-26** i `config/fokus_us_rotation.md`. Punkten stod här som "känd" i stället
+    för att åtgärdas, vilket är fel ände: filen läses av rotationen, och lärdom **L-6** kräver att
+    en spärr citeras ORDAGRANT ur den fil den påstås komma ur — en körning som följde L-6 hade
+    därmed citerat en regel strategin övergav 2026-08-02/08 som gällande auktoritet. Att
+    dokumentera ett fel är inte att rätta det.
 
 ---
 

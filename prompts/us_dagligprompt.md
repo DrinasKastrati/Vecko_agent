@@ -524,6 +524,12 @@ mot `^GSPC`, och de avvisade är det KONTRAFAKTISKA underlaget – går de syste
 köpta är urvalsfiltret för strängt. Kandidater som föll på att kursen inte kunde verifieras loggas
 med `price: null` (validatorn tillåter det); det sänker INTE verifieringskravet utan dokumenterar
 att inget kursbaserat beslut fattades, och en sådan rad får aldrig bli ett KÖP.
+**CITERAR DU ETT TAL UR `state/decision_eval.json` I RAPPORTEN: bär `effectiveN` i samma mening.**
+Rader från samma dag delar marknadsrörelse och är inte oberoende observationer – 191 mätbara rader
+låg 2026-08-26 på 18 datum, alltså 5 icke-överlappande femdagarsfönster, och ett medelvärde räknat
+per rad såg ungefär fem gånger starkare ut än materialet bär. Skriv "+1,38 pp (n=8 rader, 5 av 8
+oberoende mätfönster)", aldrig bara "+1,38 pp". Bär fältet `clusterCaveat` är talet en RIKTNING,
+inte ett svar. Ett tal utan angivet oberoendeantagande är ofärdigt.
 Samma regler som nordiska prompten:
 APPEND-ONLY (ändra/radera aldrig befintliga rader), `catalystType` ur enum-listan i filens
 `comment`-fält (aldrig egna värden), `price` som tal i USD, `weight` som andel (0.5 = 50 %),
