@@ -6006,6 +6006,135 @@
       "sector": "Detaljhandel",
       "rsi": 79,
       "reason": "Pending-plan <= 153,00 EJ TRIGGAD, avstandet vuxit 1,03 -> 8,31 pct (dayLow 165,715, nytt 250-dagarshogsta). Nivan hojs INTE for att jaga utbrottet. RSI nu 79,0 - over grind 3:s tak."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 494.2,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 100,0 pct: inget kop och inget salj i dag, alltsa ingen omviktning. -0,08 pct mot entry 494,60, basta noteringen sedan skarp start. Ingen stop, inget mal."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 43.3,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 66.2,
+      "reason": "Ersattningskop punkt 4a: grind 2. 52-veckorshogsta 42,74 BROTS men EJ pa volym - 413903 mot 574274 i snitt = 0,72x (20-dagarsbas omatbar, 7 punkter). Grind 4: ingen malreferens over 43,30."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "DKK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "BAVA.CO",
+      "action": "AVVAKTA",
+      "price": 218.2,
+      "catalystType": "earnings",
+      "sector": "Bioteknik/vaccin",
+      "rsi": 84.1,
+      "reason": "Ersattningskop punkt 4a: grind 4. Stop 209,50 (-3,99 pct) ryms nu i bandet men malet 228,00 ar bara +4,49 pct, under kostnadstroskeln 6 pct. R/R 1,13:1. RSI 84,1, volymkvot 1,37x."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "KAR.ST",
+      "action": "AVVAKTA",
+      "price": 82.1,
+      "catalystType": "ma_rumor",
+      "sector": "Juridisk information",
+      "rsi": 68.3,
+      "reason": "Ersattningskop punkt 4a: grind 2. Volymkvot 1,00x mot kravet 1,5x och kurs under EMA200 83,18 femte sessionen. Grind 4 hade fallit: mal 85,80 = +4,51 pct under kostnadstroskeln, R/R 1,16:1."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "IMP-A-SDB.ST",
+      "action": "AVVAKTA",
+      "price": 58,
+      "catalystType": "regulatory",
+      "sector": "Medicinteknik",
+      "rsi": 52.8,
+      "reason": "Ersattningskop punkt 4a: grind 2. Tredje utbrytningsforsoket pa fallande volym (1817436-423169-112987), kvot 0,77x. Kurs nu over alla tre EMA. Grind 4: ingen stop i bandet, range 8,3 pct."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "NOK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 337.2,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 52,
+      "reason": "Ersattningskop punkt 4a: grind 3, sjatte veckan. Ingen ny namngiven handelse i Saipem7-fusionen. MACD-hist faller fjarde sessionen (1,779-1,130-0,754-0,286), nara bearish kors."
     }
   ]
 }
