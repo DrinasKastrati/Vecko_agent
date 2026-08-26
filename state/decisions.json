@@ -6135,6 +6135,180 @@
       "sector": "Offshore/subsea",
       "rsi": 52,
       "reason": "Ersattningskop punkt 4a: grind 3, sjatte veckan. Ingen ny namngiven handelse i Saipem7-fusionen. MACD-hist faller fjarde sessionen (1,779-1,130-0,754-0,286), nara bearish kors."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XOM",
+      "action": "SÄLJ",
+      "price": 160.64,
+      "weight": 0.125,
+      "entry": 165.56,
+      "stop": 157.28,
+      "target": 182.12,
+      "rr": 2,
+      "catalystType": "macro",
+      "sector": "Energi/olja",
+      "rsi": 56.4,
+      "horizonDays": 20,
+      "holdDays": 4,
+      "outcomePct": -2.97,
+      "benchPct": -0.4,
+      "alphaPct": -2.57,
+      "realizedRr": -0.59,
+      "reason": "MAKROTESEN PUNKTERAD: Hormuz-premiet prisas ut (Brent 85,91 -3,01 pct 26/8 mot ~91 vid entry, WTI under 80 pa Iran/Oman-korridorsamtal). Utbrottsbasen 158,61-161,46 aterlamnad."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 765.91,
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 54.2,
+      "reason": "Kapitalparkering. OKAD 87,5 -> 100 pct med kapitalet fran XOM-salget; entry 773,26 oforandrat (tillaggskop i befintlig parkering). Fyra tomma aktieplatser, noll pending-planer."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "TGT",
+      "action": "AVVAKTA",
+      "price": 163.47,
+      "weight": 0,
+      "entry": null,
+      "stop": 145,
+      "target": 174.42,
+      "rr": 2.68,
+      "catalystType": "earnings",
+      "sector": "Detaljhandel",
+      "rsi": 66.4,
+      "reason": "Pending-plan <= 153,00 AVFORD pa femte handelsdagen utan trigger: kurs 163,47 (dayLow 161,20) ar 6,40 pct over villkoret. Nivan hojs aldrig for att jaga utbrottet."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 479.18,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Halvledare/AI",
+      "rsi": 48,
+      "reason": "Ersattningskop punkt 4a provat efter SALJ i XOM: grind 2, obligationsemissionen 13/8 ar 8 handelsdagar bak. Tekniska filtret: 479,18 under EMA20 484,39 och EMA50 484,19. Volymkvot 0,73x."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMAT",
+      "action": "AVVAKTA",
+      "price": 480.04,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledarutrustning",
+      "rsi": 41,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q3 13/8 ar 8 handelsdagar bak. Tekniska filtret: 480,04 under EMA20 514,19 och EMA50 521,33, RSI 41,0 under 50-70. Volymkvot 0,63x."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PLTR",
+      "action": "AVVAKTA",
+      "price": 172.73,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/AI",
+      "rsi": 61.8,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 3/8 ar 16 handelsdagar bak. Kurs over EMA20 163,89 men MACD-hist vant negativt (-0,070) och volymkvot 0,52x - avtagande intresse."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PAYC",
+      "action": "AVVAKTA",
+      "price": 231.7,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "HR-mjukvara",
+      "rsi": 78.5,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 5/8 ar 14 handelsdagar bak, OCH grind 3 - RSI 78,5 over taket 75. Volymkvot 0,50x, likviditet 222,4 MUSD/dag."
+    },
+    {
+      "date": "2026-08-26",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "U",
+      "action": "AVVAKTA",
+      "price": 44.99,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Spelmotor/mjukvara",
+      "rsi": 68.6,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 6/8 ar 13 handelsdagar bak. RSI nu 68,6 (under taket), men MACD-hist vant negativt (-0,041) och volymkvot 0,70x. Likviditet 585,3 MUSD/dag."
     }
   ]
 }
