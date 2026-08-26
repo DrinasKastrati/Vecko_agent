@@ -1,29 +1,19 @@
 {
-  "generatedAt": "2026-08-25T05:28:30.488Z",
+  "generatedAt": "2026-08-26T05:30:56.479Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 91,
+    "requested": 89,
     "resolved": 84,
     "failed": 3,
-    "notApplicable": 4,
-    "upcoming": 5
+    "notApplicable": 2,
+    "upcoming": 4
   },
   "upcoming": [
     {
       "tradingDaysAway": 0,
-      "symbol": "NAPA.OL",
-      "date": "2026-08-25",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": 38350000
-    },
-    {
-      "tradingDaysAway": 1,
       "symbol": "NVDA",
       "date": "2026-08-26",
       "isEstimate": false,
@@ -33,7 +23,7 @@
       "revenueConsensus": 92176624640
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "IREN",
       "date": "2026-08-27",
       "isEstimate": false,
@@ -43,7 +33,7 @@
       "revenueConsensus": 140746760
     },
     {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "MRVL",
       "date": "2026-08-27",
       "isEstimate": false,
@@ -53,7 +43,7 @@
       "revenueConsensus": 2708720140
     },
     {
-      "tradingDaysAway": 6,
+      "tradingDaysAway": 5,
       "symbol": "AVGO",
       "date": "2026-09-02",
       "isEstimate": false,
@@ -90,15 +80,6 @@
       "epsLow": 0.59,
       "epsHigh": 0.85,
       "revenueConsensus": 1975597220
-    },
-    {
-      "symbol": "DE",
-      "date": "2026-08-20",
-      "isEstimate": false,
-      "epsConsensus": 4.08565,
-      "epsLow": 3.73427,
-      "epsHigh": 4.55,
-      "revenueConsensus": 10436523330
     },
     {
       "symbol": "RAP1V.HE",
@@ -819,6 +800,15 @@
       "epsLow": 0.61,
       "epsHigh": 0.67,
       "revenueConsensus": 187172182830
+    },
+    {
+      "symbol": "DE",
+      "date": "2026-11-25",
+      "isEstimate": false,
+      "epsConsensus": 4.08565,
+      "epsLow": 3.73427,
+      "epsHigh": 4.55,
+      "revenueConsensus": 10436523330
     }
   ],
   "errors": {
@@ -827,8 +817,6 @@
     "STAR-B.ST": "inget rapportdatum i svaret"
   },
   "notApplicable": {
-    "NASDAQ": "instrumentet har inga rapporter (ETF/index/valuta)",
-    "NVIDIA": "instrumentet har inga rapporter (ETF/index/valuta)",
     "SPY": "instrumentet har inga rapporter (ETF/index/valuta)",
     "XACT-OMXS30.ST": "instrumentet har inga rapporter (ETF/index/valuta)"
   }
