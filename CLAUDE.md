@@ -104,6 +104,25 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   vaktar invarianten. Fältet `window` (täckning, `missingDays`, `perSource`) gör täckningen
   KONTROLLERBAR; watchdogen larmar under 5 handelsdagar. **Webbappen läser INTE filen** (Nyheter-vyn
   byggs ur rapporterna), så fönsterstorleken kostar inget i dashboarden.
+  **TÄCKNINGEN DÖLJER DÖDA FLÖDEN – därav `checkNewsFeeds` (2026-08-26).** Fönsterkontrollen larmar
+  under 5 handelsdagar, och täckningen låg på 10 av 10 hela tiden därför att de FUNGERANDE flödena
+  bar den. `globenewswire` och `globenewswire-earnings` slutade svara mellan **2026-08-10 08:52 och
+  20:05 UTC** (daterat ur git-historiken för filen) och var döda i 16 dygn utan att något blev rött –
+  de syntes bara som prosa i vecko- och retrorapporterna, fyra veckor i rad. Watchdogen läser numera
+  `feeds`, **ett problem per flöde** med nyckel `news-feed-<namn>` – aldrig en samlad titel med ett
+  antal, det återskapar dedupe-buggen `issue-sync.mjs` byggdes för att lösa.
+  **`fel: … aborted` är VÅR egen timeout (20 s), inte ett avvisande.** Statusen bär sedan
+  2026-08-26 även svarstiden, och den skiljer två fel med olika åtgärd: ~20 s betyder att värden
+  hänger (tarpit ⇒ blockering av datacenter-IP, källan måste bytas – en högre timeout gör bara
+  spilltiden längre), några hundra ms betyder att uppkopplingen vägrades (DNS/TLS/nät).
+  URL:erna verifierades 2026-08-26 från Drens egen maskin: **båda svarar 200 med 20 välformade
+  poster** och `parseRss` klarar dem utan miss. Felet sitter alltså i åtkomsten från runnern.
+  **`globenewswire` (companies) går inte att harvesta fullständigt vid nuvarande kadens** – mätt på
+  ett sparat svar omsätts dess 20 poster på **2,1 timmar** medan `news.yml` kör varannan timme
+  (`17 5-21/2 * * 1-5`). Noll marginal: en försenad eller utebliven körning tappar poster
+  PERMANENT, eftersom flödet bara håller "the last 20 releases". `globenewswire-earnings` har
+  däremot 4,6 dygns spann och gott om marginal – **prioritera det** om bara ett kan räddas, det är
+  dessutom den enda källan som är dedikerad åt rapportöverraskningar.
 - `state/decision_eval.json` – GENERERAD av `.github/scripts/decision_eval.mjs`, som körs i
   pris-jobbet (`prices.yml`) direkt efter hämtningen. Märkt `-merge` i `.gitattributes`. Redigera
   aldrig för hand. **Varför den finns:** backtestet visar att skelettet inte tillför avkastning över
@@ -736,6 +755,26 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
   fil som inte motsvarar trädet. Samma regel som `push.bat` följer lokalt. Misslyckas alla tre
   försöken kastas mergen (`git reset --hard origin/main`), branchen lämnas KVAR och jobbet
   failar synligt – exakt som grindens övriga felvägar.
+- **`auto_merge.yml` LÖSER KONFLIKTER I GENERERADE FILER (sedan 2026-08-26) – utvidga aldrig
+  listan utan att läsa detta.** En fil märkt `-merge` i `.gitattributes` kan PER DEFINITION aldrig
+  auto-mergas: märkningen finns just för att slippa konfliktmarkörer mitt i JSON:en. Följden var
+  att varje claude-branch som rört en sådan fil blockerade HELA mergen. Körning **32909555257**
+  (2026-08-25T23:10) föll på `CONFLICT (content): Merge conflict in state/decision_eval.json` och
+  lämnade `claude/beslutsmatning-oberoende-fonster` kvar tills den kördes om för hand. Grinden
+  hade en lösning för `dashboard.json` (bygg om EFTERÅT) men ingen för själva MERGEN.
+  Nu: konflikter enbart i **genererade** filer löses med **mains** version (den är per definition
+  färskare – `prices.yml` skriver var 30:e minut medan branchens kopia är från när den skapades)
+  och innehållet byggs om efteråt. Listan är `dashboard.json`, `search-index.json`,
+  `decision_eval.json`, `earnings_calendar.json`, `push_sent.json`, `push_subs.json`.
+  **`scout_candidates.json` står MEDVETET INTE där** – den är inte genererad utan bär routinens
+  egna avgöranden (`promoted`/`rejected` med namngivet skäl), och mains version hade kastat bort
+  precis det arbete branchen gjorde. Samma sak gäller `decisions.json`, portföljerna och
+  rapporterna. **Ligger en konflikt utanför listan avbryts allt som förut** – grinden gissar
+  aldrig i något som bär omdöme. `tests/theme.mjs` vaktar båda invarianterna: att
+  `scout_candidates.json`/beslutsloggen/portföljerna aldrig hamnar i listan, och att varje fil i
+  listan FAKTISKT är märkt `-merge`. Grinden bygger dessutom om `decision_eval.json` efter mergen
+  av samma skäl som dashboarden – annars låg den efter till nästa pris-körning och
+  `checkDecisionEval` hade larmat på vårt eget merge-beteende.
 - **KVAR (uppdaterad 2026-08-26) – i prioritetsordning:**
   **DRIFTLISTAN ÄR NÄSTAN TÖMD, OCH DET ÄR MÄTT.** Kandidatinflödet spärrades 2026-08-17 av tre
   fel i `.github/scripts/fetch-prices.mjs`: v34-rotationen fällde 21 av 27 kandidater (78 %) på
@@ -1023,6 +1062,23 @@ stooq-reserven).
   **Kontrollera hellre än att anta**, med samma mått som ovan: andelen serier vars sista punkt är
   lika med näst sista. 1–3 av ~110 är normalt (äkta oförändrade stängningar); ett tal i
   50-procentsklassen betyder att dateringen regresserat och att fixen ska letas i `historyDate`.
+- **`range=1mo` HOS YAHOO TAPPAR SISTA HANDELSDAGEN NÄR ANROPET GÖRS PÅ EN HELG
+  (fälla, mätt 2026-08-26).** `movers.yml` kör lördagar (`0 6 * * 6`) och var det ENDA jobb som
+  schemalagt körde på en helg. Utfallet över hela `movers.json`:s historik: **fyra av fyra
+  lördagskörningar gav exakt två dygns eftersläpning** (`asOf` = torsdag när sista handelsdag var
+  fredag), **fyra av fyra vardagskörningar gav noll**. `okCount` var 107 av 110 i samtliga – alltså
+  inget hämtningsfel, och inget `closesFrom` kan förklara (den filtrerar bara null-stängningar).
+  Konsekvensen är att en nordisk vinnare som toppade på FREDAGEN per konstruktion aldrig kunde synas
+  i miss-retrons primära missdetektion. Defekten rapporterades minst fem gånger utan att någon kunde
+  peka ut orsaken, eftersom filen såg komplett ut.
+  **Fixen är explicit `period1`/`period2` i stället för `range=`** (`movers.mjs:chartUrl`).
+  Verifierat mot det EXAKTA felfallet – `period2` satt till 2026-08-22T06:34:00Z, samma sekund som
+  den misslyckade körningen: ERIC-B.ST, SAAB-B.ST, NOVO-B.CO, EQNR.OL och NESTE.HE gav alla
+  fredagen 2026-08-21 som sista stapel, 23 staplar var. **Datat fanns – `range` valde bort det.**
+  Ett test vaktar att `range=` inte kommer tillbaka in i filen. **Övriga `range=`-användare
+  (`fetch-prices.mjs`, `backfill-history.mjs`) kör bara vardagar och är därför inte utsatta** –
+  men `backtest.mjs` och `backtest-earnings.mjs` körs för hand, så kör dem aldrig på en lördag
+  eller söndag utan att veta att sista sessionen fattas.
 - **EN SYMBOL MED FULL HISTORIK KAN ÄNDÅ SAKNA KURS – kontrollera `prices.json`, inte
   `price_history.json` (fälla, 2026-08-17).** De två filerna har OLIKA symbolmängder, och
   historiken behåller symboler som slutat hämtas. `collectTickers` läser bara den SENASTE

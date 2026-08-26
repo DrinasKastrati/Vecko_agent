@@ -314,6 +314,38 @@ for (const m of indexSrc.match(/src="(assets\/[^"]+\.js)"/g) || []) {
       .some(cmd => am.includes(cmd));
     ok(`${f}: push-mot-main-triggern är inte ensam (GITHUB_TOKEN-fällan)`, harCron || körsAvGrinden);
   }
+
+  /* KONFLIKTUPPLÖSNINGEN I GRINDEN (2026-08-26).
+
+     En fil markt `-merge` i .gitattributes kan per definition aldrig auto-mergas –
+     markningen finns just for att slippa konfliktmarkorer mitt i JSON:en. Foljden
+     var att varje claude-branch som rort en sadan fil blockerade HELA mergen:
+     korning 32909555257 (2026-08-25T23:10) foll pa
+     "CONFLICT (content): Merge conflict in state/decision_eval.json" och lamnade
+     branchen kvar tills nagon kort om den for hand.
+
+     Grinden loser numera konflikter i GENERERADE filer med mains version och bygger
+     om dem. Tva invarianter maste halla, och bada ar sakerhetsregler:
+       1. scout_candidates.json far ALDRIG sta i listan – den ar inte genererad utan
+          bar routinens egna avgoranden (promoted/rejected med skal). Att ta mains
+          version dar kastar bort precis det arbete branchen gjorde.
+       2. Varje fil i listan MASTE vara markt -merge i .gitattributes. En fil som
+          auto-mergas textuellt ska aldrig tas fran en sida. */
+  const safeMatch = am.match(/SAFE="([^"]+)"/);
+  ok("auto_merge: konfliktupplösningen har en namngiven fillista", !!safeMatch);
+  if (safeMatch) {
+    const safe = safeMatch[1].split(/\s+/).filter(Boolean);
+    ok("auto_merge: scout_candidates.json löses ALDRIG automatiskt",
+      !safe.some(f => f.includes("scout_candidates")));
+    ok("auto_merge: beslutsloggen och portföljerna löses ALDRIG automatiskt",
+      !safe.some(f => /decisions\.json|portfolj|reports\//.test(f)));
+    const attrs = readFileSync(join(root, ".gitattributes"), "utf8");
+    for (const f of safe)
+      ok(`auto_merge: ${f} är markerad -merge i .gitattributes`,
+        new RegExp("^" + f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s+.*-merge", "m").test(attrs));
+    ok("auto_merge: bygger om beslutsutvärderingen efter mergen",
+      /node \.github\/scripts\/decision_eval\.mjs/.test(am));
+  }
 }
 
 /* fills.js håller Drens lokala affärsdata och måste laddas i <head>, som

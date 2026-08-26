@@ -30,6 +30,15 @@ watchdog.json
 alerts_new.json
 digest.json
 
+# Sparade RSS-svar från manuell felsökning av nyhetsflödena (2026-08-26). Samma
+# skäl som strökfilerna ovan – `push.bat` kör `git add -A`. De är dessutom
+# ögonblicksbilder av ett rullande fönster: GlobeNewswires flöden håller bara
+# "the last 20 releases" och companies-flödet omsätts på ~2,1 timmar, så en
+# committad kopia är inaktuell inom ett par timmar och kan aldrig användas som
+# datakälla. Verifieringen de gjordes för är klar och står i CLAUDE.md.
+Companies.txt
+Earnings.txt
+
 # Arbetsyta för subagent-driven utveckling (ledger, uppgiftsbrief, rapporter,
 # granskningspaket). Ren scratch – git-historiken är det som räknas när arbetet
 # är klart. MÅSTE vara ignorerad: `push.bat` kör `git add -A`, så en oignorerad

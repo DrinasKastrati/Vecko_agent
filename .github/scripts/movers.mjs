@@ -86,12 +86,50 @@ export function rankMovers(bySym, opts = {}){
 // ---- nät ----------------------------------------------------------------
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function fetchCloses(sym, fetchImpl = globalThis.fetch){
+/* EXPLICIT period1/period2 – ALDRIG `range=1mo` (fix 2026-08-26).
+
+   `range=1mo` tappar SISTA HANDELSDAGEN när anropet görs på en lördag, och
+   movers.yml kör just lördagar (`0 6 * * 6`). Mätt över hela filens historik:
+
+     gen 2026-08-01 lö 22:44 | asOf 2026-07-30 | 2 dygns eftersläpning
+     gen 2026-08-08 lö 06:46 | asOf 2026-08-06 | 2
+     gen 2026-08-15 lö 06:33 | asOf 2026-08-13 | 2
+     gen 2026-08-22 lö 06:34 | asOf 2026-08-20 | 2
+     gen 2026-08-03 må 17:05 | asOf 2026-08-03 | 0
+     gen 2026-08-26 on 10:24 | asOf 2026-08-26 | 0
+
+   Fyra av fyra lördagar exakt två dygn efter, fyra av fyra vardagar noll.
+   `okCount` var 107 av 110 i samtliga – alltså inget hämtningsfel, och inget
+   som `closesFrom` kan förklara (den filtrerar bara null-stängningar).
+
+   Konsekvensen är att en nordisk vinnare som toppar på FREDAGEN per konstruktion
+   aldrig kunde synas i miss-retrons primära missdetektion. Defekten rapporterades
+   minst fem gånger i retro- och veckorapporterna utan att någon kunde peka ut
+   orsaken, eftersom filen såg komplett ut: 110 symboler, 107 mätta, sju rader.
+
+   Verifierat 2026-08-26 mot det EXAKTA felfallet – `period2` satt till
+   2026-08-22T06:34:00Z, alltså samma sekund som den misslyckade körningen:
+   ERIC-B.ST, SAAB-B.ST, NOVO-B.CO, EQNR.OL och NESTE.HE gav alla fredagen
+   2026-08-21 som sista stapel, 23 staplar var. Datat FANNS – `range` valde
+   bort det.
+
+   `lookbackDays` 45 ger ~31 handelsdagar, alltså gott om marginal över
+   `sessionsWeek + 1 = 6` som `moveOver` kräver, utan att svaret blir stort. */
+export const LOOKBACK_DAYS = 45;
+
+export function chartUrl(host, sym, now = new Date(), lookbackDays = LOOKBACK_DAYS){
+  const p2 = Math.floor(new Date(now).getTime() / 1000);
+  const p1 = p2 - lookbackDays * 86400;
+  return `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}` +
+         `?period1=${p1}&period2=${p2}&interval=1d`;
+}
+
+async function fetchCloses(sym, fetchImpl = globalThis.fetch, now = new Date()){
   const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
   for (const h of hosts){
     try {
-      const url = `https://${h}/v8/finance/chart/${encodeURIComponent(sym)}?range=1mo&interval=1d`;
-      const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Accept": "application/json" } });
+      const r = await fetchImpl(chartUrl(h, sym, now),
+        { headers: { "User-Agent": UA, "Accept": "application/json" } });
       if (!r.ok) continue;
       const cs = closesFrom(await r.json());
       if (cs.length) return cs;

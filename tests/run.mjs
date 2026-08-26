@@ -640,6 +640,74 @@ ok("kort serie: oläsbart partialBackfilledAt larmar (åldern kan inte mätas)",
   WD.checkShortSeries({ now: "2026-08-17T12:00:00Z", quotes: kortQ, series: { "A.ST": p35(1) },
     partialBackfilledAt: "inte-ett-datum" }).some(p => p.key === "backfill-stale"));
 
+/* ---- beslutsutvärderingen slutar tyst (ny kontroll 2026-08-26) ----------
+   Enda `continue-on-error`-steget i prices.yml utan egen kontroll. Färskhet
+   duger inte som signal – skriptet skriver bara vid faktisk ändring – så
+   invarianten är strukturell: counts.decisions = rader som inte är sleeven. */
+const dRad = (n, typ) => ({ decisions: Array.from({ length: n }, () => ({ catalystType: typ })) });
+ok("beslutsutvärdering: eftersläpning över taket larmar", (() => {
+  const p = WD.checkDecisionEval({ decisionsDb: dRad(100, "order"),
+    evalDb: { counts: { decisions: 60 }, generatedAt: "2026-08-20T05:00:00Z" } });
+  return p.length === 1 && p[0].key === "decision-eval-stale" && /40 rader efter/.test(p[0].title);
+})());
+ok("beslutsutvärdering: normal lucka efter en rotation tolereras",
+  WD.checkDecisionEval({ decisionsDb: dRad(100, "order"),
+    evalDb: { counts: { decisions: 72 } } }).length === 0);
+/* Indexsleeven räknas ALDRIG – den är kapitalparkering och följer per definition
+   sitt eget benchmark. Räknades den med skulle checken larma varje vecka. */
+ok("beslutsutvärdering: sleeve-rader räknas inte in", (() => {
+  const db = { decisions: [...dRad(60, "order").decisions, ...dRad(50, "index").decisions] };
+  return WD.checkDecisionEval({ decisionsDb: db, evalDb: { counts: { decisions: 60 } } }).length === 0;
+})());
+ok("beslutsutvärdering: saknad data är tyst (bakåtkompatibelt)",
+  WD.checkDecisionEval({}).length === 0 &&
+  WD.checkDecisionEval({ decisionsDb: dRad(5, "order"), evalDb: {} }).length === 0 &&
+  WD.checkDecisionEval({ decisionsDb: null, evalDb: { counts: { decisions: 1 } } }).length === 0);
+// REGRESSIONSVAKT mot repots FAKTISKA filer – invarianten ska hålla i dag.
+ok("beslutsutvärdering: invarianten håller i repots egna filer", (() => {
+  const db = JSON.parse(readFileSync(resolve(root, "state/decisions.json"), "utf8"));
+  const ev = JSON.parse(readFileSync(resolve(root, "state/decision_eval.json"), "utf8"));
+  return WD.checkDecisionEval({ decisionsDb: db, evalDb: ev }).length === 0;
+})());
+
+/* ---- döda nyhetsflöden (ny kontroll 2026-08-26) -------------------------
+   Watchdogen läste `window` men aldrig `feeds`. Täckningen var 10 av 10 hela
+   tiden – de fyra fungerande flödena bar den – så två döda flöden kunde ligga
+   16 dygn utan att något blev rött. */
+ok("nyhetsflöde: ett flöde med fel larmar, ett per flöde", (() => {
+  const p = WD.checkNewsFeeds({ feeds: {
+    mfn: "48 poster",
+    globenewswire: "fel: This operation was aborted – båda försöken",
+    "globenewswire-earnings": "fel: This operation was aborted – båda försöken"
+  } });
+  return p.length === 2 &&
+         p.some(x => x.key === "news-feed-globenewswire") &&
+         p.some(x => x.key === "news-feed-globenewswire-earnings");
+})());
+/* Ett ANTAL i titeln återskapar dedupe-buggen issue-sync.mjs byggdes för att lösa:
+   går 2 döda flöden till 1 läses det som ett nytt problem. */
+ok("nyhetsflöde: titeln bär flödesnamnet, aldrig ett antal", (() => {
+  const p = WD.checkNewsFeeds({ feeds: { a: "fel: x", b: "fel: y" } });
+  return p.every(x => !/\d+\s+(flöde|källa)/.test(x.title)) &&
+         p[0].title.includes("`a`") && p[1].title.includes("`b`");
+})());
+ok("nyhetsflöde: friska flöden är tysta",
+  WD.checkNewsFeeds({ feeds: { mfn: "48 poster", "sec-8k": "40 poster (efter omförsök)" } }).length === 0);
+// 200 men tomt skal är ett eget fel – URL:en lever men levererar inget.
+ok("nyhetsflöde: '0 poster – kontrollera URL' larmar",
+  WD.checkNewsFeeds({ feeds: { x: "0 poster – kontrollera URL" } }).length === 1);
+ok("nyhetsflöde: HTTP-fel larmar",
+  WD.checkNewsFeeds({ feeds: { x: "HTTP 404 – båda försöken" } }).length === 1);
+ok("nyhetsflöde: saknad data är tyst (bakåtkompatibelt)",
+  WD.checkNewsFeeds({}).length === 0 && WD.checkNewsFeeds({ feeds: null }).length === 0);
+// Fönsterkontrollen får INTE tysta flödeskontrollen – det var hela defekten.
+ok("nyhetsflöde: full täckning tystar inte ett dött flöde", (() => {
+  const w = WD.checkStale({ now: "2026-08-26T12:00:00Z",
+    newsWindow: { tradingDaysCovered: 10, tradingDays: 10, missingDays: [] } });
+  const f = WD.checkNewsFeeds({ feeds: { d: "fel: aborted" } });
+  return !w.some(x => x.key === "news-window") && f.length === 1;
+})());
+
 /* ---- volymbackfillen (ny kontroll 2026-08-26) ---------------------------
    INGEN kontroll och inget test läste `volume_history.json`, och det var hela
    skälet till att urvalsbuggen kunde ligga kvar i sex veckor: rapporten skrev
@@ -1901,6 +1969,39 @@ ok("renderDecisionStats visar tabell och brus-flagga", (() => {
 
 // ---- breddad rörelsedetektion (movers.mjs, rena funktioner) ----
 const MV = await mod(".github/scripts/movers.mjs");
+
+/* ---- `range=1mo` TAPPAR FREDAGEN PÅ EN LÖRDAG (fix 2026-08-26) ------------
+   movers.yml kör lördagar. Mätt över filens hela historik: fyra av fyra
+   lördagskörningar gav exakt två dygns eftersläpning (asOf = torsdag), fyra av
+   fyra vardagskörningar gav noll — med okCount 107 av 110 i samtliga, alltså
+   inget hämtningsfel. En nordisk vinnare som toppade på fredagen kunde därför
+   per konstruktion aldrig synas i missdetektionen.
+   Verifierat mot det EXAKTA felfallet (period2 = 2026-08-22T06:34:00Z): fem
+   symboler på fyra börser gav alla fredagen 2026-08-21 som sista stapel. */
+ok("chartUrl använder explicita perioder, aldrig range=", (() => {
+  const u = MV.chartUrl("query1.finance.yahoo.com", "VOLV-B.ST", new Date("2026-08-22T06:34:00Z"));
+  return /period1=\d+/.test(u) && /period2=\d+/.test(u) && !/range=/.test(u);
+})());
+ok("chartUrl:s period2 är anropstidpunkten", (() => {
+  const nu = new Date("2026-08-22T06:34:00Z");
+  const u = MV.chartUrl("h", "X", nu);
+  return Number(u.match(/period2=(\d+)/)[1]) === Math.floor(nu.getTime() / 1000);
+})());
+ok("chartUrl:s fönster rymmer mer än moveOver kräver", (() => {
+  const u = MV.chartUrl("h", "X", new Date("2026-08-22T06:34:00Z"));
+  const p1 = Number(u.match(/period1=(\d+)/)[1]), p2 = Number(u.match(/period2=(\d+)/)[1]);
+  const dygn = (p2 - p1) / 86400;
+  return dygn === MV.LOOKBACK_DAYS && dygn >= 14;   // ~31 handelsdagar mot kravet 6
+})());
+ok("chartUrl kodar tickers med specialtecken", (() => {
+  const u = MV.chartUrl("h", "SAAB-B.ST", new Date("2026-08-22T06:34:00Z"));
+  return u.includes("/chart/SAAB-B.ST?");
+})());
+// REGRESSIONSVAKT: `range=` får aldrig tillbaka in i movers.mjs.
+ok("movers.mjs innehåller inget range=-anrop", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/movers.mjs"), "utf8");
+  return !/\?range=|&range=/.test(src);
+})());
 ok("parseUniverse hoppar kommentarer och tomrader",
   (() => { const u = MV.parseUniverse("# rubrik\n\nELUX-B.ST\n  MIPS.ST  \n#SKIP.ST\n");
     return u.length === 2 && u[0] === "ELUX-B.ST" && u[1] === "MIPS.ST"; })());

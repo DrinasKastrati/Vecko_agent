@@ -517,6 +517,98 @@ export function checkShortSeries(opts){
   return problems;
 }
 
+/* BESLUTSUTVÄRDERINGEN SLUTAR TYST (ny 2026-08-26).
+
+   Steget "Utvärdera beslutsloggen mot efterföljande kurs" i `prices.yml` har
+   `continue-on-error: true` – korrekt, kursbevakningen ska inte falla med det – men
+   det var det ENDA av fyra sådana steg utan en egen kontroll (rapportkalendern har
+   `checkEarningsCalendar`, backfillen `checkShortSeries`, kandidatkurserna
+   `checkCandidatePrice`). Slutade `decision_eval.mjs` kasta skulle filen frysa medan
+   dashboarden fortsatte visa siffrorna som aktuella.
+
+   FÄRSKHET DUGER INTE SOM SIGNAL. Skriptet skriver bara vid FAKTISK ändring
+   (`generatedAt` jämförs inte, annars ~48 tomma commits per dygn), så ett gammalt
+   `generatedAt` är ett normalt tillstånd. Invarianten är i stället STRUKTURELL:
+   `counts.decisions` ska vara antalet rader i `decisions.json` som INTE är
+   indexsleeven (`catalystType === "index"` – sleeven är kapitalparkering, inte ett
+   urvalsbeslut, och följer per definition sitt eget benchmark). Verifierat 2026-08-26:
+   295 rader totalt, 31 sleeve-rader, 263 kvar – och `counts.decisions` var exakt 263.
+
+   `tolerated` är 30, alltså en hel bruttolista: en måndagsrotation lägger ~28 rader
+   06:40 UTC och pris-jobbet hinner mäta dem långt före watchdogen 10:30, men taket
+   ska inte kunna trippa på den normala luckan. Ett verkligt stopp passerar 30 inom
+   ett par dygn. */
+export function checkDecisionEval(opts){
+  const { decisionsDb, evalDb, tolerated = 30 } = opts || {};
+  const problems = [];
+  const rows = decisionsDb && decisionsDb.decisions;
+  const counts = evalDb && evalDb.counts;
+  if (!Array.isArray(rows) || !counts || typeof counts.decisions !== "number") return problems;
+
+  const matbara = rows.filter(r => r && r.catalystType !== "index").length;
+  const efter = matbara - counts.decisions;
+  if (efter > tolerated)
+    problems.push({ key: "decision-eval-stale",
+      title: "Watchdog: beslutsutvärderingen ligger " + efter + " rader efter",
+      body: "`state/decisions.json` har " + matbara + " rader som inte är indexsleeven, men " +
+        "`state/decision_eval.json` har mätt " + counts.decisions + " (`generatedAt` " +
+        (evalDb.generatedAt || "saknas") + ").\n\n" +
+        "Steget \"Utvärdera beslutsloggen mot efterföljande kurs\" i `prices.yml` har " +
+        "`continue-on-error: true` och tystnar därför utan att jobbet blir rött. " +
+        "Kontrollera dess logg.\n\n" +
+        "**Ett gammalt `generatedAt` är i sig INGET fel** – skriptet skriver bara när " +
+        "innehållet faktiskt ändrats. Det är differensen mot beslutsloggen som är signalen." });
+  return problems;
+}
+
+/* DÖDA NYHETSFLÖDEN (ny 2026-08-26).
+
+   Watchdogen läste `window` men ALDRIG `feeds`. Fönsterkontrollen larmar under 5
+   handelsdagars täckning, och täckningen var 10 av 10 hela tiden — därför att de fyra
+   FUNGERANDE flödena bar den. Två av sex flöden hade då varit döda i 16 dygn utan att
+   något blev rött: `globenewswire` och `globenewswire-earnings` slutade svara mellan
+   2026-08-10 08:52 och 20:05 UTC (daterat ur git-historiken för news_feed.json) och
+   syntes bara som prosa i vecko- och retrorapporterna, fyra veckor i rad.
+
+   Det spelar roll trots full täckning: `globenewswire-earnings` är det ENDA flöde som är
+   dedikerat åt rapportöverraskningar, och retro-260822 mätte att noll av veckans tre
+   missade nordiska rapportreaktioner gav en träff i nyhetsflödet.
+
+   ETT PROBLEM PER FLÖDE, med flödesnamnet i nyckeln — aldrig en samlad titel med ett
+   antal. Ett antal i titeln är exakt den dedupe-bugg `issue-sync.mjs` byggdes för att
+   lösa: går 2 döda flöden till 1 läses det som ett NYTT problem och ett andra issue
+   öppnas medan det första ligger kvar.
+
+   Statussträngen sätts i `fetch-news.mjs`: "<n> poster" vid lyckad hämtning, annars
+   "fel: …", "HTTP xxx – båda försöken" eller "0 poster – kontrollera URL". Allt som
+   inte är ett rent antal räknas som fel. Saknas `feeds` är kontrollen tyst
+   (bakåtkompatibelt mot filer skrivna före fältet fanns). */
+export function checkNewsFeeds(opts){
+  const { feeds } = opts || {};
+  const problems = [];
+  if (!feeds || typeof feeds !== "object") return problems;
+
+  for (const [namn, status] of Object.entries(feeds)){
+    const s = String(status);
+    if (/^\d+\s+poster/.test(s) && !/kontrollera URL/.test(s)) continue;   // friskt
+    problems.push({ key: "news-feed-" + namn,
+      title: "Watchdog: nyhetsflödet `" + namn + "` levererar inte",
+      body: "`state/news_feed.json` → `feeds." + namn + "` = `" + s + "`.\n\n" +
+        "**Fönstrets täckning döljer det här felet.** Så länge övriga flöden bär 10 av 10 " +
+        "handelsdagar larmar `news-window` aldrig, hur många källor som än dör. Ett dött " +
+        "flöde är ett tappat mellansteg, inte ett tappat slutresultat — och det syns bara " +
+        "här.\n\n" +
+        "**`fel: … aborted`** betyder att VÅR egen timeout (20 s) löste ut, alltså att " +
+        "värden hänger i stället för att avvisa — signaturen för blockering av " +
+        "datacenter-IP, inte för en död URL. Testa URL:en i `config/news_feeds.txt` från " +
+        "en vanlig maskin: svarar den där är det runnerns IP som blockeras och källan " +
+        "måste bytas, inte timeouten höjas.\n\n" +
+        "**`HTTP 404` eller `0 poster`** betyder att URL:en är utgången — byt den och " +
+        "flytta den gamla till kommentarsblocket längst ned i filen." });
+  }
+  return problems;
+}
+
 /* VOLYMBACKFILLEN (ny 2026-08-26).
 
    Ingenting läste `state/volume_history.json` – varken watchdogen eller något test –
@@ -574,9 +666,10 @@ export function latestDecisionYmd(db){
 function main(){
   let gen = null;
   try { gen = JSON.parse(readFileSync("state/prices.json", "utf8")).generatedAt || null; } catch {}
-  let newsGen = null, newsWindow = null;
+  let newsGen = null, newsWindow = null, newsFeeds = null;
   try {
     const nf = JSON.parse(readFileSync("state/news_feed.json", "utf8"));
+    newsFeeds = nf.feeds || null;   // per-flöde-status – se checkNewsFeeds
     newsGen = nf.generatedAt || null;
     newsWindow = nf.window || null;   // saknas i filer skrivna före 2026-08-03
   } catch {}
@@ -658,6 +751,10 @@ function main(){
   problems.push(...checkShortSeries({ now, series: histSeries, quotes: priceQuotes,
     partialBackfilledAt }));
   problems.push(...checkVolumeBackfill({ volumeSeries, quotes: priceQuotes }));
+  problems.push(...checkNewsFeeds({ feeds: newsFeeds }));
+  let evalDb = null;
+  try { evalDb = JSON.parse(readFileSync("state/decision_eval.json", "utf8")); } catch {}
+  problems.push(...checkDecisionEval({ decisionsDb, evalDb }));
   problems.push(...checkRecurringActionItems({ itemsDb: actionItemsDb }));
 
   const wkNordic = readLatest("reports/weekly", /^veckorapport-\d{6}\.md$/);

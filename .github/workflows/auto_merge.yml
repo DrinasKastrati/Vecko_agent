@@ -56,10 +56,51 @@ jobs:
           for BRANCH in $BRANCHES; do
             echo "==> Mergar $BRANCH till main"
             if ! git merge "origin/$BRANCH" -m "Auto-merge: $BRANCH -> main"; then
-              git merge --abort
-              echo "::error::Mergekonflikt i $BRANCH - branchen lamnas kvar for manuell hantering."
-              FAIL=1
-              continue
+              # ---- KONFLIKT I EN GENERERAD FIL AR INTE EN RIKTIG KONFLIKT ---------
+              # De filer som ar markta `-merge` i .gitattributes kan per definition
+              # ALDRIG auto-mergas: markningen stanger av den textuella mergen just
+              # for att slippa konfliktmarkorer mitt i JSON:en. Foljden var att varje
+              # claude-branch som rort en sadan fil blockerade hela mergen.
+              #
+              # Det hande 2026-08-25T23:10 (korning 32909555257):
+              #   warning: Cannot merge binary files: state/decision_eval.json
+              #   CONFLICT (content): Merge conflict in state/decision_eval.json
+              # Branchen claude/beslutsmatning-oberoende-fonster lamnades kvar och nadde
+              # main forst efter en manuell omkorning. Grinden hade redan en losning for
+              # dashboard.json (bygg om efteran) men ingen for sjalva MERGEN.
+              #
+              # Losningen: for GENERERADE filer ar mains version alltid ratt utgangslage
+              # - main skrivs av prices.yml var 30:e minut, branchens kopia ar per
+              # definition aldre - och innehallet byggs anda om efterat. Allt ANNAT
+              # avbryter som forut. Grinden gissar aldrig i en rapport, en portfolj
+              # eller en beslutslogg.
+              #
+              # scout_candidates.json star MEDVETET INTE i listan: den ar inte genererad,
+              # utan bar routinens egna avgoranden (promoted/rejected med skal). Att ta
+              # mains version dar hade kastat bort precis det arbete branchen gjorde.
+              CONFLICTS=$(git diff --name-only --diff-filter=U)
+              SAFE="state/dashboard.json state/search-index.json state/decision_eval.json state/earnings_calendar.json state/push_sent.json state/push_subs.json"
+              UNSAFE=""
+              for f in $CONFLICTS; do
+                case " $SAFE " in *" $f "*) ;; *) UNSAFE="$UNSAFE $f" ;; esac
+              done
+              if [ -n "$UNSAFE" ] || [ -z "$CONFLICTS" ]; then
+                git merge --abort
+                echo "::error::Mergekonflikt i $BRANCH utanfor de genererade filerna:$UNSAFE - branchen lamnas kvar for manuell hantering."
+                FAIL=1
+                continue
+              fi
+              echo "Konflikt enbart i genererade filer - tar mains version och bygger om: $CONFLICTS"
+              for f in $CONFLICTS; do
+                git checkout --ours -- "$f"
+                git add "$f"
+              done
+              if ! git commit -m "Auto-merge: $BRANCH -> main (genererade filer tagna fran main)"; then
+                git merge --abort
+                echo "::error::Kunde inte slutfora mergen for $BRANCH - branchen lamnas kvar."
+                FAIL=1
+                continue
+              fi
             fi
 
             # ---- GRINDEN: samma kontroller som test.yml skulle ha kort ----------
@@ -117,6 +158,22 @@ jobs:
               fi
             else
               echo "::warning::build-dashboard.mjs failade - dashboard.json kan ligga efter. Mergen pushas anda."
+            fi
+
+            # ---- Beslutsutvarderingen, av samma skal som dashboard-bygget --------
+            # decision_eval.json ar en REN FUNKTION av decisions.json + price_history.json.
+            # Branchen har just lagt till rader i beslutsloggen, och om konflikten ovan
+            # loste filen med MAINS version speglar den nu ett aldre underlag. Skriptet
+            # skriver bara vid faktisk andring, sa det ar gratis nar inget hant.
+            # Utan detta steg lag filen efter till nasta prices.yml-korning, och
+            # watchdogens checkDecisionEval hade larmat pa vart eget merge-beteende.
+            if node .github/scripts/decision_eval.mjs; then
+              git add state/decision_eval.json
+              if ! git diff --cached --quiet; then
+                git commit -m "Beslutsutvardering efter auto-merge: $BRANCH"
+              fi
+            else
+              echo "::warning::decision_eval.mjs failade - decision_eval.json kan ligga efter. Mergen pushas anda."
             fi
 
             # ---- PUSH MED RETRY -------------------------------------------------

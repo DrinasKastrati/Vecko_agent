@@ -181,9 +181,10 @@ export async function fetchFeedText(url, opts = {}){
     fetchImpl = globalThis.fetch, retries = 1, timeoutMs = 20000, delayMs = 2000,
     sleep = ms => new Promise(r => setTimeout(r, ms)), ua = uaFor(url)
   } = opts;
-  let last = "okänt fel";
+  let last = "okänt fel", lastMs = null;
   for (let attempt = 0; attempt <= retries; attempt++){
     if (attempt) await sleep(delayMs);
+    const t0 = Date.now();
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -191,13 +192,23 @@ export async function fetchFeedText(url, opts = {}){
         "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" },
         signal: ctrl.signal });
       clearTimeout(timer);
-      if (r.ok) return { ok: true, text: await r.text(), attempts: attempt + 1 };
+      lastMs = Date.now() - t0;
+      if (r.ok) return { ok: true, text: await r.text(), attempts: attempt + 1, ms: lastMs };
       last = "HTTP " + r.status;
     } catch (e) {
+      lastMs = Date.now() - t0;
       last = "fel: " + String(e && e.message || e).slice(0, 60);
     }
   }
-  return { ok: false, status: last, attempts: retries + 1 };
+  /* SVARSTIDEN SKILJER TVÅ FEL MED OLIKA ÅTGÄRD (2026-08-26).
+     "fel: This operation was aborted" ensamt säger inte OM värden avvisade oss eller
+     hängde. Tiden gör det: ~timeoutMs betyder att anropet tarpitades (blockering av
+     datacenter-IP ⇒ källan måste bytas, en högre timeout hjälper inte), medan några
+     hundra ms betyder att uppkopplingen vägrades (DNS/TLS/nät ⇒ helt annan åtgärd).
+     `globenewswire` och `globenewswire-earnings` slutade svara mellan 2026-08-10
+     08:52 och 20:05 UTC efter att ha fungerat i månader; utan tiden i statusen gick
+     de två fallen inte att skilja åt från loggen. */
+  return { ok: false, status: last, attempts: retries + 1, ms: lastMs };
 }
 
 async function main(){
@@ -213,7 +224,12 @@ async function main(){
   for (const f of feeds){
     const res = await fetchFeedText(f.url);
     const retried = res.attempts > 1 ? " (efter omförsök)" : "";
-    if (!res.ok){ status[f.name] = res.status + " – båda försöken"; continue; }
+    if (!res.ok){
+      status[f.name] = res.status + " – båda försöken" +
+        (res.ms != null ? " (" + (res.ms / 1000).toFixed(1) + " s)" : "");
+      console.log("  " + f.name + ": " + status[f.name]);
+      continue;
+    }
     const items = parseRss(res.text, f.name);
     // 200 men noll poster = trasig/utgången flödes-URL (t.ex. Business Wire som
     // svarar med ett tomt RSS-skal). Flaggas så den inte tystnar oupptäckt.
