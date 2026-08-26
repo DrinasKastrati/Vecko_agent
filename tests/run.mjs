@@ -1831,8 +1831,26 @@ ok("newsCoverage per källa", cov.perSource.mfn === 2 && cov.perSource["sec-8k"]
 ok("newsCoverage tom lista kraschar inte",
   NW.newsCoverage([], "2026-08-03T12:00:00Z", 5).tradingDaysCovered === 0);
 ok("parseFeedList", (() => { const f = NW.parseFeedList("# kommentar\nmfn|https://mfn.se/rss\nrad-utan-pipe\n"); return f.length === 1 && f[0].name === "mfn"; })());
+/* UTGE DIG ALDRIG FÖR ATT VARA CHROME (ändrat 2026-08-26).
+   GlobeNewswire tarpitade den påhittade browser-UA:n från 2026-08-10: båda deras
+   flöden slog i 20-sekunderstimeouten vid varje körning i 16 dygn. Mätt samma dag,
+   samma maskin, samma URL – enda skillnaden UA:
+     curl/8.x (ärlig)   HTTP 200 på 0,07 s
+     Chrome/124 (vår)   timeout efter 25,0 s
+   Med kontakt-UA:n svarar samtliga sex flöden 200 på under en sekund. */
 ok("uaFor sec.gov får kontakt-UA", /kastratidrinas@gmail\.com/.test(NW.uaFor("https://www.sec.gov/cgi-bin/browse-edgar?output=atom")));
-ok("uaFor övriga får browser-UA", /Mozilla/.test(NW.uaFor("https://mfn.se/all/s.rss")) && /Mozilla/.test(NW.uaFor("https://notsec.gov.example.com/x")));
+ok("uaFor ger samma ärliga kontakt-UA till ALLA värdar",
+  NW.uaFor("https://mfn.se/all/s.rss") === NW.uaFor("https://www.sec.gov/x") &&
+  /kastratidrinas@gmail\.com/.test(NW.uaFor("https://www.globenewswire.com/RssFeed/x")));
+ok("uaFor påstår sig ALDRIG vara en webbläsare",
+  ["https://mfn.se/x", "https://www.globenewswire.com/x", "https://www.prnewswire.com/x"]
+    .every(u => !/Mozilla|Chrome|Safari|AppleWebKit/.test(NW.uaFor(u))));
+// REGRESSIONSVAKT: en Mozilla-sträng får inte smyga tillbaka in i filen.
+ok("fetch-news.mjs innehåller ingen påhittad browser-UA", (() => {
+  const src = readFileSync(resolve(root, ".github/scripts/fetch-news.mjs"), "utf8");
+  const kod = src.split("\n").filter(l => !/^\s*(\/\/|\*|\/\*)/.test(l)).join("\n");
+  return !/Mozilla\/5\.0/.test(kod);
+})());
 ok("news_feeds.txt: döda flöden borta, nya på plats", (() => {
   const t = readFileSync(resolve(root, "config/news_feeds.txt"), "utf8");
   const live = NW.parseFeedList(t);

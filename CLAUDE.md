@@ -111,18 +111,35 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   de syntes bara som prosa i vecko- och retrorapporterna, fyra veckor i rad. Watchdogen läser numera
   `feeds`, **ett problem per flöde** med nyckel `news-feed-<namn>` – aldrig en samlad titel med ett
   antal, det återskapar dedupe-buggen `issue-sync.mjs` byggdes för att lösa.
-  **`fel: … aborted` är VÅR egen timeout (20 s), inte ett avvisande.** Statusen bär sedan
-  2026-08-26 även svarstiden, och den skiljer två fel med olika åtgärd: ~20 s betyder att värden
-  hänger (tarpit ⇒ blockering av datacenter-IP, källan måste bytas – en högre timeout gör bara
-  spilltiden längre), några hundra ms betyder att uppkopplingen vägrades (DNS/TLS/nät).
-  URL:erna verifierades 2026-08-26 från Drens egen maskin: **båda svarar 200 med 20 välformade
-  poster** och `parseRss` klarar dem utan miss. Felet sitter alltså i åtkomsten från runnern.
+  **ORSAKEN VAR VÅR EGEN PÅHITTADE BROWSER-UA (löst 2026-08-26).** `fel: … aborted` är VÅR egen
+  timeout (20 s), inte ett avvisande – statusen bär sedan 2026-08-26 även svarstiden.
+  Mätt samma maskin, samma nät, samma URL, enda skillnaden User-Agent:
+
+  | UA | Utfall |
+  |---|---|
+  | `curl/8.x` (ärlig) | **HTTP 200, 0,07 s** |
+  | `Chrome/139` (påhittad) | timeout, 21,6 s |
+  | `Chrome/124` (den vi skickade) | timeout, 25,0 s |
+
+  Alltså **inte** IP-blockering av runnern, vilket var den första och felaktiga slutsatsen.
+  GlobeNewswire tarpitar klienter som PÅSTÅR sig vara en webbläsare utan att bete sig som en
+  (inget browser-TLS-fingeravtryck, inga `sec-ch-ua`-headers) – vanlig bot-mitigering, påslagen
+  2026-08-10. En klient som säger vad den är släpps igenom direkt.
+  **`uaFor()` returnerar därför kontakt-UA:n till ALLA värdar**, inte bara sec.gov.
+  Verifierat genom skriptets egen `fetchFeedText`: samtliga sex flöden svarar 200 på 35–334 ms
+  (globenewswire 20 poster, -earnings 20, prnewswire 20, mfn 48, sec-8k 40, fed-press 20).
+  **Lägg aldrig tillbaka en Mozilla-sträng i filen** – `tests/run.mjs` larmar på den.
+  Att höja timeouten hade varit fel åtgärd på rätt symptom: ett anrop som tarpitas svarar inte
+  hur länge man än väntar.
   **`globenewswire` (companies) går inte att harvesta fullständigt vid nuvarande kadens** – mätt på
   ett sparat svar omsätts dess 20 poster på **2,1 timmar** medan `news.yml` kör varannan timme
   (`17 5-21/2 * * 1-5`). Noll marginal: en försenad eller utebliven körning tappar poster
   PERMANENT, eftersom flödet bara håller "the last 20 releases". `globenewswire-earnings` har
-  däremot 4,6 dygns spann och gott om marginal – **prioritera det** om bara ett kan räddas, det är
-  dessutom den enda källan som är dedikerad åt rapportöverraskningar.
+  däremot 4,6 dygns spann och gott om marginal, och är den enda källan dedikerad åt
+  rapportöverraskningar. **Kadensfrågan kvarstår även efter UA-fixen:** flödena går att hämta
+  igen, men `companies` går fortfarande inte att harvesta FULLSTÄNDIGT varannan timme. Vill du
+  täcka det måste `news.yml` köra tätare för just den källan – och per-dygn-taket (30) blir då
+  bindande, vilket är ett medvetet val, inte en detalj.
 - `state/decision_eval.json` – GENERERAD av `.github/scripts/decision_eval.mjs`, som körs i
   pris-jobbet (`prices.yml`) direkt efter hämtningen. Märkt `-merge` i `.gitattributes`. Redigera
   aldrig för hand. **Varför den finns:** backtestet visar att skelettet inte tillför avkastning över

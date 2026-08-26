@@ -8,10 +8,12 @@
    ============================================================ */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-          "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-// SEC:s access-policy kräver en User-Agent som deklarerar kontaktuppgift; en
-// browser-UA ger 403 mot deras EDGAR-flöden.
+/* ENDA User-Agent i filen (sedan 2026-08-26). SEC:s access-policy KRÄVER en UA som
+   deklarerar kontaktuppgift, och en påhittad browser-UA ger 403 mot deras
+   EDGAR-flöden. Sedan 2026-08-26 används den mot ALLA flöden – se uaFor() för
+   mätningen som ledde dit. Lägg aldrig tillbaka en Mozilla-sträng här:
+   `tests/run.mjs` larmar, och det var precis den som fick GlobeNewswire att
+   tarpita oss i 16 dygn. */
 const SEC_UA = "Vecko_agent/1.0 (kastratidrinas@gmail.com)";
 // FÖNSTRET MÄTS I HANDELSDAGAR, INTE TIMMAR (ändrat 2026-08-03).
 // Prompterna kräver "de senaste 5 handelsdagarna" ur den här filen. Ett fönster
@@ -35,9 +37,33 @@ const MAX_PER_SOURCE_DAY = 30;
 // att MAX_ITEMS > flöden × MAX_PER_SOURCE_DAY × WINDOW_TRADING_DAYS.
 const MAX_ITEMS = 2000;
 
-// Rätt User-Agent per värd (sec.gov kräver kontakt-UA, övriga vill ha browser-UA).
-export function uaFor(url){
-  return /(^|\/\/|\.)sec\.gov(\/|$|:)/i.test(String(url || "")) ? SEC_UA : UA;
+/* ÄRLIG UA FÖR ALLA FLÖDEN (ändrat 2026-08-26) – utge dig aldrig för att vara Chrome.
+
+   Fram till nu skickades en påhittad Chrome-UA till alla värdar utom sec.gov. Det
+   slutade fungera mot GlobeNewswire mellan 2026-08-10 08:52 och 20:05 UTC: båda
+   deras flöden slog i vår 20-sekunderstimeout vid VARJE körning i 16 dygn, och
+   ingenting larmade (fönstrets täckning bars av de fyra övriga flödena).
+
+   MÄTT 2026-08-26, samma maskin, samma nät, samma URL, enda skillnaden UA:
+
+     curl/8.x (ärlig, ingen påhittad header)   HTTP 200   0,07 s
+     Chrome/139 (påhittad)                     timeout   21,6 s
+     Chrome/124 (den vi skickade)              timeout   25,0 s
+
+   Alltså inte IP-blockering. GlobeNewswire tarpitar klienter som PÅSTÅR sig vara en
+   webbläsare utan att bete sig som en (ingen browser-TLS-fingeravtryck, inga
+   sec-ch-ua-headers) – vanlig bot-mitigering. En klient som säger vad den är
+   släpps igenom direkt.
+
+   Med kontakt-UA:n svarar SAMTLIGA SEX flöden 200 på under en sekund:
+   globenewswire 20 poster, globenewswire-earnings 20, prnewswire 20, mfn 48,
+   sec-8k 40, fed-press 20. SEC krävde den redan – nu är den enda UA:n i filen,
+   och `UA`-konstanten finns inte längre att råka återinföra.
+
+   Att höja timeouten hade varit fel åtgärd på rätt symptom: ett anrop som
+   tarpitas svarar inte oavsett hur länge man väntar. */
+export function uaFor(){
+  return SEC_UA;
 }
 
 // ---- pure helpers (testbara) ------------------------------------------
