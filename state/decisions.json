@@ -6309,6 +6309,135 @@
       "sector": "Spelmotor/mjukvara",
       "rsi": 68.6,
       "reason": "Ersattningskop punkt 4a: grind 2, Q2 6/8 ar 13 handelsdagar bak. RSI nu 68,6 (under taket), men MACD-hist vant negativt (-0,041) och volymkvot 0,70x. Likviditet 585,3 MUSD/dag."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 494.7,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 100,0 pct: inget kop och inget salj i dag, alltsa ingen omviktning. +0,02 pct mot entry 494,60 - forsta positiva noteringen sedan skarp start. Ingen stop, inget mal."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 43.04,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 65.1,
+      "reason": "Ersattningskop punkt 4a: grind 2. Ny hogsta 44,80 intradag men stangde 43,04, UNDER 43,30 - misslyckat utbrott. Volymkvot 0,84x pa nu backfilld 20-dagarsbas (250 punkter), krav 1,5x."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "DKK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "BAVA.CO",
+      "action": "AVVAKTA",
+      "price": 212.6,
+      "catalystType": "earnings",
+      "sector": "Bioteknik/vaccin",
+      "rsi": 74.3,
+      "reason": "Ersattningskop punkt 4a: grind 4, men sparren har bytt led. Malet 228,00 ar nu +7,24 pct, over troskeln - i stallet finns ingen stop i bandet: narmaste stod 209,40 ger -1,46 pct."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "KAR.ST",
+      "action": "AVVAKTA",
+      "price": 80.4,
+      "catalystType": "ma_rumor",
+      "sector": "Juridisk information",
+      "rsi": 63.5,
+      "reason": "Ersattningskop punkt 4a: grind 2 fjarde dagen. Volymkvot 0,62x mot kravet 1,5x, ned fran 1,00x. Kurs under EMA200 83,12 sjatte sessionen, avstandet upp vaxer till 3,4 pct."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "IMP-A-SDB.ST",
+      "action": "AVVAKTA",
+      "price": 62.8,
+      "catalystType": "regulatory",
+      "sector": "Medicinteknik",
+      "rsi": 62.1,
+      "reason": "Ersattningskop punkt 4a: grind 2. Fjarde utbrytningsforsoket, forsta som haller till stangning (+8,28 pct pa dagshogsta), men volymkvot 1,25x mot 1,5x. Grind 4: motstand 63,50 = +1,11 pct."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "NOK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 334,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 49.2,
+      "reason": "Ersattningskop punkt 4a: grind 3 sjunde veckan, ingen ny Saipem7-handelse. Grind 2 faller nu ocksa: MACD-hist -0,255 (bearish kors), kurs under EMA20 336,07, RSI 49,2 under bandet."
     }
   ]
 }
