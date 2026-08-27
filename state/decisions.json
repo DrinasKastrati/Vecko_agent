@@ -6438,6 +6438,154 @@
       "sector": "Offshore/subsea",
       "rsi": 49.2,
       "reason": "Ersattningskop punkt 4a: grind 3 sjunde veckan, ingen ny Saipem7-handelse. Grind 2 faller nu ocksa: MACD-hist -0,255 (bearish kors), kurs under EMA20 336,07, RSI 49,2 under bandet."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 766.08,
+      "weight": 1,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve/ETF",
+      "rsi": 53.6,
+      "reason": "Indexsleeve 100 pct, fyra tomma aktieplatser och noll pending. Ingen stop och inget mal per sleeve-regeln. Kurs 766,08 (mt 2026-08-26T20:00Z), -0,93 pct mot entry 773,26."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3",
+        "L-6"
+      ],
+      "ticker": "NVDA",
+      "action": "AVVAKTA",
+      "price": 209.66,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledare/AI",
+      "rsi": 45.8,
+      "reason": "Sparr f, tekniska filtret punkt 2: reguljar stangning 209,66 under EMA20 214,17 OCH EMA50 210,54, MACD-hist -1,538 fallande fjarde sessionen, RSI 45,8 under 50. Fem grindar holl."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 480.93,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 48.1,
+      "reason": "Ersattningskop punkt 4a: grind 2, obligationsemissionen 13/8 ar 9 handelsdagar bak. Tekniska filtret: 480,93 under EMA20/EMA50 484,06. Volymkvot 0,55x, likviditet 11983,6 MUSD/dag."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AMAT",
+      "action": "AVVAKTA",
+      "price": 479.76,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledarutrustning",
+      "rsi": 41.2,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q3 13/8 ar 9 handelsdagar bak. Tekniska filtret: 479,76 under EMA20 510,91 och EMA50 519,70, MACD-hist -3,552. Volymkvot 0,66x."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PLTR",
+      "action": "AVVAKTA",
+      "price": 177.5,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Dataanalys/mjukvara",
+      "rsi": 64.2,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 3/8 ar 17 handelsdagar bak. MACD-hist -0,271 andra dagen negativ, EMA50 151,15 under EMA200 154,04. Volymkvot 0,60x."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PAYC",
+      "action": "AVVAKTA",
+      "price": 232.31,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "HR-mjukvara",
+      "rsi": 78.4,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 5/8 ar 15 handelsdagar bak, OCH grind 3: RSI 78,4 over taket 75. Volymkvot 0,59x, likviditet 217,2 MUSD/dag."
+    },
+    {
+      "date": "2026-08-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "U",
+      "action": "AVVAKTA",
+      "price": 44.38,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Spelmotor/mjukvara",
+      "rsi": 65,
+      "reason": "Ersattningskop punkt 4a: grind 2, Q2 6/8 ar 14 handelsdagar bak. MACD-hist -0,272 och fordjupas, RSI 65,0. Volymkvot 0,68x, likviditet 579,7 MUSD/dag."
     }
   ]
 }
