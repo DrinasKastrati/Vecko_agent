@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-26T23:52:33.003Z",
+  "generatedAt": "2026-08-27T00:46:42.752Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil. 'volume' är omsatta enheter i den session marketTime pekar på, null när källan inte ger volym (index rapporterar ingen). 20-dagarssnittet att jämföra mot ligger i state/price_history.json under toppnyckeln 'volumes'.",
@@ -234,15 +234,15 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 79025.98,
+      "price": 78804.55,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-26T23:51:53.000Z",
+      "marketTime": "2026-08-27T00:46:04.000Z",
       "marketState": null,
       "previousClose": 78564.9765625,
-      "dayHigh": 79225.88,
-      "dayLow": 77641.164,
-      "volume": 29166350336,
+      "dayHigh": 79026.75,
+      "dayLow": 78794.99,
+      "volume": 29103628288,
       "source": "Yahoo Finance (chart API)"
     },
     "BWO.OL": {
@@ -403,15 +403,15 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 2503.71,
+      "price": 2493.9,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-26T23:51:59.000Z",
+      "marketTime": "2026-08-27T00:46:11.000Z",
       "marketState": null,
       "previousClose": 2443.159423828125,
-      "dayHigh": 2511.3857,
-      "dayLow": 2432.87,
-      "volume": 13096316928,
+      "dayHigh": 2509.5068,
+      "dayLow": 2496.6895,
+      "volume": 13302704128,
       "source": "Yahoo Finance (chart API)"
     },
     "EVO.ST": {
@@ -599,8 +599,8 @@
       "dayLow": 39.36,
       "volume": 37445517,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 40.874,
-      "extendedTime": "2026-08-26T23:52:05.000Z",
+      "extendedPrice": 40.9469,
+      "extendedTime": "2026-08-26T23:59:55.000Z",
       "extendedSession": "post"
     },
     "ITW": {
@@ -771,8 +771,8 @@
       "dayLow": 236.79,
       "volume": 15919680,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 255.82,
-      "extendedTime": "2026-08-26T23:52:02.000Z",
+      "extendedPrice": 255.88,
+      "extendedTime": "2026-08-26T23:59:59.000Z",
       "extendedSession": "post"
     },
     "MS": {
@@ -943,8 +943,8 @@
       "dayLow": 209.23,
       "volume": 145070184,
       "source": "Yahoo Finance (chart API)",
-      "extendedPrice": 218.8915,
-      "extendedTime": "2026-08-26T23:52:18.000Z",
+      "extendedPrice": 219.53,
+      "extendedTime": "2026-08-26T23:59:59.000Z",
       "extendedSession": "post"
     },
     "NVO": {
@@ -1209,15 +1209,15 @@
     },
     "SOL-USD": {
       "symbol": "SOL-USD",
-      "price": 101.84,
+      "price": 100.93,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-26T23:52:19.000Z",
+      "marketTime": "2026-08-27T00:46:31.000Z",
       "marketState": null,
       "previousClose": 96.6035385131836,
-      "dayHigh": 101.49333,
-      "dayLow": 95.24322,
-      "volume": 3506375424,
+      "dayHigh": 102.163376,
+      "dayLow": 101.03166,
+      "volume": 3677158656,
       "source": "Yahoo Finance (chart API)"
     },
     "SPY": {
@@ -1326,10 +1326,10 @@
     },
     "USDSEK=X": {
       "symbol": "USDSEK=X",
-      "price": 9.525,
+      "price": 9.5253,
       "currency": "SEK",
       "exchange": "CCY",
-      "marketTime": "2026-08-26T23:52:23.000Z",
+      "marketTime": "2026-08-27T00:46:38.000Z",
       "marketState": null,
       "previousClose": 9.452150344848633,
       "dayHigh": 9.5291,
