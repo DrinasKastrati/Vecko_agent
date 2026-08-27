@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-26T20:23:18.536Z",
+ "generatedAt": "2026-08-27T06:54:14.233Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 270,
-  "measurable": 270,
+  "decisions": 275,
+  "measurable": 275,
   "missing": 0,
-  "pending": 75
+  "pending": 80
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -4549,6 +4549,56 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Spelmotor/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-27",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-27",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-27",
+   "ticker": "KAR.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Juridisk information",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-27",
+   "ticker": "IMP-A-SDB.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-27",
+   "ticker": "SUBC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Offshore/subsea",
    "reconstructed": false,
    "fwd": {}
   }
