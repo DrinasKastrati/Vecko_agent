@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-27T16:04:41.544Z",
+  "generatedAt": "2026-08-28T17:08:18.016Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -9,31 +9,11 @@
     "resolved": 84,
     "failed": 3,
     "notApplicable": 2,
-    "upcoming": 3
+    "upcoming": 1
   },
   "upcoming": [
     {
-      "tradingDaysAway": 0,
-      "symbol": "IREN",
-      "date": "2026-08-27",
-      "isEstimate": false,
-      "epsConsensus": -0.455,
-      "epsLow": -0.51,
-      "epsHigh": -0.4,
-      "revenueConsensus": 135603900
-    },
-    {
-      "tradingDaysAway": 0,
-      "symbol": "MRVL",
-      "date": "2026-08-27",
-      "isEstimate": false,
-      "epsConsensus": 0.93077,
-      "epsLow": 0.88,
-      "epsHigh": 0.95707,
-      "revenueConsensus": 2710801390
-    },
-    {
-      "tradingDaysAway": 4,
+      "tradingDaysAway": 3,
       "symbol": "AVGO",
       "date": "2026-09-02",
       "isEstimate": false,
@@ -70,15 +50,6 @@
       "epsLow": null,
       "epsHigh": null,
       "revenueConsensus": 65900000
-    },
-    {
-      "symbol": "IREN",
-      "date": "2026-08-27",
-      "isEstimate": false,
-      "epsConsensus": -0.455,
-      "epsLow": -0.51,
-      "epsHigh": -0.4,
-      "revenueConsensus": 135603900
     },
     {
       "symbol": "MRVL",
@@ -592,6 +563,15 @@
       "epsLow": 1.5,
       "epsHigh": 9.2,
       "revenueConsensus": 686679800
+    },
+    {
+      "symbol": "IREN",
+      "date": "2026-11-05",
+      "isEstimate": true,
+      "epsConsensus": -0.455,
+      "epsLow": -0.51,
+      "epsHigh": -0.4,
+      "revenueConsensus": 135603900
     },
     {
       "symbol": "MAERSK-B.CO",
