@@ -6586,6 +6586,135 @@
       "sector": "Spelmotor/mjukvara",
       "rsi": 65,
       "reason": "Ersattningskop punkt 4a: grind 2, Q2 6/8 ar 14 handelsdagar bak. MACD-hist -0,272 och fordjupas, RSI 65,0. Volymkvot 0,68x, likviditet 579,7 MUSD/dag."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 493.95,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven oforandrad 100,0 pct: inget kop och inget salj i dag, alltsa ingen omviktning. -0,13 pct mot entry 494,60 (-0,15 pct pa dagen). Ingen stop, inget mal."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 44.18,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 67.8,
+      "reason": "Ersattningskop punkt 4a: grind 2. Stangde 44,18 = ny 250-dagarshogsta over 43,30, men volymkvot 0,64x mot kravet 1,5x - utbrott utan volym. Grind 4: inget motstand over 44,18."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "DKK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "BAVA.CO",
+      "action": "AVVAKTA",
+      "price": 213.2,
+      "catalystType": "earnings",
+      "sector": "Bioteknik/vaccin",
+      "rsi": 74.7,
+      "reason": "Ersattningskop punkt 4a: grind 2, volymkvot 0,45x mot 1,5x (konsekvent tillampning av samma delkriterium som fallt KAR/HNSA). Grind 4 kvar: ingen stop i bandet 3-5 pct."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "KAR.ST",
+      "action": "AVVAKTA",
+      "price": 81.4,
+      "catalystType": "ma_rumor",
+      "sector": "Juridisk information",
+      "rsi": 65.1,
+      "reason": "Ersattningskop punkt 4a: grind 2 femte dagen. Volymkvot 0,45x mot 1,5x, kurs under EMA200 83,07 sjunde sessionen. Grind 4: motstand 85,80 = +5,41 pct, under troskeln 6 pct."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "SEK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "IMP-A-SDB.ST",
+      "action": "AVVAKTA",
+      "price": 59.6,
+      "catalystType": "regulatory",
+      "sector": "Medicinteknik",
+      "rsi": 54.4,
+      "reason": "Ersattningskop punkt 4a: grind 2, volymkvot 0,38x mot 1,5x, utbrottet gavs tillbaka -5,10 pct. Grind 4: R/R 1,56:1 (mal 63,50 +6,54 pct, stop 57,10 -4,19 pct). Grind 3 sista dagen."
+    },
+    {
+      "date": "2026-08-28",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "currency": "NOK",
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "SUBC.OL",
+      "action": "AVVAKTA",
+      "price": 336.2,
+      "catalystType": "ma_rumor",
+      "sector": "Offshore/subsea",
+      "rsi": 51.3,
+      "reason": "Ersattningskop punkt 4a: grind 3 sjunde veckan, noll traffar pa Saipem/Subsea i 949 poster. Grind 2 ocksa: MACD-hist -0,488 fordjupas, volymkvot 0,28x pa nu backfilld 20-dagarsbas."
     }
   ]
 }
