@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-28T06:52:57.553Z",
+ "generatedAt": "2026-08-28T13:38:04.461Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 286,
-  "measurable": 286,
+  "decisions": 292,
+  "measurable": 292,
   "missing": 0,
-  "pending": 80
+  "pending": 86
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -4796,6 +4796,66 @@
    "action": "AVVAKTA",
    "catalystType": "ma_rumor",
    "sector": "Offshore/subsea",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "AMAT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledarutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Dataanalys/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "PAYC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "HR-mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-28",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Spelmotor/mjukvara",
    "reconstructed": false,
    "fwd": {}
   }
