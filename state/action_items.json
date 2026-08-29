@@ -1,0 +1,162 @@
+{
+  "generatedAt": "2026-08-29T08:30:00Z",
+  "comment": "Åtgärdspunkter konsoliderade av miss-retron (prompts/miss_retro.md STEG 5). ENDA SKRIVAREN är retron – rotationerna och scouten skriver punkter i prosa, retron gör dem räknebara. weeksOpen räknas av retron (antal retros/ISO-veckor som OBSERVERAT punkten), aldrig ur datum. id är stabilt och blir watchdogens nyckel (action-item-<id>) – ändra det aldrig. Första ifyllningen 2026-08-29 räknade BAKÅT enligt STEG 5 punkt 1b; källrapporterna per punkt namnges i reports/retro/retro-260829.md.",
+  "items": [
+    {
+      "id": "us-rotation-lage-a-missed",
+      "title": "US-rotationens LÄGE A kördes aldrig 2026-08-24 och ingenting larmade",
+      "file": ".github/scripts/watchdog.mjs",
+      "scope": "1 utebliven veckorotation; noll filer i reports/us_weekly/ för 260824 (senaste är us-veckorapport-260817.md); noll rader med book=\"us\" och date=\"2026-08-24\" av 329 i state/decisions.json; state/portfolj_us.md orörd 21/8–25/8. Följd: US-boken har saknat köpväg i fem handelsdagar (17/8–28/8) och står 100 % i sleeven med fyra tomma platser. Två oberoende luckor i watchdogen: checkGrossList returnerar tidigt på noll rader (watchdog.mjs:178) och decisions-kontrollen grindar på nordic === today (watchdog.mjs:62), alltså på den NORDISKA rapportens datum – en US-körning som helt uteblir är strukturellt osynlig.",
+      "firstSeen": "2026-08-25",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "scheduled-actions-not-firing",
+      "title": "GitHub startar inte schemalagda workflows – movers, prices och monitor tappar körningar",
+      "file": ".github/workflows/movers.yml",
+      "scope": "movers.yml: lördagscronen 0 6 * * 6 startade INTE 2026-08-29 (verifierat mot Actions-API:t – senaste körningen är run_number 7, workflow_dispatch 2026-08-26T10:23Z; den 22/8 startade schemat normalt). Följd: state/movers.json bär asOf 2026-08-26, alltså två handelsdagar för gammal, och miss-retrons PRIMÄRA nordiska missdetektion saknas denna vecka. prices.yml: noll av ~14 schemalagda körningar i fönstret 07:00–13:30 UTC den 27/8 och den 28/8 (körningarna hoppar 2026-08-27T00:45Z → 16:03Z och 2026-08-28T05:21Z → 17:07Z). monitor.yml: 2 av 14 körningar den 27/8, lucka 19 h 21 min över hela den nordiska sessionen; noll av 7 i fönstret 07–13 UTC den 28/8. Samtliga STARTADE körningar har conclusion success, alltså uteblivna schemastarter och inte kodfel.",
+      "firstSeen": "2026-08-27",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "movers-universe-not-priced",
+      "title": "Symboler i universe_nordic_movers.txt prisbevakas aldrig – en mover där faller alltid på grind 1",
+      "file": ".github/scripts/fetch-prices.mjs",
+      "scope": "110 symboler i config/universe_nordic_movers.txt hämtas i sin helhet av movers.mjs varje lördag, men INGEN av dem hamnar i state/prices.json annat än genom att handkopieras till config/watchlist.txt i efterhand. 2026-08-29 saknar 7 av movers.json:s 8 rader kurs i prices.json (TRUE-B.ST, SALM.OL, SAND.ST, BOL.ST, NIBE-B.ST, EPI-A.ST, EPI-B.ST) – bara MIPS.ST har en. Följd: veckans mätt starkaste nordiska rörelse med bekräftad och daterad katalysator (SALM.OL +12,65 %, Q2 + höjd volymguide 2026-08-25) kan inte poängsättas alls, eftersom grind 1 kräver verifierad kurs. Avvägning som måste göras medvetet: prices.yml kör var 30:e minut, så 110 extra symboler där är inte gratis – rimligare är att hämta unionen bara på 05:00-cronen, eller låta movers.mjs skriva sina redan hämtade stängningar till price_history.json.",
+      "firstSeen": "2026-08-29",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "nordic-movers-universe-narrow",
+      "title": "universe_nordic_movers.txt täcker inte alla nordiska rapportreaktioner, och tre symboler failar vid varje hämtning",
+      "file": "config/universe_nordic_movers.txt",
+      "scope": "1 konfigurationsfil. BIOT.ST, DOMETIC.ST och ICA.ST failar i varje körning (okCount 107 av 110 den 2026-08-26, identiskt med 2026-08-22). Täckningshålet mättes i retro-260822 med Bico ≈ +25 %, Kabe ≈ +16 % och Karnov ≈ +11 % (19–20/8), samtliga utan rad i filen. Detta är INTE en breddning av handelsuniversumet – filens egen rubrik säger att en rad där inte betyder att aktien får köpas – så backtest-varningen om breddat universum gäller inte här.",
+      "firstSeen": "2026-08-22",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 2,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "news-feed-prnewswire-http-404",
+      "title": "Nyhetsflödet prnewswire svarar HTTP 404 på båda försöken",
+      "file": "state/news_feed.json",
+      "scope": "1 av 6 flöden. feeds.prnewswire = \"HTTP 404 – båda försöken (0.6 s)\" vid generatedAt 2026-08-29T02:14:58Z; de övriga fem svarar (globenewswire 20, globenewswire-earnings 20, mfn 48, sec-8k 40, fed-press 20 poster). Fönstret som helhet är friskt – 10 av 10 handelsdagar, tom missingDays – så ingenting larmar på täckningen. 404 är ett annat fel än den timeout som fälldes 2026-08-26: en URL som har flyttat, inte en klient som avvisas.",
+      "firstSeen": "2026-08-29",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "earnings-calendar-errors-nonempty",
+      "title": "errors i earnings_calendar.json är inte tomt och har vuxit från 1 till 3 symboler",
+      "file": "state/earnings_calendar.json",
+      "scope": "3 symboler av 84 begärda: KABE-B.ST, MGN.OL och STAR-B.ST, samtliga \"inget rapportdatum i svaret\" (generatedAt 2026-08-28T17:08:18Z). Ingen av dem är innehav, så inget beslut påverkades denna vecka – men errors ska vara TOMT i friskt läge enligt kontraktet, och en permanent post maskerar nästa riktiga fel. Antalet var 1 den 21/8 (STAR-B.ST) och 2 den 24/8. Åtgärd: ge dem datum eller flytta dem till notApplicable.",
+      "firstSeen": "2026-08-21",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 2,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "crypto-previousclose-misdated",
+      "title": "previousClose mis-daterar dagsrörelsen för dygnet-runt-marknader i förbörsfönstret",
+      "file": "state/prices.json",
+      "scope": "2 symboler (BTC-USD, ETH-USD) i varje förbörs- och helgsnapshot. Fältet pekar ~en session bakåt, vilket ger fel tecken eller kraftigt överdriven dagsrörelse – 2026-08-20 gav det +7,62 % för BTC och +17,65 % för ETH mot korrekta värden räknade ur daterade stängningar. Scouten kringgår det varje morgon genom att räkna mot price_history.json, alltså är effekten på besluten noll, men kringgången måste göras om i varje körning. Reproducerat i sex scout-rapporter 24–29/8 och två 20–21/8; reproducerades INTE i helgsnapshotet 22/8.",
+      "firstSeen": "2026-08-20",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 2,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "fx-rates-missing-eur-dkk-nok",
+      "title": "Inga växelkurser för EUR, DKK och NOK – likviditetsgolvet kan inte räknas för icke-svenska kandidater",
+      "file": "config/watchlist_us.txt",
+      "scope": "state/prices.json bär endast USDSEK=X. 13 av 21 prissatta bruttokandidater i v35-rotationen handlas i EUR, DKK eller NOK. Golvet 3 MSEK/dag måste enligt punkt 2 RÄKNAS, inte uppskattas; v35 löste det med medvetet generösa övre gränser (12 SEK/EUR, 1,70 SEK/DKK, 1,00 SEK/NOK), vilket bara fungerar i avvisande riktning – en kandidat som PASSERAR golvet nära gränsen kan inte avgöras. Åtgärd: EURSEK=X, DKKSEK=X och NOKSEK=X i watchlist_us.txt (samma hämtare, valutafiltret finns redan) = 3 extra anrop.",
+      "firstSeen": "2026-08-24",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "news-window-daily-cap-drops-morning-posts",
+      "title": "Nyhetsfönstrets dygnstak gallrar bort dygnets tidigaste poster och gör morgonkatalysatorer overifierbara i efterhand",
+      "file": "state/news_feed.json",
+      "scope": "Taket 30 poster per källa och dygn (window.perSource). Mätt på 2026-08-21 börjar mfn-posterna i den nuvarande filen först 08:38 UTC, medan den äldsta news_feed-versionen i git för det dygnet är från 11:46 UTC – två katalysatorer som LÄGE B citerade samma morgon (HNSA.ST 05:00 UTC, BAVA.CO 05:44/05:48 UTC) går därför inte längre att belägga ur repots egen data. Båda verifierades externt, men det bör inte krävas. Åtgärd: behåll dygnets FÖRSTA n poster lika väl som de sista (t.ex. 15 + 15), eller höj taket för mfn – den enda genuint nordiska källan.",
+      "firstSeen": "2026-08-24",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 1,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "us-rotation-universe-crypto-equities",
+      "title": "Tolkningsfråga: är kryptorelaterade AMERIKANSKA aktier en del av US-rotationens universum?",
+      "file": "config/fokus_us_rotation.md",
+      "scope": "5 symboler (COIN, MSTR, MARA, RIOT, IREN), 1 konfigurationsfil. Filen utesluter \"Krypto\" och kallar boken \"en ren US-aktierotation\" med universumet \"USA: NYSE & NASDAQ … Alla bolagsstorlekar tillåtna\", men nämner inte de fem namnen, som alla är amerikanska aktier och alla ligger i config/watchlist_us.txt. us-veckorapport-260817 strök klassen ur poängsättningen; us-daglig-260820 poängsatte samma två bolag fullt ut tre handelsdagar senare. Kräver ett beslut av Dren, inte en kodändring – vilketdera duger, men i dag avgörs det olika från körning till körning. L-6 hänvisar hit.",
+      "firstSeen": "2026-08-22",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 2,
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedBy": null
+    },
+    {
+      "id": "movers-stale-asof",
+      "title": "movers.json asOf saknade fredagens stängning på grund av range=1mo vid helghämtning",
+      "file": ".github/scripts/movers.mjs",
+      "scope": "Hela filen vid varje lördagskörning: fyra av fyra lördagskörningar gav exakt två dygns eftersläpning (asOf = torsdag när sista handelsdag var fredag), fyra av fyra vardagskörningar noll. Följden var att en nordisk vinnare som toppade på FREDAGEN per konstruktion aldrig kunde synas i miss-retrons primära missdetektion. Rapporterad i veckorapport-260803, retro-260808, veckorapport-260810, retro-260815, veckorapport-260817, dagliga rapporter 19–21/8, retro-260822, veckorapport-260824 och dagliga 25–26/8.",
+      "firstSeen": "2026-08-03",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 4,
+      "status": "resolved",
+      "resolvedAt": "2026-08-29",
+      "resolvedBy": "movers.mjs:chartUrl bytte range=1mo mot explicit period1/period2 (2026-08-26), verifierat mot det exakta felfallet: med period2 satt till 2026-08-22T06:34:00Z gav ERIC-B.ST, SAAB-B.ST, NOVO-B.CO, EQNR.OL och NESTE.HE alla fredagen 2026-08-21 som sista stapel. Ett test vaktar att range= inte kommer tillbaka. OBS: filen är fortfarande två handelsdagar gammal den 2026-08-29, men av en ANNAN orsak – lördagscronen startade aldrig, vilket följs som scheduled-actions-not-firing."
+    },
+    {
+      "id": "volume-history-not-backfilled",
+      "title": "volume_history.json backfillades aldrig – grind 2:s volymkriterier var omätbara",
+      "file": ".github/scripts/backfill-history.mjs",
+      "scope": "Som mest 54 av 95 symboler med ≤ 10 volympunkter (retro-260822), 53 av 99 varav 23 nordiska (veckorapport-260824), 52 av 105 (daglig-260825). Rotorsak: urvalet gjordes med shortSeries mot PRISseriens längd, så när prisserierna blev fulla plockades ingen symbol alls – att laga prisdefekten stängde av volymbackfillen.",
+      "firstSeen": "2026-08-17",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 2,
+      "status": "resolved",
+      "resolvedAt": "2026-08-29",
+      "resolvedBy": "collectShortSymbols i backfill-history.mjs tar sedan 2026-08-26 hänsyn till BÅDA serierna, och watchdog.mjs:checkVolumeBackfill larmar när det tystnar. Verifierat 2026-08-29: 108 av 112 symboler har ≥ 21 volympunkter, och de fyra kvarvarande (USDSEK=X, ^GSPC, ^IXIC, ^OMX) är valuta och index, som per konstruktion inte rapporterar volym."
+    },
+    {
+      "id": "news-feed-globenewswire-dead",
+      "title": "Två av sex nyhetsflöden döda – globenewswire och globenewswire-earnings svarade inte",
+      "file": "state/news_feed.json",
+      "scope": "2 av 6 flöden, alltså en tredjedel av nyhetsradarn, döda från 2026-08-10 och 16 dygn framåt med felet \"This operation was aborted – båda försöken\". Fönstret som helhet bar 10 av 10 handelsdagar hela tiden eftersom de fungerande flödena höll det uppe, så ingenting blev rött. globenewswire-earnings är den enda källa som är dedikerad åt rapportöverraskningar.",
+      "firstSeen": "2026-08-06",
+      "lastSeen": "2026-08-29",
+      "weeksOpen": 4,
+      "status": "resolved",
+      "resolvedBy": "uaFor() returnerar sedan 2026-08-26 kontakt-UA:n till ALLA värdar i stället för en påhittad Mozilla-sträng – GlobeNewswire tarpitade klienter som påstod sig vara en webbläsare utan att bete sig som en. Verifierat 2026-08-29: feeds.globenewswire = \"20 poster\" och feeds.globenewswire-earnings = \"20 poster\" vid generatedAt 2026-08-29T02:14:58Z.",
+      "resolvedAt": "2026-08-29"
+    }
+  ]
+}

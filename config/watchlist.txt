@@ -142,6 +142,23 @@ ORK.OL
 # OBS: tickerformaten är standardformer men EJ verifierade mot Yahoo. Tisdagens prices.json är
 # kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
 
+# Miss 1 ur retro-260829, tillagd 2026-08-29 enligt miss_retro.md STEG 4b (kategori A –
+# utanför universum, bekräftad och daterad katalysator, max 3 rader per retro; 1 av 3 använd).
+SALM.OL
+# SalMar ASA – Q2 2026 presenterad 2026-08-25 med "rekordsterke biologiske prestasjoner" och
+# HÖJD volymguide för 2026: +20 000 ton till 350 000 ton, alltså +16 % slaktvolym mot 2025
+# (GlobeNewswire 2026-08-25). Därtill återköpsprogram startat 2026-08-25 och slutfört
+# 2026-08-28, 100 000 aktier för 56,17 MNOK till snittkursen 561,73 (GlobeNewswire 2026-08-28).
+# catalystType earnings respektive buyback, båda confirmed. Rörde sig +12,65 % på fem sessioner
+# t.o.m. 2026-08-26 (state/movers.json) och var veckans näst största nordiska rörelse.
+# Bolaget ligger i config/universe_nordic_movers.txt rad 106 men har ALDRIG hämtats till
+# prices.json, så grind 1 föll innan någon bedömning kunde göras – se åtgärdspunkten
+# movers-universe-not-priced i state/action_items.json, som är den varaktiga fixen.
+# Detta är en BEVAKNINGSRAD, inte ett case: den ger verifierad kurs och en kursserie,
+# ingenting mer. Urvalet och samtliga fem grindar är oförändrade.
+# OBS: tickerformatet är standardformen för Oslo Børs men EJ verifierat mot Yahoo.
+# Måndagens prices.json är kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
 # EQNR.OL
