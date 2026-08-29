@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-29T00:42:50.660Z",
+  "generatedAt": "2026-08-29T02:20:48.842Z",
   "source": "Yahoo Finance chart API via GitHub Actions",
   "schemaVersion": "2026-08-02-prevclose",
   "note": "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). Använd endast om marketTime är från idag eller senaste handelsdagens stängning. 'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). Saknas 'schemaVersion' är filen skriven före 2026-08-02 och previousClose pekar då ~en vecka bakåt – räkna INTE dagsrörelser ur en sådan fil. 'volume' är omsatta enheter i den session marketTime pekar på, null när källan inte ger volym (index rapporterar ingen). 20-dagarssnittet att jämföra mot ligger i state/price_history.json under toppnyckeln 'volumes'.",
@@ -234,15 +234,15 @@
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
-      "price": 77792.12,
+      "price": 77659.82,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-29T00:42:15.000Z",
+      "marketTime": "2026-08-29T02:20:12.000Z",
       "marketState": null,
       "previousClose": 80257.5390625,
       "dayHigh": 77897.88,
-      "dayLow": 77792.79,
-      "volume": 39079047168,
+      "dayLow": 77635.66,
+      "volume": 36359184384,
       "source": "Yahoo Finance (chart API)"
     },
     "BWO.OL": {
@@ -403,15 +403,15 @@
     },
     "ETH-USD": {
       "symbol": "ETH-USD",
-      "price": 2444.74,
+      "price": 2439.06,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-29T00:42:17.000Z",
+      "marketTime": "2026-08-29T02:20:13.000Z",
       "marketState": null,
       "previousClose": 2510.41015625,
       "dayHigh": 2445.976,
-      "dayLow": 2442.217,
-      "volume": 16870679552,
+      "dayLow": 2439.596,
+      "volume": 16130176000,
       "source": "Yahoo Finance (chart API)"
     },
     "EVO.ST": {
@@ -1200,15 +1200,15 @@
     },
     "SOL-USD": {
       "symbol": "SOL-USD",
-      "price": 104.11,
+      "price": 103.93,
       "currency": "USD",
       "exchange": "CCC",
-      "marketTime": "2026-08-29T00:42:39.000Z",
+      "marketTime": "2026-08-29T02:20:36.000Z",
       "marketState": null,
       "previousClose": 109.20824432373047,
       "dayHigh": 104.47569,
-      "dayLow": 104.13081,
-      "volume": 5881232384,
+      "dayLow": 103.88167,
+      "volume": 5644921856,
       "source": "Yahoo Finance (chart API)"
     },
     "SPY": {
