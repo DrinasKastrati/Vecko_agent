@@ -1,17 +1,28 @@
 {
- "generatedAt": "2026-08-29T00:42:50.777Z",
+ "generatedAt": "2026-08-31T07:04:26.523Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 292,
-  "measurable": 292,
-  "missing": 0,
-  "pending": 76
+  "decisions": 320,
+  "measurable": 310,
+  "missing": 10,
+  "pending": 94
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "ASA.OL",
+  "BWE.OL",
+  "CADLR.OL",
+  "KINV-B.ST",
+  "NIBE-B.ST",
+  "NNIT.CO",
+  "PARKEN.CO",
+  "SALM.OL",
+  "SINCH.ST",
+  "TRUE-B.ST"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -125,6 +136,15 @@
      "medianAlphaPct": 3.06,
      "meanPct": 3.5,
      "beatIndexPct": 90
+    },
+    "insider": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
     }
    },
    "selectionEdge": {
@@ -354,6 +374,15 @@
      "need": 8
     },
     "turnaround": {
+     "n": 0,
+     "meanAlphaPct": null,
+     "medianAlphaPct": null,
+     "meanPct": null,
+     "beatIndexPct": null,
+     "insufficient": true,
+     "need": 8
+    },
+    "insider": {
      "n": 0,
      "meanAlphaPct": null,
      "medianAlphaPct": null,
@@ -4932,6 +4961,296 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Spelmotor/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "SKA-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Bygg/anlaggning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "HAYPP.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "E-handel/nikotin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "MGN.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Fornybart/projektutveckling",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "ZEAL.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "NOKIA.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Telekomutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "BOOZT.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "E-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "NAPA.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Natverkshardvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "BWE.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Olja & gas",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "CADLR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Offshore vind/fartyg",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "ASA.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Landbaserad lax",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "NNIT.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "IT-tjanster",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "PARKEN.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Sport/underhallning",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Lax/sjomat",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "TRUE-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Mjukvara/app",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "NIBE-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Varmepumpar",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "KINV-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Investmentbolag",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "SINCH.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Molnkommunikation",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "KAR.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Juridisk information",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "SUBC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Offshore/subsea",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "IMP-A-SDB.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "DFDS.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Sjofart/logistik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "SCA-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Skog/massa",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "MAERSK-B.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Container/sjofart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "VWS.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Vindkraft",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "EVO.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Live casino",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-08-31",
+   "ticker": "GRK.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Infrastruktur/anlaggning",
    "reconstructed": false,
    "fwd": {}
   }
