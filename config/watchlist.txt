@@ -159,6 +159,53 @@ SALM.OL
 # OBS: tickerformatet är standardformen för Oslo Børs men EJ verifierat mot Yahoo.
 # Måndagens prices.json är kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
 
+# Bruttolistan v36 (veckorapport-260831), tillagda 2026-08-31 enligt punkt 6b: varje ticker som
+# fått en rad i state/decisions.json MÅSTE hämtas av prices.yml, annars backfillas den aldrig i
+# state/price_history.json och beslutet blir omätbart för alltid i state/decision_eval.json.
+# Detta går FÖRE riktmärket på 25 tickers. Samtliga tio nedan loggades med price: null (grind 1)
+# och utgör därmed HELA veckans grind 1-bortfall – 10 av 28 bruttokandidater, upp från 6 av 27
+# i v35. Att lägga in dem för hand är en KRINGGÅNG, inte fixen: den varaktiga åtgärden är
+# åtgärdspunkten movers-universe-not-priced i state/action_items.json.
+BWE.OL
+# BW Energy – strategiskt inträde i Angola genom 10 % i Block 14 och 5 % i Block 14K från Azule
+# Energy, kontant USD 97,5 mn netto plus villkorade tillägg (MFN 2026-08-28 18:25 UTC, verifierat
+# mot bwenergy.no/PR-sammanfattningar). catalystType order, confirmed. Veckans starkaste
+# nordiska katalysator – och den föll på grind 1, inte på omdöme.
+CADLR.OL
+# Cadeler – Cadeler Limited lämnade in registreringsdokument på Form F-4 till SEC för en möjlig
+# bolagskombination (MFN 2026-08-27 21:20 UTC). catalystType ma_rumor.
+ASA.OL
+# Atlantic Sapphire – preliminärt utfall i det rekommenderade budpliktserbjudandet
+# (MFN 2026-08-28 16:11 UTC). OBS: ett budpliktsbud låser uppsidan vid budkursen, så raden är
+# bevakning för mätbarhet, aldrig ett case.
+NNIT.CO
+# NNIT – Q2 enligt plan plus strategiuppdatering (GlobeNewswire 2026-08-27 16:01 UTC).
+PARKEN.CO
+# Parken Sport & Entertainment – bolagets svar på uppgift i Inside Business
+# (MFN/GlobeNewswire 2026-08-28 16:02 UTC). ⚠️ RYKTE – EJ BEKRÄFTAT.
+TRUE-B.ST
+NIBE-B.ST
+KINV-B.ST
+SINCH.ST
+# Fyra rader ur state/movers.json (+20,84 %, +11,74 %, +8,02 % respektive +8,01 % på veckan) som
+# saknade verifierad kurs och därför föll på grind 1 utan att kunna poängsättas alls. Samtliga
+# fyra ligger i config/universe_nordic_movers.txt och hämtas av movers.mjs varje lördag –
+# tickerformaten är alltså verifierade mot Yahoo (okCount 107 av 110), till skillnad från de
+# fem raderna ovan vars format är standardformer men EJ verifierade. Måndagens prices.json är
+# kontrollen; jämför med SAAB.ST-fallet längst ned i filen.
+GRK.HE
+# GRK Infra Oyj (Nasdaq Helsinki, noterad 2025-04-04) – hämtades hittills BARA för att den
+# nämnts i en av de tre senaste veckorapporterna, och den kopplingen bryts automatiskt när en
+# fjärde rapport skrivs. Samma skäl som KOG.OL 2026-08-07. Fick en AVVAKTA-rad i v36.
+
+# Namngiven rapport inom fönstret, tillagd 2026-08-31 enligt L-5 (samma mekanik som punkt 6b)
+# så att kursserien börjar byggas FÖRE eventet i stället för efter. Rapportförbudet i punkt 2e
+# gäller oförändrat.
+BAKKA.OL
+# Bakkafrost – Q2 2026 presenteras 2026-08-31 08:00 CET (MFN 2026-08-24 04:00 UTC, namngiven i
+# radarn i veckorapport-260824). Saknas i prices.json, i earnings_calendar.json OCH i
+# universe_nordic_movers.txt – alltså osynlig i hela flödet, precis det hål L-5 beskriver.
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
 # EQNR.OL
