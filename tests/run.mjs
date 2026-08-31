@@ -3486,5 +3486,182 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("spökticker: US-insamlingen filtrerar", !FP.collectUsTickers().includes("SAAB.ST"));
 }
 
+
+/* ---- MOVERS-UNIVERSUMET SOM KURSKÄLLA (åtgärdspunkt movers-universe-not-priced)
+
+   Grind 1 ("verifierad kurs med källa + tidsstämpel") fällde 25 av 82 nordiska
+   bruttokandidater över v34–v36, och i v36 var de tio fällda veckans FEM största
+   rörelser plus veckans FEM starkaste bekräftade katalysatorer. Samtliga fanns i
+   config/universe_nordic_movers.txt och hämtades av movers.mjs varje lördag –
+   men INGEN av dem nådde state/prices.json annat än genom handpåläggning i
+   config/watchlist.txt i efterhand, vilket veckorapport-260831 gjorde för elva
+   tickers. Kringgången gör veckans beslut mätbara; hålet står kvar.
+
+   Två invarianter som fixen måste hålla, och som är skälet till att den inte
+   bara är "lägg listan i collectTickers":
+     1. Universumet ligger UTANFÖR collectTickers. prices.yml kör var 30:e minut
+        och 110 extra Yahoo-anrop per halvtimme är inte gratis – de hämtas bara
+        på dagens första körning.
+     2. Universumet stämplar ALDRIG lastSeen. Gör det det får varje symbol 30
+        dygns nådetid och äter collectLiveHistoryTickers tak på 30, alltså exakt
+        de övergivna symboler den mekanismen byggdes för att rädda. */
+{
+  const uni = FP.collectMoversUniverse();
+  ok("moversUniversum: filen läses", uni.length > 50);
+  ok("moversUniversum: kommentarer och tomrader faller bort",
+     !uni.some(t => t.startsWith("#") || t === ""));
+  ok("moversUniversum: bara nordiska tickerformat",
+     uni.every(t => /^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)));
+  ok("moversUniversum: sorterad och unik",
+     uni.join() === [...new Set(uni)].sort().join());
+  // Härlett, aldrig hårdkodat: ett tickernamn här hade blivit en ögonblicksbild
+  // av dataläget, precis som "SAAB" i sim.mjs var det till 2026-08-17.
+  const src = new Set(FP.collectTickers());
+  ok("moversUniversum: bär symboler källistan saknar – det är dem grind 1 tappade",
+     uni.filter(t => !src.has(t)).length > 20);
+  ok("moversUniversum: spöktickrar filtreras som i övriga insamlingar",
+     !uni.includes("SAAB.ST"));
+
+  const hist = { series: {}, lastSeen: {} };
+  FP.updateLastSeen(hist, FP.collectTickers(), "2026-09-01");
+  ok("moversUniversum: stämplar aldrig lastSeen (skulle äta live-taket)",
+     uni.filter(t => hist.lastSeen[t] === "2026-09-01" && !src.has(t)).length === 0);
+}
+
+/* ---- DAGENS FÖRSTA KÖRNING (åtgärdspunkt scheduled-actions-not-firing)
+
+   GitHub deprioriterar schemalagda körningar vid hög last och startar dem då
+   inte alls. Mätt 2026-08-31: prices.yml körde 0 av 2 rotationskritiska crons
+   (05:00 och 06:00 UTC) och news.yml 0 av 1, medan samtliga STARTADE körningar
+   hade conclusion success – alltså uteblivna schemastarter, inte kodfel.
+
+   Stegen som bara ska köras en gång per dygn (rapportkalender, backfill, det
+   breda movers-universumet) var grindade på den exakta cron-strängen
+   `github.event.schedule == '0 5 * * 1-5'`. Uteblir just den körningen körs de
+   inte alls den dagen, trots att fjorton senare körningar passerar. Grinden
+   flyttas därför till DATAT: har dagens markör redan skrivits eller inte. */
+{
+  ok("dygnsgrind: kör när markören är från ett tidigare dygn",
+     FP.needsDailyRun("2026-08-28T05:31:00Z", "2026-08-31"));
+  ok("dygnsgrind: hoppar när markören redan är dagens",
+     !FP.needsDailyRun("2026-08-31T05:31:00Z", "2026-08-31"));
+  ok("dygnsgrind: kör när markören saknas helt",
+     FP.needsDailyRun(null, "2026-08-31"));
+  ok("dygnsgrind: kör vid oläsbar markör (hellre en extra körning än ingen)",
+     FP.needsDailyRun("inte-ett-datum", "2026-08-31"));
+}
+
+/* ---- WATCHDOG: en UTEBLIVEN US-rotation (åtgärdspunkt us-rotation-lage-a-missed)
+
+   US-rotationens LÄGE A kördes aldrig 2026-08-24 och inte heller 2026-08-31:
+   reports/us_weekly/ slutar på us-veckorapport-260817.md, och decisions.json har
+   noll rader med book="us" för de datumen. Ingenting larmade, i tio handelsdagar.
+
+   Två oberoende luckor gjorde det strukturellt osynligt:
+     1. checkGrossList hoppar över en bok med NOLL rader ("fångas av decisions-
+        kontrollen ovan").
+     2. Den decisions-kontrollen grindar på `nordic === today`, alltså på den
+        NORDISKA rapportens datum. En US-körning som helt uteblir passerar båda. */
+{
+  const WDus = await mod(".github/scripts/watchdog.mjs");
+  const nordicOnly = { decisions: [
+    { date: "2026-08-24", book: "nordic", ticker: "SKA-B.ST", action: "AVVAKTA" }] };
+  const p = WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
+    decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-17" });
+  ok("watchdog: utebliven US-rotation larmar", p.length === 1);
+  ok("watchdog: US-rotationen får en egen stabil nyckel",
+     p[0] && p[0].key === "us-rotation");
+  ok("watchdog: tyst när dagens us-veckorapport finns",
+     WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
+       decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-24" }).length === 0);
+  const medUs = { decisions: [...nordicOnly.decisions,
+    { date: "2026-08-24", book: "us", ticker: "NVDA", action: "AVVAKTA" }] };
+  ok("watchdog: tyst när US-beslut loggats för dagen (rapporten kan vara på väg)",
+     WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
+       decisionsDb: medUs, latestUsWeeklyDate: "2026-08-17" }).length === 0);
+  ok("watchdog: prövas bara i LÄGE A (måndag)",
+     WDus.checkUsRotation({ isoDate: "2026-08-25", isMonday: false,
+       decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-17" }).length === 0);
+  ok("watchdog: tyst utan underlag (bakåtkompatibel)",
+     WDus.checkUsRotation({}).length === 0);
+  ok("watchdog: en tom us_weekly-katalog larmar inte i sig",
+     WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
+       decisionsDb: medUs, latestUsWeeklyDate: null }).length === 0);
+}
+
+
+/* ---- HÄMTLISTAN: universumet bara på dagens första körning ---------------- */
+{
+  const src  = ["AAA.ST", "BBB.ST"];
+  const live = ["CCC.ST"];
+  const wide = ["ZZZ.ST", "AAA.ST"];      // överlappar källistan med flit
+  const smal = FP.fetchList(src, live, wide, false);
+  const bred = FP.fetchList(src, live, wide, true);
+  ok("hämtlista: universumet är UTE på en halvtimmeskörning",
+     !smal.includes("ZZZ.ST") && smal.length === 3);
+  ok("hämtlista: universumet är MED på dagens första körning",
+     bred.includes("ZZZ.ST") && bred.length === 4);
+  ok("hämtlista: dubbletter slås ihop",
+     bred.filter(t => t === "AAA.ST").length === 1);
+  ok("hämtlista: sorterad", bred.join() === [...bred].sort().join());
+  ok("hämtlista: tåligt mot saknade listor", FP.fetchList(src).join() === "AAA.ST,BBB.ST");
+}
+
+
+/* ---- MARKÖREN SOM DYGNSGRINDEN LÄSER ------------------------------------
+
+   Grinden måste läsa något som den BREDA hämtningen själv sätter, inte något
+   ett continue-on-error-steg sätter. Gör den det senare och det steget failar en
+   hel dag, blir varje halvtimmeskörning bred – 110 extra Yahoo-anrop var 30:e
+   minut, vilket är precis den throttling-risk config/watchlist.txt varnar för.
+
+   Och den smala körningen måste BEVARA markören. Nollställer den, blir nästa
+   körning bred igen och grinden är verkningslös på det tystaste sätt som finns:
+   allt fungerar, det kostar bara tio gånger så mycket. */
+{
+  ok("markör: en bred körning stämplar dagens tid",
+     FP.nextWideAt("2026-08-30T05:09:00Z", true, "2026-08-31T05:09:00Z")
+       === "2026-08-31T05:09:00Z");
+  ok("markör: en smal körning BEVARAR föregående stämpel",
+     FP.nextWideAt("2026-08-31T05:09:00Z", false, "2026-08-31T09:37:00Z")
+       === "2026-08-31T05:09:00Z");
+  ok("markör: saknad stämpel på en smal körning ger null, aldrig dagens datum",
+     FP.nextWideAt(undefined, false, "2026-08-31T09:37:00Z") === null);
+  ok("markör: needsDailyRun läser stämpeln som dygnsgrind",
+     FP.needsDailyRun(FP.nextWideAt(null, true, "2026-08-31T05:09:00Z"), "2026-08-31") === false &&
+     FP.needsDailyRun(FP.nextWideAt("2026-08-30T05:09:00Z", false, "x"), "2026-08-31") === true);
+}
+
+
+/* ---- BACKFILLENS TAK PER KÖRNING (2026-08-31) ---------------------------
+
+   Taket är 40 symboler per körning. När movers-universumet kopplades in som
+   kurskälla tillkom 75 symboler på en gång, alla med EN historikpunkt – alltså
+   två dygn där watchdogens checkShortSeries (tolerated = 2) larmar
+   "backfill-refused" med den FELAKTIGA orsaken "Yahoo levererar inte historiken
+   (403/404 per symbol)". Det är samma klass av fel som resten av repot bekämpar:
+   ett larm som pekar på fel sak är sämre än inget larm, för det bränner den
+   uppmärksamhet nästa larm behöver.
+
+   Taket görs därför ställbart och sätts högt på dygnskörningen. Det kostar inget
+   i normalläge: collectShortSymbols returnerar bara symboler som FAKTISKT är
+   korta, och när ikapphämtningen är klar är listan nästan tom oavsett tak. */
+{
+  const BH = await mod(".github/scripts/backfill-history.mjs");
+  ok("backfill: --cap= läses", BH.parseCap(["--missing=200", "--cap=120", "1y"]) === 120);
+  ok("backfill: utan flagga gäller 40 som förr", BH.parseCap(["--missing=200", "1y"]) === 40);
+  ok("backfill: skräpvärde faller tillbaka på 40", BH.parseCap(["--cap=abc"]) === 40);
+  ok("backfill: --cap utan värde faller tillbaka på 40", BH.parseCap(["--cap"]) === 40);
+  ok("backfill: noll och negativt tak avvisas (skulle tysta backfillen helt)",
+     BH.parseCap(["--cap=0"]) === 40 && BH.parseCap(["--cap=-5"]) === 40);
+  // Taket måste faktiskt nå urvalet, annars är flaggan dekoration.
+  const serier = {}; const vol = {};
+  for (let i = 0; i < 60; i++){ serier["S" + i] = [["2026-08-31", 1]]; vol["S" + i] = []; }
+  const namn = Object.keys(serier);
+  ok("backfill: taket styr hur många symboler urvalet ger",
+     BH.collectShortSymbols(serier, vol, namn, 200, 21, 120).length === 60 &&
+     BH.collectShortSymbols(serier, vol, namn, 200, 21, 40).length === 40);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

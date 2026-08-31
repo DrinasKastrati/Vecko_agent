@@ -156,6 +156,62 @@ export function collectTickers(){
   return dropKnownMissing([...tickers].sort());
 }
 
+/* MOVERS-UNIVERSUMET SOM KURSKÄLLA (2026-08-31).
+
+   config/universe_nordic_movers.txt bär 110 nordiska symboler och hämtades i sin
+   helhet av movers.mjs varje lördag – men INGEN av dem nådde state/prices.json.
+   Följden var att grind 1 ("verifierad kurs med källa + tidsstämpel") per
+   konstruktion fällde varje mover som inte råkat handkopieras till
+   config/watchlist.txt i efterhand. Mätt över v34–v36: 25 av 82 nordiska
+   bruttokandidater föll på grind 1, och i v36 var de tio fällda veckans FEM
+   största rörelser plus veckans FEM starkaste bekräftade katalysatorer. Systemet
+   såg alltså rörelsen, kunde namnge katalysatorn – och kunde inte poängsätta
+   någon av dem.
+
+   VARFÖR DEN INTE LIGGER I collectTickers: prices.yml kör var 30:e minut, och
+   110 extra Yahoo-anrop per halvtimme är varken gratis eller ofarligt (Yahoo
+   svarar 403 när listan blir för lång). Universumet hämtas därför bara på dagens
+   FÖRSTA körning – se needsDailyRun och prices.yml.
+
+   VARFÖR DEN INTE STÄMPLAR lastSeen: gjorde den det skulle varje symbol få 30
+   dygns nådetid i collectLiveHistoryTickers och fylla dess tak på 30, alltså
+   trycka ut precis de övergivna symboler den mekanismen byggdes för att rädda.
+   Universumet går in i hämtlistan direkt i run() och passerar aldrig
+   updateLastSeen. En symbol som är genuint intressant lyfts in i watchlist.txt
+   av en rotation och blir källsymbol den vägen. */
+export function collectMoversUniverse(readFile = readFirst){
+  const txt = readFile(["config/universe_nordic_movers.txt"]);
+  const out = new Set();
+  for (const line of txt.split("\n")){
+    const t = line.trim().toUpperCase();
+    if (!t || t.startsWith("#")) continue;
+    if (/^[A-Z0-9-]{1,14}\.(ST|OL|CO|HE)$/.test(t)) out.add(t);
+  }
+  return dropKnownMissing([...out].sort());
+}
+
+/* DAGENS FÖRSTA KÖRNING (2026-08-31).
+
+   Stegen som bara hör hemma en gång per dygn – rapportkalendern, backfillen och
+   det breda movers-universumet – var grindade på den exakta cron-strängen
+   `github.event.schedule == '0 5 * * 1-5'`. GitHub deprioriterar schemalagda
+   körningar vid hög last och startar dem då INTE ALLS: 2026-08-31 uteblev både
+   05:00- och 06:00-cronen, och stegen kördes därför inte en enda gång den dagen
+   trots att fjorton senare körningar passerade. Samtliga STARTADE körningar hade
+   conclusion success – det var alltså inget kodfel att leta efter.
+
+   Grinden ligger nu i DATAT i stället för i schemat: har dygnets markör redan
+   skrivits eller inte. En utebliven 05:00-körning tas då igen av 07:00-körningen
+   av sig själv. Vid saknad eller oläsbar markör körs steget – hellre en extra
+   körning än ett steg som tyst hoppas över ett helt dygn, vilket är exakt det
+   fel mekanismen finns för. */
+export function needsDailyRun(markerIso, todayIso){
+  if (!markerIso) return true;
+  const d = String(markerIso).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return true;
+  return d < todayIso;
+}
+
 /* Symboler som RAPPORTERAR SNART, ur state/earnings_calendar.json.
 
    Varför de måste med: fram till 2026-08-04 fylldes watchlistan i efterhand, av
@@ -541,22 +597,69 @@ export function collectLiveHistoryTickers(lastSeen, today, days = 30, cap = 30, 
     .map(r => r[0]);
 }
 
+/* HÄMTLISTAN (2026-08-31).
+
+   Tre mängder går ihop till en: källsymbolerna (portfölj, watchlists, de tre
+   senaste rapporterna, kandidatkön, rapportkalendern), nådetidssymbolerna som
+   nyligen VAR i en källa, och – bara på dagens första körning – hela det breda
+   movers-universumet. Den tredje ligger utanför de två andra av kostnadsskäl:
+   prices.yml kör var 30:e minut och 110 extra anrop där är varken gratis eller
+   ofarligt. */
+export function fetchList(sourceTickers = [], liveTickers = [], wideTickers = [], wide = false){
+  const alla = [...(sourceTickers || []), ...(liveTickers || [])];
+  if (wide) alla.push(...(wideTickers || []));
+  return [...new Set(alla)].sort();
+}
+
+/* MARKÖREN DYGNSGRINDEN LÄSER (2026-08-31).
+
+   `wideAt` är tidsstämpeln för senaste BREDA hämtningen, alltså den som tog med
+   hela movers-universumet. prices.yml läser den via needsDailyRun för att avgöra
+   om dagens första körning återstår.
+
+   VARFÖR JUST DEN OCH INTE earnings_calendar.json:s generatedAt: kalendersteget
+   har continue-on-error, och en dag då Yahoos quoteSummary är nere hade markören
+   då stått kvar på gårdagen HELA dygnet – varje halvtimmeskörning hade blivit
+   bred, alltså 110 extra anrop var 30:e minut. Markören måste sättas av det steg
+   den beskriver.
+
+   VARFÖR DEN SMALA KÖRNINGEN BEVARAR DEN: run() skriver om hela prices.json varje
+   gång. Nollställdes fältet skulle nästa körning läsa "ingen bred körning i dag"
+   och bli bred igen – grinden vore verkningslös på det tystaste sätt som finns:
+   allt fungerar, det kostar bara tio gånger så mycket.
+
+   Inget schemaVersion-byte: fältet är NYTT, ingen befintlig nyckels betydelse
+   ändras, och en läsare som saknar det beter sig som förut. */
+export function nextWideAt(prevWideAt, wide, nowIso){
+  return wide ? nowIso : (prevWideAt || null);
+}
+
 // ---- main -------------------------------------------------------------
-export async function run(fetchImpl = globalThis.fetch){
+export async function run(fetchImpl = globalThis.fetch, wide = false){
   const sourceTickers = [...new Set([...collectTickers(), ...collectUsTickers(),
                                      ...collectEarningsTickers()])].sort();
   // Symboler som nyligen VAR i en källa hämtas vidare under sin nådetid – annars
   // dör en 250-punktsserie i samma sekund rapporten den nämndes i rullar ut.
+  /* Universumet läses ALLTID (en filläsning), men går in i hämtlistan bara på
+     dagens första körning. Att det alltid räknas fram är avsiktligt: det måste
+     uteslutas ur collectLiveHistoryTickers taket på VARJE körning, annars seedar
+     updateLastSeen dem ur sin färska historikpunkt nästa gång och de äter de 30
+     platser mekanismen har för genuint övergivna symboler. Universumet behöver
+     ingen nådetid – det hämtas i sin helhet varje dygn ändå. */
+  const prevWideAt  = (readJsonFirst(["state/prices.json"]) || {}).wideAt || null;
+  const universum   = collectMoversUniverse();
+  const wideTickers = wide ? universum : [];
   let liveTickers = [];
   try {
     const ph = JSON.parse(readFileSync("state/price_history.json", "utf8"));
     const idag = new Date().toISOString().slice(0, 10);
     const seen = updateLastSeen(ph, sourceTickers, idag);
-    liveTickers = collectLiveHistoryTickers(seen, idag, 30, 30, sourceTickers);
+    liveTickers = collectLiveHistoryTickers(seen, idag, 30, 30,
+                    [...sourceTickers, ...universum]);
     mkdirSync("state", { recursive: true });
     writeFileSync("state/price_history.json", JSON.stringify(ph) + "\n");
   } catch { /* saknas filen är det första körningen – källorna räcker */ }
-  const tickers = [...new Set([...sourceTickers, ...liveTickers])].sort();
+  const tickers = fetchList(sourceTickers, liveTickers, wideTickers, wide);
   // Utökad session hämtas bara för symboler med en rapport inom räckhåll.
   const today = new Date().toISOString().slice(0, 10);
   const scope = new Set(extendedScope(
@@ -586,6 +689,9 @@ export async function run(fetchImpl = globalThis.fetch){
     // vilken kod som skrivit den. Nu kan den. Bumpa strängen när ett fälts BETYDELSE ändras,
     // inte vid vanliga ändringar.
     schemaVersion: "2026-08-02-prevclose",
+    // Tidsstämpel för senaste BREDA hämtningen (movers-universumet med). Läses av
+    // prices.yml:s dygnsgrind – se nextWideAt.
+    wideAt: nextWideAt(prevWideAt, wide, new Date().toISOString()),
     note: "Automatiskt hämtade kurser. 'marketTime' är kursens verifierade tidsstämpel (ISO). " +
           "Använd endast om marketTime är från idag eller senaste handelsdagens stängning. " +
           "'previousClose' är föregående SESSIONS stängning (dagsrörelse = price/previousClose − 1). " +
@@ -744,5 +850,6 @@ export function updateVolumeHistory(quotes){
 // kör bara när scriptet startas direkt (inte vid import i test)
 const invokedDirectly = process.argv[1] && process.argv[1].replace(/\\/g, "/").endsWith("fetch-prices.mjs");
 if (invokedDirectly) {
-  run().catch(e => { console.error("Fel:", e); process.exit(1); });
+  // --wide = dagens första körning, se needsDailyRun och prices.yml.
+  run(globalThis.fetch, process.argv.includes("--wide")).catch(e => { console.error("Fel:", e); process.exit(1); });
 }

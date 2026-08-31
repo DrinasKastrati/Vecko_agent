@@ -2,16 +2,24 @@ name: Hämta kurser (prices.json)
 
 on:
   schedule:
-    # 1. Kör varje halvtimme (:00 och :30) från 07:00 till 20:00 UTC på vardagar
-    # Detta täcker den aktiva handelsdagen för både Europa och USA.
-    - cron: "0,30 7-20 * * 1-5"
-    
-    # 2. Dina specifika stängningstider ligger kvar för att garantera exakt rätt minut
-    - cron: "0 5 * * 1-5"    # 05:00 UTC (~07:00 CEST) vardagar – justera till FÖRE din routine
-    - cron: "0 6 * * 1-5"    # extra säkerhetskörning 06:00 UTC
-    - cron: "45 16 * * 1-5"  # efter Stockholm-stängning (17:30 CET/CEST = 15:30–16:30 UTC) – ger riktiga stängningskurser i price_history
-    - cron: "10 21 * * 1-5"  # efter US-stängning (16:00 ET = 20:00–21:00 UTC) – scout/krypto-kurser
-  
+    # MINUTVALET ÄR MEDVETET (2026-08-31). GitHub deprioriterar schemalagda
+    # körningar vid hög last och startar dem då INTE ALLS – minut 0 på en hel
+    # timme är den mest översökta minuten som finns. Mätt 2026-08-31 startade
+    # 0 av 2 rotationskritiska crons (05:00 och 06:00 UTC), medan samtliga
+    # STARTADE körningar hade conclusion success; det var alltså inget kodfel
+    # att leta efter. Crons ligger därför bredvid hela timmen.
+    # Ett test i tests/theme.mjs vaktar att ingen kryper tillbaka till minut 0.
+    #
+    # 1. Var 30:e minut 07–20 UTC på vardagar – täcker den aktiva handelsdagen
+    #    för både Europa och USA.
+    - cron: "7,37 7-20 * * 1-5"
+
+    # 2. Stängningstiderna ligger kvar för att garantera exakt rätt minut
+    - cron: "9 5 * * 1-5"    # ~07:00 CEST vardagar – FÖRE rotationerna
+    - cron: "9 6 * * 1-5"    # extra säkerhetskörning
+    - cron: "45 16 * * 1-5"  # efter Stockholm-stängning – riktiga stängningskurser i price_history
+    - cron: "10 21 * * 1-5"  # efter US-stängning (16:00 ET) – scout/krypto-kurser
+
   workflow_dispatch: {}
 
 permissions:
@@ -31,6 +39,32 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      # DYGNSGRINDEN (2026-08-31) – ersätter grindningen på en exakt cron-sträng.
+      #
+      # Stegen nedan hör hemma en gång per dygn och var grindade på
+      # `github.event.schedule == '0 5 * * 1-5'`. Uteblir just DEN körningen körs
+      # de inte alls det dygnet, trots att fjorton senare körningar passerar –
+      # exakt det som hände 2026-08-31, då varken rapportkalendern eller
+      # backfillen kördes en enda gång.
+      #
+      # Grinden ligger nu i DATAT: `state/prices.json`:s `wideAt` är tidsstämpeln
+      # för senaste BREDA hämtningen. Är den från ett tidigare dygn återstår
+      # dagens första körning, och nästa körning tar igen den av sig själv.
+      # Markören sätts av den breda hämtningen SJÄLV och inte av ett
+      # continue-on-error-steg – ett sådant kunde faila en hel dag och göra varje
+      # halvtimmeskörning bred, alltså 110 extra Yahoo-anrop var 30:e minut.
+      - name: Dygnsgrind – återstår dagens första körning?
+        id: dygnsgrind
+        run: |
+          FORSTA=$(node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            import { needsDailyRun } from './.github/scripts/fetch-prices.mjs';
+            let at = null;
+            try { at = JSON.parse(readFileSync('state/prices.json','utf8')).wideAt || null; } catch {}
+            process.stdout.write(needsDailyRun(at, new Date().toISOString().slice(0,10)) ? 'true' : 'false');
+          ")
+          echo "forsta=$FORSTA" >> "$GITHUB_OUTPUT"
+          echo "Dagens första körning återstår: $FORSTA"
       # Rapportkalendern hämtas FÖRE kurserna: fetch-prices.mjs läser dess
       # `upcoming`-lista och tar med varje symbol som rapporterar inom 10
       # handelsdagar, så att en verifierad kurs finns INNAN rapporten släpps.
@@ -38,16 +72,32 @@ jobs:
       # igenom först nästa hämtning, vilket är exakt den fördröjning som gjorde
       # att PLTR saknade kurs på rapportdagen 2026-08-03.
       #
-      # Bara på 05:00-cronen (och manuellt): rapportdatum ändras inte var
-      # halvtimme, och quoteSummary kräver cookie+crumb per körning. Faller den
-      # ska kursbevakningen inte falla med den – därav continue-on-error, och
+      # Bara på dagens första körning: rapportdatum ändras inte var halvtimme,
+      # och quoteSummary kräver cookie+crumb per körning. Faller den ska
+      # kursbevakningen inte falla med den – därav continue-on-error, och
       # skriptet lämnar filen ORÖRD vid fel i stället för att skriva en tom
       # kalender (en tom kalender läses som "inga rapporter på väg").
       - name: Hämta rapportkalender
-        if: github.event.schedule == '0 5 * * 1-5' || github.event_name == 'workflow_dispatch'
+        if: steps.dygnsgrind.outputs.forsta == 'true' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: node .github/scripts/earnings-calendar.mjs
+      # DAGENS FÖRSTA KÖRNING TAR MED HELA MOVERS-UNIVERSUMET (2026-08-31).
+      #
+      # config/universe_nordic_movers.txt bär 110 nordiska symboler som movers.mjs
+      # hämtade varje lördag utan att en enda av dem nådde state/prices.json.
+      # Grind 1 ("verifierad kurs med källa + tidsstämpel") fällde därför per
+      # konstruktion varje mover som inte handkopierats till config/watchlist.txt
+      # i efterhand: 25 av 82 nordiska bruttokandidater över v34–v36, och i v36
+      # var de tio fällda veckans FEM största rörelser plus veckans FEM starkaste
+      # bekräftade katalysatorer.
+      #
+      # BARA här och inte var 30:e minut: 110 extra Yahoo-anrop per halvtimme är
+      # varken gratis eller ofarligt – Yahoo svarar 403 när listan blir för lång.
+      - name: Hämta kurser (dagens första – hela movers-universumet med)
+        if: steps.dygnsgrind.outputs.forsta == 'true'
+        run: node .github/scripts/fetch-prices.mjs --wide
       - name: Hämta kurser
+        if: steps.dygnsgrind.outputs.forsta != 'true'
         run: node .github/scripts/fetch-prices.mjs
       # Backfill av symboler med KORT serie. Löser åtgärdspunkt 1 i
       # veckorapport-260817: backfill-history.mjs fanns sedan 2026-08-03 men
@@ -61,15 +111,24 @@ jobs:
       # sin första punkt, och backfillens collectSymbols läser bara historiken
       # + watchlists. Körs den före missas de ett dygn.
       #
-      # Bara på 05:00-cronen (och manuellt): historik för gamla dagar ändras
+      # Bara på dagens första körning (och manuellt): historik för gamla dagar ändras
       # inte var halvtimme, och varje symbol kostar ett eget Yahoo-anrop.
       # Skriptet har eget tak per körning (40 symboler, kortast serie först) och
       # rör aldrig `backfilledAt` i detta läge. Faller den ska INTE
       # kursbevakningen falla med den.
       - name: Backfilla symboler med kort historik
-        if: github.event.schedule == '0 5 * * 1-5' || github.event_name == 'workflow_dispatch'
+        if: steps.dygnsgrind.outputs.forsta == 'true' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
-        run: node .github/scripts/backfill-history.mjs --missing=200 1y
+        #
+        # `--cap=120` (2026-08-31) i stället för standardtaket 40: movers-universumet
+        # lade till 75 symboler på en gång, alla med EN historikpunkt, och med tak 40
+        # hade ikapphämtningen tagit två dygn. Under dem larmar
+        # `watchdog.mjs:checkShortSeries` (tolerated = 2) "backfill-refused" med
+        # orsaken "Yahoo levererar inte historiken (403/404 per symbol)" – vilket är
+        # FEL. Ett larm som pekar på fel sak bränner den uppmärksamhet nästa larm
+        # behöver. Taket kostar inget i normalläge: urvalet returnerar bara symboler
+        # som FAKTISKT är korta, och den listan är nästan tom när alla är ifyllda.
+        run: node .github/scripts/backfill-history.mjs --missing=200 --cap=120 1y
       # Beslutsutvärderingen är en REN FUNKTION av decisions.json + price_history.json
       # och hör därför hemma direkt efter hämtningen: den färska historiken är precis
       # det som gör ett tidigare beslut moget att mäta. LLM-fritt, ingen nätåtkomst,

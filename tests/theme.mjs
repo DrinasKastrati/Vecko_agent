@@ -390,5 +390,51 @@ ok("config/push.json finns och saknar privat nyckel",
   (() => { const c = JSON.parse(readFileSync(join(root, "config/push.json"), "utf8"));
            return "vapidPublicKey" in c && !JSON.stringify(c).match(/privateKey/i); })());
 
+
+/* ---- ÅTGÄRDSPUNKTERNA FRÅN 2026-08-31 ÄR FAKTISKT INKOPPLADE -------------
+
+   Alla tre defekterna nedan var TYSTA: ingen fil såg konstig ut, ingen körning
+   blev röd, och de rapporterades i prosa i vecka efter vecka utan att något
+   larmade. En ren funktion som ingen anropar hade varit samma klass av fel en
+   gång till – det var precis så backfill-history.mjs kunde ligga oanropad i
+   fjorton dagar (KVAR punkt 3, avsnitt 5b). Därför vaktas KOPPLINGEN här, inte
+   bara logiken i tests/run.mjs. */
+{
+  const wd = readFileSync(join(root, ".github", "scripts", "watchdog.mjs"), "utf8");
+  ok("watchdog: checkUsRotation anropas av main (en ren funktion ingen kör är ingen kontroll)",
+     /problems\.push\(\.\.\.checkUsRotation\(/.test(wd));
+  ok("watchdog: checkUsRotation matas med us-veckorapportens datum",
+     /checkUsRotation\(\{[\s\S]{0,200}latestUsWeeklyDate/.test(wd));
+
+  const fp = readFileSync(join(root, ".github", "scripts", "fetch-prices.mjs"), "utf8");
+  ok("fetch-prices: movers-universumet går in i hämtlistan",
+     /collectMoversUniverse\(\)/.test(fp) && /fetchList\(/.test(fp));
+  ok("fetch-prices: universumet passerar ALDRIG updateLastSeen (skulle äta live-taket)",
+     !/updateLastSeen\([^)]*(wide|movers|Movers)/.test(fp));
+
+  const yml = readFileSync(join(root, ".github", "workflows", "prices.yml"), "utf8");
+  ok("prices.yml: dagens första körning hämtar det breda universumet",
+     /fetch-prices\.mjs\s+--wide/.test(yml));
+  /* Grinden får inte ligga på en exakt cron-sträng: uteblir just den körningen
+     hoppas steget över hela dygnet, vilket är felet som mättes 2026-08-31
+     (0 av 2 rotationskritiska crons startade, alla startade körningar success).
+     Prövas på `if:`-raderna och inte på hela filen – kommentarerna CITERAR den
+     gamla grinden med flit, och ett test som läser prosa mäter prosan. */
+  const ifRader = [...yml.matchAll(/^\s*if:\s*(.+)$/gm)].map(m => m[1]);
+  ok("prices.yml: dygnsstegen grindas inte på en exakt cron-sträng",
+     ifRader.length > 0 && !ifRader.some(r => /github\.event\.schedule\s*==/.test(r)));
+  ok("prices.yml: dygnsgrinden har ett eget steg med utdata",
+     /needs-daily|dygnsgrind|daily-gate/.test(yml));
+
+  /* GitHub deprioriterar schemalagda körningar på hela timmar – minut 0 är den
+     mest översökta minuten som finns. Rotationskritiska crons ska ligga bredvid. */
+  for (const f of ["prices.yml", "news.yml", "movers.yml"]) {
+    const src = readFileSync(join(root, ".github", "workflows", f), "utf8");
+    const minuter = [...src.matchAll(/^\s*-\s*cron:\s*"(\S+)\s/gm)].map(m => m[1]);
+    ok(`${f}: ingen cron ligger på minut 0 (GitHubs mest belastade minut)`,
+       minuter.length > 0 && !minuter.some(m => m === "0" || m.split(",").includes("0")));
+  }
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

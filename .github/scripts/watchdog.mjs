@@ -214,6 +214,51 @@ export function checkGrossList(opts){
   return problems;
 }
 
+/* EN UTEBLIVEN US-ROTATION (2026-08-31).
+
+   US-rotationens LÄGE A kördes aldrig 2026-08-24 och inte heller 2026-08-31:
+   reports/us_weekly/ slutade på us-veckorapport-260817.md och state/decisions.json
+   hade noll rader med book="us" för båda datumen. US-boken saknade därmed köpväg i
+   tio handelsdagar och stod 100 % i sleeven med fyra tomma platser – utan att något
+   larmade, och utan att någon fil såg konstig ut.
+
+   Två oberoende luckor gjorde felet STRUKTURELLT osynligt, och båda är rimliga var
+   för sig:
+     1. checkGrossList hoppar medvetet över en bok med NOLL rader, med motiveringen
+        att "det fångas av decisions-kontrollen ovan".
+     2. Den decisions-kontrollen i checkStale grindar på `nordic === today`, alltså
+        på den NORDISKA rapportens datum. Den mäter om en pushad rapport saknar
+        beslutsrader – inte om en rotation aldrig ägde rum.
+   En US-körning som helt uteblir passerar därför båda. Bruttolistspärren fångar en
+   rotation som loggar FÖR LITE; den här fångar en rotation som inte loggar ALLS.
+
+   Bara på måndagar: LÄGE A är veckorotationen, och det är den som öppnar positioner.
+   En utebliven LÄGE B-dag är en dags bevakning, inte en förlorad köpväg.
+
+   Två tystnadsregler: finns dagens us-veckorapport är allt bra, och finns US-rader i
+   beslutsloggen för dagen har rotationen kört även om rapportfilen ännu inte
+   committats (auto_merge kan ligga efter). Saknas `latestUsWeeklyDate` helt går
+   kontrollen på beslutsloggen ensam – ett tomt reports/us_weekly/ är inte i sig ett
+   bevis på en utebliven körning. */
+export function checkUsRotation(opts){
+  const { isoDate, isMonday, decisionsDb, latestUsWeeklyDate } = opts || {};
+  if (!isMonday || !isoDate || !decisionsDb) return [];
+  if (latestUsWeeklyDate === isoDate) return [];
+  if (decisionRowsOn(decisionsDb, isoDate, "us").length) return [];
+  return [{ key: "us-rotation", title: "Watchdog: US-rotationens LÄGE A har inte kört",
+    body: "Måndag " + isoDate + " har varken en `reports/us_weekly/us-veckorapport-" +
+      isoDate.slice(2).replace(/-/g, "") + ".md` (senaste: " + (latestUsWeeklyDate || "ingen") +
+      ") eller en enda rad med `book: \"us\"` i `state/decisions.json`. US-boken saknar då " +
+      "köpväg hela veckan och står kvar i sleeven med sina lediga platser.\n\n" +
+      "Det här är INTE samma sak som bruttolistspärren: den fångar en rotation som loggar " +
+      "för lite, medan en rotation som uteblir helt passerar både den (`checkGrossList` " +
+      "hoppar över en bok med noll rader) och färskhetskontrollen (som grindar på den " +
+      "NORDISKA rapportens datum). Det var precis så 2026-08-24 och 2026-08-31 kunde gå " +
+      "obemärkta förbi i tio handelsdagar.\n\n" +
+      "Kontrollera att US-rotationens routine (mån–fre 15:00 CEST, `prompts/us_dagligprompt.md`) " +
+      "faktiskt startade, och kör den för hand om måndagen redan passerat." }];
+}
+
 /* SCOUT-KANDIDATER SOM ALDRIG FICK ETT AVGÖRANDE.
    Detta är samma tystnad som gjorde att Palantir kunde flaggas tre dagar i rad
    utan att någon bok tog ställning. Kandidatfilen gör den mätbar. */
@@ -763,6 +808,12 @@ function main(){
     quotes: priceQuotes, decisionsDb, book: "nordic" }));
   problems.push(...checkStalePricedBubblare({ weeklyMd: wkUs.md, weeklyDate: wkUs.date,
     quotes: priceQuotes, decisionsDb, book: "us" }));
+  // En US-rotation som HELT uteblir passerar både bruttolistspärren och
+  // färskhetskontrollen – se checkUsRotation. Ligger här för att wkUs.date
+  // beräknas först nu.
+  problems.push(...checkUsRotation({
+    isoDate: todayIso, isMonday: now.getUTCDay() === 1,
+    decisionsDb, latestUsWeeklyDate: wkUs.date }));
 
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");
   console.log(problems.length ? "Problem:\n" + problems.map(p => "- " + p.title).join("\n") : "Allt friskt.");

@@ -195,10 +195,32 @@ async function fetchSeries(sym, range){
   } catch (e){ return { error: String(e && e.message || e) }; }
 }
 
+/* TAKET PER KÖRNING ÄR STÄLLBART (2026-08-31).
+
+   Standard är 40 – oförändrat, och tillräckligt i normalläge eftersom urvalet
+   bara returnerar symboler som FAKTISKT är korta. Flaggan finns för
+   ikapphämtning: när movers-universumet kopplades in som kurskälla tillkom 75
+   symboler på en gång, alla med EN historikpunkt, och med tak 40 tog det två
+   dygn. Under de dygnen larmar watchdogens checkShortSeries (tolerated = 2)
+   "backfill-refused" med orsaken "Yahoo levererar inte historiken (403/404 per
+   symbol)" – vilket är FEL, och ett larm som pekar på fel sak bränner den
+   uppmärksamhet nästa larm behöver.
+
+   Ett ogiltigt, noll eller negativt värde faller tillbaka på 40 i stället för att
+   accepteras: ett tak på 0 hade tystat backfillen helt, och den feltypen är
+   osynlig – skriptet loggar "Inget att göra" och exitar 0. */
+export function parseCap(args = [], fallback = 40){
+  const a = (args || []).find(x => typeof x === "string" && x.startsWith("--cap="));
+  if (!a) return fallback;
+  const n = parseInt(a.split("=")[1], 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
 async function main(){
   const args = process.argv.slice(2).filter(Boolean);
   const missingArg = args.find(a => a === "--missing" || a.startsWith("--missing="));
-  const rest  = args.filter(a => a !== missingArg);
+  const cap = parseCap(args);
+  const rest  = args.filter(a => a !== missingArg && !a.startsWith("--cap"));
   const range = rest[0] || "1y";
   const only  = rest.slice(1);
   // --missing utan värde = 200 punkter, alltså EMA200-golvet: det är den
@@ -226,7 +248,7 @@ async function main(){
 
   const candidates = only.length ? only : collectSymbols(hist.series, wl);
   const symbols = minPoints
-    ? collectShortSymbols(hist.series, vol.series, candidates, minPoints)
+    ? collectShortSymbols(hist.series, vol.series, candidates, minPoints, 21, cap)
     : candidates;
   const today = new Date().toISOString().slice(0, 10);
   if (minPoints)

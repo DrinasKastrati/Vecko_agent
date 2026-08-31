@@ -2,9 +2,16 @@ name: Veckans rörelser (movers.json)
 
 on:
   schedule:
-    # Lördag 06:00 UTC – efter fredagens stängningskurser (21:10 UTC fredag) och
+    # Lördag 06:13 UTC – efter fredagens stängningskurser (21:10 UTC fredag) och
     # FÖRE miss-retron (lördag 10:00 CEST = 08:00 UTC), som läser filen i STEG 1.
-    - cron: "0 6 * * 6"
+    #
+    # MINUTEN ÄR MEDVETET INTE 0 (2026-08-31). GitHub deprioriterar schemalagda
+    # körningar vid hög last och startar dem då inte alls; minut 0 på en hel timme
+    # är den mest översökta minuten som finns. Lördagscronen uteblev helt
+    # 2026-08-29, vilket gjorde att miss-retron körde utan sin PRIMÄRA nordiska
+    # missdetektion. Ett test i tests/theme.mjs vaktar att minuten inte kryper
+    # tillbaka till 0. Marginalen till retron är fortfarande ~1,5 h.
+    - cron: "13 6 * * 6"
   workflow_dispatch: {}
 
 permissions:

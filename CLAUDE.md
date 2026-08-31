@@ -2,7 +2,7 @@
 
 Detta dokument finns för att en ny Cowork-/Claude-session snabbt ska förstå projektet, nuläget
 och vad som är kvar att göra. Ägare: **Dren** (kastratidrinas@gmail.com).
-**Senast uppdaterad:** 2026-08-17.
+**Senast uppdaterad:** 2026-08-31.
 **TVÅ AKTIVA ARBETSKOPIOR – båda är giltiga och pekar på samma remote:**
 `C:\Users\drini\code\Vecko_agent` (stationär dator) och
 `C:\Users\kastrdri\Git_proj\gitVecko_agent` (laptop). Dren växlar mellan dem.
@@ -283,7 +283,33 @@ Repots struktur framgår av `ls`/`find`. Det som INTE syns i filträdet:
   raden dokumenterar att inget kursbaserat beslut fattades, och en rad med `price: null` får aldrig
   bli ett KÖP.
 - `state/portfolj.md` / `portfolj_us.md` – historiken är append-only. Radera aldrig filerna.
-- `config/universe_nordic_movers.txt` – används BARA av `movers.mjs` (missdetektion), inte av pris-hämtaren.
+- **`config/universe_nordic_movers.txt` – sedan 2026-08-31 ÄVEN kurskälla, inte bara missdetektion.**
+  Fram till dess stod här att filen används BARA av `movers.mjs` och inte av pris-hämtaren, och det
+  var precis felet: `movers.mjs` hämtade alla 110 symboler varje lördag utan att en enda av dem
+  nådde `state/prices.json`. Grind 1 ("verifierad kurs med källa + tidsstämpel") fällde därför per
+  konstruktion varje mover som inte handkopierats till `config/watchlist.txt` i efterhand.
+  **Mätt över v34–v36: 25 av 82 nordiska bruttokandidater föll på grind 1**, och i v36 var de tio
+  fällda veckans FEM största rörelser (TRUE-B.ST +20,84 %, SALM.OL +12,17 %, NIBE-B.ST +11,74 %,
+  KINV-B.ST +8,02 %, SINCH.ST +8,01 %) plus veckans FEM starkaste bekräftade katalysatorer.
+  Systemet såg rörelsen, kunde namnge katalysatorn – och kunde inte poängsätta någon av dem.
+  Grind 4 och 5 fällde tillsammans **3 kandidater på tre veckor**; funneln stoppade på datatillgång,
+  inte på omdöme. `fetch-prices.mjs:collectMoversUniverse()` läser filen och `run(fetchImpl, wide)`
+  lägger den i hämtlistan (117 → 192 symboler, varav 75 nya).
+  **Två spärrar som inte får luckras upp:** (1) universumet går in BARA på dagens första körning
+  (`--wide`) – `prices.yml` kör var 30:e minut och 110 extra Yahoo-anrop per halvtimme är den
+  throttling-risk `config/watchlist.txt` varnar för; (2) universumet stämplar **aldrig** `lastSeen`
+  och utesluts ur `collectLiveHistoryTickers` på VARJE körning – annars seedar `updateLastSeen` dem
+  ur sin färska historikpunkt och de fyller takets 30 platser, alltså trycker ut exakt de övergivna
+  symboler den mekanismen byggdes för att rädda. Filens egen rubrik gäller fortfarande: **en rad här
+  betyder bevakning, inte att aktien får köpas.** Urvalet och grindarna är oförändrade.
+- **`state/prices.json` bär `wideAt` (nytt 2026-08-31) – dygnsgrindens markör.** Tidsstämpel för
+  senaste BREDA hämtningen. `prices.yml`:s första steg läser den via `needsDailyRun` och avgör om
+  dagens första körning återstår. **Markören sätts av den breda hämtningen SJÄLV**, aldrig av ett
+  `continue-on-error`-steg: hade den legat på `earnings_calendar.json`:s `generatedAt` skulle en dag
+  då Yahoos quoteSummary är nere ha gjort VARJE halvtimmeskörning bred. Den smala körningen BEVARAR
+  fältet (`nextWideAt`) – nollställs det blir nästa körning bred igen och grinden är verkningslös på
+  det tystaste sätt som finns: allt fungerar, det kostar bara tio gånger så mycket.
+  **Inget `schemaVersion`-byte** – fältet är nytt och ingen befintlig nyckels betydelse ändras.
 - `assets/themes/base.css` – all struktur; hårdkoda aldrig färg/radie/typsnitt där, lägg en token.
 - `state/dashboard.json` / `search-index.json` – GENERERADE av `dashboard.yml`. Redigera aldrig
   för hand; kör `node .github/scripts/build-dashboard.mjs` i stället. De är märkta `-merge` i
@@ -857,6 +883,61 @@ kapitalallokering, miss-retro). Vad som ÅTERSTÅR står i avsnitt 5b.
      2026-08-26), volymbackfillen (punkt 5) och de två döda GlobeNewswire-flödena (kräver
      handpåläggning, se `MANUAL.md`). **Kontrollera efter 2026-08-29** att filen skapas och att
      punkterna får stabila ASCII-kebab-case-`id`.
+     ✅ **KÖRD, verifierad 2026-08-31:** `state/action_items.json` finns (skriven av
+     `retro-260829`), bär **13 punkter, samtliga med ASCII-kebab-case-`id`** (regexkontrollerat),
+     10 `open` och 3 `resolved`. Högsta `weeksOpen` bland öppna är 2 ⇒ `checkRecurringActionItems`
+     är tyst, korrekt. De tre defekter som räknades ovan är märkta `resolved`:
+     `movers-stale-asof`, `volume-history-not-backfilled`, `news-feed-globenewswire-dead`.
+
+  **TRE NYA DEFEKTER, KODFIXADE 2026-08-31 – MEN ÄNNU INTE SEDDA I SKARP DRIFT.**
+  Samtliga tre kom ur `state/action_items.json` (retro-260829) och `veckorapport-260831`.
+  Koden är skriven och testad lokalt (`run.mjs` 925/0, `theme.mjs` 160/0, `sim.mjs` 143/0),
+  **men ingen GitHub-körning har ännu exekverat den** – påstå inte motsatsen. Vad som ska
+  kontrolleras står under varje punkt.
+  7. **KODFIXAD – `movers-universe-not-priced`.** De 110 symbolerna i
+     `config/universe_nordic_movers.txt` når nu `state/prices.json` på dagens första körning.
+     Se den utförliga posten i avsnitt 2. **Kontrollera:** att `state/prices.json` bär `wideAt`
+     med dagens datum efter första körningen, att `tickerCount` går 117 → ~192 på den breda
+     körningen och tillbaka på de smala, och att nästa veckorotations grind 1-bortfall sjunker
+     från v36:s 10 av 28.
+     **Backfillen fick samtidigt `--cap=120` i stället för standardtaket 40** (`prices.yml`):
+     de 75 nya symbolerna kommer in med EN historikpunkt var, och med tak 40 hade
+     ikapphämtningen tagit två dygn – under vilka `checkShortSeries` (tolerated = 2) larmat
+     `backfill-refused` med den FELAKTIGA orsaken "Yahoo levererar inte historiken (403/404
+     per symbol)". **Ett larm som pekar på fel sak är sämre än inget larm** – det bränner den
+     uppmärksamhet nästa larm behöver. Taket kostar inget i normalläge: urvalet returnerar
+     bara symboler som FAKTISKT är korta, och den listan är nästan tom när alla är ifyllda.
+     Ogiltigt, noll eller negativt värde faller tillbaka på 40 (`parseCap`) – ett tak på 0
+     hade tystat backfillen helt, och det felet är osynligt: den loggar "Inget att göra" och
+     exitar 0. **Kontrollera** att `checkShortSeries` och `checkVolumeBackfill` är tysta efter
+     första dygnskörningen; larmar de ändå är det en ÄKTA Yahoo-vägran, inte ikapphämtningen.
+  8. **KODFIXAD – `scheduled-actions-not-firing` (mitigering, inte bot).** GitHub deprioriterar
+     schemalagda körningar vid hög last och startar dem då inte alls; 2026-08-31 uteblev 0 av 2
+     rotationskritiska crons i `prices.yml`, 0 av 1 i `news.yml`, och lördagscronen i `movers.yml`
+     uteblev 2026-08-29 – samtliga STARTADE körningar hade conclusion `success`. Två ändringar:
+     (a) **crons ligger inte längre på minut 0** (`prices.yml` 7,37/9/9, `movers.yml` 13 6 * * 6;
+     `news.yml` låg redan på minut 17). Ett test i `tests/theme.mjs` vaktar det.
+     (b) **dygnsstegen grindas på DATAT i stället för på en exakt cron-sträng.** De var gatade på
+     `github.event.schedule == '0 5 * * 1-5'`, så en utebliven 05:00-körning hoppade över
+     rapportkalendern och backfillen HELA dygnet trots fjorton senare körningar. Grinden läser nu
+     `wideAt` via `needsDailyRun`, och nästa körning tar igen den uteblivna av sig själv.
+     **Detta botar inte GitHubs köproblem** – det gör bara att en tappad körning inte längre
+     kostar ett helt dygns dygnssteg. **Kontrollera:** att stegen faktiskt körs de dagar 05:00-
+     cronen uteblir.
+  9. **KODFIXAD – `us-rotation-lage-a-missed`.** US-rotationens LÄGE A kördes varken 2026-08-24
+     eller 2026-08-31: `reports/us_weekly/` slutade på `us-veckorapport-260817.md` och
+     `decisions.json` hade noll `book: "us"`-rader för båda datumen. US-boken saknade köpväg i
+     tio handelsdagar utan att något larmade. **Två oberoende luckor gjorde det strukturellt
+     osynligt**, och båda är rimliga var för sig: `checkGrossList` hoppar medvetet över en bok med
+     NOLL rader, och `checkStale`:s decisions-kontroll grindar på `nordic === today`, alltså på den
+     NORDISKA rapportens datum. En US-körning som helt uteblir passerar båda.
+     `watchdog.mjs:checkUsRotation` larmar nu på måndagar när varken dagens us-veckorapport eller
+     en enda US-beslutsrad finns; nyckeln är `us-rotation`. **Verifierat mot repots FAKTISKA data
+     2026-08-31:** kontrollen larmar där HEAD:s watchdog var tyst. **Bruttolistspärren fångar en
+     rotation som loggar för lite; den här fångar en som inte loggar alls – slå aldrig ihop dem.**
+     **Kvar för Dren, och det är den egentliga åtgärden:** watchdogen SER numera felet, men
+     US-rotationen är fortfarande inte körd. Kör `prompts/us_dagligprompt.md` i LÄGE A för hand,
+     annars står US-boken i sleeven en tredje vecka.
 
   Utöver driftlistan återstår **strategiarbete efter den externa granskningen**, som ligger i
   **`docs/STRATEGI-ATGARDER.md`**
