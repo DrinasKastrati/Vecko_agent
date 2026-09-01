@@ -420,6 +420,44 @@
       "decidedBy": "reports/us_daily/us-daglig-260827.md",
       "decidedAt": "2026-08-27",
       "decisionReason": "Sparr f, tekniska filtret punkt 2: reguljar stangning 209,66 under EMA20 214,17 OCH EMA50 210,54, MACD-hist -1,538 fallande fjarde sessionen, RSI 45,8 under 50. Fem grindar holl."
+    },
+    {
+      "id": "260901-CVX",
+      "date": "2026-09-01",
+      "ticker": "CVX",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "macro",
+      "catalystDate": "2026-08-31",
+      "confirmed": true,
+      "thesis": "Hormuz-eskalering (US-strejk mot iranska raketramper 30/8, iransk vedergallning): olja +2-3%, energi bjudet, CVX +2,12% man. Ren large-cap oljepremie-exponering; bear = geopolitisk premie mean-reverterar snabbt (buy the news).",
+      "sourceRef": "Reuters/Washington Times/Bloomberg 2026-08-31; prices.json mt 2026-08-31T20:03:33Z",
+      "price": 206.14,
+      "priceAsOf": "2026-08-31T20:03:33.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-08",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260901-DE",
+      "date": "2026-09-01",
+      "ticker": "DE",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-08-31",
+      "confirmed": true,
+      "thesis": "Baird uppgraderade DE Neutral->Outperform, PT 640->800, pa NA row-crop-efterfragan + tidiga orderprogram (planteringsmaskiner/spridare +mid-single-digit a/a). DE +3,90% man, AGCO +~4%. Bear: analytiker-trigger mjukare an rapport-beat, redan rusat.",
+      "sourceRef": "Investing.com/24-7 Wall St./The Motley Fool 2026-08-31; prices.json mt 2026-08-31T20:00:03Z",
+      "price": 654.91,
+      "priceAsOf": "2026-08-31T20:00:03.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-08",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
