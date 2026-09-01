@@ -15,6 +15,7 @@ const mod = p => import(pathToFileURL(resolve(root, p)).href);
 load("vparse.js"); load("vrender.js");
 const VP = globalThis.window.VParse, VR = globalThis.window.VRender;
 const FP = await mod(".github/scripts/fetch-prices.mjs");
+const BHf = await mod(".github/scripts/backfill-history.mjs");
 
 let pass = 0, fail = 0;
 const ok = (name, cond) => { if (cond) pass++; else { fail++; console.log("  FAIL:", name); } };
@@ -2367,13 +2368,20 @@ ok("prices.yml anropar backfillen – annars fylls korta serier aldrig", (() => 
   const y = readFileSync(resolve(root, ".github/workflows/prices.yml"), "utf8");
   return /backfill-history\.mjs\s+--missing/.test(y);
 })());
-// Två fält, två betydelser: `backfilledAt` = hela universumet fyllt en gång,
-// och en delkörning får inte maskera att det aldrig gjorts.
-ok("--missing-läget rör aldrig backfilledAt", (() => {
-  const src = readFileSync(resolve(root, ".github/scripts/backfill-history.mjs"), "utf8");
-  return /if \(minPoints\) hist\.partialBackfilledAt/.test(src) &&
-         /else\s+hist\.backfilledAt/.test(src);
-})());
+/* Två fält, två betydelser: `backfilledAt` = hela universumet fyllt en gång,
+   och en delkörning får inte maskera att det aldrig gjorts.
+
+   OMSKRIVET 2026-09-01. Testet matchade tidigare den ordagranna källkoden
+   (`if (minPoints) hist.partialBackfilledAt` … `else hist.backfilledAt`) och
+   prövade alltså implementationens FORM, inte dess beteende. Det gjorde det
+   blint för exakt det fall buggen kom in genom: en körning med NAMNGIVNA
+   symboler har inget `minPoints`, tog `else`-grenen och satte `backfilledAt` –
+   vilket 2026-09-01 flyttade fältet från 2026-08-03 till 2026-08-31 efter en
+   körning på elva symboler, och maskerade att ingen full backfill gjorts på en
+   månad. Invarianten prövas nu mot funktionen i stället för mot texten. */
+ok("--missing-läget rör aldrig backfilledAt", !BHf.isFullRun(200, []) && !BHf.isFullRun(200, ["X.ST"]));
+ok("en körning med namngivna symboler rör aldrig backfilledAt", !BHf.isFullRun(null, ["X.ST"]));
+ok("bara en körning över hela universumet sätter backfilledAt", BHf.isFullRun(null, []));
 /* REGRESSIONSVAKT: benchmarken måste ha djup nog för regimfiltret. Utan den
    här assertionen kan filen tunnas ut igen utan att någon märker det – och då
    tillämpar rotationen punkt 2b "i sin strängare riktning" utan att kunna mäta,
@@ -3661,6 +3669,142 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("backfill: taket styr hur många symboler urvalet ger",
      BH.collectShortSymbols(serier, vol, namn, 200, 21, 120).length === 60 &&
      BH.collectShortSymbols(serier, vol, namn, 200, 21, 40).length === 40);
+}
+
+
+/* ---- SERIELUCKOR: den tysta feltypen ingen kontroll mätte (2026-09-01) -----
+
+   Repot hade två mekanismer för att symboler försvinner ur historiken, och bara
+   den ena var känd:
+
+   (1) HELA SYMBOLER slutade hämtas när `collectTickers` läste en enda
+       veckorapport. Åtgärdat 2026-08-17 med recentWeeklies(3) + lastSeen.
+
+   (2) ENSTAKA DAGAR saknas MITT I en serie. Aldrig mätt förrän nu. Yahoo
+       returnerar tidvis `close: null` för en dag, `candlesToSeries` filtrerar
+       bort den, och ingenting fyller den någonsin igen: `--missing=200` väljer
+       bara symboler som är för KORTA, och en 250-punktsserie med hål är inte
+       kort. Felet är därmed SJÄLVLÅSANDE.
+
+   Mätt 2026-09-01: **17 kursserier och 18 volymserier bär hål**, samtliga med
+   >= 200 punkter, alltså utom räckhåll för backfillen. Femton av dem saknar
+   SAMMA dag (2026-07-31), alltså en enda misslyckad hämtning som legat kvar i
+   en månad utan att något blivit rött.
+
+   Varför det inte är kosmetiskt: en EMA/RSI/MACD räknad på indexpositioner
+   antar att två intilliggande punkter ligger EN handelsdag isär. Med ett hål är
+   avståndet två dagar och varje glidande fönster förskjuts – exakt den
+   distorsion CLAUDE.md dokumenterar för fantompunkten, fast åt andra hållet.
+   DFDS.CO, ZEAL.CO, MAERSK-B.CO, NAPA.OL, PDX.ST och NESTE.HE låg alla i
+   bruttolistan 2026-09-01 med hålet i serien. */
+{
+  const BH = await mod(".github/scripts/backfill-history.mjs");
+
+  ok("marknad: nordiska suffix skiljs åt", BH.marketOf("VOLV-B.ST") === ".ST" &&
+     BH.marketOf("EQNR.OL") === ".OL" && BH.marketOf("NOVO-B.CO") === ".CO" &&
+     BH.marketOf("NOKIA.HE") === ".HE");
+  ok("marknad: US-aktier och US-index hamnar i samma hink",
+     BH.marketOf("AAPL") === "US" && BH.marketOf("^GSPC") === "US" && BH.marketOf("^IXIC") === "US");
+  ok("marknad: ^OMX följer Stockholm, inte New York", BH.marketOf("^OMX") === ".ST");
+  /* Dygnet-runt-instrument har ingen handelsdagskalender. Buntas de med aktier
+     hamnar lördagar i kalendern och VARJE aktie ser ut att sakna 79 dagar –
+     det var precis det första mätförsöket 2026-09-01 gjorde fel. */
+  ok("marknad: krypto och valuta har ingen kalender",
+     BH.marketOf("BTC-USD") === null && BH.marketOf("USDSEK=X") === null);
+
+  const dagar = ["2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28"];
+  const full = s => dagar.map((d,i) => [d, 100 + i]);
+  const serier = {
+    "A.ST": full(), "B.ST": full(), "C.ST": full(), "D.ST": full(), "E.ST": full(),
+    // F saknar en dag MITT i sitt eget spann
+    "F.ST": full().filter(r => r[0] !== "2026-08-26"),
+    // G startade senare – det är ingen lucka, bara en kortare serie
+    "G.ST": full().slice(2),
+    "BTC-USD": [["2026-08-29", 1], ["2026-08-30", 2]]
+  };
+  const kal = BH.buildCalendars(serier);
+  ok("kalender: byggs per marknad ur datat självt", kal[".ST"] && kal[".ST"].size === 5);
+  ok("kalender: dygnet-runt-instrument bidrar inte", !kal["BTC-USD"] && !kal[null]);
+
+  const hål = BH.symbolsWithGaps(serier, kal, 3);
+  const namn = hål.map(h => h.sym).sort();
+  ok("luckor: hittar hålet mitt i serien", namn.includes("F.ST"));
+  ok("luckor: en SENARE startpunkt är ingen lucka", !namn.includes("G.ST"));
+  ok("luckor: hela serier flaggas inte", !namn.includes("A.ST") && !namn.includes("B.ST"));
+  ok("luckor: rapporterar vilka datum som fattas",
+     (hål.find(h => h.sym === "F.ST") || {}).missing?.join() === "2026-08-26");
+  ok("luckor: för korta serier prövas inte", BH.symbolsWithGaps(serier, kal, 99).length === 0);
+
+  /* backfilledAt betyder "HELA universumet fyllt en gång" och läses som
+     färskhetsmått. Villkoret var `!minPoints`, alltså sant även för en körning
+     med elva NAMNGIVNA symboler – och 2026-09-01 satte just en sådan körning
+     fältet från 2026-08-03 till 2026-08-31, vilket maskerade att en full
+     backfill inte gjorts på en månad. Två fält, två betydelser. */
+  ok("backfilledAt: full körning utan argument räknas som full", BH.isFullRun(null, []));
+  ok("backfilledAt: --missing-läget är ALDRIG full", !BH.isFullRun(200, []));
+  ok("backfilledAt: namngivna symboler är ALDRIG full", !BH.isFullRun(null, ["SALM.OL"]));
+  ok("backfilledAt: --missing OCH symboler är inte full", !BH.isFullRun(200, ["SALM.OL"]));
+}
+
+/* ---- WATCHDOG: luckor ska vara HÖRBARA -----------------------------------
+   En ren funktion som ingen kontroll anropar upprepar exakt det fel den finns
+   för. checkShortSeries mäter LÄNGD; en 250-punktsserie med hål passerar den. */
+{
+  const WDg = await mod(".github/scripts/watchdog.mjs");
+  const p = WDg.checkSeriesGaps({ gaps: [
+    { sym: "DFDS.CO", missing: ["2026-07-31"] },
+    { sym: "ZEAL.CO", missing: ["2026-07-31"] }] });
+  ok("watchdog: serieluckor larmar", p.length === 1);
+  ok("watchdog: EN samlad nyckel, inte en per symbol", p[0] && p[0].key === "series-gaps");
+  ok("watchdog: larmet namnger symbolerna", p[0] && /DFDS\.CO/.test(p[0].body));
+  ok("watchdog: inga luckor = tyst", WDg.checkSeriesGaps({ gaps: [] }).length === 0);
+  ok("watchdog: saknad data = tyst (bakåtkompatibelt)", WDg.checkSeriesGaps({}).length === 0);
+  /* Toleransen finns för att en enstaka symbol kan ha en legitim handelspaus
+     (halt, flytt mellan listor). Ett HÅL PÅ SAMMA DAG hos flera symboler är
+     däremot alltid vår egen hämtning. */
+  ok("watchdog: en enstaka lucka under toleransen är tyst",
+     WDg.checkSeriesGaps({ gaps: [{ sym: "X.ST", missing: ["2026-07-31"] }], tolerated: 2 }).length === 0);
+}
+
+
+/* ---- RAPPORTKALENDERN: TÄCKNINGSLUCKA ÄR INGET FEL (2026-09-01) ----------
+
+   `errors` ska vara TOM i friskt läge – det är fältet man larmar på. Filens egen
+   kommentar motiverar redan varför 404 (ETF/index/valuta) bröts ut till
+   `notApplicable`: "utan den här uppdelningen är `errors` ALDRIG tom och går
+   därmed inte att larma på".
+
+   Exakt samma sak hände igen med ett annat utfall. Yahoo svarar **200 med giltig
+   JSON men utan rapportdatum** för nordiska små- och medelbolag som den inte
+   täcker. Det klassades som `error: "inget rapportdatum i svaret"` och fastnade
+   permanent: KABE-B.ST och STAR-B.ST i v35, plus MGN.OL i v36 och PARKEN.CO i
+   v36-extra – fyra symboler, rapporterat som ÅTERKOMMANDE åtgärdspunkt tre
+   veckor i rad, och fältet var därmed lika verkningslöst som före 404-fixen.
+
+   Täckningslucka och hämtningsfel kräver olika åtgärd: den ena är Yahoos
+   utbudsgräns och kan inte åtgärdas, den andra är vår egen kedja och måste
+   åtgärdas. De ska därför inte dela hink. */
+{
+  const EC = await mod(".github/scripts/earnings-calendar.mjs");
+  const auth = { cookie: "c", crumb: "x" };
+  const svar = (status, body) => async () => ({
+    status, ok: status >= 200 && status < 300, json: async () => body });
+
+  const utanDatum = await EC.fetchCalendar("KABE-B.ST", auth,
+    svar(200, { quoteSummary: { result: [{ calendarEvents: {} }] } }));
+  ok("kalender: 200 utan rapportdatum är en TÄCKNINGSLUCKA, inte ett fel",
+     !!utanDatum.noCoverage && !utanDatum.error);
+  const ejTillämpligt = await EC.fetchCalendar("SPY", auth, svar(404, {}));
+  ok("kalender: 404 är fortsatt notApplicable",
+     !!ejTillämpligt.notApplicable && !ejTillämpligt.error && !ejTillämpligt.noCoverage);
+  const riktigtFel = await EC.fetchCalendar("AAPL", auth, svar(500, {}));
+  ok("kalender: HTTP 500 är fortfarande ett FEL", riktigtFel.error === "HTTP 500");
+  const kastar = await EC.fetchCalendar("AAPL", auth, async () => { throw new Error("nät nere"); });
+  ok("kalender: nätavbrott är fortfarande ett FEL", /nät nere/.test(kastar.error || ""));
+  /* Hela poängen: errors måste kunna bli tom igen, annars går den inte att
+     larma på – vilket är samma slutsats som 404-fixen drog. */
+  ok("kalender: en täckningslucka hamnar ALDRIG i errors",
+     !utanDatum.error && utanDatum.noCoverage !== undefined);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

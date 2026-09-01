@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T23:04:28.161Z",
+  "generatedAt": "2026-09-01T00:05:47.465Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -7,33 +7,14 @@
   "counts": {
     "requested": 101,
     "resolved": 95,
-    "failed": 4,
+    "failed": 0,
     "notApplicable": 2,
-    "upcoming": 3
+    "noCoverage": 4,
+    "upcoming": 1
   },
   "upcoming": [
     {
-      "tradingDaysAway": 0,
-      "symbol": "ASA.OL",
-      "date": "2026-08-31",
-      "isEstimate": false,
-      "epsConsensus": null,
-      "epsLow": null,
-      "epsHigh": null,
-      "revenueConsensus": null
-    },
-    {
-      "tradingDaysAway": 0,
-      "symbol": "BAKKA.OL",
-      "date": "2026-08-31",
-      "isEstimate": false,
-      "epsConsensus": 3.67215,
-      "epsLow": 3.01646,
-      "epsHigh": 4.2,
-      "revenueConsensus": 2237841480
-    },
-    {
-      "tradingDaysAway": 2,
+      "tradingDaysAway": 1,
       "symbol": "AVGO",
       "date": "2026-09-02",
       "isEstimate": false,
@@ -900,14 +881,15 @@
       "revenueConsensus": 10388106670
     }
   ],
-  "errors": {
-    "KABE-B.ST": "inget rapportdatum i svaret",
-    "MGN.OL": "inget rapportdatum i svaret",
-    "PARKEN.CO": "inget rapportdatum i svaret",
-    "STAR-B.ST": "inget rapportdatum i svaret"
-  },
+  "errors": {},
   "notApplicable": {
     "SPY": "instrumentet har inga rapporter (ETF/index/valuta)",
     "XACT-OMXS30.ST": "instrumentet har inga rapporter (ETF/index/valuta)"
+  },
+  "noCoverage": {
+    "KABE-B.ST": "Yahoo har ingen rapportkalender for symbolen",
+    "MGN.OL": "Yahoo har ingen rapportkalender for symbolen",
+    "PARKEN.CO": "Yahoo har ingen rapportkalender for symbolen",
+    "STAR-B.ST": "Yahoo har ingen rapportkalender for symbolen"
   }
 }

@@ -436,5 +436,103 @@ ok("config/push.json finns och saknar privat nyckel",
   }
 }
 
+
+/* ---- ÅTGÄRDERNA FRÅN 2026-09-01 ÄR FAKTISKT INKOPPLADE -------------------
+
+   Hela poängen med dagens genomgång var att en ren funktion som ingen anropar
+   upprepar precis det fel den finns för. backfill-history.mjs låg oanropad i
+   fjorton dagar 2026-08; checkSeriesGaps och gap-urvalet får inte gå samma väg. */
+{
+  const bh = readFileSync(join(root, ".github", "scripts", "backfill-history.mjs"), "utf8");
+  ok("backfill: urvalet tar med serier som har HÅL, inte bara korta",
+     /symbolsWithGaps\(hist\.series/.test(bh) && /symbolsWithGaps\(vol\.series/.test(bh));
+  ok("backfill: hålen läggs FÖRE de korta i urvalet (de självläker aldrig)",
+     /\[\.\.\.new Set\(\[\.\.\.hål, \.\.\.korta\]\)\]/.test(bh));
+  ok("backfill: backfilledAt sätts bara av en FULL körning",
+     /isFullRun\(minPoints, only\)\s*\)\s*hist\.backfilledAt/.test(bh));
+  ok("backfill: en delkörning rör aldrig backfilledAt",
+     !/else\s+hist\.backfilledAt/.test(bh) && /partialBackfilledAt\s*=/.test(bh));
+
+  const wd = readFileSync(join(root, ".github", "scripts", "watchdog.mjs"), "utf8");
+  ok("watchdog: checkSeriesGaps anropas av main",
+     /problems\.push\(\.\.\.checkSeriesGaps\(\{ gaps \}\)\)/.test(wd));
+  ok("watchdog: luckorna räknas ur BÅDA serierna",
+     /symbolsWithGaps\(histSeries/.test(wd) && /symbolsWithGaps\(volumeSeries/.test(wd));
+
+  const yml = readFileSync(join(root, ".github", "workflows", "prices.yml"), "utf8");
+  ok("prices.yml: backfillen körs med --missing (annars nås varken korta eller hål)",
+     /backfill-history\.mjs\s+--missing=200/.test(yml));
+}
+
+
+/* ---- METATEST: EN KONTROLL SOM INGEN ANROPAR ÄR INGEN KONTROLL -----------
+
+   Detta är repots mest återkommande feltyp, och den har slagit till minst fyra
+   gånger:
+     * backfill-history.mjs skrevs 2026-08-03 och anropades av INGEN workflow –
+       upptäckt 2026-08-17, fjorton dagar senare.
+     * digest.yml triggade bara på push mot main, som GITHUB_TOKEN aldrig startar –
+       noll körningar på en vecka.
+     * theme.mjs DEL B, data.mjs och sim.mjs hoppade tyst över sig själva i CI
+       eftersom jsdom aldrig installerades – 227 påståenden var dekoration.
+     * checkSeriesGaps hade inte funnits alls om luckorna inte mätts för hand
+       2026-09-01; ingen kontroll läste serie-KONTINUITET, bara längd.
+
+   Gemensamt: koden fanns, den var riktig, och ingenting körde den. En ny
+   watchdog-kontroll som inte kopplas in i main upprepar exakt det felet, och
+   det syns inte i någon diff. Därför prövas KOPPLINGEN här, inte bara logiken.
+
+   Regeln: varje `export function check…` i watchdog.mjs MÅSTE (a) anropas inne
+   i main() och (b) ha minst ett test i tests/run.mjs. */
+{
+  const wdSrc = readFileSync(join(root, ".github", "scripts", "watchdog.mjs"), "utf8");
+  const mainIdx = wdSrc.indexOf("\nfunction main()");
+  ok("watchdog: main() går att hitta (annars mäter metatestet ingenting)", mainIdx > 0);
+  const mainBody = mainIdx > 0 ? wdSrc.slice(mainIdx) : "";
+  const körSrc = readFileSync(join(root, "tests", "run.mjs"), "utf8");
+  const checkar = [...wdSrc.matchAll(/export function (check\w+)/g)].map(m => m[1]);
+
+  ok("watchdog: metatestet hittar kontrollerna", checkar.length >= 14);
+  const okopplade = checkar.filter(n => !mainBody.includes(n + "("));
+  ok("watchdog: VARJE check-funktion anropas av main" +
+     (okopplade.length ? " – okopplade: " + okopplade.join(", ") : ""), okopplade.length === 0);
+  const otestade = checkar.filter(n => !körSrc.includes(n));
+  ok("watchdog: VARJE check-funktion har ett test i run.mjs" +
+     (otestade.length ? " – otestade: " + otestade.join(", ") : ""), otestade.length === 0);
+
+  /* Nycklarna styr dedupen i issue-sync.mjs och ligger i en HTML-kommentar i
+     brödtexten, aldrig i titeln. En nyckel som råkar delas av två OLIKA problem
+     gör att det ena stänger det andras issue. Undantaget är en och samma
+     kontroll med två ömsesidigt uteslutande grenar (earnings-calendar), där
+     samma nyckel är avsikten. */
+  const nycklar = [...wdSrc.matchAll(/key:\s*"([a-z0-9-]+)"/g)].map(m => m[1]);
+  const räkning = {};
+  for (const k of nycklar) räkning[k] = (räkning[k] || 0) + 1;
+  const oväntade = Object.entries(räkning).filter(([k, n]) => n > 1 && k !== "earnings-calendar");
+  ok("watchdog: inga OAVSIKTLIGA dubblettnycklar" +
+     (oväntade.length ? " – " + oväntade.map(([k, n]) => k + "×" + n).join(", ") : ""),
+     oväntade.length === 0);
+}
+
+
+/* ---- RAPPORTKALENDERN: TRE HINKAR, TRE BETYDELSER (2026-09-01) -----------
+   `errors` ska kunna bli TOM – det är fältet man larmar på. Två gånger har ett
+   normalt utfall hamnat där och gjort fältet verkningslöst: 404 för ETF/index
+   (åtgärdat med `notApplicable`) och 200-utan-rapportdatum för nordiska
+   små-/medelbolag Yahoo inte täcker (åtgärdat med `noCoverage`, efter att fyra
+   symboler legat kvar och rapporterats som ÅTERKOMMANDE tre veckor i rad). */
+{
+  const ec = readFileSync(join(root, ".github", "scripts", "earnings-calendar.mjs"), "utf8");
+  ok("kalender: täckningslucka har en EGEN hink, inte errors",
+     /noCoverage:\s*"/.test(ec) && !/error:\s*"inget rapportdatum/.test(ec));
+  ok("kalender: noCoverage bucketas i run()",
+     /else if \(r && r\.noCoverage\) noCoverage\[s\]/.test(ec));
+  ok("kalender: noCoverage skrivs till filen",
+     /^\s*noCoverage\s*$/m.test(ec) || /noCoverage\s*[,}]/.test(ec));
+  ok("kalender: 404 ligger kvar som notApplicable",
+     /notApplicable:\s*"instrumentet har inga rapporter/.test(ec));
+  ok("kalender: ett HTTP-fel är fortfarande ett fel", /error:\s*"HTTP "\s*\+\s*r\.status/.test(ec));
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

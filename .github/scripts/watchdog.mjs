@@ -13,6 +13,7 @@
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { staleCandidates } from "./validate-scout-candidates.mjs";
 import { postCatalystQuote } from "./refresh-candidate-prices.mjs";
+import { symbolsWithGaps, buildCalendars } from "./backfill-history.mjs";
 
 // Senaste rapportdatum (yymmdd) bland filnamn med givet prefix, eller null.
 export function latestReportDate(files, prefix){
@@ -562,6 +563,56 @@ export function checkShortSeries(opts){
   return problems;
 }
 
+/* SERIELUCKOR ÄR TYSTA (ny kontroll 2026-09-01).
+
+   `checkShortSeries` mäter LÄNGD. En serie på 250 punkter med ett hål mitt i
+   passerar den utan anmärkning, och `backfill-history.mjs --missing=200` väljer
+   bara symboler som är för korta – alltså kan hålet aldrig fyllas av sig självt.
+   Felet är självlåsande, och 2026-09-01 mättes 17 kursserier och 18 volymserier
+   med hål, varav femton saknade SAMMA dag (2026-07-31). Det hade legat i en
+   månad utan att något blivit rött.
+
+   Varför det spelar roll: EMA/RSI/MACD räknas på indexpositioner och antar att
+   två intilliggande punkter ligger EN handelsdag isär. Ett hål förskjuter varje
+   glidande fönster – samma klass av fel som fantompunkten, fast åt andra hållet.
+
+   EN SAMLAD NYCKEL, inte en per symbol: till skillnad från döda nyhetsflöden
+   och åtgärdspunkter är luckorna nästan alltid SAMMA händelse (en misslyckad
+   hämtning träffar alla symboler samtidigt), och ett issue per symbol hade gett
+   sjutton issues för ett fel. Titeln bär därför inget antal – det skulle
+   återskapa dedupe-buggen `issue-sync.mjs` byggdes för att lösa.
+
+   `tolerated` finns för att en ENSTAKA symbol kan ha en legitim handelspaus
+   (handelsstopp, listbyte, namnbyte). Ett hål på samma dag hos flera symboler
+   är däremot alltid vår egen hämtning. */
+export function checkSeriesGaps(opts){
+  const { gaps, tolerated = 1 } = opts || {};
+  if (!Array.isArray(gaps) || gaps.length <= tolerated) return [];
+  const punkter = gaps.reduce((s, g) => s + ((g.missing || []).length), 0);
+  const datum = {};
+  for (const g of gaps) for (const d of (g.missing || [])) datum[d] = (datum[d] || 0) + 1;
+  const värst = Object.entries(datum).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  return [{ key: "series-gaps",
+    title: "Watchdog: kursserier har hål mitt i (backfillen når dem aldrig)",
+    body: "**" + gaps.length + " serie(r) saknar dagar INOM sitt eget spann**, totalt " +
+      punkter + " punkt(er). Detta är INTE samma sak som en kort serie: " +
+      "`backfill-history.mjs --missing=200` väljer bara symboler som är för KORTA, " +
+      "så ett hål i en 250-punktsserie kan aldrig fyllas av sig självt – felet är " +
+      "självlåsande.\n\n" +
+      "Vanligaste orsaken är att Yahoo returnerat `close: null` för en dag som " +
+      "faktiskt handlades; `candlesToSeries` filtrerar korrekt bort den, men " +
+      "ingenting fyller den igen.\n\n" +
+      "**Varför det inte är kosmetiskt:** EMA/RSI/MACD räknas på indexpositioner och " +
+      "antar en handelsdag mellan två punkter. Ett hål förskjuter varje glidande " +
+      "fönster, alltså exakt de värden grind 2 avgörs av.\n\n" +
+      "Mest drabbade datum: " + värst.map(([d, n]) => "`" + d + "` (" + n + " symboler)").join(", ") +
+      ".\nSymboler: " + gaps.slice(0, 12).map(g => "`" + g.sym + "`").join(", ") +
+      (gaps.length > 12 ? " m.fl." : "") + "\n\n" +
+      "Åtgärd: `node .github/scripts/backfill-history.mjs --missing=200 1y` fyller dem " +
+      "sedan 2026-09-01, eftersom urvalet numera tar med symboler som har hål och inte " +
+      "bara symboler som är för korta." }];
+}
+
 /* BESLUTSUTVÄRDERINGEN SLUTAR TYST (ny 2026-08-26).
 
    Steget "Utvärdera beslutsloggen mot efterföljande kurs" i `prices.yml` har
@@ -796,6 +847,11 @@ function main(){
   problems.push(...checkShortSeries({ now, series: histSeries, quotes: priceQuotes,
     partialBackfilledAt }));
   problems.push(...checkVolumeBackfill({ volumeSeries, quotes: priceQuotes }));
+  // Serieluckor: checkShortSeries mäter LÄNGD, en 250-punktsserie med hål
+  // passerar den. Kalendern byggs ur datat självt i backfill-history.mjs.
+  const gaps = [...symbolsWithGaps(histSeries || {}, buildCalendars(histSeries || {})),
+                ...symbolsWithGaps(volumeSeries || {}, buildCalendars(volumeSeries || {}))];
+  problems.push(...checkSeriesGaps({ gaps }));
   problems.push(...checkNewsFeeds({ feeds: newsFeeds }));
   let evalDb = null;
   try { evalDb = JSON.parse(readFileSync("state/decision_eval.json", "utf8")); } catch {}

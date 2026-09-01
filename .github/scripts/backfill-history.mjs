@@ -216,6 +216,95 @@ export function parseCap(args = [], fallback = 40){
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+/* SERIELUCKOR (2026-09-01) – den andra sortens "symbol saknas".
+
+   Repot kände en mekanism för att data försvinner ur historiken: HELA SYMBOLER
+   slutade hämtas när collectTickers läste en enda veckorapport (åtgärdat
+   2026-08-17 med recentWeeklies(3) + lastSeen). Det finns en andra, som aldrig
+   mättes: ENSTAKA DAGAR saknas MITT I en serie.
+
+   MEKANISMEN: Yahoos chart-API returnerar tidvis `close: null` för en dag som i
+   själva verket handlades. candlesToSeries filtrerar bort null-stängningar –
+   korrekt, ett påhittat värde vore värre – men ingenting fyller dagen någonsin
+   igen. `--missing=200` väljer bara symboler som är för KORTA, och en
+   250-punktsserie med hål är inte kort. Felet är därför SJÄLVLÅSANDE och
+   permanent.
+
+   MÄTT 2026-09-01: 17 kursserier och 18 volymserier bar hål, samtliga med
+   >= 200 punkter. Femton saknade SAMMA dag (2026-07-31) – en enda misslyckad
+   hämtning som legat kvar i en månad utan att något blivit rött, eftersom ingen
+   kontroll mäter KONTINUITET, bara LÄNGD.
+
+   VARFÖR DET INTE ÄR KOSMETISKT: varje glidande medelvärde räknat på
+   indexpositioner antar att två intilliggande punkter ligger EN handelsdag
+   isär. Med ett hål är avståndet två dagar och fönstret förskjuts – samma klass
+   av distorsion som fantompunkten 2026-08-17, fast åt andra hållet.
+
+   KALENDERN BYGGS UR DATAT SJÄLVT, inte ur en hårdkodad helgdagslista: en dag
+   räknas som handelsdag på en marknad när minst hälften av marknadens symboler
+   har den. Det är självkalibrerande och kräver ingen underhållen kalender. */
+export function marketOf(sym){
+  if (typeof sym !== "string" || !sym) return null;
+  if (sym.endsWith("-USD")) return null;          // krypto handlas dygnet runt
+  if (sym.includes("=X"))   return null;          // valutapar likaså
+  if (sym === "^OMX")       return ".ST";         // nordiskt index följer Stockholm
+  if (sym.startsWith("^"))  return "US";          // ^GSPC/^IXIC följer New York
+  if (sym.includes("."))    return sym.slice(sym.lastIndexOf("."));
+  return "US";
+}
+
+/* Dygnet-runt-instrument måste undantas HELT. Buntas de med aktier hamnar
+   lördagar i kalendern och varje aktie ser ut att sakna ~79 dagar – exakt det
+   fel det första mätförsöket 2026-09-01 gjorde, innan bucketen rättades. */
+export function buildCalendars(series, minShare = 0.5, minSymbols = 5){
+  const räknare = {}, antal = {};
+  for (const [sym, arr] of Object.entries(series || {})){
+    const m = marketOf(sym);
+    if (!m || !Array.isArray(arr) || !arr.length) continue;
+    antal[m] = (antal[m] || 0) + 1;
+    (räknare[m] ||= {});
+    for (const rad of arr) if (rad && rad[0]) räknare[m][rad[0]] = (räknare[m][rad[0]] || 0) + 1;
+  }
+  const ut = {};
+  for (const [m, dagar] of Object.entries(räknare)){
+    const tröskel = Math.max(Math.min(minSymbols, antal[m]), Math.floor(antal[m] * minShare));
+    ut[m] = new Set(Object.entries(dagar).filter(([, n]) => n >= tröskel).map(([d]) => d));
+  }
+  return ut;
+}
+
+/* Bara hål INOM symbolens EGET spann räknas. En serie som börjar senare än
+   marknaden saknar ingenting – den är bara yngre, och att behandla det som en
+   lucka hade gjort varje nyinlagd ticker permanent "trasig". */
+export function symbolsWithGaps(series, calendars, minPoints = 30){
+  const ut = [];
+  for (const [sym, arr] of Object.entries(series || {})){
+    const m = marketOf(sym);
+    if (!m || !Array.isArray(arr) || arr.length < minPoints) continue;
+    const kal = calendars && calendars[m];
+    // Kalendern måste bära minst lika många dagar som vi kräver av en serie för
+    // att den ska dömas. Ett fast tal här vore godtyckligt och stängde dessutom
+    // ute varje liten marknad; kopplingen till minPoints är självkonsistent.
+    if (!kal || kal.size < minPoints) continue;
+    const har = new Set(arr.map(r => r && r[0]).filter(Boolean));
+    const första = arr[0][0], sista = arr[arr.length - 1][0];
+    const missing = [...kal].filter(d => d >= första && d <= sista && !har.has(d)).sort();
+    if (missing.length) ut.push({ sym, points: arr.length, missing });
+  }
+  return ut.sort((a, b) => b.missing.length - a.missing.length || (a.sym < b.sym ? -1 : 1));
+}
+
+/* backfilledAt betyder "HELA universumet fyllt en gång" och läses som
+   färskhetsmått av rapporterna. Villkoret var tidigare bara `!minPoints`,
+   alltså sant även för en körning med NAMNGIVNA symboler – och 2026-09-01
+   satte en sådan körning (elva symboler) fältet från 2026-08-03 till
+   2026-08-31 och maskerade att ingen full backfill gjorts på en månad.
+   Två fält, två betydelser: en körning är FULL bara när den varken filtrerar
+   på serielängd eller på en symbollista. */
+export function isFullRun(minPoints, only){
+  return !minPoints && (!only || only.length === 0);
+}
+
 async function main(){
   const args = process.argv.slice(2).filter(Boolean);
   const missingArg = args.find(a => a === "--missing" || a.startsWith("--missing="));
@@ -247,9 +336,23 @@ async function main(){
     if (existsSync(f)) wl.push(readFileSync(f, "utf8"));
 
   const candidates = only.length ? only : collectSymbols(hist.series, wl);
-  const symbols = minPoints
-    ? collectShortSymbols(hist.series, vol.series, candidates, minPoints, 21, cap)
-    : candidates;
+  /* URVALET TAR NUMERA BÅDE KORTA SERIER OCH SERIER MED HÅL (2026-09-01).
+     Hålen ligger FÖRST i listan, före de korta, och det är avsiktligt: en kort
+     serie växer en punkt per handelsdag av sig själv, medan ett hål mitt i en
+     250-punktsserie ALDRIG fylls – urvalet såg bara på längd, så symbolen var
+     permanent utom räckhåll. Taket gäller unionen. */
+  let symbols;
+  if (minPoints){
+    const korta = collectShortSymbols(hist.series, vol.series, candidates, minPoints, 21, cap);
+    const iUniversum = new Set(candidates);
+    const hål = [...symbolsWithGaps(hist.series, buildCalendars(hist.series)),
+                 ...symbolsWithGaps(vol.series, buildCalendars(vol.series))]
+                .map(g => g.sym).filter(x => iUniversum.has(x));
+    symbols = [...new Set([...hål, ...korta])].slice(0, cap);
+    if (hål.length)
+      console.log("  varav " + new Set(hål).size + " symbol(er) med HÅL i serien " +
+                  "(de nås aldrig av längdkravet – se symbolsWithGaps)");
+  } else symbols = candidates;
   const today = new Date().toISOString().slice(0, 10);
   if (minPoints)
     console.log(`Backfyller ${symbols.length} av ${candidates.length} symboler ` +
@@ -289,8 +392,11 @@ async function main(){
   hist.generatedAt = new Date().toISOString();
   // Se huvudet: delkörningar rör ALDRIG backfilledAt, som betyder "hela
   // universumet fyllt en gång" och läses som färskhetsmått av rapporterna.
-  if (minPoints) hist.partialBackfilledAt = new Date().toISOString();
-  else           hist.backfilledAt        = new Date().toISOString();
+  // isFullRun (2026-09-01): villkoret var tidigare bara !minPoints, alltså sant
+  // aven for en korning med NAMNGIVNA symboler - och en sadan korning satte faltet
+  // 2026-09-01 och maskerade att ingen full backfill gjorts pa en manad.
+  if (isFullRun(minPoints, only)) hist.backfilledAt        = new Date().toISOString();
+  else                            hist.partialBackfilledAt = new Date().toISOString();
   mkdirSync("state", { recursive: true });
   writeFileSync(path, JSON.stringify(hist) + "\n");
   if (volAdded || Object.keys(vol.series).length){

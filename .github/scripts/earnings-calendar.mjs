@@ -171,7 +171,14 @@ export async function fetchCalendar(symbol, auth, fetchImpl = globalThis.fetch){
     if (r.status === 404) return { symbol, notApplicable: "instrumentet har inga rapporter (ETF/index/valuta)" };
     if (!r.ok) return { symbol, error: "HTTP " + r.status };
     const parsed = parseCalendarEvents(await r.json(), symbol);
-    return parsed || { symbol, error: "inget rapportdatum i svaret" };
+    /* 200 med giltig JSON men UTAN rapportdatum ar en TACKNINGSLUCKA hos Yahoo,
+       inte ett fel i var kedja. Nordiska sma- och medelbolag saknas ofta helt i
+       calendarEvents. Klassades det som error fastnade det permanent i faltet:
+       KABE-B.ST och STAR-B.ST fran v35, plus MGN.OL och PARKEN.CO, alltsa fyra
+       symboler rapporterade som ATERKOMMANDE atgardspunkt tre veckor i rad – och
+       da gick  inte langre att larma pa. Exakt samma slutsats som
+       404-uppdelningen ovan drog. Tva utfall, tva hinkar. */
+    return parsed || { symbol, noCoverage: "Yahoo har ingen rapportkalender for symbolen" };
   } catch (e) { return { symbol, error: String(e && e.message || e) }; }
 }
 
@@ -188,10 +195,11 @@ export async function run(fetchImpl = globalThis.fetch){
     return null;
   }
   console.log(`Hämtar rapportdatum för ${symbols.length} symboler…`);
-  const entries = [], errors = {}, notApplicable = {};
+  const entries = [], errors = {}, notApplicable = {}, noCoverage = {};
   for (const s of symbols){
     const r = await fetchCalendar(s, auth, fetchImpl);
     if (r && r.notApplicable) notApplicable[s] = r.notApplicable;
+    else if (r && r.noCoverage) noCoverage[s] = r.noCoverage;
     else if (r && r.error) errors[s] = r.error;
     else if (r) entries.push(r);
     await sleep(250);
@@ -209,13 +217,15 @@ export async function run(fetchImpl = globalThis.fetch){
     counts: { requested: symbols.length, resolved: entries.length,
               failed: Object.keys(errors).length,
               notApplicable: Object.keys(notApplicable).length,
+              noCoverage: Object.keys(noCoverage).length,
               upcoming: upcoming.length },
     upcoming,
     all: entries.sort((a, b) => String(a.date).localeCompare(String(b.date))),
     // `errors` ska vara TOM i friskt läge – det är vad man larmar på.
     // Instrument utan rapporter (ETF/index/valuta) ligger separat.
     errors,
-    notApplicable
+    notApplicable,
+    noCoverage
   };
   writeFileSync("state/earnings_calendar.json", JSON.stringify(out, null, 2) + "\n");
   console.log(`Skrev state/earnings_calendar.json: ${entries.length}/${symbols.length} lösta, ` +
