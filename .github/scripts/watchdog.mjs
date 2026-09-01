@@ -392,8 +392,23 @@ export function checkStalePricedBubblare(opts){
   const tickers = bubblareFromWeekly(weeklyMd);
   if (!tickers.length) return problems;
   const rows = decisionsDb.decisions || [];
+  /* SAMMA DAG RÄKNAS OM RADEN BÄR EN KURS (fix 2026-09-01).
+
+     Villkoret var bara `r.date > weeklyDate`, alltså STRIKT efter. Men
+     veckorotationen poängsätter själv hela bubblarlistan och loggar en rad per
+     kandidat SAMMA dag, så kontrollen larmade varje rotationsdag på bubblare den
+     just tagit ställning till – mellan rotationen 06:40 UTC och nästa dags
+     LÄGE B. Ett larm som går varje måndag av konstruktion tränar bort läsaren,
+     vilket är värre än inget larm.
+
+     Kontrollens syfte står i dess egen brödtext: fånga en bubblare som
+     rotationen INTE kunde prissätta. Det avgörs ur raden själv – `price: null`
+     betyder att kursen saknades (prompternas punkt 0 kräver att sådana ändå
+     loggas), ett tal betyder att den fanns och att kandidaten bedömdes med den.
+     En rad EFTER veckorapporten avgör som förut, oavsett kurs. */
   const decided = new Set(rows
-    .filter(r => r && typeof r.date === "string" && r.date > weeklyDate)
+    .filter(r => r && typeof r.date === "string" &&
+      (r.date > weeklyDate || (r.date === weeklyDate && r.price != null)))
     .map(r => r.ticker));
   const stuck = tickers.filter(t => {
     const q = quotes[t];

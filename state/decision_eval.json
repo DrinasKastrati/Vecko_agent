@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-08-31T23:36:11.316Z",
+ "generatedAt": "2026-09-01T00:18:09.429Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 351,
-  "measurable": 351,
+  "decisions": 383,
+  "measurable": 383,
   "missing": 0,
-  "pending": 108
+  "pending": 140
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -5767,6 +5767,326 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Teknik/programvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "TSLA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fordon/teknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "DE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industri/lantbruksmaskiner",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare/minne",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara/analys",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "AMAT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledarutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "PAYC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara/lon",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara/spel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "AVGO",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "AMZN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "E-handel/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "TSM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledartillverkning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MRVL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "IREN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Datacenter/krypto",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "ANET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Natverksutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Sociala medier",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MSFT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "GOOGL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Sok/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "AAPL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Konsumentelektronik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "SMCI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Serverhardvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "NET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Molninfrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "TEAM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "COIN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kryptobors",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MSTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Programvara/bitcoinreserv",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "INTC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "XOM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "JPM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Bank",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "WFC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Bank",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "WMT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MARA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kryptobrytning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "RIOT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kryptobrytning",
    "reconstructed": false,
    "fwd": {}
   }

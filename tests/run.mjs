@@ -3807,5 +3807,48 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      !utanDatum.error && utanDatum.noCoverage !== undefined);
 }
 
+
+/* ---- BUBBLAR-KONTROLLEN LARMADE PÅ SIN EGEN ROTATIONSDAG (fix 2026-09-01) --
+
+   Villkoret var `r.date > weeklyDate`, alltså STRIKT efter veckorapportens datum.
+   Men veckorotationen poängsätter själv HELA bubblarlistan och loggar en rad per
+   kandidat SAMMA dag. Följden: mellan rotationen (06:40 UTC) och nästa dags
+   LÄGE B larmade kontrollen varje vecka på bubblare den just tagit ställning
+   till. Ett larm som går varje måndag av konstruktion tränar bort läsaren.
+
+   Kontrollens FAKTISKA syfte står i dess egen brödtext: "En bubblare som bara
+   stoppades av att kursen saknades ska få en villkorad plan i LÄGE B så snart
+   kursen finns." Den ska alltså fånga en bubblare som rotationen INTE kunde
+   prissätta. Det går att avgöra ur beslutsloggen: rotationens rad bär
+   `price: null` när kursen saknades och ett tal när den fanns.
+
+   Ny regel: en rad daterad EFTER veckorapporten avgör som förut, och en rad
+   daterad SAMMA dag avgör OM den bär en kurs. En samma-dag-rad med
+   `price: null` gör det inte – den dokumenterar just att kursen saknades. */
+{
+  const WDb = await mod(".github/scripts/watchdog.mjs");
+  const md = "## Bubblare (watchlist inför nästa vecka)\n1. **Alfa (AAA.ST)** – text\n2. **Beta (BBB.ST)** – text\n";
+  const q = { "AAA.ST": { price: 10, marketTime: "2026-09-01T15:00:00Z" },
+              "BBB.ST": { price: 20, marketTime: "2026-09-01T15:00:00Z" } };
+  const kör = rows => WDb.checkStalePricedBubblare({
+    weeklyMd: md, weeklyDate: "2026-09-01", quotes: q,
+    decisionsDb: { decisions: rows }, book: "nordic" });
+
+  ok("bubblare: rotationens EGNA rader samma dag räknas som avgörande",
+     kör([{ date: "2026-09-01", ticker: "AAA.ST", price: 10 },
+          { date: "2026-09-01", ticker: "BBB.ST", price: 20 }]).length === 0);
+  ok("bubblare: en samma-dag-rad UTAN kurs avgör inte – det var ju kursen som fattades",
+     kör([{ date: "2026-09-01", ticker: "AAA.ST", price: null },
+          { date: "2026-09-01", ticker: "BBB.ST", price: 20 }]).length === 1);
+  ok("bubblare: en rad EFTER veckorapporten avgör som förut, även utan kurs",
+     kör([{ date: "2026-09-02", ticker: "AAA.ST", price: null },
+          { date: "2026-09-01", ticker: "BBB.ST", price: 20 }]).length === 0);
+  ok("bubblare: helt oavgjord bubblare larmar fortfarande",
+     kör([{ date: "2026-09-01", ticker: "BBB.ST", price: 20 }]).length === 1);
+  ok("bubblare: en rad FÖRE veckorapporten avgör aldrig",
+     kör([{ date: "2026-08-31", ticker: "AAA.ST", price: 10 },
+          { date: "2026-08-31", ticker: "BBB.ST", price: 20 }]).length === 1);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
