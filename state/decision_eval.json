@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-01T00:18:09.429Z",
+ "generatedAt": "2026-09-01T06:52:19.764Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 383,
-  "measurable": 383,
+  "decisions": 389,
+  "measurable": 389,
   "missing": 0,
-  "pending": 140
+  "pending": 146
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -6087,6 +6087,66 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Kryptobrytning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Livsmedel/vattenbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "BWE.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "CADLR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Offshore vind",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "SKA-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Bygg",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "KINV-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Investmentbolag",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Bioteknik",
    "reconstructed": false,
    "fwd": {}
   }
