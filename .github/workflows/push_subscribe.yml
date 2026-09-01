@@ -27,7 +27,7 @@ jobs:
     # Actions-listan och utan ett enda felmeddelande. Symptomet blev att
     # push_subs.json aldrig dök upp och inga notiser kom fram.
     # Lägg till ett konto här, inte en ny gren i logiken.
-    if: ${{ contains(fromJSON('["DrinasKastrati","Drinas-k"]'), github.event.issue.user.login) && startsWith(github.event.issue.title, 'push:') }}
+    if: ${{ contains(fromJSON('["DrinasKastrati","Drinas-k", "ravipatel9800-hue"]'), github.event.issue.user.login) && startsWith(github.event.issue.title, 'push:') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
