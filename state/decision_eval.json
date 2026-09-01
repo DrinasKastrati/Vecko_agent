@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-01T12:33:08.760Z",
+ "generatedAt": "2026-09-01T13:46:41.853Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 389,
-  "measurable": 389,
+  "decisions": 395,
+  "measurable": 395,
   "missing": 0,
-  "pending": 140
+  "pending": 146
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -6195,6 +6195,66 @@
    "action": "AVVAKTA",
    "catalystType": "insider",
    "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "DE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industri",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "TSLA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bilindustri",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-01",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Mjukvara",
    "reconstructed": false,
    "fwd": {}
   }
