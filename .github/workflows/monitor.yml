@@ -9,6 +9,10 @@ on:
         description: "Skicka en testnotis till registrerade enheter i stället för att leta signaler"
         type: boolean
         default: false
+      forhandsvisning:
+        description: "Skicka ETT exempel av varje sort (KOP/SALJ, larm och beslut) - fyra notiser"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -30,7 +34,7 @@ jobs:
         with:
           node-version: "20"
       - name: Kör monitor (LLM-fritt, inga tokens)
-        if: ${{ inputs.testnotis != true }}
+        if: ${{ inputs.testnotis != true && inputs.forhandsvisning != true }}
         run: node .github/scripts/alerts.mjs
       # Push till telefonen. Ligger HÄR, inte i en egen workflow som lyssnar på
       # push mot main: GitHub startar inga workflows för commits gjorda med den
@@ -41,7 +45,7 @@ jobs:
         env:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
-        run: node .github/scripts/push-notify.mjs ${{ inputs.testnotis == true && '--test' || '' }}
+        run: node .github/scripts/push-notify.mjs ${{ inputs.forhandsvisning == true && '--preview' || (inputs.testnotis == true && '--test' || '') }}
       - name: Committa alerts.json om signalerna ändrats
         run: |
           git config user.name "github-actions[bot]"
@@ -74,7 +78,7 @@ jobs:
       # Hoppas over vid testnotis: da har alerts.mjs inte kort, och
       # state/alerts.json speglar en tidigare korning.
       - name: Synka issues mot aktiva signaler (oppna nya, stang upphorda)
-        if: ${{ inputs.testnotis != true }}
+        if: ${{ inputs.testnotis != true && inputs.forhandsvisning != true }}
         uses: actions/github-script@v7
         with:
           script: |
