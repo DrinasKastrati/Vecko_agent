@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-03T22:03:38.690Z",
+  "updatedAt": "2026-09-01T13:44:55.997Z",
   "subscriptions": [
     {
       "endpoint": "https://fcm.googleapis.com/fcm/send/d6atmO0EVcg:APA91bFmubRlgi69K6XtoHb7UpAU5QoarOxw2tobN3wRNclmeOjCzF3YbPh0kPO-aBHoupHxCjQKutOc-pBOpPSSXtGJ9SZ53xH6beHTXL1rqymkEIoEVoNXHVPuyHHs-_IKvpKF67R4",
@@ -9,6 +9,15 @@
       },
       "label": "Android 10",
       "addedAt": "2026-08-03T22:03:38.690Z"
+    },
+    {
+      "endpoint": "https://web.push.apple.com/QHdDIPXUyr0tZV08ruLZcCbVT2c61RaxfJvrVLF8Qh5zrosBXSqUzlhougxF1O8bBKADscdcfZCQbfGkjftSe1TrvwNNQXfMLa4F6IAepVlUEKf4wpMTJqjlTcIeTxXkSYUB8Yixo2ADGzEq9tERXHOwMp6Ab4fCSQsAvtA2pik",
+      "keys": {
+        "p256dh": "BPLFV9e638VHEqM7ybnafsJycu0jZTcWWThnxpBCT1KZoc1gtp1jPRQZQFAVroyHzTX_9924UrpERa7HvcZEcZ8",
+        "auth": "wm8yJRzctdvtkohbUURyaw"
+      },
+      "label": "Iphone",
+      "addedAt": "2026-09-01T13:44:55.997Z"
     }
   ]
 }
