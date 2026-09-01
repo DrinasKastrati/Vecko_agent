@@ -701,17 +701,67 @@
       }
       this.registerSubscription(sub);
     }
-    // Registreringen går via ett förifyllt GitHub-ärende – samma nyckellösa
-    // mönster som analyskön. Ett klick i appen, ett i GitHub, sedan är det klart.
-    registerSubscription(sub) {
-      const j = sub.toJSON ? sub.toJSON() : sub;
+    /* Bygger ärendets URL och den kropp .github/scripts/push-sub-add.mjs
+       parsar. REN: ingen DOM, inga sidoeffekter, ingen localStorage – så den
+       går att pröva utan webbläsare. Kroppens JSON måste ligga i ett
+       kodstaket, det är vad parseSubscription() letar efter först. */
+    pushIssue(sub, ua) {
+      const j = (sub && sub.toJSON) ? sub.toJSON() : (sub || {});
       const payload = JSON.stringify({ endpoint: j.endpoint, keys: j.keys }, null, 1);
-      const label = (navigator.userAgent.match(/\((?:Linux; )?([^;)]+)/) || [])[1] || "enhet";
-      const url = this.repoURL + "/issues/new?title=" + encodeURIComponent("push: " + label.slice(0, 40)) +
-        "&body=" + encodeURIComponent("Registrera den här enheten för push-notiser. Skicka in ärendet oförändrat.\n\n```json\n" + payload + "\n```");
-      window.open(url, "_blank", "noopener");
-      this.cacheSet("vr_push_registered", true);
+      const label = ((String(ua || "").match(/\((?:Linux; )?([^;)]+)/) || [])[1] || "enhet").slice(0, 40);
+      const body = "Registrera den här enheten för push-notiser. Skicka in ärendet oförändrat.\n\n```json\n" + payload + "\n```";
+      const url = this.repoURL + "/issues/new?title=" + encodeURIComponent("push: " + label) +
+        "&body=" + encodeURIComponent(body);
+      return { url, body, payload, label };
+    }
+    /* Registreringen går via ett förifyllt GitHub-ärende – samma nyckellösa
+       mönster som analyskön. Ett klick i appen, ett i GitHub, sedan är det klart.
+
+       WINDOW.OPEN FÅR ALDRIG ANTAS LYCKAS (fix 2026-09-01). Prenumerationen
+       kan bara skapas efter fyra await (permission, service worker,
+       config/push.json, subscribe), och då är användargesten borta. iOS Safari
+       poppblockerar det tyst, och service-workerns push-resubscribe-väg har
+       ingen gest över huvud taget. Returvärdet lästes inte, så
+       vr_push_registered sattes villkorslöst: knappen lyste "Notiser på" på en
+       telefon där ingenting hade registrerats, vilket är precis det knappen
+       inte får påstå. Flaggan sätts numera BARA när fönstret faktiskt öppnades.
+       Blockeras det visas rutan i stället – med ett riktigt <a> (ett tryck på
+       den ÄR en ny gest) och JSON:en att kopiera för enheter där inte heller
+       det går. Gör aldrig om det här till ett naket window.open. */
+    registerSubscription(sub) {
+      const info = this.pushIssue(sub, navigator.userAgent);
+      let win = null;
+      try { win = window.open(info.url, "_blank", "noopener"); } catch (e) {}
+      if (win) this.cacheSet("vr_push_registered", true);
+      else this.showPushModal(info);
       this.updateNotifBtn();
+    }
+    showPushModal(info) {
+      const modal = this.el("pushModal");
+      // Saknas markupen är alert det enda som återstår – tyst returnera vore
+      // samma fel som det här bygget rättar: användaren fick ingen väg vidare.
+      if (!modal) { alert("Kunde inte öppna GitHub-ärendet automatiskt. Öppna länken manuellt:\n\n" + info.url); return; }
+      const a = this.el("pushIssueLink"); if (a) a.href = info.url;
+      const ta = this.el("pushPayload"); if (ta) ta.value = info.body;
+      const msg = this.el("pushCopyMsg"); if (msg) msg.textContent = "";
+      this._pushInfo = info;
+      modal.classList.add("open");
+    }
+    closePushModal() {
+      const modal = this.el("pushModal"); if (modal) modal.classList.remove("open");
+    }
+    // Kopieringen sker i knappens EGEN gest, inte efter ett await – annars
+    // nekar iOS skrivning till urklipp på samma sätt som den blockerar popupen.
+    async copyPushPayload() {
+      const ta = this.el("pushPayload"), msg = this.el("pushCopyMsg");
+      if (!ta) return false;
+      let ok = false;
+      try { await navigator.clipboard.writeText(ta.value); ok = true; } catch (e) {}
+      if (!ok) {
+        try { ta.focus(); ta.setSelectionRange(0, ta.value.length); ok = !!document.execCommand("copy"); } catch (e) {}
+      }
+      if (msg) msg.textContent = ok ? "Kopierat." : "Kopiering nekades – markera texten och kopiera för hand.";
+      return ok;
     }
     async disablePush() {
       const reg = await this.swReady();
@@ -1573,7 +1623,10 @@
         if (chip) { this.setPriceRole(chip.dataset.role || "alla"); return; }
         const px = e.target.closest(".px-item");
         if (px && px.dataset.tk) { this.openPxChart(px.dataset.tk); return; }
-        if (e.target.id === "pxModal" || e.target.id === "pxModalClose") this.closePxChart();
+        if (e.target.id === "pxModal" || e.target.id === "pxModalClose") { this.closePxChart(); return; }
+        // Reservrutan för push-registrering (se registerSubscription).
+        if (e.target.id === "pushModal" || e.target.id === "pushModalClose") { this.closePushModal(); return; }
+        if (e.target.id === "pushCopyBtn") { this.copyPushPayload(); return; }
       });
       document.addEventListener("input", e => { if (e.target && e.target.id === "pxSearch") this.filterPrices(); });
       document.addEventListener("change", e => { if (e.target && e.target.id === "pxSort") this.sortPrices(); });
@@ -1605,7 +1658,7 @@
       // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
       document.addEventListener("keydown", e => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;
-        if (e.key === "Escape") { this.closePxChart(); return; }
+        if (e.key === "Escape") { this.closePxChart(); this.closePushModal(); return; }
         const t = e.target, tag = (t && t.tagName || "").toLowerCase();
         if (tag === "input" || tag === "textarea" || tag === "select" || (t && t.isContentEditable)) return;
         const links = [...document.querySelectorAll(".subnav a")];

@@ -892,6 +892,11 @@ details.sblock summary:hover{color:var(--accent-primary)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .modal-chart{position:relative;height:300px}
 .modal-chart > div{width:100%;height:100%}
+/* reservrutan för push-registrering: bara struktur, färg/radie/typsnitt ur tokens */
+.push-payload{width:100%;box-sizing:border-box;resize:vertical;
+  background:var(--panel3);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);
+  font-family:var(--mono);font-size:11.5px;line-height:1.45;padding:8px 10px}
+.push-row{display:flex;align-items:center;gap:10px;margin-top:10px}
 /* legend som följer hårkorset i kursdiagrammet (Lightweight Charts har ingen egen) */
 .px-legend{position:absolute;top:8px;left:10px;z-index:3;pointer-events:none;
   display:flex;align-items:baseline;gap:10px;padding:6px 11px;border-radius:var(--r);

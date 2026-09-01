@@ -690,6 +690,54 @@ if (!tkWithHistory) {
   catch (e) { ok("kursdiagram: utan bibliotek kraschar inget (" + e.message + ")", false); }
 }
 
+/* ---- push-registrering: reservvägen när popupen blockeras ----------------
+   Prenumerationen kan bara skapas efter fyra await, så användargesten är borta
+   när GitHub-ärendet ska öppnas. iOS Safari poppblockerar då tyst, och jsdom
+   implementerar inte window.open alls – båda ger samma falsy retur, vilket gör
+   det här testbart på riktig DOM. Fram till 2026-09-01 lästes returvärdet inte
+   och vr_push_registered sattes ändå: knappen lyste "Notiser på" på en telefon
+   där ingen enhet hade registrerats. */
+{
+  const b64u = b => Buffer.from(b).toString("base64")
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  // 65 byte = okomprimerad P-256-punkt, 16 byte = auth-hemlighet (RFC 8291).
+  // Genererade, inte kopierade ur state/push_subs.json – testet ska mäta koden,
+  // inte dataläget.
+  const p256dh = b64u(Buffer.alloc(65, 4)), auth = b64u(Buffer.alloc(16, 7));
+  const endpoint = "https://web.push.apple.com/QABC123";
+  const fakeSub = { toJSON: () => ({ endpoint, keys: { p256dh, auth } }) };
+
+  const info = dash.pushIssue(fakeSub, "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X)");
+  ok("push: etiketten härleds ur user agent", info.label === "iPhone");
+  ok("push: url pekar på repots issues/new", info.url.startsWith(dash.repoURL + "/issues/new?"));
+  ok("push: titeln är den actionen grindar på", decodeURIComponent(info.url).includes("title=push: iPhone"));
+  ok("push: kroppen bär endpointen i ett kodstaket",
+    info.body.includes("```json") && info.body.includes(endpoint));
+
+  // Kontraktet mot actionen: kroppen MÅSTE gå att läsa tillbaka med exakt den
+  // parser push_subscribe.yml kör. Ett formatglapp här är osynligt i appen och
+  // syns först som ett kvitterat men misslyckat issue.
+  try {
+    const { parseSubscription } = await import("../.github/scripts/push-sub-add.mjs");
+    const back = parseSubscription(info.body);
+    ok("push: kroppen läses tillbaka av actionens egen parser",
+      back.endpoint === endpoint && back.keys.p256dh === p256dh && back.keys.auth === auth);
+  } catch (e) { ok("push: kroppen läses tillbaka av actionens egen parser (" + e.message + ")", false); }
+
+  dash.cacheSet("vr_push_registered", false);
+  const expect = dash.pushIssue(fakeSub, window.navigator.userAgent).url;
+  dash.registerSubscription(fakeSub);
+  const modal = doc.getElementById("pushModal");
+  ok("push: blockerad popup öppnar reservrutan", !!modal && modal.classList.contains("open"));
+  ok("push: reservrutan bär en riktig länk (ett tryck = ny gest)",
+    doc.getElementById("pushIssueLink").getAttribute("href") === expect);
+  ok("push: reservrutan visar JSON att kopiera", doc.getElementById("pushPayload").value.includes(endpoint));
+  ok("push: knappen påstår INTE att enheten registrerats",
+    dash.cacheGet("vr_push_registered") !== true);
+  dash.closePushModal();
+  ok("push: reservrutan går att stänga", !modal.classList.contains("open"));
+}
+
 console.log(`\nSIM: ${pass} passed, ${fail} failed`);
 window.close();
 process.exit(fail ? 1 : 0);

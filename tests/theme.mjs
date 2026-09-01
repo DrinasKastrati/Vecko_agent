@@ -386,6 +386,28 @@ ok("sw.js precachar notisikonerna",
 ok("manifest.json har png-ikoner för startskärmen",
   (() => { const m = JSON.parse(readFileSync(join(root, "manifest.json"), "utf8"));
            return ["192x192", "512x512"].every(s => m.icons.some(i => i.sizes === s && i.type === "image/png")); })());
+/* (3) WINDOW.OPEN FÅR INTE ANTAS LYCKAS (2026-09-01). Prenumerationen kan bara
+       skapas efter fyra await – permission, service worker, config/push.json,
+       subscribe – och då är användargesten borta. iOS Safari poppblockerar det
+       tyst, och service-workerns push-resubscribe-väg har ingen gest alls.
+       Returvärdet lästes inte och vr_push_registered sattes ändå, så knappen
+       lyste "Notiser på" på en telefon där ingenting hade registrerats. Testet
+       vaktar att flaggan är villkorad OCH att det finns en väg vidare. */
+const regFn = (() => {
+  const i = appCode.indexOf("registerSubscription(sub) {");
+  const j = appCode.indexOf("\n    }", i);
+  return i < 0 ? "" : appCode.slice(i, j);
+})();
+ok("app.js: registerSubscription läser returvärdet från window.open",
+  regFn.includes("win = window.open("));
+ok("app.js: vr_push_registered sätts bara när fönstret faktiskt öppnades",
+  regFn.includes('if (win) this.cacheSet("vr_push_registered", true)'));
+ok("app.js: blockerad popup visar reservrutan i stället", regFn.includes("this.showPushModal(info)"));
+ok("index.html har reservrutan för push-registrering",
+  ["pushModal", "pushModalClose", "pushIssueLink", "pushPayload", "pushCopyBtn"]
+    .every(id => indexSrc.includes('id="' + id + '"')));
+ok("base.css formger reservrutan", base.includes(".push-payload{") && base.includes(".push-row{"));
+
 ok("config/push.json finns och saknar privat nyckel",
   (() => { const c = JSON.parse(readFileSync(join(root, "config/push.json"), "utf8"));
            return "vapidPublicKey" in c && !JSON.stringify(c).match(/privateKey/i); })());

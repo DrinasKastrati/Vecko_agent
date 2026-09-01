@@ -387,6 +387,31 @@
   </div>
 </div>
 
+<!-- Reserv när webbläsaren blockerar window.open. Prenumerationen kan bara
+     skapas efter fyra await (permission, service worker, config/push.json,
+     subscribe), och då är användargesten borta: iOS Safari poppblockerar tyst,
+     och service-workerns `push-resubscribe` har ingen gest alls. Länken här
+     är ett riktigt <a> – ett tryck på den ÄR en gest – och textrutan finns för
+     enheter där även det stoppas (app på iPhones hemskärm öppnar inte alltid
+     nya fönster). Se registerSubscription() i assets/app.js. -->
+<div id="pushModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pushModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span id="pushModalTitle">Registrera enheten för notiser</span>
+      <div class="spacer"></div>
+      <button id="pushModalClose" class="btn">Stäng</button>
+    </div>
+    <p class="stat-note">Webbläsaren blockerade det nya fönstret. Tryck på länken – då öppnas det förifyllda GitHub-ärendet, och du skickar in det oförändrat.</p>
+    <p><a id="pushIssueLink" class="btn" target="_blank" rel="noopener">Öppna GitHub-ärendet ↗</a></p>
+    <p class="stat-note">Går inte länken heller, eller saknar du åtkomst till repot: kopiera texten nedan och skicka den till repots ägare, som lägger in enheten med <code>node .github/scripts/push-sub-add.mjs</code>. Den innehåller bara enhetens endpoint och publika nycklar.</p>
+    <textarea id="pushPayload" class="push-payload" readonly rows="7" spellcheck="false" aria-label="Prenumerationens JSON"></textarea>
+    <div class="push-row">
+      <button id="pushCopyBtn" class="btn">Kopiera</button>
+      <span id="pushCopyMsg" class="stat-note"></span>
+    </div>
+  </div>
+</div>
+
 <!-- 3:e-partsbibliotek laddas LAT av app.js (metoden lib()), inte här.
      marked (35 kB), Chart.js (206 kB) och Lightweight Charts (164 kB) behövs
      först när en rapport öppnas, Avkastning-vyn visas respektive kursmodalen
