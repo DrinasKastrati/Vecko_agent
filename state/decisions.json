@@ -9655,6 +9655,133 @@
       "sector": "Bioteknik",
       "rsi": 79.5,
       "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 2 (RSI over taket 75), inte pa saknad kurs. RSI 77,2 till 79,5 efter +2,02 pct - spanningen okar, inte minskar."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 761.78,
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 48.6,
+      "reason": "Kapitalparkering, 100 pct oforandrat. -1,48 pct mot entry 773,26, -0,69 pct pa dagen. Noll kop och noll salj; sleeven saljs aldrig pa nedgang."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "TSLA",
+      "action": "AVVAKTA",
+      "price": 356.09,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bilindustri",
+      "rsi": 53.1,
+      "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 3 (SpaceX-beskedet ar hype enligt punkt 1c), inte pa saknad kurs."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "DE",
+      "action": "AVVAKTA",
+      "price": 676.08,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Industri",
+      "rsi": 66.2,
+      "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 3 (uppgradering ar inte katalysator per punkt 1a), inte pa saknad kurs."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MU",
+      "action": "AVVAKTA",
+      "price": 933.44,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledare",
+      "rsi": 50.4,
+      "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 2 (volymkvot 0,74x mot 1,5x), inte pa saknad kurs."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NVDA",
+      "action": "AVVAKTA",
+      "price": 217.44,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Halvledare",
+      "rsi": 51.9,
+      "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 2 (MACD under signalen, volymkvot 0,97x), inte pa saknad kurs."
+    },
+    {
+      "date": "2026-09-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "PLTR",
+      "action": "AVVAKTA",
+      "price": 179.92,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Mjukvara",
+      "rsi": 61.9,
+      "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 2 (volymkvot 0,56x mot 1,5x), inte pa saknad kurs."
     }
   ]
 }
