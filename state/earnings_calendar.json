@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T09:32:47.563Z",
+  "generatedAt": "2026-09-03T09:41:44.331Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -10,28 +10,17 @@
     "failed": 0,
     "notApplicable": 2,
     "noCoverage": 4,
-    "upcoming": 1
+    "upcoming": 0
   },
-  "upcoming": [
-    {
-      "tradingDaysAway": 0,
-      "symbol": "AVGO",
-      "date": "2026-09-02",
-      "isEstimate": false,
-      "epsConsensus": 3.238,
-      "epsLow": 3.08,
-      "epsHigh": 3.33,
-      "revenueConsensus": 29434507200
-    }
-  ],
+  "upcoming": [],
   "all": [
     {
       "symbol": "RAP1V.HE",
       "date": "2026-08-20",
       "isEstimate": false,
-      "epsConsensus": -0.02,
-      "epsLow": -0.02,
-      "epsHigh": -0.02,
+      "epsConsensus": -0.01,
+      "epsLow": -0.01,
+      "epsHigh": -0.01,
       "revenueConsensus": 55900000
     },
     {
@@ -110,10 +99,10 @@
       "symbol": "TSM",
       "date": "2026-10-15",
       "isEstimate": false,
-      "epsConsensus": 4.45834,
+      "epsConsensus": 4.45297,
       "epsLow": 4.26,
       "epsHigh": 4.72,
-      "revenueConsensus": 1454960072270
+      "revenueConsensus": 1454486821800
     },
     {
       "symbol": "TSLA",
@@ -248,7 +237,7 @@
       "epsConsensus": -0.144,
       "epsLow": -0.5,
       "epsHigh": 0.23,
-      "revenueConsensus": 25020744650
+      "revenueConsensus": 25058684870
     },
     {
       "symbol": "GOOGL",
@@ -257,7 +246,7 @@
       "epsConsensus": 3.00444,
       "epsLow": 2.64,
       "epsHigh": 3.68,
-      "revenueConsensus": 127068299570
+      "revenueConsensus": 127083886400
     },
     {
       "symbol": "META",
@@ -293,7 +282,7 @@
       "epsConsensus": 1.98013,
       "epsLow": 1.93,
       "epsHigh": 2.07,
-      "revenueConsensus": 113550860190
+      "revenueConsensus": 113563145910
     },
     {
       "symbol": "AMZN",
@@ -302,7 +291,7 @@
       "epsConsensus": 1.94764,
       "epsLow": 1.72,
       "epsHigh": 2.32,
-      "revenueConsensus": 202153010130
+      "revenueConsensus": 202141155960
     },
     {
       "symbol": "BIIB",
@@ -329,7 +318,7 @@
       "epsConsensus": -0.14477,
       "epsLow": -0.59,
       "epsHigh": 0.95,
-      "revenueConsensus": 1155260020
+      "revenueConsensus": 1155540020
     },
     {
       "symbol": "KOG.OL",
@@ -347,7 +336,7 @@
       "epsConsensus": 12.63,
       "epsLow": 12.63,
       "epsHigh": 12.63,
-      "revenueConsensus": 129875750
+      "revenueConsensus": 129529410
     },
     {
       "symbol": "NESTE.HE",
@@ -392,7 +381,7 @@
       "epsConsensus": -0.31678,
       "epsLow": -0.33,
       "epsHigh": -0.22571,
-      "revenueConsensus": 159360930
+      "revenueConsensus": 159660930
     },
     {
       "symbol": "TEAM",
@@ -425,10 +414,10 @@
       "symbol": "BAKKA.OL",
       "date": "2026-11-02",
       "isEstimate": false,
-      "epsConsensus": 2.67325,
-      "epsLow": 1.9465,
-      "epsHigh": 3.4,
-      "revenueConsensus": 1896442490
+      "epsConsensus": 2.45937,
+      "epsLow": 1.66812,
+      "epsHigh": 3.1,
+      "revenueConsensus": 1701775940
     },
     {
       "symbol": "PLTR",
@@ -437,7 +426,7 @@
       "epsConsensus": 0.41452,
       "epsLow": 0.38,
       "epsHigh": 0.48,
-      "revenueConsensus": 2176723630
+      "revenueConsensus": 2176719280
     },
     {
       "symbol": "RHP",
@@ -461,10 +450,10 @@
       "symbol": "ANET",
       "date": "2026-11-03",
       "isEstimate": true,
-      "epsConsensus": 1.07679,
+      "epsConsensus": 1.07656,
       "epsLow": 1.059,
       "epsHigh": 1.12,
-      "revenueConsensus": 3326661280
+      "revenueConsensus": 3326509510
     },
     {
       "symbol": "BOOZT.ST",
@@ -533,10 +522,10 @@
       "symbol": "MARA",
       "date": "2026-11-04",
       "isEstimate": true,
-      "epsConsensus": -0.325,
-      "epsLow": -0.55,
+      "epsConsensus": -0.1,
+      "epsLow": -0.1,
       "epsHigh": -0.1,
-      "revenueConsensus": 177713880
+      "revenueConsensus": 172813880
     },
     {
       "symbol": "NOVO-B.CO",
@@ -560,8 +549,8 @@
       "symbol": "ODF.OL",
       "date": "2026-11-04",
       "isEstimate": false,
-      "epsConsensus": 0.44,
-      "epsLow": 0.44,
+      "epsConsensus": 0.40667,
+      "epsLow": 0.39,
       "epsHigh": 0.44,
       "revenueConsensus": 289400000
     },
@@ -623,10 +612,10 @@
       "symbol": "IREN",
       "date": "2026-11-05",
       "isEstimate": true,
-      "epsConsensus": -0.36,
-      "epsLow": -0.36,
-      "epsHigh": -0.36,
-      "revenueConsensus": 231861070
+      "epsConsensus": -0.51,
+      "epsLow": -0.51,
+      "epsHigh": -0.51,
+      "revenueConsensus": 224341630
     },
     {
       "symbol": "MAERSK-B.CO",
@@ -644,7 +633,7 @@
       "epsConsensus": 0.98,
       "epsLow": 0.98,
       "epsHigh": 0.98,
-      "revenueConsensus": 420666670
+      "revenueConsensus": 423000000
     },
     {
       "symbol": "SINCH.ST",
@@ -803,10 +792,10 @@
       "symbol": "LOW",
       "date": "2026-11-18",
       "isEstimate": false,
-      "epsConsensus": 2.88358,
+      "epsConsensus": 2.88345,
       "epsLow": 2.82,
       "epsHigh": 3.12,
-      "revenueConsensus": 22395833240
+      "revenueConsensus": 22380410170
     },
     {
       "symbol": "TGT",
@@ -830,10 +819,10 @@
       "symbol": "ROST",
       "date": "2026-11-19",
       "isEstimate": true,
-      "epsConsensus": 1.82664,
-      "epsLow": 1.79,
-      "epsHigh": 1.87,
-      "revenueConsensus": 6204561490
+      "epsConsensus": 1.83378,
+      "epsLow": 1.8,
+      "epsHigh": 1.89,
+      "revenueConsensus": 6208245150
     },
     {
       "symbol": "SUBC.OL",
@@ -848,19 +837,19 @@
       "symbol": "WMT",
       "date": "2026-11-19",
       "isEstimate": false,
-      "epsConsensus": 0.63504,
+      "epsConsensus": 0.6352,
       "epsLow": 0.61,
       "epsHigh": 0.67,
-      "revenueConsensus": 187032849490
+      "revenueConsensus": 187195533440
     },
     {
       "symbol": "CADLR.OL",
       "date": "2026-11-23",
       "isEstimate": false,
-      "epsConsensus": 0.23,
+      "epsConsensus": 0.22667,
       "epsLow": 0.22,
       "epsHigh": 0.24,
-      "revenueConsensus": 281500000
+      "revenueConsensus": 278666670
     },
     {
       "symbol": "DE",
@@ -875,10 +864,10 @@
       "symbol": "MRVL",
       "date": "2026-12-01",
       "isEstimate": true,
-      "epsConsensus": 1.1004,
+      "epsConsensus": 1.10101,
       "epsLow": 1.07628,
       "epsHigh": 1.13,
-      "revenueConsensus": 3149162240
+      "revenueConsensus": 3149640870
     }
   ],
   "errors": {},
