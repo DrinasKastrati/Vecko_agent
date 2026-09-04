@@ -1,11 +1,23 @@
 {
-  "generatedAt": "2026-08-25T16:36:07.948Z",
-  "checkedAt": "2026-09-03T19:39:13.771Z",
+  "generatedAt": "2026-09-04T11:58:59.178Z",
+  "checkedAt": "2026-09-04T11:58:59.178Z",
   "watched": [
     "SALM.OL",
     "SPY"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "SALM.OL",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 552.5,
+      "price": 548,
+      "currency": "NOK",
+      "marketTime": "2026-09-04T11:43:00.000Z",
+      "basis": "price",
+      "hitPrice": 548
+    }
+  ],
   "history": [
     {
       "ticker": "NVDA",
