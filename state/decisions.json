@@ -10068,6 +10068,165 @@
       "sector": "Mjukvara",
       "rsi": 52.2,
       "reason": "Punkt 4 villkor 1 faller: us-veckorapport-260901 fallde den pa grind 2 (volymkvot 0,56x mot 1,5x), inte pa saknad kurs. -5,81 pct i gar bekraftar snarare grinden an motsager den."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "NOK",
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ],
+      "ticker": "SALM.OL",
+      "action": "BEHÅLL",
+      "price": 554,
+      "weight": 0.125,
+      "entry": 569,
+      "stop": 544,
+      "target": 619,
+      "rr": 2,
+      "catalystType": "earnings",
+      "sector": "Livsmedel/vattenbruk",
+      "rsi": 57.3,
+      "reason": "BEHALL, -2,64 pct mot entry. Varken stop 544 eller mal 619 traffat, inte heller intradag (lagsta 553,50). RSI 61,4 till 57,3, MACD-hist femte vikande, mom6m nu -1,25 pct. Tesen intakt."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "SEK",
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 489.2,
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering, 87,5 pct oforandrat. +1,35 pct pa dagen, -1,09 pct mot entry 494,60. Noll kop och noll salj ger ingen omviktning; sleeven saljs aldrig pa nedgang."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "NOK",
+      "lessonIds": [
+        "L-3",
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "BWE.OL",
+      "action": "AVVAKTA",
+      "price": 55.4,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Energi/olja",
+      "rsi": 53.7,
+      "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 2 (MACD-linjen under signallinjen), inte pa saknad kurs. Hist -0,168, volymkvot 0,49x - korsningen uteblir."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "NOK",
+      "lessonIds": [
+        "L-3",
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "CADLR.OL",
+      "action": "AVVAKTA",
+      "price": 58.05,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Offshore vind",
+      "rsi": 55.5,
+      "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 3 (ingen katalysator ur punkt 1a), inte pa saknad kurs. Noll traffar i fonstrets 1212 poster; hist 0,253 till 0,144."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "SEK",
+      "lessonIds": [
+        "L-3",
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "SKA-B.ST",
+      "action": "AVVAKTA",
+      "price": 269.4,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "order",
+      "sector": "Bygg",
+      "rsi": 52.5,
+      "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 3 (Prag-ordern 24/8 utanfor femdagarsfonstret), inte pa saknad kurs. Ater over EMA20 269,16, volymkvot 0,79x."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "SEK",
+      "lessonIds": [
+        "L-3",
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "KINV-B.ST",
+      "action": "AVVAKTA",
+      "price": 62.34,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Investmentbolag",
+      "rsi": 64.9,
+      "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 3 (rorelse utan namngiven katalysator), inte pa saknad kurs. +2,53 pct men fortsatt under EMA200 64,12."
+    },
+    {
+      "date": "2026-09-04",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "DKK",
+      "lessonIds": [
+        "L-3",
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "BAVA.CO",
+      "action": "AVVAKTA",
+      "price": 219.4,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "insider",
+      "sector": "Bioteknik",
+      "rsi": 74.6,
+      "reason": "Punkt 4 villkor 1 faller: veckorapport-260901 fallde den pa grind 2 (RSI over taket 75), inte pa saknad kurs. RSI 74,6 andra dagen under taket - provas om vid v37, inte via punkt 4."
     }
   ]
 }
