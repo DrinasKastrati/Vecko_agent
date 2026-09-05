@@ -206,6 +206,19 @@ BAKKA.OL
 # radarn i veckorapport-260824). Saknas i prices.json, i earnings_calendar.json OCH i
 # universe_nordic_movers.txt – alltså osynlig i hela flödet, precis det hål L-5 beskriver.
 
+# Bevakningsrad lagd av miss-retron 2026-09-05 (miss_retro.md STEG 4b, retro-260905).
+# EN RAD HÄR BETYDER BEVAKNING, INTE ATT AKTIEN FÅR KÖPAS – urvalet och samtliga fem grindar
+# gäller oförändrat. Kategori A (utanför universum): HSHP.OL saknades i BÅDE config/watchlist.txt
+# och config/universe_nordic_movers.txt och fanns i noll av systemets kanaler.
+HSHP.OL
+# Himalaya Shipping (Oslo Børs, Newcastlemax torrbulk) – veckans enda nordiska rörelse över 10 %
+# (+11,34 %, 155,20 -> 172,80 NOK, reguljära stängningar 2026-08-28 / 2026-09-04 ur
+# state/price_history.json). Bekräftad och daterad katalysator: bolagets pressmeddelande
+# 2026-08-27 om konvertering av två indexlänkade certepartier till fasta timecharters om i snitt
+# USD 53 000/dag för 2026-09-01–2027-03-31, ca USD 22,5 mn bruttohyra (LNG Prime, Splash247,
+# Shipping Telegraph 2026-08-27). Symbolen hämtas i dag bara via recentWeeklies(3) och faller ur
+# så snart en fjärde veckorapport skrivits – därav raden. Omfattas av watchlist-hygienen.
+
 # --- Exempel (avkommentera eller byt ut) ---
 # VOLV-B.ST
 # EQNR.OL
