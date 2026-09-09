@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-08T22:36:50.458Z",
+ "generatedAt": "2026-09-09T06:51:50.031Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 460,
-  "measurable": 460,
+  "decisions": 466,
+  "measurable": 466,
   "missing": 0,
-  "pending": 103
+  "pending": 109
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -8034,6 +8034,66 @@
   },
   {
    "date": "2026-09-08",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Livsmedel/vattenbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "HSHP.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Sjofart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "GRK.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Infrastruktur/bygg",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "ODF.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Sjofart/tank",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
    "ticker": "BAVA.CO",
    "book": "nordic",
    "action": "AVVAKTA",
