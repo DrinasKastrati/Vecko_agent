@@ -475,11 +475,11 @@
       "price": 169.1,
       "priceAsOf": "2026-09-04T23:59:50.000Z",
       "priceSession": "post",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-11",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260909.md",
+      "decidedAt": "2026-09-09",
+      "decisionReason": "Sparr f, tekniska filtret punkt 2: MACD-linjen 2,731 under signallinjen 5,610 (hist -2,878, fallande), kurs 161,94 under EMA20 173,69/EMA50 164,81/EMA200 190,41, volymkvot 1,42x."
     }
   ]
 }
