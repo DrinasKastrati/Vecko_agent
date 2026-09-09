@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-09T12:19:13.283Z",
+ "generatedAt": "2026-09-09T13:29:54.144Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 466,
-  "measurable": 466,
+  "decisions": 472,
+  "measurable": 472,
   "missing": 0,
-  "pending": 103
+  "pending": 109
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -8177,6 +8177,66 @@
    "action": "AVVAKTA",
    "catalystType": "insider",
    "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "ZS",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Cybersakerhet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "TSLA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fordon/energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "DE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industri/lantbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/minne",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-09",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Mjukvara/AI",
    "reconstructed": false,
    "fwd": {}
   }
