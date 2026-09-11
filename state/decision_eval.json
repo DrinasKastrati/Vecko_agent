@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-11T12:11:14.187Z",
+ "generatedAt": "2026-09-11T13:28:41.408Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 484,
-  "measurable": 484,
+  "decisions": 492,
+  "measurable": 492,
   "missing": 0,
-  "pending": 66
+  "pending": 74
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -8873,6 +8873,86 @@
    "action": "AVVAKTA",
    "catalystType": "insider",
    "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "NET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Molninfrastruktur/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Sociala medier/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "TSLA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fordon/energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "DE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industri/lantbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/minne",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-11",
+   "ticker": "PLTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Mjukvara/AI",
    "reconstructed": false,
    "fwd": {}
   }
