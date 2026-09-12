@@ -274,3 +274,18 @@ KCC.OL
 NORBT.OL
 # NORBIT ASA - meldepliktig handel av primarinsider (GlobeNewswire 2026-09-04 09:27 UTC).
 # catalystType insider. Riktningen ar INTE verifierad via lanken och far inte antas.
+
+# Bevakningsrad ur miss-retron 2026-09-12 (retro-260912, STEG 4b) - kategori D.
+# EN RAD HAR BETYDER BEVAKNING, INTE ATT AKTIEN FAR KOPAS. Urvalet och samtliga fem grindar
+# galler oforandrat; raden ger verifierad kurs och kursserie, ingenting mer.
+FORTUM.HE
+# Fortum Oyj (Nasdaq Helsinki) - steg +15,87 % 2026-09-04 -> 2026-09-11 (veckans storsta nordiska
+# rorelse) pa ett 22-arigt karnkrafts-PPA med Google for Loviisa-verket: upp till 50 % av
+# kapaciteten 2030-2049, ca EUR 1,0 md investeringsprogram, ca +1,4 pp jamforbar RONA over tid.
+# Bolagets borsmeddelande som INSIDERINFORMATION 2026-09-09 (refererat av DataCenterDynamics,
+# The Register, MLQ News, Eurasia Review; www.fortum.com ar EGRESS_BLOCKED fran korningsmiljon).
+# Kategori D: symbolen ligger i config/universe_nordic_movers.txt rad 128 med 250 daterade
+# punkter, men saknade rad i state/prices.json och hade darfor fallt pa grind 1 vid varje
+# rotation - se atgardspunkten wide-fetch-not-last-run-of-day. Raden loser grind 1 for just
+# denna symbol och gor dessutom dess historikpunkt till en riktig stangning i stallet for en
+# intradagsnotering ~09:37 UTC.
