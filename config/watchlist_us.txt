@@ -165,3 +165,31 @@ ZS
 # Zscaler – Q4 FY26 3/9 AMC beat-and-raise (intäkt 898 MUSD vs ~877, EPS 1,19 vs ~1,09,
 # ARR 3,77 mdr +25 %, FY27-guide över konsensus). Case 1 i scout-260906, post-event-kurs
 # ej verifierbar i prices.json (Yahoo egress-blockerad) → L-2 (kandidat 260906-ZS, price: null).
+
+# --- SK Hynix ADR (konfigurationsrad tillagd 2026-09-14, us-veckorapport-260914) ---
+# SKHY har prisbevakats sedan Nasdaq-debuten 2026-07-10 UTAN att någon konfigurationsfil
+# kunde förklara varför – åtgärdspunkten `skhy-symbol-without-source` (öppen 2 veckor i
+# state/action_items.json) beskrev just det, och den stängs av raden nedan. SKHY är en
+# NASDAQ-noterad ADR och alltså en del av US-rotationens universum enligt
+# config/fokus_us_rotation.md ("USA: NYSE & NASDAQ … Alla bolagsstorlekar tillåtna");
+# den har felaktigt beskrivits som nordisk i tidigare rapporter. Serien bär 45 punkter,
+# så EMA50/EMA200 går ännu inte att räkna.
+SKHY
+
+# --- Nyhetsdrivna kandidater v38 (punkt 6b: varje symbol med ett beslut i ---
+# decisions.json ska gå att prissätta, annars blir raden omätbar för alltid.
+# Samtliga fem föll på grind 1 (saknades i prices.json) i us-veckorapport-260914
+# och loggades med price: null. Går FÖRE taket på 25 symboler.
+ORCL
+# Oracle – 8-K registrerad 2026-09-14 10:01 UTC (sec-8k). Stor AI-capex-exponering;
+# gick inte att prissätta på beslutsdagen.
+COO
+# CooperCompanies – Q3 2026-rapport OCH slutförd strategisk översyn med höjd
+# återköpsfullmakt, båda 2026-09-09 (GlobeNewswire).
+HII
+# Huntington Ingalls – tilldelat long-lead-materialkontrakt för CVN 82, 2026-09-11 (mfn).
+EVCM
+# EverCommerce – höjt och förlängt återköpsprogram, 2026-09-11 (GlobeNewswire).
+TLX
+# Telix Pharmaceuticals – FDA godkände hjärncancerdiagnostiken Pixclara, 2026-09-14
+# (GlobeNewswire). Bekräftad regulatorisk katalysator som inte gick att prissätta.
