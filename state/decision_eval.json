@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-14T03:05:08.596Z",
+ "generatedAt": "2026-09-14T10:35:05.306Z",
  "horizons": [
   5,
   20
@@ -7,34 +7,27 @@
  "minN": 8,
  "counts": {
   "decisions": 517,
-  "measurable": 511,
-  "missing": 6,
-  "pending": 88
+  "measurable": 517,
+  "missing": 0,
+  "pending": 68
  },
- "missingSymbols": [
-  "CHEMM.CO",
-  "HEM.ST",
-  "HMS.ST",
-  "HOFI.ST",
-  "NOL.OL",
-  "SOBI.ST"
- ],
+ "missingSymbols": [],
  "byHorizon": {
   "5": {
    "all": {
-    "n": 423,
-    "meanAlphaPct": 0.51,
-    "medianAlphaPct": 0.24,
-    "meanPct": 0.48,
-    "beatIndexPct": 52.72
+    "n": 449,
+    "meanAlphaPct": 0.59,
+    "medianAlphaPct": 0.36,
+    "meanPct": 0.47,
+    "beatIndexPct": 53.45
    },
    "byAction": {
     "KÖP": {
-     "n": 11,
-     "meanAlphaPct": 0.8,
-     "medianAlphaPct": 0.56,
-     "meanPct": 0.85,
-     "beatIndexPct": 54.55
+     "n": 12,
+     "meanAlphaPct": 1.28,
+     "medianAlphaPct": 1.03,
+     "meanPct": 1.2,
+     "beatIndexPct": 58.33
     },
     "SÄLJ": {
      "n": 7,
@@ -53,20 +46,20 @@
      "beatIndexPct": 34.62
     },
     "AVVAKTA": {
-     "n": 379,
-     "meanAlphaPct": 0.56,
-     "medianAlphaPct": 0.26,
-     "meanPct": 0.51,
-     "beatIndexPct": 53.56
+     "n": 404,
+     "meanAlphaPct": 0.63,
+     "medianAlphaPct": 0.42,
+     "meanPct": 0.48,
+     "beatIndexPct": 54.21
     }
    },
    "byBook": {
     "nordic": {
-     "n": 236,
-     "meanAlphaPct": 0.33,
-     "medianAlphaPct": 0.24,
-     "meanPct": 0.47,
-     "beatIndexPct": 52.97
+     "n": 262,
+     "meanAlphaPct": 0.48,
+     "medianAlphaPct": 0.38,
+     "meanPct": 0.45,
+     "beatIndexPct": 54.2
     },
     "us": {
      "n": 187,
@@ -78,32 +71,32 @@
    },
    "byCatalyst": {
     "earnings": {
-     "n": 126,
-     "meanAlphaPct": 0.7,
+     "n": 132,
+     "meanAlphaPct": 0.71,
      "medianAlphaPct": 0.74,
-     "meanPct": 0.52,
-     "beatIndexPct": 51.59
+     "meanPct": 0.47,
+     "beatIndexPct": 51.52
     },
     "macro": {
-     "n": 24,
-     "meanAlphaPct": 2.01,
-     "medianAlphaPct": 1.34,
-     "meanPct": 2.21,
-     "beatIndexPct": 62.5
+     "n": 25,
+     "meanAlphaPct": 2.21,
+     "medianAlphaPct": 1.43,
+     "meanPct": 2.33,
+     "beatIndexPct": 64
     },
     "order": {
-     "n": 49,
-     "meanAlphaPct": -0.1,
-     "medianAlphaPct": -0.37,
+     "n": 52,
+     "meanAlphaPct": 0.01,
+     "medianAlphaPct": -0.35,
      "meanPct": 0.1,
-     "beatIndexPct": 44.9
+     "beatIndexPct": 46.15
     },
     "other": {
-     "n": 132,
-     "meanAlphaPct": 0.23,
-     "medianAlphaPct": 0.18,
-     "meanPct": 0.28,
-     "beatIndexPct": 53.79
+     "n": 144,
+     "meanAlphaPct": 0.32,
+     "medianAlphaPct": 0.22,
+     "meanPct": 0.23,
+     "beatIndexPct": 54.86
     },
     "regulatory": {
      "n": 26,
@@ -113,11 +106,11 @@
      "beatIndexPct": 57.69
     },
     "buyback": {
-     "n": 15,
-     "meanAlphaPct": 3.66,
-     "medianAlphaPct": 5.41,
-     "meanPct": 3.35,
-     "beatIndexPct": 86.67
+     "n": 17,
+     "meanAlphaPct": 4.08,
+     "medianAlphaPct": 5.62,
+     "meanPct": 3.63,
+     "beatIndexPct": 88.24
     },
     "ma_rumor": {
      "n": 30,
@@ -134,51 +127,51 @@
      "beatIndexPct": 92.31
     },
     "insider": {
-     "n": 8,
-     "meanAlphaPct": -4.44,
-     "medianAlphaPct": -5.39,
-     "meanPct": -4.24,
-     "beatIndexPct": 12.5
+     "n": 10,
+     "meanAlphaPct": -3.39,
+     "medianAlphaPct": -3.77,
+     "meanPct": -3.54,
+     "beatIndexPct": 20
     }
    },
    "selectionEdge": {
     "horizon": 5,
     "bought": {
-     "n": 11,
-     "meanAlphaPct": 0.8,
-     "medianAlphaPct": 0.56,
-     "meanPct": 0.85,
-     "beatIndexPct": 54.55
+     "n": 12,
+     "meanAlphaPct": 1.28,
+     "medianAlphaPct": 1.03,
+     "meanPct": 1.2,
+     "beatIndexPct": 58.33
     },
     "passed": {
-     "n": 379,
-     "meanAlphaPct": 0.56,
-     "medianAlphaPct": 0.26,
-     "meanPct": 0.51,
-     "beatIndexPct": 53.56
+     "n": 404,
+     "meanAlphaPct": 0.63,
+     "medianAlphaPct": 0.42,
+     "meanPct": 0.48,
+     "beatIndexPct": 54.21
     },
-    "edgePct": 0.24,
+    "edgePct": 0.65,
     "verdict": "ingen skillnad utöver brus mellan köpta och avvisade",
     "effectiveN": 8
    },
    "clustered": {
-    "n": 423,
-    "nDates": 30,
+    "n": 449,
+    "nDates": 31,
     "effectiveN": 8,
-    "meanAlphaPct": 0.51,
-    "clusterMeanAlphaPct": 1.27,
-    "medianAlphaPct": 0.24,
-    "beatIndexPct": 52.72
+    "meanAlphaPct": 0.59,
+    "clusterMeanAlphaPct": 1.28,
+    "medianAlphaPct": 0.36,
+    "beatIndexPct": 53.45
    },
    "poolAlpha": {
     "horizon": 5,
-    "n": 423,
-    "nDates": 30,
+    "n": 449,
+    "nDates": 31,
     "effectiveN": 8,
-    "meanAlphaPct": 0.51,
-    "clusterMeanAlphaPct": 1.27,
-    "medianAlphaPct": 0.24,
-    "beatIndexPct": 52.72,
+    "meanAlphaPct": 0.59,
+    "clusterMeanAlphaPct": 1.28,
+    "medianAlphaPct": 0.36,
+    "beatIndexPct": 53.45,
     "verdict": "kandidatflödet slår index -- värdet kan ligga i urvalet AV kandidater, inte i grindarna"
    },
    "holdRule": {
@@ -196,23 +189,23 @@
      "reason": "för få oberoende mätfönster (5 av 8); radantalet 26 är inte oberoende observationer"
     },
     "pool": {
-     "n": 379,
-     "nDates": 25,
-     "effectiveN": 5,
-     "meanAlphaPct": 0.56,
-     "clusterMeanAlphaPct": 0.62,
-     "medianAlphaPct": 0.26,
-     "beatIndexPct": 53.56,
+     "n": 404,
+     "nDates": 26,
+     "effectiveN": 6,
+     "meanAlphaPct": 0.63,
+     "clusterMeanAlphaPct": 0.66,
+     "medianAlphaPct": 0.42,
+     "beatIndexPct": 54.21,
      "insufficient": true,
-     "need": 3,
-     "reason": "för få oberoende mätfönster (5 av 8); radantalet 379 är inte oberoende observationer"
+     "need": 2,
+     "reason": "för få oberoende mätfönster (6 av 8); radantalet 404 är inte oberoende observationer"
     },
     "gapPct": null,
     "verdict": "för tidigt att uttala sig",
     "insufficient": true,
     "need": {
      "held": 3,
-     "pool": 3
+     "pool": 2
     }
    },
    "convergence": {
@@ -222,19 +215,19 @@
      "minEdgePct": 0.5
     },
     "boughtClusters": 6,
-    "passedClusters": 5,
-    "edgePct": 0.24,
+    "passedClusters": 6,
+    "edgePct": 0.65,
     "decision": "avvakta",
-    "reason": "inte moget: 6/20 KÖP-fönster, 5/20 AVVAKTA-fönster"
+    "reason": "inte moget: 6/20 KÖP-fönster, 6/20 AVVAKTA-fönster"
    }
   },
   "20": {
    "all": {
-    "n": 116,
-    "meanAlphaPct": 0.58,
+    "n": 144,
+    "meanAlphaPct": 0.38,
     "medianAlphaPct": -0.3,
-    "meanPct": 0.03,
-    "beatIndexPct": 46.55
+    "meanPct": -0.22,
+    "beatIndexPct": 46.53
    },
    "byAction": {
     "KÖP": {
@@ -254,27 +247,27 @@
      "need": 5
     },
     "BEHÅLL": {
-     "n": 10,
-     "meanAlphaPct": -1.82,
-     "medianAlphaPct": -1.91,
-     "meanPct": -2.35,
-     "beatIndexPct": 30
+     "n": 11,
+     "meanAlphaPct": -1.81,
+     "medianAlphaPct": -1.7,
+     "meanPct": -2.36,
+     "beatIndexPct": 27.27
     },
     "AVVAKTA": {
-     "n": 95,
-     "meanAlphaPct": 0.68,
-     "medianAlphaPct": -0.29,
-     "meanPct": -0.06,
-     "beatIndexPct": 46.32
+     "n": 122,
+     "meanAlphaPct": 0.44,
+     "medianAlphaPct": -0.23,
+     "meanPct": -0.31,
+     "beatIndexPct": 46.72
     }
    },
    "byBook": {
     "nordic": {
-     "n": 56,
-     "meanAlphaPct": 0.54,
-     "medianAlphaPct": -0.13,
-     "meanPct": 0.34,
-     "beatIndexPct": 50
+     "n": 84,
+     "meanAlphaPct": 0.21,
+     "medianAlphaPct": -0.18,
+     "meanPct": -0.19,
+     "beatIndexPct": 48.81
     },
     "us": {
      "n": 60,
@@ -286,11 +279,11 @@
    },
    "byCatalyst": {
     "earnings": {
-     "n": 44,
-     "meanAlphaPct": 0.83,
-     "medianAlphaPct": -1.33,
-     "meanPct": 0.19,
-     "beatIndexPct": 40.91
+     "n": 52,
+     "meanAlphaPct": 0.96,
+     "medianAlphaPct": -1.15,
+     "meanPct": 0.3,
+     "beatIndexPct": 44.23
     },
     "macro": {
      "n": 5,
@@ -302,54 +295,50 @@
      "need": 3
     },
     "order": {
-     "n": 12,
-     "meanAlphaPct": 1.2,
-     "medianAlphaPct": 1.18,
-     "meanPct": 0.76,
-     "beatIndexPct": 66.67
+     "n": 14,
+     "meanAlphaPct": 0.41,
+     "medianAlphaPct": 0.29,
+     "meanPct": -0.08,
+     "beatIndexPct": 57.14
     },
     "other": {
-     "n": 35,
-     "meanAlphaPct": -0.15,
+     "n": 47,
+     "meanAlphaPct": -0.59,
      "medianAlphaPct": -0.32,
-     "meanPct": -0.69,
-     "beatIndexPct": 42.86
+     "meanPct": -1.2,
+     "beatIndexPct": 42.55
     },
     "regulatory": {
+     "n": 8,
+     "meanAlphaPct": -0.07,
+     "medianAlphaPct": -0.21,
+     "meanPct": -0.71,
+     "beatIndexPct": 50
+    },
+    "buyback": {
+     "n": 8,
+     "meanAlphaPct": 5.89,
+     "medianAlphaPct": 7.67,
+     "meanPct": 5.2,
+     "beatIndexPct": 87.5
+    },
+    "ma_rumor": {
      "n": 6,
-     "meanAlphaPct": 1.63,
-     "medianAlphaPct": 2.15,
-     "meanPct": 1.04,
-     "beatIndexPct": 66.67,
+     "meanAlphaPct": -1.92,
+     "medianAlphaPct": -2.83,
+     "meanPct": -2.7,
+     "beatIndexPct": 33.33,
      "insufficient": true,
      "need": 2
     },
-    "buyback": {
-     "n": 7,
-     "meanAlphaPct": 5.33,
-     "medianAlphaPct": 7.24,
-     "meanPct": 4.65,
-     "beatIndexPct": 85.71,
-     "insufficient": true,
-     "need": 1
-    },
-    "ma_rumor": {
+    "turnaround": {
      "n": 4,
-     "meanAlphaPct": -1.98,
-     "medianAlphaPct": -2.83,
-     "meanPct": -2.76,
+     "meanAlphaPct": 0.43,
+     "medianAlphaPct": -2.01,
+     "meanPct": -1.03,
      "beatIndexPct": 25,
      "insufficient": true,
      "need": 4
-    },
-    "turnaround": {
-     "n": 3,
-     "meanAlphaPct": -2.51,
-     "medianAlphaPct": -2.18,
-     "meanPct": -4.18,
-     "beatIndexPct": 0,
-     "insufficient": true,
-     "need": 5
     },
     "insider": {
      "n": 0,
@@ -371,68 +360,68 @@
      "beatIndexPct": 62.5
     },
     "passed": {
-     "n": 95,
-     "meanAlphaPct": 0.68,
-     "medianAlphaPct": -0.29,
-     "meanPct": -0.06,
-     "beatIndexPct": 46.32
+     "n": 122,
+     "meanAlphaPct": 0.44,
+     "medianAlphaPct": -0.23,
+     "meanPct": -0.31,
+     "beatIndexPct": 46.72
     },
-    "edgePct": 1.03,
+    "edgePct": 1.27,
     "verdict": "urvalet skiljer köpta från avvisade i rätt riktning",
     "effectiveN": 2,
     "clusterCaveat": "vilar på 2 oberoende mätfönster av 8 — behandla som riktning, inte som svar"
    },
    "clustered": {
-    "n": 116,
-    "nDates": 15,
+    "n": 144,
+    "nDates": 16,
     "effectiveN": 2,
-    "meanAlphaPct": 0.58,
-    "clusterMeanAlphaPct": 1.88,
+    "meanAlphaPct": 0.38,
+    "clusterMeanAlphaPct": 1.74,
     "medianAlphaPct": -0.3,
-    "beatIndexPct": 46.55,
+    "beatIndexPct": 46.53,
     "insufficient": true,
     "need": 6,
-    "reason": "för få oberoende mätfönster (2 av 8); radantalet 116 är inte oberoende observationer"
+    "reason": "för få oberoende mätfönster (2 av 8); radantalet 144 är inte oberoende observationer"
    },
    "poolAlpha": {
     "horizon": 20,
-    "n": 116,
-    "nDates": 15,
+    "n": 144,
+    "nDates": 16,
     "effectiveN": 2,
-    "meanAlphaPct": 0.58,
-    "clusterMeanAlphaPct": 1.88,
+    "meanAlphaPct": 0.38,
+    "clusterMeanAlphaPct": 1.74,
     "medianAlphaPct": -0.3,
-    "beatIndexPct": 46.55,
+    "beatIndexPct": 46.53,
     "insufficient": true,
     "need": 6,
-    "reason": "för få oberoende mätfönster (2 av 8); radantalet 116 är inte oberoende observationer",
+    "reason": "för få oberoende mätfönster (2 av 8); radantalet 144 är inte oberoende observationer",
     "verdict": "för tidigt att uttala sig"
    },
    "holdRule": {
     "horizon": 20,
     "held": {
-     "n": 10,
-     "nDates": 8,
+     "n": 11,
+     "nDates": 9,
      "effectiveN": 1,
-     "meanAlphaPct": -1.82,
-     "clusterMeanAlphaPct": -1.54,
-     "medianAlphaPct": -1.91,
-     "beatIndexPct": 30,
+     "meanAlphaPct": -1.81,
+     "clusterMeanAlphaPct": -1.56,
+     "medianAlphaPct": -1.7,
+     "beatIndexPct": 27.27,
      "insufficient": true,
      "need": 7,
-     "reason": "för få oberoende mätfönster (1 av 8); radantalet 10 är inte oberoende observationer"
+     "reason": "för få oberoende mätfönster (1 av 8); radantalet 11 är inte oberoende observationer"
     },
     "pool": {
-     "n": 95,
-     "nDates": 10,
+     "n": 122,
+     "nDates": 11,
      "effectiveN": 1,
-     "meanAlphaPct": 0.68,
-     "clusterMeanAlphaPct": 0.24,
-     "medianAlphaPct": -0.29,
-     "beatIndexPct": 46.32,
+     "meanAlphaPct": 0.44,
+     "clusterMeanAlphaPct": 0.18,
+     "medianAlphaPct": -0.23,
+     "beatIndexPct": 46.72,
      "insufficient": true,
      "need": 7,
-     "reason": "för få oberoende mätfönster (1 av 8); radantalet 95 är inte oberoende observationer"
+     "reason": "för få oberoende mätfönster (1 av 8); radantalet 122 är inte oberoende observationer"
     },
     "gapPct": null,
     "verdict": "för tidigt att uttala sig",
@@ -450,7 +439,7 @@
     },
     "boughtClusters": 2,
     "passedClusters": 1,
-    "edgePct": 1.03,
+    "edgePct": 1.27,
     "decision": "avvakta",
     "reason": "inte moget: 2/20 KÖP-fönster, 1/20 AVVAKTA-fönster"
    }
@@ -3258,6 +3247,12 @@
      "benchPct": 0.75,
      "alphaPct": -1.09,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -2.5,
+     "benchPct": -0.8,
+     "alphaPct": -1.7,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3275,6 +3270,12 @@
      "benchPct": 0.75,
      "alphaPct": 2.5,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 8.44,
+     "benchPct": -0.8,
+     "alphaPct": 9.24,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3292,6 +3293,12 @@
      "benchPct": 0.75,
      "alphaPct": -2.4,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -10.65,
+     "benchPct": -0.8,
+     "alphaPct": -9.85,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3309,6 +3316,12 @@
      "benchPct": 0.75,
      "alphaPct": -6.84,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -10.43,
+     "benchPct": -0.8,
+     "alphaPct": -9.63,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3326,6 +3339,12 @@
      "benchPct": 0.75,
      "alphaPct": -9.72,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -3.17,
+     "benchPct": -0.8,
+     "alphaPct": -2.37,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3343,6 +3362,12 @@
      "benchPct": 0.75,
      "alphaPct": 2.84,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -4.61,
+     "benchPct": -0.8,
+     "alphaPct": -3.81,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3360,6 +3385,12 @@
      "benchPct": 0.75,
      "alphaPct": -11.38,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -9.46,
+     "benchPct": -0.8,
+     "alphaPct": -8.66,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3377,6 +3408,12 @@
      "benchPct": 0.75,
      "alphaPct": 1.83,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 1.32,
+     "benchPct": -0.8,
+     "alphaPct": 2.12,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3394,6 +3431,12 @@
      "benchPct": 0.75,
      "alphaPct": 2.95,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 7.17,
+     "benchPct": -0.8,
+     "alphaPct": 7.97,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3411,6 +3454,12 @@
      "benchPct": 0.75,
      "alphaPct": -1.13,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 11.07,
+     "benchPct": -0.8,
+     "alphaPct": 11.88,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3428,6 +3477,12 @@
      "benchPct": 0.75,
      "alphaPct": -7.92,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -16.59,
+     "benchPct": -0.8,
+     "alphaPct": -15.79,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3445,6 +3500,12 @@
      "benchPct": 0.75,
      "alphaPct": -9.3,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -15.56,
+     "benchPct": -0.8,
+     "alphaPct": -14.75,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3462,6 +3523,12 @@
      "benchPct": 0.75,
      "alphaPct": 0.64,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -4.89,
+     "benchPct": -0.8,
+     "alphaPct": -4.08,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3479,6 +3546,12 @@
      "benchPct": 0.75,
      "alphaPct": 0.7,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 1.78,
+     "benchPct": -0.8,
+     "alphaPct": 2.58,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3496,6 +3569,12 @@
      "benchPct": 0.75,
      "alphaPct": 1.59,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -3.68,
+     "benchPct": -0.8,
+     "alphaPct": -2.87,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3513,6 +3592,12 @@
      "benchPct": 0.75,
      "alphaPct": 2.29,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 9.04,
+     "benchPct": -0.8,
+     "alphaPct": 9.84,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3530,6 +3615,12 @@
      "benchPct": 0.75,
      "alphaPct": -3.05,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -10.35,
+     "benchPct": -0.8,
+     "alphaPct": -9.55,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3547,6 +3638,12 @@
      "benchPct": 0.75,
      "alphaPct": -6.6,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -7.06,
+     "benchPct": -0.8,
+     "alphaPct": -6.26,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3564,6 +3661,12 @@
      "benchPct": 0.75,
      "alphaPct": -0.89,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -1.53,
+     "benchPct": -0.8,
+     "alphaPct": -0.72,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3581,6 +3684,12 @@
      "benchPct": 0.75,
      "alphaPct": -3.06,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 4.33,
+     "benchPct": -0.8,
+     "alphaPct": 5.13,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3598,6 +3707,12 @@
      "benchPct": 0.75,
      "alphaPct": 5.54,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -0.84,
+     "benchPct": -0.8,
+     "alphaPct": -0.04,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3615,6 +3730,12 @@
      "benchPct": 0.75,
      "alphaPct": 3.76,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 8.61,
+     "benchPct": -0.8,
+     "alphaPct": 9.42,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3632,6 +3753,12 @@
      "benchPct": 0.75,
      "alphaPct": -0.27,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 1.93,
+     "benchPct": -0.8,
+     "alphaPct": 2.73,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3649,6 +3776,12 @@
      "benchPct": 0.75,
      "alphaPct": 8.63,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 6.25,
+     "benchPct": -0.8,
+     "alphaPct": 7.06,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3666,6 +3799,12 @@
      "benchPct": 0.75,
      "alphaPct": -3.85,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": -13.81,
+     "benchPct": -0.8,
+     "alphaPct": -13.01,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3683,6 +3822,12 @@
      "benchPct": 0.75,
      "alphaPct": 6.34,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 8.25,
+     "benchPct": -0.8,
+     "alphaPct": 9.05,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3700,6 +3845,12 @@
      "benchPct": 0.75,
      "alphaPct": -0.75,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 5.17,
+     "benchPct": -0.8,
+     "alphaPct": 5.98,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -3717,6 +3868,12 @@
      "benchPct": 0.75,
      "alphaPct": 0.97,
      "toDate": "2026-08-24"
+    },
+    "20": {
+     "pct": 6.51,
+     "benchPct": -0.8,
+     "alphaPct": 7.31,
+     "toDate": "2026-09-14"
     }
    }
   },
@@ -8402,7 +8559,14 @@
    "catalystType": "earnings",
    "sector": "Livsmedel/vattenbruk",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5,
+     "benchPct": -1.57,
+     "alphaPct": 6.57,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8412,7 +8576,14 @@
    "catalystType": "order",
    "sector": "Torrbulk/sjofart",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -0.36,
+     "benchPct": -1.57,
+     "alphaPct": 1.22,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8422,7 +8593,14 @@
    "catalystType": "other",
    "sector": "Infrastruktur/bygg",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 7.59,
+     "benchPct": -1.57,
+     "alphaPct": 9.16,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8432,7 +8610,14 @@
    "catalystType": "other",
    "sector": "Bioteknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -10.62,
+     "benchPct": -1.57,
+     "alphaPct": -9.04,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8442,7 +8627,14 @@
    "catalystType": "earnings",
    "sector": "Tank/kemikaliesjofart",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 6.44,
+     "benchPct": -1.57,
+     "alphaPct": 8.01,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8452,7 +8644,14 @@
    "catalystType": "insider",
    "sector": "Vacciner",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -3.4,
+     "benchPct": -1.57,
+     "alphaPct": -1.83,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8462,7 +8661,14 @@
    "catalystType": "other",
    "sector": "Containersjofart",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 4.37,
+     "benchPct": -1.57,
+     "alphaPct": 5.94,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8472,7 +8678,14 @@
    "catalystType": "other",
    "sector": "Cykelhjalmsteknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -1.82,
+     "benchPct": -1.57,
+     "alphaPct": -0.25,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8482,7 +8695,14 @@
    "catalystType": "order",
    "sector": "Bygg/anlaggning",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -3.15,
+     "benchPct": -1.57,
+     "alphaPct": -1.58,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8492,7 +8712,14 @@
    "catalystType": "other",
    "sector": "Offshoretjanster",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -1.41,
+     "benchPct": -1.57,
+     "alphaPct": 0.16,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8502,7 +8729,14 @@
    "catalystType": "earnings",
    "sector": "Husvagnar/husbilar",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -6.48,
+     "benchPct": -1.57,
+     "alphaPct": -4.91,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8512,7 +8746,14 @@
    "catalystType": "earnings",
    "sector": "Bioprintning",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -5.87,
+     "benchPct": -1.57,
+     "alphaPct": -4.3,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8522,7 +8763,14 @@
    "catalystType": "earnings",
    "sector": "E-handel",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -4.9,
+     "benchPct": -1.57,
+     "alphaPct": -3.33,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8532,7 +8780,14 @@
    "catalystType": "other",
    "sector": "E-handel/nikotin",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -0.69,
+     "benchPct": -1.57,
+     "alphaPct": 0.88,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8542,7 +8797,14 @@
    "catalystType": "other",
    "sector": "Investmentbolag",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.82,
+     "benchPct": -1.57,
+     "alphaPct": 3.39,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8552,7 +8814,14 @@
    "catalystType": "other",
    "sector": "Vindkraftsinstallation",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -2.13,
+     "benchPct": -1.57,
+     "alphaPct": -0.56,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8562,7 +8831,14 @@
    "catalystType": "buyback",
    "sector": "Natverkshardvara",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.86,
+     "benchPct": -1.57,
+     "alphaPct": 7.43,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8572,7 +8848,14 @@
    "catalystType": "buyback",
    "sector": "Dataspel",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.53,
+     "benchPct": -1.57,
+     "alphaPct": 7.1,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8582,7 +8865,14 @@
    "catalystType": "order",
    "sector": "Energi/olja",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 3.96,
+     "benchPct": -1.57,
+     "alphaPct": 5.54,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8592,7 +8882,14 @@
    "catalystType": "other",
    "sector": "Forsvar/maritim teknik",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 2.42,
+     "benchPct": -1.57,
+     "alphaPct": 3.99,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8602,7 +8899,14 @@
    "catalystType": "earnings",
    "sector": "Lax/sjomat",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.64,
+     "benchPct": -1.57,
+     "alphaPct": 3.21,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8612,7 +8916,14 @@
    "catalystType": "insider",
    "sector": "Lax/sjomat",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 1.89,
+     "benchPct": -1.57,
+     "alphaPct": 3.46,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8622,7 +8933,14 @@
    "catalystType": "macro",
    "sector": "Energi/olja",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 5.38,
+     "benchPct": -1.57,
+     "alphaPct": 6.95,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8632,7 +8950,14 @@
    "catalystType": "other",
    "sector": "Investmentbolag",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": 0.83,
+     "benchPct": -1.57,
+     "alphaPct": 2.41,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8642,7 +8967,14 @@
    "catalystType": "other",
    "sector": "Fastigheter",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -3.14,
+     "benchPct": -1.57,
+     "alphaPct": -1.57,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-07",
@@ -8652,7 +8984,14 @@
    "catalystType": "other",
    "sector": "Vegetabiliska oljor",
    "reconstructed": false,
-   "fwd": {}
+   "fwd": {
+    "5": {
+     "pct": -1.17,
+     "benchPct": -1.57,
+     "alphaPct": 0.4,
+     "toDate": "2026-09-14"
+    }
+   }
   },
   {
    "date": "2026-09-08",
@@ -9172,8 +9511,7 @@
    "catalystType": "regulatory",
    "sector": "Lakemedel",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
@@ -9183,8 +9521,7 @@
    "catalystType": "ma_rumor",
    "sector": "Industriell kommunikation",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
@@ -9194,8 +9531,7 @@
    "catalystType": "earnings",
    "sector": "Laboratorieinstrument",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
@@ -9205,8 +9541,7 @@
    "catalystType": "other",
    "sector": "Kreditforvaltning",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
@@ -9216,8 +9551,7 @@
    "catalystType": "buyback",
    "sector": "Digitala marknadsplatser",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
@@ -9227,8 +9561,7 @@
    "catalystType": "ma_rumor",
    "sector": "Offshore borrning",
    "reconstructed": false,
-   "fwd": {},
-   "missing": true
+   "fwd": {}
   },
   {
    "date": "2026-09-14",
