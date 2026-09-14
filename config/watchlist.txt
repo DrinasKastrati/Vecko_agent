@@ -46,7 +46,9 @@ DFDS.CO
 # Zealand Pharma (Q2 13/8) och DFDS (Q2 14/8) – namngivna i veckans radar enligt L-1.
 CTY1S.HE
 # Citycon – G Citys ovillkorade kontantbud, MFN 2026-08-04.
-CTM.ST
+# CTM.ST BORTTAGEN 2026-09-14 (v38, punkt 6): varken innehav, pending, bubblare eller namnd i
+# nagon rapport sedan 2026-08-25 (18 rapporter, 14 handelsdagar). Ligger kvar i
+# config/universe_nordic_movers.txt och forblir darmed rangordningsbar i punkt g1.
 G5EN.ST
 NESTE.HE
 # Tre rader ur state/movers.json som saknade verifierad kurs och darfor foll pa grind 1.
@@ -65,7 +67,8 @@ RAP1V.HE
 # MEUR 2025. Fonstrets starkaste nordiska katalysator och den ENDA som foll pa enbart grind 1.
 PHO.OL
 NAPA.OL
-NHY.OL
+# NHY.OL BORTTAGEN 2026-09-14 (v38, punkt 6): samma skal som CTM.ST ovan. Ligger kvar i
+# config/universe_nordic_movers.txt.
 # Photocure (FDA-omklassning 14/8), Napatech (AI-infraorder 13/8), Norsk Hydro (Alunorte 13/8).
 VWS.CO
 MAERSK-B.CO
@@ -289,3 +292,45 @@ FORTUM.HE
 # rotation - se atgardspunkten wide-fetch-not-last-run-of-day. Raden loser grind 1 for just
 # denna symbol och gor dessutom dess historikpunkt till en riktig stangning i stallet for en
 # intradagsnotering ~09:37 UTC.
+
+# --- Tillagda 2026-09-14 (v38-rotationen, punkt 6b) ---
+# Varje ticker som far en rad i state/decisions.json maste hamtas av prices.yml, annars blir
+# beslutet omatbart for alltid: price_history.json backfillas bara for hamtade symboler och
+# decision_eval.mjs mater varje rad - aven de avvisade - mot efterfoljande kurs och index.
+# EN RAD HAR BETYDER BEVAKNING, INTE ATT AKTIEN FAR KOPAS. Samtliga fem grindar galler oforandrat.
+
+# (a) Nyhetskandidater ur news_feed.json som saknade ALL historik och darfor foll pa grind 1.
+# Utan rad har kan de aldrig prissattas - veckans starkaste katalysator i sak (Sobis FDA Fast
+# Track 2026-09-09) kunde inte poangsattas overhuvudtaget.
+SOBI.ST
+# Swedish Orphan Biovitrum - US FDA Fast Track Designation for pacritinib i VEXAS-syndrom
+# (mfn + globenewswire 2026-09-09 17:50 UTC), catalystType regulatory.
+HMS.ST
+# HMS Networks - offentligt uppkopserbjudande pa samtliga aktier i ROBOT S.A. (mfn 2026-09-11
+# 15:51 UTC). Bolaget ar kopare, inte malbolag.
+CHEMM.CO
+# ChemoMetec - guidning for rakenskapsaret 2026/27 (mfn 2026-09-10 18:20 UTC), catalystType earnings.
+HOFI.ST
+# Hoist Finance - uppdaterade finansiella mal och ny portfoljambition (mfn 2026-09-08 17:02 UTC).
+HEM.ST
+# Hemnet - pausar aktieaterkopsprogrammet (mfn 2026-09-09 16:24 UTC), catalystType buyback men i
+# NEGATIV riktning. Tillagd for matbarhet, inte som ide.
+NOL.OL
+# Northern Ocean - slutligt resultat av budpliktserbjudande (mfn 2026-09-11 16:34 UTC).
+
+# (b) Symboler som bara nas av den BREDA hamtningen och darfor saknar rad i prices.json vid
+# rotationens starttid. Raden flyttar dem till den SMALA hamtningen, vilket ger bade kalla +
+# marketTime OCH en historikpunkt som ar en riktig stangning i stallet for en intradagsnotering
+# ~09:37 UTC. Samma mekanik som miss-retron anvande for FORTUM.HE 2026-09-12.
+# Se atgardspunkterna wide-fetch-not-last-run-of-day och history-point-not-a-close-for-wide-symbols.
+FRO.OL
+# Frontline - extra engangsutdelning efter forsaljning av tva VLCC (globenewswire 2026-09-11 20:30 UTC).
+ORSTED.CO
+# Orsted - slutligt utlatande om beskattningen av Walney Extension och Hornsea 1 (mfn 2026-09-10 19:25 UTC).
+UPM.HE
+# UPM-Kymmene - +6,60 pct pa veckan 2026-09-04 -> 2026-09-11, rangordnad sexa av 139.
+CLAS-B.ST
+# Clas Ohlson - -4,38 pct pa veckan, mover enligt movers.json (weekPct -8,72).
+COLO-B.CO
+# Coloplast - -6,77 pct pa veckan, mover enligt movers.json (weekPct -10,30).
+
