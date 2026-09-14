@@ -6,7 +6,8 @@
    Routinerna läser sedan filen som PRIMÄR nyhetsradar (rubriker som
    sedan verifieras via länken innan de används i beslut).
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+import { readJSON, writeAtomic, hasArray } from "./state-io.mjs";
 
 /* ENDA User-Agent i filen (sedan 2026-08-26). SEC:s access-policy KRÄVER en UA som
    deklarerar kontaktuppgift, och en påhittad browser-UA ger 403 mot deras
@@ -211,20 +212,23 @@ export async function fetchFeedText(url, opts = {}){
   for (let attempt = 0; attempt <= retries; attempt++){
     if (attempt) await sleep(delayMs);
     const t0 = Date.now();
+    let timer;
     try {
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+      timer = setTimeout(() => ctrl.abort(), timeoutMs);
       const r = await fetchImpl(url, { headers: { "User-Agent": ua,
         "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*" },
         signal: ctrl.signal });
-      clearTimeout(timer);
       lastMs = Date.now() - t0;
-      if (r.ok) return { ok: true, text: await r.text(), attempts: attempt + 1, ms: lastMs };
+      if (r.ok) {
+        const text = await r.text();
+        return { ok: true, text, attempts: attempt + 1, ms: Date.now() - t0 };
+      }
       last = "HTTP " + r.status;
     } catch (e) {
       lastMs = Date.now() - t0;
       last = "fel: " + String(e && e.message || e).slice(0, 60);
-    }
+    } finally { clearTimeout(timer); }
   }
   /* SVARSTIDEN SKILJER TVÅ FEL MED OLIKA ÅTGÄRD (2026-08-26).
      "fel: This operation was aborted" ensamt säger inte OM värden avvisade oss eller
@@ -241,8 +245,7 @@ async function main(){
   const feeds = parseFeedList(existsSync("config/news_feeds.txt") ? readFileSync("config/news_feeds.txt", "utf8") : "");
   if (!feeds.length){ console.log("Inga flöden i config/news_feeds.txt – avslutar."); return; }
 
-  let old = { items: [] };
-  try { old = JSON.parse(readFileSync("state/news_feed.json", "utf8")); } catch {}
+  const old = readJSON("state/news_feed.json", { items: [] }, hasArray("items"));
 
   const nowIso = new Date().toISOString();
   const status = {};
@@ -266,7 +269,7 @@ async function main(){
   const ageH = ageHoursForTradingDays(nowIso, WINDOW_TRADING_DAYS);
   const merged = mergeNews(old.items, fresh, nowIso, ageH, MAX_ITEMS, MAX_PER_SOURCE_DAY);
   const window = newsCoverage(merged, nowIso, WINDOW_TRADING_DAYS);
-  writeFileSync("state/news_feed.json", JSON.stringify({
+  writeAtomic("state/news_feed.json", JSON.stringify({
     generatedAt: nowIso,
     feeds: status,
     count: merged.length,

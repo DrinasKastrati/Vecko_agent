@@ -144,6 +144,7 @@
 /* fylld pillerflik i stället för understruken */
 .subnav a.active{color:var(--on-accent);background:var(--accent-primary);
   box-shadow:0 3px 10px var(--accent-line)}
+.subnav a.active .ico{color:inherit}
 .pill{border:none}
 .wt-pill{border:none}
 .tbl th,.tbl td{border:none;border-bottom:1px solid var(--border-color)}
@@ -157,6 +158,7 @@
    Brytpunkten MÅSTE vara samma 860px som base.css använder – med 820 föll
    spannet 821–860 mellan stolarna. */
 @media(max-width:860px){
-  .subnav a{flex:1 1 0;min-width:0;flex-direction:column;gap:0;min-height:50px}
-  .subnav a::after{font-size:12px}
+  .subnav a::after,.nav-more::after{font-size:11.5px}
+  /* på mobil är den fyllda pillern för tung – samma lugna markering som base */
+  .subnav a.active{background:var(--accent-soft);color:var(--accent-primary);box-shadow:none}
 }

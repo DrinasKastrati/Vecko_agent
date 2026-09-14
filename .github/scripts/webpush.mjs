@@ -104,6 +104,7 @@ export function vapidAuthHeader(endpoint, vapidPublicB64, vapidPrivateB64, subje
 export async function sendPush(sub, payload, vapid, fetchImpl = globalThis.fetch){
   const body = encryptPayload(payload, unb64u(sub.keys.p256dh), unb64u(sub.keys.auth));
   const res = await fetchImpl(sub.endpoint, {
+    signal: AbortSignal.timeout(20000),
     method: "POST",
     headers: {
       "Content-Encoding": "aes128gcm",

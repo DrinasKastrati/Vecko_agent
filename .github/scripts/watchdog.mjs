@@ -195,10 +195,10 @@ export function decisionRowsOn(db, isoDate, book){
    flaggar bara det uppenbara fallet och ger inga falsklarm på en vecka med få
    kandidater. */
 export function checkGrossList(opts){
-  const { isoDate, isMonday, decisionsDb, minRows = 6 } = opts || {};
+  const { isoDate, isMonday, decisionsDb, minRows = 6, books = ["nordic", "us"] } = opts || {};
   const problems = [];
   if (!isMonday || !isoDate || !decisionsDb) return problems;
-  for (const book of ["nordic", "us"]){
+  for (const book of books){
     const rows = decisionRowsOn(decisionsDb, isoDate, book);
     // Ingen rad alls = boken kördes förmodligen inte; det fångas av "decisions"-
     // kontrollen ovan och ska inte dubbelrapporteras här.
@@ -407,7 +407,7 @@ export function checkStalePricedBubblare(opts){
      loggas), ett tal betyder att den fanns och att kandidaten bedömdes med den.
      En rad EFTER veckorapporten avgör som förut, oavsett kurs. */
   const decided = new Set(rows
-    .filter(r => r && typeof r.date === "string" &&
+    .filter(r => r && (!book || r.book === book) && typeof r.date === "string" &&
       (r.date > weeklyDate || (r.date === weeklyDate && r.price != null)))
     .map(r => r.ticker));
   const stuck = tickers.filter(t => {
@@ -415,7 +415,7 @@ export function checkStalePricedBubblare(opts){
     return q && !q.error && q.price != null && !decided.has(t);
   });
   if (stuck.length)
-    problems.push({ key: "bubblare-price", title:
+    problems.push({ key: "bubblare-price" + (book ? "-" + book : ""), title:
       `Watchdog: ${stuck.length} prissatt(a) bubblare utan avgörande (${book || "?"})`,
       body: "Följande bubblare ur veckorapporten " + weeklyDate + " har nu verifierad kurs i " +
         "`state/prices.json`, men ingen körning har tagit ställning till dem sedan dess:\n\n" +
@@ -774,6 +774,17 @@ export function latestDecisionYmd(db){
   return best;
 }
 
+// The US routine runs at 15:00 Stockholm time. Check after 14:30 UTC (after
+// both DST variants), and keep a missed Monday visible for the rest of the week.
+export function latestRotationDate(now, hour = 14){
+  const date = new Date(now);
+  const weekday = date.getUTCDay();
+  let days = (weekday + 6) % 7;
+  if (weekday === 1 && date.getUTCHours() * 60 + date.getUTCMinutes() < hour * 60 + 30) days = 7;
+  date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
 function main(){
   let gen = null;
   try { gen = JSON.parse(readFileSync("state/prices.json", "utf8")).generatedAt || null; } catch {}
@@ -850,8 +861,9 @@ function main(){
   });
 
   const todayIso = now.toISOString().slice(0, 10);
-  problems.push(...checkGrossList({
-    isoDate: todayIso, isMonday: now.getUTCDay() === 1, decisionsDb
+  for (const book of ["nordic", "us"]) problems.push(...checkGrossList({
+    isoDate: latestRotationDate(now, book === "us" ? 14 : 10),
+    isMonday: true, decisionsDb, books: [book]
   }));
   problems.push(...checkScoutCandidates({
     candidatesDb, today: todayIso, staleFn: staleCandidates
@@ -883,7 +895,7 @@ function main(){
   // färskhetskontrollen – se checkUsRotation. Ligger här för att wkUs.date
   // beräknas först nu.
   problems.push(...checkUsRotation({
-    isoDate: todayIso, isMonday: now.getUTCDay() === 1,
+    isoDate: latestRotationDate(now), isMonday: true,
     decisionsDb, latestUsWeeklyDate: wkUs.date }));
 
   writeFileSync((process.env.RUNNER_TEMP || ".") + "/watchdog.json", JSON.stringify(problems, null, 2) + "\n");

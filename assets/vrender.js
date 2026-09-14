@@ -773,7 +773,7 @@
      "binär händelse inom 2 handelsdagar" och kan tvinga fram ett beslut före
      eventet. `isEstimate` måste märkas – Yahoo gissar då datumet ur förra
      årets kadens, och en gissning får aldrig läsas som ett bekräftat datum. */
-  function renderEarningsSoon(cal, heldTickers){
+  function renderEarningsSoon(cal, heldTickers, now = new Date()){
     // Samma skäl som i renderCandidates: en trasig post får aldrig släcka vyn.
     const up = (cal && Array.isArray(cal.upcoming))
       ? cal.upcoming.filter(u => u && typeof u === "object") : null;
@@ -782,9 +782,11 @@
     if (!up.length)
       return `<div class="empty">Inga rapporter inom ${esc(String((cal && cal.horizonDays) || 10))} handelsdagar bland bevakade bolag.</div>`;
     const held = new Set((heldTickers || []).filter(Boolean));
-    const rows = up.slice(0, 12).map(u => {
+    const today = now.toISOString().slice(0, 10);
+    const fresh = cal.generatedAt && String(cal.generatedAt).slice(0, 10) === today;
+    const rows = up.slice().sort((a, b) => Number(held.has(b.symbol)) - Number(held.has(a.symbol))).slice(0, 12).map(u => {
       const own = held.has(u.symbol);
-      const när = u.tradingDaysAway === 0 ? "i dag"
+      const när = !fresh ? "kontrollera datum" : u.tradingDaysAway === 0 ? "i dag"
                 : u.tradingDaysAway === 1 ? "i morgon"
                 : `om ${u.tradingDaysAway} handelsdagar`;
       return `<li class="er${own ? " er--held" : ""}">
@@ -792,6 +794,7 @@
         <span class="er-date">${esc(u.date || "")}</span>
         ${own ? `<span class="er-tag" title="Rapporten är en binär händelse i ett innehav">INNEHAV</span>` : ""}
         ${u.isEstimate ? `<span class="er-est" title="Yahoo gissar datumet ur förra årets kadens – inte bekräftat av bolaget">gissat datum</span>` : ""}
+        ${u.retained ? `<span class="er-est">tidigare uppgift – hämtningen misslyckades</span>` : ""}
       </li>`;
     }).join("");
     return `<ul class="er-list">${rows}</ul>
@@ -1168,8 +1171,8 @@
     } else {
       verdict = `<div class="sv-verdict sv-verdict--ok">
         <div class="sv-q">Behöver du göra något i dag?</div>
-        <div class="sv-a">Nej.</div>
-        <p class="sv-note">${held.length
+        <div class="sv-a">${m.stale ? "Dagens underlag är inte komplett ännu." : "Nej."}</div>
+        <p class="sv-note">${m.stale ? "Kontrollera senaste rapportdatum innan du agerar." : held.length
           ? "Roboten behåller allt den äger. Att inte handla är ett aktivt beslut, inte en utebliven insats."
           : "Roboten äger inget just nu och har inte hittat något värt att köpa."}</p>
       </div>`;
@@ -1180,7 +1183,7 @@
     const accCls = acc == null ? "" : acc > 0 ? "pos" : acc < 0 ? "neg" : "";
     const perBook = books.filter(b => b.accum != null).map(b =>
       `<li>${esc(b.label)}: <b class="${b.accum > 0 ? "pos" : b.accum < 0 ? "neg" : ""}">${plainPct(b.accum)}</b></li>`).join("");
-    const howsit = `<div class="sv-card">
+    const howsit = `<div class="sv-card sv-card--how">
       <h3>Hur går det?</h3>
       <div class="sv-big ${accCls}">${acc == null ? "–" : plainPct(acc)}</div>
       <p>${acc == null
@@ -1198,7 +1201,7 @@
           return `<li><b>${esc(plainName(h))}</b>${sinceTxt}${sleeve}</li>`;
         }).join("")}</ul>`
       : `<p class="sv-empty">Inget innehav just nu. Pengarna står i indexfonden.</p>`;
-    const owns = `<div class="sv-card"><h3>Vad roboten äger</h3>${ownList}</div>`;
+    const owns = `<div class="sv-card sv-card--own"><h3>Vad roboten äger</h3>${ownList}</div>`;
 
     /* 4. Dagens händelser som meningar. */
     const acts = (m.actions || []);
@@ -1213,10 +1216,10 @@
                  full bok · fallen grind), så den gamla meningen påstod fel
                  orsak i de flesta fall. Motiveringen finns i modellen – använd
                  den, och påstå ingenting alls när den saknas. */
-              ? (a.why ? ` – ${truncate(a.why, 120)}` : " och avstod från att agera")
+              ? (a.why ? ` – ${esc(truncate(a.why, 120))}` : " och avstod från att agera")
               : ""}.</li>`).join("")}</ul>`
       : `<p class="sv-empty">Inga beslut fattade i dag.</p>`;
-    const today = `<div class="sv-card">
+    const today = `<div class="sv-card sv-card--today">
       <h3>Vad hände i dag${m.dateLabel ? ` <span class="sv-date">${esc(m.dateLabel)}</span>` : ""}</h3>
       ${m.blocked ? `<p class="sv-warn">Roboten kunde inte bekräfta alla kurser och avstod därför från kursbaserade beslut. Det är avsiktligt – hellre inget beslut än ett på osäkra siffror.</p>` : ""}
       ${happened}
@@ -1237,7 +1240,69 @@
     return `<div class="sv">${verdict}${howsit}${owns}${today}${next}${words}</div>`;
   }
 
-  const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple,
+  /* ---- HEM: DAGSSAMMANFATTNING (detaljerat läge) ---------------------------
+     En rad KPI-rutor överst i Hem som svarar på "hur ligger vi till?" innan
+     korten. Samma modell som renderSimple (byggd i app.js:simpleModel) plus
+     antal aktiva signaler och planer. REN funktion – ingen DOM, ingen lagring.
+
+     Samma uppgiftsregel som enkla vyn: bara KÖP/SÄLJ är något att göra, BEHÅLL
+     aldrig. Rutorna för böckerna är knappar till respektive bokvy (klicket
+     fångas av den delegerade [data-goto-view]-lyssnaren i app.js). */
+  function renderHemSummary(m){
+    m = m || {};
+    const acts = m.actions || [];
+    const counts = {};
+    acts.forEach(a => { if (a && a.decision) counts[a.decision] = (counts[a.decision] || 0) + 1; });
+    const todo = (counts["KÖP"] || 0) + (counts["SÄLJ"] || 0);
+    const cls = v => v == null ? "" : v > 0 ? " pos" : v < 0 ? " neg" : "";
+
+    let state = "ok", head = "Inget att göra i dag";
+    if (todo) { state = "act"; head = `${todo} ${todo === 1 ? "affär" : "affärer"} att lägga`; }
+    else if (m.blocked || m.stale) { state = "warn"; head = m.blocked ? "Kurser kunde inte bekräftas" : "Dagens underlag inte komplett"; }
+    const sub = todo
+      ? acts.filter(a => a.decision === "KÖP" || a.decision === "SÄLJ").slice(0, 3)
+          .map(a => `${a.decision === "KÖP" ? "Köp" : "Sälj"} ${a.name || a.ticker || ""}`).join(" · ")
+      : (state === "warn" ? "Kontrollera rapportdatum innan du agerar." : "Roboten behåller det den äger.");
+    /* AVVAKTA är till största delen bruttolistans avvisade kandidater – inget
+       att agera på, så den får neutral färg här i stället för bärnsten. */
+    const chips = ["KÖP", "SÄLJ", "BEHÅLL", "AVVAKTA"].filter(k => counts[k])
+      .map(k => `<span class="badge badge--${k === "AVVAKTA" ? "none" : decClass(k)}">${counts[k]} ${esc(k)}</span>`).join("");
+
+    const today = `<div class="hs-tile hs-today hs-today--${state}">
+      <div class="hs-k">I dag${m.dateLabel ? ` <span class="hs-date">${esc(m.dateLabel)}</span>` : ""}</div>
+      <div class="hs-head">${esc(head)}</div>
+      <div class="hs-s">${esc(truncate(sub, 120))}</div>
+      ${chips ? `<div class="hs-chips">${chips}</div>` : ""}
+    </div>`;
+
+    const total = `<div class="hs-tile">
+      <div class="hs-k">Total utveckling</div>
+      <div class="hs-v${cls(m.totalAccum)}">${plainPct(m.totalAccum)}</div>
+      <div class="hs-s">${(m.books || []).length > 1 ? "båda böckerna, kapitalviktat" : "sedan skarp start"}</div>
+    </div>`;
+
+    const bookTiles = (m.books || []).map(b => {
+      const open = b.open != null ? b.open : ((b.holdings || []).filter(h => !h.isSleeve).length);
+      const bits = [`${open} ${open === 1 ? "position" : "positioner"}`];
+      if (b.pending) bits.push(`${b.pending} ${b.pending === 1 ? "plan" : "planer"}`);
+      return `<button type="button" class="hs-tile hs-link"${b.view ? ` data-goto-view="${esc(b.view)}"` : ""}>
+        <div class="hs-k">${esc(b.label)}</div>
+        <div class="hs-v${cls(b.accum)}">${plainPct(b.accum)}</div>
+        <div class="hs-s">${esc(bits.join(" · "))}</div>
+      </button>`;
+    }).join("");
+
+    const n = m.alerts || 0;
+    const alerts = `<div class="hs-tile${n ? " hs-alert" : ""}">
+      <div class="hs-k">Signaler</div>
+      <div class="hs-v">${n}</div>
+      <div class="hs-s">${n ? "aktiva intradag – se överst" : "inga nivåer korsade"}</div>
+    </div>`;
+
+    return `<div class="hs">${today}${total}${bookTiles}${alerts}</div>`;
+  }
+
+  const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple, renderHemSummary,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending, renderMyStats,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,

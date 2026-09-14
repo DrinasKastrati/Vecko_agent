@@ -53,7 +53,8 @@
    Symboler som INTE går att hämta lämnas exakt som de är – skriptet raderar
    aldrig historik.
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
+import { readJSON, writeAtomic, hasSeries } from "./state-io.mjs";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
@@ -188,7 +189,7 @@ async function fetchSeries(sym, range){
   const url = "https://query1.finance.yahoo.com/v8/finance/chart/" +
               encodeURIComponent(sym) + "?range=" + range + "&interval=1d";
   try {
-    const res = await fetch(url, { headers: { "User-Agent": UA } });
+    const res = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA } });
     if (!res.ok) return { error: "HTTP " + res.status };
     const json = await res.json();
     return { series: candlesToSeries(json), volumes: candlesToVolumes(json) };
@@ -321,15 +322,11 @@ async function main(){
 
   const volPath = "state/volume_history.json";
 
-  let hist = { series: {} };
-  if (existsSync(path)){ try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
-  hist.series = hist.series || {};
+  const hist = readJSON(path, { series: {} }, hasSeries);
 
   // Volymerna ligger i en EGEN fil – se motiveringen i fetch-prices.mjs
   // (price_history.json hämtas av dashboarden vid varje sidladdning).
-  let vol = { series: {} };
-  if (existsSync(volPath)){ try { vol = JSON.parse(readFileSync(volPath, "utf8")); } catch {} }
-  vol.series = vol.series || {};
+  const vol = readJSON(volPath, { series: {} }, hasSeries);
 
   const wl = [];
   for (const f of ["config/watchlist.txt", "config/watchlist_us.txt"])
@@ -398,10 +395,10 @@ async function main(){
   if (isFullRun(minPoints, only)) hist.backfilledAt        = new Date().toISOString();
   else                            hist.partialBackfilledAt = new Date().toISOString();
   mkdirSync("state", { recursive: true });
-  writeFileSync(path, JSON.stringify(hist) + "\n");
+  writeAtomic(path, JSON.stringify(hist) + "\n");
   if (volAdded || Object.keys(vol.series).length){
     vol.generatedAt = new Date().toISOString();
-    writeFileSync(volPath, JSON.stringify(vol) + "\n");
+    writeAtomic(volPath, JSON.stringify(vol) + "\n");
   }
 
   const langd = Object.values(hist.series).map(a => a.length);

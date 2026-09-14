@@ -19,6 +19,14 @@ rem =====================================================
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+rem The explicit push below targets local main. On another branch it would
+rem commit that branch, then report success after pushing unrelated main.
+for /f "delims=" %%b in ('git branch --show-current') do set "CURRENT_BRANCH=%%b"
+if not "%CURRENT_BRANCH%"=="main" (
+  echo Push avbruten: skriptet kraever main. Aktuell branch: %CURRENT_BRANCH%
+  exit /b 1
+)
+
 git add -A
 git diff --cached --quiet
 if errorlevel 1 (

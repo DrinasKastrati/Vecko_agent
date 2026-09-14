@@ -54,7 +54,8 @@ export function planIssues(openIssues, live, source) {
     .filter(x => x.key && x.key.indexOf(source + ":") === 0)
     .map(x => ({ issue: x.issue, key: x.key.slice(source.length + 1) }));
 
-  const levande = (live || []).filter(l => l && l.key != null);
+  const levande = [...new Map((live || []).filter(l => l && l.key != null)
+    .map(l => [String(l.key), l])).values()];
   const levandeNycklar = new Set(levande.map(l => String(l.key)));
   const öppnaNycklar = new Set(öppna.map(x => x.key));
 

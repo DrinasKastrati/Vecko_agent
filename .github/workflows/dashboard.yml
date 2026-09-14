@@ -10,6 +10,7 @@ on:
       - "state/portfolj.md"
       - "state/portfolj_us.md"
       - "state/lessons.md"
+      - "state/live_start.json"
       - "config/watchlist.txt"
       - "config/watchlist_us.txt"
       - "assets/vparse.js"          # parsningen ändrad => bygg om
@@ -20,8 +21,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: dashboard
-  cancel-in-progress: true   # bara den senaste byggnaden är intressant
+  group: state-main-writer
+  queue: max
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -29,6 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0   # full historik – krävs för rebase mot samtidiga pushar
       - uses: actions/setup-node@v4
         with:
@@ -45,8 +48,12 @@ jobs:
           else
             git commit -m "Dashboard-data: $(date -u +'%Y-%m-%d %H:%M UTC')"
             for i in 1 2 3; do
-              if git pull --rebase --autostash -X theirs origin main && git push origin main; then
-                exit 0
+              if git pull --rebase --autostash origin main && node .github/scripts/build-dashboard.mjs && node .github/scripts/validate-state.mjs; then
+                git add state/dashboard.json state/search-index.json
+                if ! git diff --cached --quiet; then git commit -m "Dashboard rebuilt after rebase"; fi
+                if git push origin main; then
+                  exit 0
+                fi
               fi
               git rebase --abort 2>/dev/null || true
               echo "Push-försök $i misslyckades – försöker igen..."

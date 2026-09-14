@@ -32,7 +32,8 @@
    Kör:  node .github/scripts/earnings-calendar.mjs
    Skriver state/earnings_calendar.json. Kräver nätåtkomst (körs i prices.yml).
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+import { readJSON, hasArray, writeAtomic } from "./state-io.mjs";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
@@ -96,10 +97,10 @@ export function tradingDaysBetween(fromIso, toIso){
 export function upcomingWithin(entries, todayIso, horizonDays = DEFAULT_HORIZON_DAYS){
   const out = [];
   for (const e of entries || []){
-    if (!e || !e.date) continue;
+    if (!e || !e.date || e.date < todayIso) continue;
     const d = tradingDaysBetween(todayIso, e.date);
     if (d == null || d < 0 || d > horizonDays) continue;
-    out.push(Object.assign({ tradingDaysAway: d }, e));
+    out.push(Object.assign({}, e, { tradingDaysAway: d }));
   }
   return out.sort((x, y) => x.tradingDaysAway - y.tradingDaysAway ||
                             String(x.symbol).localeCompare(String(y.symbol)));
@@ -142,13 +143,13 @@ export function collectSymbols(readFile = p => existsSync(p) ? readFileSync(p, "
    så en tillfällig 401 inte raderar gårdagens giltiga datum. */
 export async function getCrumb(fetchImpl = globalThis.fetch){
   try {
-    const r1 = await fetchImpl("https://fc.yahoo.com", { headers: { "User-Agent": UA } });
+    const r1 = await fetchImpl("https://fc.yahoo.com", { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA } });
     const raw = typeof r1.headers.getSetCookie === "function"
       ? r1.headers.getSetCookie() : [r1.headers.get("set-cookie")];
     const cookie = (raw || []).filter(Boolean).map(s => String(s).split(";")[0]).join("; ");
     if (!cookie) return null;
     const r2 = await fetchImpl("https://query2.finance.yahoo.com/v1/test/getcrumb",
-      { headers: { "User-Agent": UA, "Cookie": cookie } });
+      { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Cookie": cookie } });
     if (!r2.ok) return null;
     const crumb = (await r2.text()).trim();
     if (!crumb || crumb.length > 32 || /[<{]/.test(crumb)) return null;  // felsida, inte crumb
@@ -160,7 +161,7 @@ export async function fetchCalendar(symbol, auth, fetchImpl = globalThis.fetch){
   const url = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/" +
     encodeURIComponent(symbol) + "?modules=calendarEvents&crumb=" + encodeURIComponent(auth.crumb);
   try {
-    const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Cookie": auth.cookie, "Accept": "application/json" } });
+    const r = await fetchImpl(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Cookie": auth.cookie, "Accept": "application/json" } });
     /* 404 = instrumentet HAR ingen calendarEvents-modul. Det gäller ETF:er,
        index och valutapar – de rapporterar inte, så svaret är korrekt och inte
        ett fel. Skillnaden spelar roll: indexsleeven (SPY, XACT-OMXS30.ST) ligger
@@ -185,6 +186,7 @@ export async function fetchCalendar(symbol, auth, fetchImpl = globalThis.fetch){
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 export async function run(fetchImpl = globalThis.fetch){
+  const previous = readJSON("state/earnings_calendar.json", { all: [] }, hasArray("all"));
   const symbols = collectSymbols();
   const auth = await getCrumb(fetchImpl);
   if (!auth){
@@ -205,6 +207,9 @@ export async function run(fetchImpl = globalThis.fetch){
     await sleep(250);
   }
   const today = new Date().toISOString().slice(0, 10);
+  const resolved = entries.length;
+  const retained = retainFailedEntries(previous, errors, today);
+  entries.push(...retained);
   const upcoming = upcomingWithin(entries, today, DEFAULT_HORIZON_DAYS);
   const out = {
     generatedAt: new Date().toISOString(),
@@ -214,7 +219,7 @@ export async function run(fetchImpl = globalThis.fetch){
     note: "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet " +
           "ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. " +
           "'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
-    counts: { requested: symbols.length, resolved: entries.length,
+    counts: { requested: symbols.length, resolved, retained: retained.length,
               failed: Object.keys(errors).length,
               notApplicable: Object.keys(notApplicable).length,
               noCoverage: Object.keys(noCoverage).length,
@@ -227,7 +232,7 @@ export async function run(fetchImpl = globalThis.fetch){
     notApplicable,
     noCoverage
   };
-  writeFileSync("state/earnings_calendar.json", JSON.stringify(out, null, 2) + "\n");
+  writeAtomic("state/earnings_calendar.json", JSON.stringify(out, null, 2) + "\n");
   console.log(`Skrev state/earnings_calendar.json: ${entries.length}/${symbols.length} lösta, ` +
               `${Object.keys(notApplicable).length} utan rapporter (ETF/index), ` +
               `${Object.keys(errors).length} fel, ` +
@@ -237,6 +242,13 @@ export async function run(fetchImpl = globalThis.fetch){
   for (const u of upcoming)
     console.log(`  ${u.symbol.padEnd(12)} ${u.date} (${u.tradingDaysAway} hd)${u.isEstimate ? " [gissat]" : ""}`);
   return out;
+}
+
+// A transient error for one symbol must not erase its known upcoming event.
+// Preserve the original verification time and estimate flag alongside the error.
+export function retainFailedEntries(previous, errors, today){
+  return (previous.all || []).filter(e => e && errors[e.symbol] && e.date >= today)
+    .map(e => ({ ...e, retained: true, lastVerifiedAt: e.lastVerifiedAt || previous.generatedAt || null }));
 }
 
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop());

@@ -129,7 +129,7 @@ async function fetchCloses(sym, fetchImpl = globalThis.fetch, now = new Date()){
   for (const h of hosts){
     try {
       const r = await fetchImpl(chartUrl(h, sym, now),
-        { headers: { "User-Agent": UA, "Accept": "application/json" } });
+        { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Accept": "application/json" } });
       if (!r.ok) continue;
       const cs = closesFrom(await r.json());
       if (cs.length) return cs;

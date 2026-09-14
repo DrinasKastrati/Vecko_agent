@@ -46,6 +46,7 @@ export const SKIP_CATALYST = "index";
 // får ALDRIG räknas som noll, det skulle dra alla medelvärden mot mitten.
 export function forwardReturn(series, fromDate, bars){
   if (!Array.isArray(series) || !series.length || !fromDate) return null;
+  if (!Number.isInteger(bars) || bars < 0 || String(fromDate) < String(series[0][0])) return null;
   // Första stängningen PÅ eller EFTER beslutsdatumet: beslutet fattas på dagens
   // kurs, så den dagens stängning är utgångspunkten.
   let i = series.findIndex(p => p && String(p[0]) >= String(fromDate));
@@ -53,7 +54,7 @@ export function forwardReturn(series, fromDate, bars){
   const j = i + (bars || 0);
   if (j >= series.length) return null;         // ännu inte moget
   const a = Number(series[i][1]), b = Number(series[j][1]);
-  if (!isFinite(a) || !isFinite(b) || a <= 0) return null;
+  if (!isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) return null;
   return { fromDate: series[i][0], toDate: series[j][0], from: a, to: b,
            pct: (b / a - 1) * 100 };
 }
@@ -71,7 +72,11 @@ export function evalRow(row, seriesFor, horizons = HORIZONS){
   for (const h of horizons){
     const r = forwardReturn(series, row.date, h);
     if (!r) continue;                                   // ännu inte moget
-    const br = bench && bench.length ? forwardReturn(bench, row.date, h) : null;
+    // Compare the same dated closes. Counting N benchmark bars independently
+    // can end on another day when a market is closed or a quote is missing.
+    const bi = Array.isArray(bench) ? bench.findIndex(p => p && p[0] === r.fromDate) : -1;
+    const bj = Array.isArray(bench) ? bench.findIndex(p => p && p[0] === r.toDate) : -1;
+    const br = bi >= 0 && bj >= bi ? forwardReturn(bench, r.fromDate, bj - bi) : null;
     out.fwd[h] = {
       pct: round2(r.pct),
       benchPct: br ? round2(br.pct) : null,
@@ -304,8 +309,9 @@ export function convergenceTest(rows, horizon, cal, cfg = CONVERGENCE){
 // bära det i samma objekt. Verdict lämnas orörd — frontenden och testerna läser
 // den — men clusterCaveat gör att ingen läser siffran som ett svar.
 export function withClusterCaveat(res, rows, horizon, cal, minClusters = MIN_CLUSTERS){
-  const c = independentClusters(rows.filter(r => r.fwd && r.fwd[horizon] &&
-    r.fwd[horizon].alphaPct !== null).map(r => r.date), horizon, cal);
+  const count = action => independentClusters(rows.filter(r => r.action === action &&
+    r.fwd && r.fwd[horizon] && r.fwd[horizon].alphaPct !== null).map(r => r.date), horizon, cal);
+  const c = Math.min(count("KÖP"), count("AVVAKTA"));
   res.effectiveN = c;
   if (!res.insufficient && c < minClusters){
     res.clusterCaveat = "vilar på " + c + " oberoende mätfönster av " + minClusters +

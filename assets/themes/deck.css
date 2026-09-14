@@ -1,7 +1,17 @@
 /* ============================================================================
-   deck.css — "Quant Deck". Originaltemat: sidopanel + full skärmbredd.
-   Ärver all struktur från base.css; här ligger paletter (mörkt + ljust) och
-   den enda riktiga avvikelsen: menyn flyttas till en fast vänsterpanel.
+   deck.css — "Deck". Standardtemat: sidopanel + innehåll.
+   Ärver all struktur från base.css; här ligger palett (mörkt + ljust),
+   typografisk skala och sidopanelen.
+
+   UI-refaktor 2026-09: från neon-terminal till lugn analytics-produkt.
+     - Mörkt läge är djup slate/navy, inte nästan svart. Ytor är ett steg
+       ljusare än bakgrunden; ramar är svaga och skuggor nästan osynliga.
+     - Accent är blå/indigo och används för navigation och fokus. Grönt, rött
+       och bärnsten bär BETYDELSE (köp/vinst, sälj/förlust, varning) – aldrig
+       dekoration. Inga glödeffekter, inga bakgrundsgradienter.
+     - Rubriker i gemener (inga versaler + spärr), KPI-värden i monospace med
+       tabellsiffror. Skalan: sida 28 · sektion 18 · kort 15 · KPI 32 ·
+       brödtext 14,5 · metadata 12.
    ========================================================================== */
 
 :root{
@@ -9,77 +19,153 @@
   --mono:'JetBrains Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --display:var(--sans);
   --prose:var(--sans);
-  --r:9px; --r2:14px; --sidew:236px; --topbar-h:54px;
-  --view-bg:var(--view-tint);
-  --view-border:1px solid var(--border-color);
-  --nav-radius:9px;
+
+  /* geometri */
+  --r:8px; --r2:12px; --sidew:248px; --topbar-h:60px;
+  --maxw:1480px;
+  --wrap-pad:32px 40px 64px;
+  --topbar-pad:0 32px;
+  --view-bg:transparent;
+  --view-border:none;
+  --view-pad:0;
+  --card-pad:18px 20px;
+  --gap:16px;
+  --hem-gap:24px;
+  --hold-pad:18px; --hold-gap:12px 16px; --hold-min:300px;
+  --rail-pad:16px 18px 18px;
+
+  /* typografi */
+  --fs-base:14.5px; --lh:1.55;
+  --fs-prose:15px; --fs-card:13.5px;
+  --heading-weight:700;
+  --title-weight:700;
+  --sec-size:28px; --sec-spacing:-.025em; --sec-transform:none;
+  --sec-color:var(--text-main); --sec-rule-w:0; --sec-rule-pad:0;
+  --sub-size:18px; --sub-spacing:-.015em; --sub-transform:none; --sub-date-font:var(--sans);
+  --name-size:16px;
+  --kpi-size:32px; --kpi-label-weight:500;
+  --book-size:17px; --book-spacing:-.015em; --book-transform:none;
+  --rail-t-size:14px; --rail-t-spacing:0; --rail-t-transform:none; --rail-t-color:var(--text-main);
+  --rail-size:13.5px;
+  --label-size:11.5px; --label-spacing:0; --label-transform:none; --label-weight:500;
+  --badge-size:11.5px; --badge-spacing:.03em; --badge-pad:3px 9px;
+  --btn-size:13px; --btn-weight:500; --btn-pad:7px 12px; --btn-h:36px;
+  --val-weight:500;
+  --stat-l-weight:500;
+  --bullet:"•";
+  --empty-style:normal;
+
+  /* rapporter: forskningsdokument */
+  --report-maxw:800px; --report-pad:16px 44px 40px;
+  --rh1:28px; --rh1-spacing:-.025em;
+  --rh2:20px; --rh2-spacing:-.015em;
+  --rh3:16px; --rh3-spacing:-.005em; --rh3-color:var(--text-main);
+  --report-cell-border:0;
+  --report-th-bg:transparent;
+  --quote-bg:color-mix(in srgb,var(--accent-primary) 6%,var(--bg-surface));
+  --quote-rule:var(--accent-primary);
+  --quote-fg:var(--text-soft);
+
+  /* tabeller: radlinjer, inga rutnät */
+  --tbl-cell-border:0;
+  --tbl-head-bg:transparent;
+  --tbl-pad:10px 12px;
+  --th-size:12px; --th-fg:var(--text-muted); --th-weight:600;
+
+  /* sidopanel */
+  --nav-radius:8px;
   --nav-underline:0;
-  --nav-item-pad:8px 12px;
-  --nav-gap:2px;
-  --banner-rule:0;
+  --nav-item-pad:8px 10px;
+  --nav-size:14px;
+  --nav-weight:500;
+  --nav-gap:1px;
+
+  --banner-rule:3px;
   --market-rule:0;
   --bubbl-pad:30px;
   --hold-lift:none;
+  --kpi-rule-op:0;
 }
 
-/* ---------------------------- MÖRKT (original) --------------------------- */
+/* ---------------------------- MÖRKT -------------------------------------- */
 :root[data-mode="dark"]{
-  --bg-main:#070B15; --bg-surface:#101828; --panel2:#0A101E; --panel3:#1A2438;
-  --text-main:#E6EBF4; --text-muted:#8FA0B8; --faint:#5D7089;
-  --border-color:#22304A; --border2:#31425F;
-  --accent-primary:#38BDF8; --trade-up:#10B981; --trade-down:#EF4444;
-  --amber:#F59E0B; --purple:#A78BFA;
-  --view-tint:rgba(16,24,40,.5);
-  --page-bg:
-    radial-gradient(900px 480px at 85% -8%, rgba(56,189,248,.09), transparent 60%),
-    radial-gradient(760px 500px at -10% 30%, rgba(167,139,250,.06), transparent 55%),
-    #070B15;
-  --head-bg:rgba(7,10,18,.82);
-  --nav-mobile-bg:rgba(5,8,15,.96);
-  --nav-active-bg:linear-gradient(90deg,rgba(56,189,248,.14),rgba(56,189,248,.03));
-  --scroll-thumb:#273350;
-  --scroll-shadow:rgba(0,0,0,.55);
-  --modal-bg:rgba(4,7,14,.78);
+  --bg-main:#0E1422; --bg-surface:#161E2F; --panel2:#131B2B; --panel3:#1D2739;
+  --text-main:#E6EBF3; --text-muted:#98A3B6; --faint:#6B778B;
+  --border-color:#232D41; --border2:#2F3B52;
+  --accent-primary:#7C95FF; --trade-up:#3CC98E; --trade-down:#F06B6F;
+  --amber:#F0B44C; --purple:#A897FF;
+  --page-bg:#0E1422;
+  --head-bg:rgba(14,20,34,.86);
+  --nav-mobile-bg:rgba(17,24,39,.97);
+  --nav-active-bg:color-mix(in srgb,var(--accent-primary) 13%,transparent);
+  --nav-hover-bg:color-mix(in srgb,var(--text-main) 6%,transparent);
+  --scroll-thumb:#2A354B;
+  --scroll-shadow:rgba(0,0,0,.45);
+  --modal-bg:rgba(6,10,20,.72);
   --strong:#FFFFFF;
-  --on-accent:#08111C;
-  --shadow:0 10px 34px rgba(0,0,0,.4);
-  --shadow-sm:none;
-  --btn-bg:#1A2438; --btn-bg-hover:#223050; --btn-border-hover:#3E5680; --btn-on-bg:#223050;
-  --alloc-fg:#fff;
+  --on-accent:#0B1020;
+  --shadow:0 12px 40px rgba(0,0,0,.45);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.22);
+  --shadow-hover:0 4px 16px rgba(0,0,0,.28);
+  --btn-bg:#182133; --btn-bg-hover:#1F2A3F; --btn-border-hover:#3A4863; --btn-on-bg:var(--accent-soft);
+  --btn-fg-hover:var(--text-main);
+  --seg-on-bg:#232E44; --seg-on-shadow:0 1px 2px rgba(0,0,0,.3);
+  --input-bg:#121A29;
+  --alloc-0:#3CC98E; --alloc-1:#7C95FF; --alloc-fg:#0B1020;
 }
 
-/* ---------------------------- LJUST ------------------------------------- */
+/* ---------------------------- LJUST -------------------------------------- */
 :root[data-mode="light"]{
-  --bg-main:#EEF2F8; --bg-surface:#FFFFFF; --panel2:#F7F9FC; --panel3:#E7ECF4;
-  --text-main:#0F1B2E; --text-muted:#54637A; --faint:#8493A8;
-  --border-color:#DCE3EE; --border2:#C3CEDE;
-  --accent-primary:#0369A1; --trade-up:#059669; --trade-down:#DC2626;
-  --amber:#B45309; --purple:#6D42D9;
-  --view-tint:rgba(255,255,255,.72);
-  --page-bg:
-    radial-gradient(900px 480px at 85% -8%, rgba(3,105,161,.07), transparent 60%),
-    radial-gradient(760px 500px at -10% 30%, rgba(109,66,217,.05), transparent 55%),
-    #EEF2F8;
-  --head-bg:rgba(238,242,248,.88);
+  --bg-main:#F4F6FA; --bg-surface:#FFFFFF; --panel2:#FAFBFD; --panel3:#EEF1F6;
+  --text-main:#0F172A; --text-muted:#526073; --faint:#8490A1;
+  --border-color:#E3E8EF; --border2:#CDD5E0;
+  --accent-primary:#4F5BD5; --trade-up:#0A8A5C; --trade-down:#D62F2F;
+  --amber:#B45309; --purple:#6E48D6;
+  --page-bg:#F4F6FA;
+  --head-bg:rgba(244,246,250,.88);
   --nav-mobile-bg:rgba(255,255,255,.97);
-  --nav-active-bg:linear-gradient(90deg,rgba(3,105,161,.12),rgba(3,105,161,.02));
-  --scroll-thumb:#C3CEDE;
-  --scroll-shadow:rgba(15,27,46,.14);
-  --modal-bg:rgba(15,27,46,.45);
-  --strong:#050B14;
+  --nav-active-bg:color-mix(in srgb,var(--accent-primary) 10%,transparent);
+  --nav-hover-bg:color-mix(in srgb,var(--text-main) 5%,transparent);
+  --scroll-thumb:#CDD5E0;
+  --scroll-shadow:rgba(15,23,42,.12);
+  --modal-bg:rgba(15,23,42,.4);
+  --strong:#020617;
   --on-accent:#FFFFFF;
-  --shadow:0 4px 12px rgba(15,27,46,.08), 0 18px 40px rgba(15,27,46,.1);
-  --shadow-sm:0 1px 2px rgba(15,27,46,.05);
-  --btn-bg:#FFFFFF; --btn-bg-hover:#F1F5FB; --btn-border-hover:#0369A1; --btn-on-bg:rgba(3,105,161,.1);
-  --alloc-fg:#fff;
+  --shadow:0 4px 12px rgba(15,23,42,.06), 0 18px 40px rgba(15,23,42,.08);
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04);
+  --shadow-hover:0 2px 10px rgba(15,23,42,.07);
+  --btn-bg:#FFFFFF; --btn-bg-hover:#F4F6FA; --btn-border-hover:#B6C0CF; --btn-on-bg:var(--accent-soft);
+  --btn-fg-hover:var(--text-main);
+  --seg-on-bg:#FFFFFF; --seg-on-shadow:0 1px 2px rgba(15,23,42,.08);
+  --input-bg:#FFFFFF;
+  --alloc-0:#0A8A5C; --alloc-1:#4F5BD5; --alloc-fg:#fff;
 }
 
-/* aktiv menypost får en glödande markör i vänsterkanten */
-.subnav a.active{box-shadow:inset 0 0 0 1px var(--accent-line)}
-.subnav a.active::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:3px;
-  border-radius:3px;background:var(--accent-primary);box-shadow:0 0 8px var(--accent-line)}
-.kpi{background:linear-gradient(165deg,var(--bg-surface) 0%,var(--panel2) 100%)}
-.kpi::before{background:linear-gradient(90deg,var(--accent-primary),transparent 70%)}
+/* ================= Komponentavvikelser ================= */
+.sec-head{margin-bottom:var(--s5)}
+.sec-head .hint{font-size:13px}
+.sub{margin:32px 0 14px}
+.book-h{margin:28px 0 4px}
+.kpi{background:var(--bg-surface)}
+.kpi-label{font-size:13px}
+/* innehavskort: luftigare, live-kursen som en rad och inte en egen ruta */
+.hold-name{font-weight:650}
+.hold-grid .v{font-size:14px}
+.hold-live{background:transparent;border:none;border-top:1px solid var(--border-color);border-radius:0;
+  padding:11px 0 0;margin-top:14px;font-size:12.5px}
+.hold-live .k{color:var(--faint)}
+.hold-live .lv-px{font-size:14.5px}
+.pill{background:transparent}
+.market{background:var(--bg-surface)}
+.market-tag{border:none;background:var(--green-soft);border-radius:999px;letter-spacing:.04em}
+.report{background:var(--bg-surface)}
+.report h2{border-bottom:none;padding-bottom:0;margin-top:36px}
+.report h3{margin-top:24px}
+.report p,.report li{line-height:1.72}
+.report th{border-bottom:1px solid var(--border2)}
+.report tr:hover td{background:var(--tbl-hover)}
+.tbl th{border-bottom:1px solid var(--border2)}
+.al-wrap--calm{background:transparent;border-style:dashed}
 
 /* ================= Sidopanel (bara på stor skärm) =================
    Markupen är densamma som för topp-temana; här lyfts .subnav ut till en fast
@@ -92,21 +178,28 @@
   .topbar .side-brand{display:none}          /* varumärket bor i sidopanelen */
   .subnav{position:fixed;left:0;top:0;bottom:0;width:var(--sidew);z-index:55;
     flex-direction:column;align-items:stretch;justify-content:flex-start;
-    padding:18px 12px 14px;background:var(--head-bg);backdrop-filter:blur(12px);
+    padding:18px 14px 16px;background:var(--bg-surface);
     border-right:1px solid var(--border);overflow-y:auto;overflow-x:hidden}
-  .subnav a{flex:0 0 auto}
-  .nav-group{border-left:none;margin-left:0;padding:14px 10px 5px;width:100%}
-  .nav-group:first-of-type{padding-top:4px}
-  .brand-nav{display:flex;align-items:center;gap:11px;padding:2px 8px 16px;min-width:0;flex:0 0 auto}
-  .brand-nav .logo{width:32px;height:32px;flex:0 0 auto;filter:drop-shadow(0 0 10px var(--accent-line))}
-  .brand-nav h1{font-size:14.5px;margin:0;letter-spacing:.14em;text-transform:uppercase;
-    white-space:nowrap;font-weight:800;color:var(--text-main)}
-  .brand-nav .sub{color:var(--faint);font-size:10.5px;letter-spacing:.06em;margin-top:1px}
+  .subnav a{flex:0 0 auto;gap:11px;color:var(--text-muted)}
+  .subnav a.active{color:var(--text-main);font-weight:600}
+  .nav-group{border-left:none;margin-left:0;padding:20px 10px 6px;width:100%;
+    font-size:11px;letter-spacing:.06em;font-weight:600;color:var(--faint)}
+  .nav-group:first-of-type{padding-top:6px}
+  .brand-nav{display:flex;align-items:center;gap:11px;padding:4px 8px 14px;min-width:0;flex:0 0 auto;
+    border-bottom:1px solid var(--border);margin-bottom:6px}
+  .brand-nav .logo{width:30px;height:30px;flex:0 0 auto}
+  .brand-nav h1{font-size:15px;margin:0;letter-spacing:-.01em;white-space:nowrap;font-weight:700;color:var(--text-main)}
+  /* .sub är även rubrikklassen i base.css – nollställ det den ärver därifrån */
+  .brand-nav > div{min-width:0}
+  .brand-nav .sub{display:block;color:var(--faint);font-size:12px;font-weight:400;font-family:var(--sans);
+    margin:1px 0 0;padding:0;border:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .side-foot{display:block;margin-top:auto;padding:14px 10px 2px;border-top:1px solid var(--border);
-    color:var(--faint);font-size:10.5px;line-height:1.5;flex:0 0 auto}
-  .side-foot .disc{color:var(--amber)}
+    color:var(--faint);font-size:11.5px;line-height:1.5;flex:0 0 auto}
   .main{padding:var(--topbar-h) 0 0 var(--sidew)}
 }
 @media(min-width:861px) and (max-width:1100px){
-  :root{--sidew:190px}
+  :root{--sidew:208px; --wrap-pad:24px 24px 56px; --topbar-pad:0 24px}
+}
+@media(max-width:860px){
+  :root{--kpi-size:28px; --sec-size:24px; --report-pad:8px 18px 22px; --rh1:23px; --rh2:18px}
 }

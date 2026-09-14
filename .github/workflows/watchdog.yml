@@ -3,6 +3,7 @@ name: Watchdog (tysta fel -> issue)
 on:
   schedule:
     - cron: "30 10 * * 1-5"   # 12:30 CEST vardagar – efter routiner (07:47/08:40 lokal) + auto-push
+    - cron: "30 14 * * 1"     # Monday check after US rotation, including winter time
   workflow_dispatch: {}
 
 permissions:
@@ -22,7 +23,9 @@ jobs:
         with:
           node-version: "20"
       - name: Kontrollera färskhet (LLM-fritt, inga tokens)
-        run: node .github/scripts/watchdog.mjs
+        run: |
+          node .github/scripts/validate-state.mjs
+          node .github/scripts/watchdog.mjs
       # Issues speglar NULAGET: nya problem oppnas, atgardade stangs.
       # Dedupen matchade tidigare pa TITEL, och watchdog-titlar bar antal
       # ("5 prissatt(a) bubblare utan avgorande"). Gick antalet 5 -> 3 lastes
@@ -34,11 +37,11 @@ jobs:
           script: |
             const fs = require('fs');
             const S = await import(process.env.GITHUB_WORKSPACE + '/.github/scripts/issue-sync.mjs');
-            let problems = [];
-            try { problems = JSON.parse(fs.readFileSync((process.env.RUNNER_TEMP || '.') + '/watchdog.json', 'utf8')); } catch (e) {}
-            const open = await github.rest.issues.listForRepo({
+            const problems = JSON.parse(fs.readFileSync((process.env.RUNNER_TEMP || '.') + '/watchdog.json', 'utf8'));
+            if (!Array.isArray(problems)) throw new Error('Invalid watchdog output');
+            const open = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
-            const plan = S.planIssues(open.data, problems, 'watchdog');
+            const plan = S.planIssues(open, problems, 'watchdog');
             for (const p of plan.open) {
               await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo,
                 title: p.title,

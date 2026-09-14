@@ -7,7 +7,8 @@
    Ren aritmetik – förbrukar INGA tokens. Ersätter INTE routinens omdöme;
    flaggar bara att en nivå korsats.
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
+import { readJSON, writeAtomic as writeFileSync, hasArray } from "./state-io.mjs";
 import { fetchQuote } from "./fetch-prices.mjs";
 
 export function numFrom(s){
@@ -132,11 +133,12 @@ export async function run(fetchImpl = globalThis.fetch){
   const tickers = [...new Set([...targets.held.map(h => h.ticker), ...targets.pending.map(p => p.ticker)])];
   const quotes = {};
   for (const t of tickers){ quotes[t] = await fetchQuote(t, fetchImpl); await new Promise(r => setTimeout(r, 250)); }
+  const failed = tickers.filter(t => !quotes[t] || quotes[t].error || quotes[t].price == null);
+  if (failed.length) throw new Error("Monitor quotes unavailable; previous signals retained: " + failed.join(", "));
   const signals = evalSignals(targets, quotes);
 
   const path = "state/alerts.json";
-  let prev = { active: [] };
-  if (existsSync(path)) { try { prev = JSON.parse(readFileSync(path, "utf8")); } catch {} }
+  const prev = readJSON(path, { active: [] }, hasArray("active"));
   const key = s => s.ticker + "|" + s.type;
   const prevSet = new Set((prev.active || []).map(key));
   const curSet = new Set(signals.map(key));

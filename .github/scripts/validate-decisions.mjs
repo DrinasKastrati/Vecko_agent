@@ -10,6 +10,7 @@
    Exit 1 vid fel.
    ============================================================ */
 import { readFileSync, existsSync } from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 
 export const CATALYST_TYPES = ["earnings", "order", "ma_rumor", "regulatory", "insider",
                                "buyback", "index", "macro", "turnaround", "other"];
@@ -24,12 +25,16 @@ export function validateDecision(row, i){
   const e = [];
   const at = f => `rad ${i} (${(row && row.date) || "?"}/${(row && row.ticker) || "?"}): ${f}`;
   if (!row || typeof row !== "object") return [`rad ${i}: inte ett objekt`];
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(row.date || "")) e.push(at("date måste vara åååå-mm-dd"));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(row.date || "") ||
+      !Number.isFinite(Date.parse(row.date)) || new Date(row.date).toISOString().slice(0, 10) !== row.date)
+    e.push(at("date måste vara ett giltigt åååå-mm-dd"));
   if (!BOOKS.includes(row.book)) e.push(at(`book måste vara ${BOOKS.join("|")}`));
   if (!["A", "B"].includes(row.mode)) e.push(at("mode måste vara A eller B"));
   if (!row.ticker || typeof row.ticker !== "string") e.push(at("ticker saknas"));
   if (!ACTIONS.includes(row.action)) e.push(at(`action måste vara ${ACTIONS.join("|")}`));
   if (!isNumOrNull(row.price)) e.push(at("price måste vara tal eller null"));
+  if (row.action === "KÖP" && !(isNum(row.price) && row.price > 0))
+    e.push(at("KÖP kräver en verifierad positiv price"));
   if (!isNumOrNull(row.weight)) e.push(at("weight måste vara tal eller null"));
   if (isNum(row.weight) && (row.weight < 0 || row.weight > 1)) e.push(at("weight är en andel 0–1, inte procent"));
   for (const f of ["entry", "stop", "target", "rr", "rsi"])
@@ -65,10 +70,11 @@ export function validateDb(db){
 
 // APPEND-ONLY: den nya arrayen måste börja med exakt den gamla (djup jämförelse).
 export function isAppendOnly(oldRows, newRows){
-  const o = oldRows || [], n = newRows || [];
+  if (!Array.isArray(oldRows) || !Array.isArray(newRows)) return false;
+  const o = oldRows, n = newRows;
   if (n.length < o.length) return false;
   for (let i = 0; i < o.length; i++)
-    if (JSON.stringify(o[i]) !== JSON.stringify(n[i])) return false;
+    if (!isDeepStrictEqual(o[i], n[i])) return false;
   return true;
 }
 
@@ -83,6 +89,7 @@ function main(){
   const { errors, count } = validateDb(db);
 
   const bi = process.argv.indexOf("--base");
+  if (bi > -1 && !process.argv[bi + 1]) errors.push("--base kräver en fil");
   if (bi > -1 && process.argv[bi + 1]){
     try {
       const base = JSON.parse(readFileSync(process.argv[bi + 1], "utf8"));

@@ -120,6 +120,26 @@
   --chart-grid:color-mix(in srgb,var(--text-main) 10%,transparent);
   --chart-tick:var(--text-muted);
   --chart-border:var(--border2);
+
+  /* ---- skala (UI-refaktor 2026-09) ----
+     Avstånd i 4/8-steg. EN token per rad: tests/theme.mjs räknar bara den
+     första definitionen på varje rad som definierad. */
+  --s1:4px;
+  --s2:8px;
+  --s3:12px;
+  --s4:16px;
+  --s5:24px;
+  --s6:32px;
+  --s7:48px;
+  --fs-meta:12px;
+  --heading-weight:800;
+  --icon-btn:36px;
+  --nav-ico-display:inline-block;
+  --tile-bg:var(--panel);
+  --hover-bg:color-mix(in srgb,var(--text-main) 6%,transparent);
+  --quote-bg:var(--warn-bg);
+  --quote-rule:var(--amber);
+  --quote-fg:var(--warn-fg);
 }
 
 *{box-sizing:border-box}
@@ -237,6 +257,25 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
   font-size:14px;transition:.14s;padding:0}
 .mode-btn:hover{color:var(--accent-primary);border-color:var(--accent-primary)}
 
+/* ---- topprad: status | actions ----
+   Två zoner: systemstatus + datans ålder till vänster, globala actions som
+   ikonknappar till höger. Temaknapparna renderas fortfarande i #themeCtl (VTheme
+   och testerna kräver dem) men visas bara i Inställningar – de ska inte
+   konkurrera med portföljinformationen. Lägesknappen (ljust/mörkt) stannar. */
+.tb-status{display:flex;align-items:center;gap:var(--s3);min-width:0;font-size:var(--fs-meta);color:var(--muted)}
+.tb-status .status{padding:3px 10px 3px 8px;border-radius:999px;background:var(--hover-bg);
+  border:1px solid var(--border);font-weight:500;color:var(--text-soft);font-size:var(--fs-meta)}
+.tb-status #updated,.tb-status .px-age{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-actions{display:flex;align-items:center;gap:2px}
+.tb-sep{width:1px;height:18px;background:var(--border);flex:none;margin:0 var(--s1)}
+#themeCtl .theme-switch{display:none}
+.btn.btn--icon,#themeCtl .mode-btn{width:var(--icon-btn);height:var(--icon-btn);min-height:0;padding:0;
+  justify-content:center;background:transparent;border-color:transparent;box-shadow:none;color:var(--muted);font-size:15px}
+.btn.btn--icon:hover,#themeCtl .mode-btn:hover{background:var(--hover-bg);border-color:transparent;color:var(--text)}
+.btn--icon svg{width:18px;height:18px}
+.btn--icon .btn-lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.btn.btn--icon.on{color:var(--accent-primary);background:var(--accent-soft)}
+
 /* ---- meny (klassen .subnav krävs av app.js) ---- */
 .subnav{display:flex;align-items:center;gap:var(--nav-gap,2px);padding:var(--nav-pad,0 24px);
   max-width:var(--head-maxw,none);margin:0 auto;overflow-x:auto;overflow-y:hidden;white-space:nowrap}
@@ -251,6 +290,12 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .subnav a.active{color:var(--nav-active-fg);background:var(--nav-active-bg,transparent);
   border-bottom-color:var(--nav-active-border,transparent)}
 .side-foot{display:none}
+/* menyikoner: teman med toppmeny kan stänga av dem via --nav-ico-display */
+.subnav .ico{display:var(--nav-ico-display);width:18px;height:18px;flex:none;opacity:.75}
+.subnav a:hover .ico{opacity:1}
+.subnav a.active .ico{opacity:1;color:var(--accent-primary)}
+/* "Mer"-knappen, arkets rubrik och avdelaren finns bara på mobil */
+.nav-more,.nav-break,.nav-sheet-t{display:none}
 
 .main{min-width:0;display:flex;flex-direction:column}
 .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:var(--wrap-pad)}
@@ -293,31 +338,41 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
    I enkelt läge döljs teckenförklaringen och den detaljerade ingressen: de
    förklarar en kortlayout som inte visas då. Högerspalten renderas tom, så
    rutnätet fälls ihop till en spalt.                                        */
-.hemtoggle{display:flex;gap:4px;margin-left:auto}
-.hemtoggle .btn[aria-pressed="true"]{background:var(--btn-on-bg,var(--accent-soft));
-  color:var(--btn-fg-hover,var(--text));border-color:var(--accent-line,var(--border))}
+/* Växlarna (Hem: Enkel/Detaljerad, Avkastning: bok) är segmentkontroller:
+   en platta med knappar där den valda är lyft. Samma utseende i båda vyerna. */
+.hemtoggle,.booktabs{display:inline-flex;flex-wrap:wrap;gap:2px;margin-left:auto;padding:3px;
+  border-radius:calc(var(--r) + 3px);background:var(--hover-bg);border:1px solid var(--border)}
+.hemtoggle .btn,.booktabs .btn{background:transparent;border-color:transparent;box-shadow:none;color:var(--muted);
+  min-height:32px;padding:5px 12px}
+.hemtoggle .btn:hover,.booktabs .btn:hover{color:var(--text);background:transparent;border-color:transparent}
+.hemtoggle .btn[aria-pressed="true"],.booktabs .btn[aria-pressed="true"]{background:var(--seg-on-bg,var(--panel));
+  color:var(--text);border-color:var(--border);box-shadow:var(--seg-on-shadow,var(--shadow-sm));font-weight:600}
 [data-hemmode="enkel"] #view-hem .legend,
-[data-hemmode="enkel"] #view-hem .lead--full{display:none}
+[data-hemmode="enkel"] #view-hem .lead--full,
+[data-hemmode="enkel"] #hemSummary{display:none}
 [data-hemmode="enkel"] #view-hem .hem-grid{grid-template-columns:minmax(0,1fr)}
 
-.sv{display:grid;gap:14px;max-width:70ch}
-.sv-card,.sv-verdict{background:var(--panel2);border:1px solid var(--border);
-  border-radius:var(--r2);padding:16px 18px;box-shadow:var(--shadow-sm)}
-.sv-card h3{margin:0 0 8px;font-family:var(--display);font-size:14px;font-weight:800;color:var(--text)}
+/* Enkel: svaret först och störst, sedan två kort bredvid varandra. */
+.sv{display:grid;gap:var(--gap);max-width:1040px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.sv > .sv-verdict,.sv > .sv-card--today,.sv > .sv-next,.sv > .sv-words{grid-column:1/-1}
+.sv-card,.sv-verdict{background:var(--tile-bg);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px 22px;box-shadow:var(--shadow-sm)}
+.sv-card h3{margin:0 0 12px;font-family:var(--display);font-size:15px;font-weight:var(--heading-weight);color:var(--text)}
 .sv-card p,.sv-verdict p{margin:6px 0 0;color:var(--text-soft);font-size:13.5px;line-height:1.6}
-.sv-date{font-weight:400;color:var(--faint);font-size:11.5px;margin-left:6px}
+.sv-date{font-weight:400;color:var(--faint);font-size:12px;margin-left:6px;font-family:var(--mono)}
 
 /* Uppgiftsrutan: grön när inget behöver göras, bärnsten när något ska handlas. */
-.sv-verdict{border-left:4px solid var(--green)}
-.sv-verdict--act{border-left-color:var(--amber);background:var(--amber-soft,var(--panel2))}
-.sv-verdict--ok{background:var(--green-soft,var(--panel2))}
-.sv-q{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
-.sv-a{font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);margin-top:2px}
+.sv-verdict{border-left:4px solid var(--green);padding:22px 24px}
+.sv-verdict--act{border-left-color:var(--amber);background:color-mix(in srgb,var(--amber) 8%,var(--tile-bg))}
+.sv-verdict--ok{background:color-mix(in srgb,var(--green) 6%,var(--tile-bg))}
+.sv-q{font-size:13px;color:var(--muted);font-weight:600}
+.sv-a{font-family:var(--display);font-size:clamp(22px,3vw,30px);font-weight:var(--heading-weight);color:var(--text);
+  margin-top:4px;letter-spacing:-.02em;line-height:1.2}
 .sv-todo{margin:10px 0 0;padding-left:20px;display:grid;gap:6px}
 .sv-todo li{font-size:14px;color:var(--text);line-height:1.55}
 .sv-note{font-size:12.5px}
 
-.sv-big{font-family:var(--display);font-size:34px;font-weight:800;line-height:1.1;
+.sv-big{font-family:var(--mono);font-size:clamp(28px,4vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1.1;
   font-variant-numeric:tabular-nums;color:var(--text)}
 .sv-big.pos{color:var(--green)} .sv-big.neg{color:var(--red)}
 .sv-books{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:5px;font-size:13px;color:var(--text-soft)}
@@ -340,8 +395,33 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 /* ================= Hem ================= */
 .hem-grid{display:grid;grid-template-columns:minmax(0,var(--hem-ratio,2.15fr)) minmax(300px,1fr);
   gap:var(--hem-gap,18px);align-items:start}
+/* ---- Hem: dagssammanfattning (VRender.renderHemSummary) ----
+   KPI-rutor överst i detaljerat läge. "I dag"-rutan är dubbelt bred och bär
+   färg bara när den betyder något: bärnsten = affärer att lägga eller osäkert
+   underlag, grön kant = inget att göra. Bokrutorna är knappar till bokvyn. */
+.hs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--gap);margin:0 0 var(--s5)}
+.hs-tile{background:var(--tile-bg);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px;
+  display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0;text-align:left;font:inherit;
+  color:var(--text);box-shadow:var(--shadow-sm)}
+.hs-link{cursor:pointer;transition:border-color .15s,background-color .15s}
+.hs-link:hover{border-color:var(--border2);background:color-mix(in srgb,var(--text-main) 3%,var(--tile-bg))}
+.hs-k{font-size:13px;color:var(--muted);font-weight:500;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.hs-date{font-family:var(--mono);font-size:11.5px;color:var(--faint);font-weight:400}
+.hs-v{font-family:var(--mono);font-size:var(--kpi-size);font-weight:600;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums;margin-top:2px;color:var(--text)}
+.hs-v.pos{color:var(--green)} .hs-v.neg{color:var(--red)}
+.hs-s{font-size:12px;color:var(--faint);line-height:1.45}
+.hs-today{grid-column:span 2;border-left:3px solid var(--green)}
+.hs-today--act{border-left-color:var(--amber);background:color-mix(in srgb,var(--amber) 7%,var(--tile-bg))}
+.hs-today--warn{border-left-color:var(--amber)}
+.hs-head{font-family:var(--display);font-size:22px;font-weight:var(--heading-weight);letter-spacing:-.02em;
+  line-height:1.25;margin-top:2px}
+.hs-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hs-alert{border-color:var(--amber-line)}
+.hs-alert .hs-v{color:var(--amber)}
+
 .rail{display:grid;gap:14px}
-.rail-card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r2);
+.rail-card{background:var(--tile-bg);border:1px solid var(--border);border-radius:var(--r2);
   padding:var(--rail-pad,13px 16px 15px);box-shadow:var(--shadow-sm)}
 .rail-t{font-size:var(--rail-t-size,10.5px);letter-spacing:var(--rail-t-spacing,.12em);
   text-transform:var(--rail-t-transform,uppercase);color:var(--rail-t-color,var(--accent-primary));
@@ -450,9 +530,10 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 .fills-pending .fp-item{display:flex;align-items:center;gap:10px;padding:4px 0}
 .fills-pending .fp-what{font-size:12.3px;color:var(--muted)}
 
-.status-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;background:var(--panel2);
-  border:1px solid var(--border);border-radius:var(--r2);padding:9px 13px;margin-bottom:14px;
-  font-size:12.3px;color:var(--muted);box-shadow:var(--shadow-sm)}
+/* Statusraden är metadata, inte en ruta: ingen ram, liten text. */
+.status-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--status-bg,transparent);
+  border:var(--status-border,none);border-radius:var(--r2);padding:var(--status-pad,0 0 2px);margin-bottom:var(--s4);
+  font-size:var(--fs-meta);color:var(--muted)}
 .st-date{font-family:var(--st-date-font,var(--mono));color:var(--text);font-size:12px;font-weight:600}
 .st-mode{color:var(--muted)}
 .st-chip{font-size:10.5px;font-weight:700;letter-spacing:.05em;border-radius:var(--r);padding:2px 8px}
@@ -524,7 +605,10 @@ section.view{background:var(--view-bg,transparent);border:var(--view-border,none
 .cat-text{font-family:var(--prose);font-size:12.5px;color:var(--muted)}
 
 /* ================= Rapporter ================= */
-.report-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.report-ctrl{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;margin-bottom:var(--s4)}
+.rc-group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.rc-tools{margin-left:auto}
+.report-ctrl .rc-search{flex:1 1 220px;min-width:180px;max-width:420px;width:auto;font-family:var(--sans);font-size:13px;padding:7px 11px}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:3px}
 .rtype{cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--sans);
   font-size:12.5px;padding:6px 14px;border-radius:calc(var(--r) - 2px);transition:.15s;
@@ -591,14 +675,16 @@ select#reportSelect{min-width:210px}
 .report em{color:var(--muted)}
 .report ul,.report ol{padding-left:20px;color:var(--text-soft);font-family:var(--prose);font-size:var(--fs-prose)}
 .report li{margin:4px 0}
-.report blockquote{margin:12px 0;padding:10px 15px;background:var(--warn-bg);
-  border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;color:var(--warn-fg);font-size:12.8px}
+.report blockquote{margin:16px 0;padding:12px 16px;background:var(--quote-bg);
+  border-left:3px solid var(--quote-rule);border-radius:0 var(--r) var(--r) 0;color:var(--quote-fg);font-size:calc(var(--fs-prose) - 1px)}
+.report blockquote p{color:inherit;margin:4px 0}
 .report hr{border:none;border-top:1px solid var(--border);margin:20px 0}
 .report code{font-family:var(--mono);font-size:12px;background:var(--panel3);padding:1px 5px;
   border-radius:calc(var(--r) - 4px);color:var(--code-fg,var(--text))}
 .report table{border-collapse:collapse;width:100%;margin:12px 0;font-size:12.5px;display:block;overflow-x:auto}
-.report th,.report td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
-.report th{background:var(--panel3);color:var(--th-fg,var(--text));font-weight:700;white-space:nowrap;
+.report th,.report td{border:var(--report-cell-border,1px solid var(--border));border-bottom:1px solid var(--border);
+  padding:8px 11px;text-align:left;vertical-align:top;font-variant-numeric:tabular-nums}
+.report th{background:var(--report-th-bg,var(--panel3));color:var(--th-fg,var(--text));font-weight:700;white-space:nowrap;
   font-size:var(--th-size,12.5px);letter-spacing:var(--th-spacing,0);text-transform:var(--th-transform,none)}
 .report td{color:var(--text-soft)}
 .report del{color:var(--faint)}
@@ -609,9 +695,7 @@ pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
    blev en vägg av siffror. Valet ligger som data-book på <section id=
    "view-avkastning">; app.js sätter attributet, CSS:en nedan gör resten. Utan
    attributet (t.ex. om app.js inte hunnit köra) visas nordiska boken. */
-.booktabs{display:flex;gap:4px;margin-left:auto}
-.booktabs .btn[aria-pressed="true"]{background:var(--btn-on-bg,var(--accent-soft));
-  color:var(--btn-fg-hover,var(--text));border-color:var(--accent-line,var(--border))}
+/* .booktabs formges tillsammans med .hemtoggle (segmentkontroll, se Hem ovan) */
 #view-avkastning .book-block[data-book="us"],
 #view-avkastning .book-block[data-book="bada"]{display:none}
 #view-avkastning[data-book="us"] .book-block{display:none}
@@ -647,7 +731,8 @@ pre.raw{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-
   border-bottom:1px solid var(--border);padding:var(--tbl-pad,8px 11px);text-align:left}
 .tbl th{background:var(--tbl-head-bg,var(--panel3));color:var(--th-fg,var(--text));
   font-size:var(--th-size,12.5px);letter-spacing:var(--th-spacing,0);
-  text-transform:var(--th-transform,none);font-weight:700;border-bottom:var(--tbl-head-rule,1px solid var(--border))}
+  text-transform:var(--th-transform,none);font-weight:var(--th-weight,700);border-bottom:var(--tbl-head-rule,1px solid var(--border));
+  white-space:nowrap}
 .tbl tr:last-child td{border-bottom:var(--tbl-cell-border,1px solid var(--border))}
 .tbl tbody tr:hover{background:var(--tbl-hover,transparent)}
 .tbl td .pos{color:var(--green);font-weight:700} .tbl td .neg{color:var(--red);font-weight:700}
@@ -968,7 +1053,9 @@ button.pill--lnk:hover{border-color:var(--accent-primary);color:var(--accent-pri
   /* .spacer skulle knuffa allt efter sig till en egen rad – toppraden blev 172px
      hög (fyra rader). Utan den ryms rad 1 på en enda rad. */
   .spacer{display:none}
-  .status{margin-left:auto}
+  .tb-status{margin-left:auto}
+  .tb-sep{display:none}
+  .btn.btn--icon,#themeCtl .mode-btn{width:44px;height:44px;padding:0}
   /* Temaknapparna bor i Inställningar på mobil – de tog en hel extra rad (172 →
      103 px topprad) och nås nu via kugghjulet. Lägesknappen får stanna: att
      snabbt växla ljust/mörkt är något man gör mitt i användningen. */
@@ -979,18 +1066,41 @@ button.pill--lnk:hover{border-color:var(--accent-primary);color:var(--accent-pri
   .set-opts{width:100%}
   .set-opt{flex:1 1 auto;min-height:44px}
 
+  /* Botten-baren: fem ytor (länkar med data-primary + "Mer"). Övriga vyer
+     ligger i ett ark som fälls upp ovanför baren (.more-open, app.js). Samma
+     <a>-element som på desktop – bara ordning och synlighet skiljer. */
   .subnav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:70;height:auto;max-width:none;
-    padding:5px 4px calc(5px + env(safe-area-inset-bottom));gap:2px;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:2px;flex-wrap:wrap;overflow:visible;
     background:var(--nav-mobile-bg);backdrop-filter:blur(14px);
-    border-top:1px solid var(--border);box-shadow:0 -6px 20px rgba(0,0,0,.25);
-    scroll-behavior:smooth;scrollbar-width:none}
-  .subnav::-webkit-scrollbar{display:none}
+    border-top:1px solid var(--border);box-shadow:0 -6px 20px rgba(0,0,0,.16)}
   .nav-group{display:none}
-  .subnav a{flex:1 0 auto;min-width:50px;text-align:center;justify-content:center;padding:7px 4px;
-    border-radius:var(--r);font-size:0;line-height:1.15;border-bottom:none;min-height:46px}
-  .subnav a::after{content:attr(data-short);font-size:10px;letter-spacing:0;font-weight:600}
-  .subnav a.active{background:var(--accent-soft);color:var(--accent-primary)}
-  .wrap{padding:14px 12px calc(84px + env(safe-area-inset-bottom))}
+  .subnav a,.nav-more{order:2;flex:1 1 0;min-width:0;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:6px 2px;border-radius:var(--r);font-size:0;line-height:1.15;border-bottom:none;min-height:52px;
+    text-align:center;color:var(--muted)}
+  .subnav a::after,.nav-more::after{content:attr(data-short);font-size:10.5px;letter-spacing:0;font-weight:600}
+  .subnav .ico,.nav-more svg{display:block;width:22px;height:22px;opacity:1}
+  .nav-lbl{display:none}
+  .subnav a:not([data-primary]){display:none}
+  .nav-more{display:flex;cursor:pointer;background:none;border:none;font-family:var(--sans)}
+  .subnav a.active,.nav-more.active{background:var(--accent-soft);color:var(--accent-primary)}
+  .subnav.more-open{border-radius:18px 18px 0 0;padding-top:12px;box-shadow:0 -18px 50px rgba(0,0,0,.35)}
+  .subnav.more-open .nav-sheet-t{display:block;order:0;flex-basis:100%;padding:0 12px 6px;font-size:12px;
+    font-weight:600;color:var(--faint)}
+  .subnav.more-open a:not([data-primary]){display:flex;order:1;flex:0 0 calc(50% - 1px);flex-direction:row;
+    justify-content:flex-start;gap:10px;padding:10px 12px;min-height:48px;text-align:left}
+  .subnav.more-open a:not([data-primary])::after{content:none}
+  .subnav.more-open a:not([data-primary]) .nav-lbl{display:inline;font-size:14px;font-weight:500}
+  .subnav.more-open .nav-break{display:block;order:1;flex-basis:100%;height:1px;background:var(--border);margin:8px 4px}
+  .wrap{padding:16px 14px calc(92px + env(safe-area-inset-bottom))}
+  .hs{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:var(--s4)}
+  .hs-tile{padding:13px 14px}
+  .hs-v{font-size:calc(var(--kpi-size) - 8px)}
+  .hs-head{font-size:19px}
+  .sv{grid-template-columns:minmax(0,1fr)}
+  .sv-card,.sv-verdict{padding:16px}
+  .rc-tools{margin-left:0}
+  .report-ctrl .rc-search{max-width:none;flex-basis:100%}
+  .hemtoggle .btn,.booktabs .btn{min-height:40px}
   section.view{padding:13px 11px 18px}
   .report{padding:6px 15px 18px}
   .px-tools{margin-left:0;width:100%}
@@ -1029,6 +1139,5 @@ button.pill--lnk:hover{border-color:var(--accent-primary);color:var(--accent-pri
 }
 @media(max-width:400px){
   .sec-head .hint{display:none}
-  .subnav a{min-width:48px}
-  .subnav a::after{font-size:9px}
+  .subnav a::after,.nav-more::after{font-size:10px}
 }

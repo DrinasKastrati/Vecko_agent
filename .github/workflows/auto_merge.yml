@@ -10,7 +10,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: automerge-main
+  group: state-main-writer
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -33,6 +34,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Installera DOM-testberoendet
+        run: npm install --no-save --no-audit --no-fund jsdom@29.1.1
 
       - name: Merga till main och ta bort branchen
         run: |
@@ -54,6 +57,13 @@ jobs:
 
           FAIL=0
           for BRANCH in $BRANCHES; do
+            # An earlier queued run may already have merged/deleted this branch.
+            if ! git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+              echo "Branch already removed: $BRANCH"
+              continue
+            fi
+            BRANCH_SHA=$(git rev-parse "origin/$BRANCH")
+            git show HEAD:state/decisions.json > "$RUNNER_TEMP/decisions-base.json"
             echo "==> Mergar $BRANCH till main"
             if ! git merge "origin/$BRANCH" -m "Auto-merge: $BRANCH -> main"; then
               # ---- KONFLIKT I EN GENERERAD FIL AR INTE EN RIKTIG KONFLIKT ---------
@@ -109,7 +119,7 @@ jobs:
             # main - och den poangen forsvann helt nar pushen inte triggade CI.
             # Vid fel: mergen kastas lokalt, branchen lamnas KVAR (inget arbete
             # forsvinner) och jobbet failar synligt i Actions.
-            if ! node .github/scripts/validate-decisions.mjs; then
+            if ! node .github/scripts/validate-decisions.mjs --base "$RUNNER_TEMP/decisions-base.json"; then
               echo "::error::validate-decisions.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
               git reset --hard origin/main
               FAIL=1
@@ -138,11 +148,10 @@ jobs:
               FAIL=1
               continue
             fi
-            # tests/data.mjs korrs medvetet INTE har: den hamtar ~110 filer over
-            # natet och ar darmed bade langsam och beroende av att raw.github svarar.
-            # Den halls kvar i test.yml, som gar pa pushar med Drens credentials.
-            if ! node tests/theme.mjs; then
-              echo "::error::tests/theme.mjs failade for $BRANCH - INGET pushat. Branchen ligger kvar."
+            # DOM/data simulations serve repository fixtures; no external network.
+            if ! (git ls-files -z '*.js' '*.mjs' | xargs -0 -n 1 node --check) ||
+               ! (node tests/theme.mjs && node tests/data.mjs && node tests/sim.mjs && node tests/audit.mjs && node .github/scripts/validate-state.mjs); then
+              echo "::error::Validation failed for $BRANCH - nothing pushed."
               git reset --hard origin/main
               FAIL=1
               continue
@@ -157,7 +166,10 @@ jobs:
                 git commit -m "Dashboard-data efter auto-merge: $BRANCH"
               fi
             else
-              echo "::warning::build-dashboard.mjs failade - dashboard.json kan ligga efter. Mergen pushas anda."
+              echo "::error::Dashboard build failed - nothing pushed."
+              git reset --hard origin/main
+              FAIL=1
+              continue
             fi
 
             # ---- Beslutsutvarderingen, av samma skal som dashboard-bygget --------
@@ -173,7 +185,10 @@ jobs:
                 git commit -m "Beslutsutvardering efter auto-merge: $BRANCH"
               fi
             else
-              echo "::warning::decision_eval.mjs failade - decision_eval.json kan ligga efter. Mergen pushas anda."
+              echo "::error::Decision evaluation failed - nothing pushed."
+              git reset --hard origin/main
+              FAIL=1
+              continue
             fi
 
             # ---- PUSH MED RETRY -------------------------------------------------
@@ -196,16 +211,25 @@ jobs:
               if git push origin main; then PUSHAD=1; break; fi
               echo "Push-forsok $i misslyckades (kollision med annan push?) - hamtar och forsoker igen..."
               sleep $((5 * i))
-              if ! git pull --rebase --autostash -X theirs origin main; then
+              if ! git pull --rebase --autostash origin main; then
                 git rebase --abort 2>/dev/null || true
                 echo "::error::Rebase mot main misslyckades for $BRANCH - branchen ligger kvar."
                 break
               fi
-              if node .github/scripts/build-dashboard.mjs; then
-                git add state/dashboard.json state/search-index.json
+              git show origin/main:state/decisions.json > "$RUNNER_TEMP/decisions-base.json"
+              if (node .github/scripts/build-dashboard.mjs && node .github/scripts/decision_eval.mjs &&
+                  node .github/scripts/validate-decisions.mjs --base "$RUNNER_TEMP/decisions-base.json" &&
+                  node .github/scripts/validate-scout-candidates.mjs && node .github/scripts/validate-action-items.mjs &&
+                  node .github/scripts/validate-state.mjs && node tests/run.mjs && node tests/theme.mjs &&
+                  node tests/data.mjs && node tests/sim.mjs && node tests/audit.mjs &&
+                  (git ls-files -z '*.js' '*.mjs' | xargs -0 -n 1 node --check)); then
+                git add state/dashboard.json state/search-index.json state/decision_eval.json
                 if ! git diff --cached --quiet; then
                   git commit -m "Dashboard-data ombyggd efter push-kollision: $BRANCH"
                 fi
+              else
+                echo "::error::Validation after rebase failed - nothing pushed."
+                break
               fi
             done
             if [ "$PUSHAD" != "1" ]; then
@@ -215,7 +239,10 @@ jobs:
               continue
             fi
 
-            git push origin --delete "$BRANCH"
-            echo "==> Klart: $BRANCH mergad, validerad, dashboard ombyggd och branchen borttagen."
+            # A newer push to the source branch must survive for the next run.
+            if ! git push --force-with-lease="refs/heads/$BRANCH:$BRANCH_SHA" origin ":refs/heads/$BRANCH"; then
+              echo "::warning::Source branch retained; it may contain a newer push."
+            fi
+            echo "==> Klart: $BRANCH mergad, validerad och dashboard ombyggd."
           done
           exit $FAIL

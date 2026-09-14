@@ -277,9 +277,11 @@ export function backtestUniverse(candlesBySym, params){
     return res;
   };
   const regimeOk = date => {
-    if (!benchSma) return true;
-    const bi = benchAt(date);
-    if (bi < 0 || benchSma[bi] == null) return true;   // saknas underlag = blockera inte
+    if (!(P.regimeMa > 0)) return true;
+    if (!benchSma) return false;
+    let bi = benchAt(date);
+    if (bi >= 0 && bench[bi].d === date) bi--; // entry is at open; today's close is not known
+    if (bi < 0 || benchSma[bi] == null) return false;
     return bench[bi].c > benchSma[bi];
   };
 
@@ -481,7 +483,7 @@ async function fetchCandles(sym, range){
   for (const h of hosts){
     try {
       const url = `https://${h}/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d`;
-      const r = await fetch(url, { headers: { "User-Agent": UA, "Accept": "application/json" } });
+      const r = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Accept": "application/json" } });
       if (!r.ok) continue;
       const c = parseCandles(await r.json());
       if (c.length) return c;
@@ -497,7 +499,8 @@ async function main(){
   // gridet simulerade fortfarande 2 – och det är ur det gridet stoppbanden i prompterna är
   // hämtade. Vikten följer positionsantalet (4 positioner ⇒ 0,25), så kedjningen och
   // kostnadsdraget per affär blir jämförbara med hur boken faktiskt handlas.
-  const topN = Math.max(1, Number(process.argv[4]) || 4);
+  const topN = process.argv[4] == null ? 4 : Number(process.argv[4]);
+  if (!Number.isInteger(topN) || topN < 1 || topN > 100) throw new Error("topN must be an integer from 1 to 100");
   const weight = 1 / topN;
   /* Universumvarianter (tillagt 2026-08-03). Frågan "ska vi ta in mindre bolag?"
      kan inte besvaras med argument, bara genom att köra samma skelett över tre
@@ -510,6 +513,7 @@ async function main(){
     "us":           "config/backtest_universe_us.txt"
   };
   const uniFile = UNI[market] || UNI.nordic;
+  if (!UNI[market] || !/^(?:[1-9]\d*(?:d|mo|y)|ytd|max)$/.test(range)) throw new Error("Invalid market or range");
   const isUS = market === "us";
   const benchSym = isUS ? "^GSPC" : "^OMX";
   if (!existsSync(uniFile)){ console.error("Saknar " + uniFile); process.exit(1); }
@@ -523,7 +527,7 @@ async function main(){
     await new Promise(r => setTimeout(r, 400)); // artigt tempo mot Yahoo
   }
   const benchCandles = await fetchCandles(benchSym, range);
-  if (!benchCandles.length) console.log("VARNING: benchmark " + benchSym + " kunde inte hämtas – sleeve och regimfilter blir verkningslösa.");
+  if (!benchCandles.length) throw new Error("Benchmark unavailable: " + benchSym);
 
   /* Transaktionskostnad ur config/kostnader.json.
      Finns `liquidityTiers` för marknaden används KOSTNAD PER SYMBOL, härledd ur
@@ -553,7 +557,7 @@ async function main(){
       costTable = { bySym: {}, turnover: built.turnover };
       for (const s of Object.keys(built.bySym)) costTable.bySym[s] = built.bySym[s] + fx;
     }
-  } catch { console.log("Ingen config/kostnader.json – räknar brutto."); }
+  } catch (error) { if (error.code !== "ENOENT") throw error; console.log("Ingen config/kostnader.json – räknar brutto."); }
   // Detta värde går in i COMMON nedan: funktion om nivåer finns, annars ett tal.
   const costParam = costTable ? (sym => costTable.bySym[sym] != null ? costTable.bySym[sym] : costPct) : costPct;
   if (costTable){
@@ -866,7 +870,7 @@ async function main(){
      2026-08-03 och innebar att den enda körning som faktiskt dög som
      beslutsunderlag försvann bakom en diagnostikkörning. */
   const suffix = process.env.VECKO_FLAT_COST === "1" ? "-flatcost" : "";
-  const out = `reports/backtest/backtest-${ymd}-${market}-top${topN}${suffix}.md`;
+  const out = `reports/backtest/backtest-${ymd}-${market}-top${topN}-${range}${suffix}.md`;
   writeFileSync(out, lines.join("\n") + "\n");
   console.log("\nSkrev " + out);
   // Kompakt konsolsammanfattning – hela rapporten finns i filen.

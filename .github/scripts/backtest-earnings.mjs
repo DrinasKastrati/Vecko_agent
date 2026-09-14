@@ -10,7 +10,7 @@
    reverserades till −7,9 % dagen efter. Frågan går inte att avgöra med
    argument, bara genom att mäta båda sidorna över många rapporter.
 
-   VAD SOM MÄTS – fyra armar per rapporthändelse:
+   VAD SOM MÄTS – fem armar per rapporthändelse:
      PRE_ALL   köp stängning dagen före, sälj stängning på reaktionsdagen.
                Ingen riktningsgissning – detta är "köp inför rapporten".
      PRE_MOM   samma, men bara när aktien trendar UPP in i rapporten. Det är
@@ -19,6 +19,7 @@
      PEAD_D0   post-earnings drift, optimistisk: köp på reaktionsdagens ÖPPNING,
                men bara efter ett POSITIVT gap. Kräver att man hinner agera på
                öppningen samma dag som reaktionen.
+     PEAD_D0C  köp vid reaktionsdagens stängning, när dagens volym är känd.
      PEAD_D1   post-earnings drift, ärlig: köp på öppningen DAGEN EFTER
                reaktionsdagen. Det är vad böckerna faktiskt kan exekvera – den
                nordiska routinen kör 08:40 CEST och US-routinen 15:00 CEST, båda
@@ -34,10 +35,9 @@
    `volMin` gånger medianvolymen, med minst `minSpacing` handelsdagar mellan två
    händelser (kvartalstakt). Proxyn är trubbig åt BÅDA håll – den missar
    rapporter som inte rörde kursen och fångar ibland en icke-rapport (M&A,
-   vinstvarning, sektorchock). Den är däremot inte systematiskt snedvriden mot
-   någon av armarna: alla fyra mäts på EXAKT samma händelsemängd, så
-   JÄMFÖRELSEN mellan dem håller även om nivån på varje enskild arm är osäker.
-   Det är jämförelsen beslutet vilar på, inte absoluttalen.
+   vinstvarning, sektorchock). Resultaten är villkorade på denna proxy,
+   inte på en verifierad historisk rapportkalender.
+   PRE mäts med SET_VOL utan gapvillkor; PEAD med SET_GAP. Se varningen nedan.
 
    Kör:  node .github/scripts/backtest-earnings.mjs us 5y
          node .github/scripts/backtest-earnings.mjs nordic 5y
@@ -246,7 +246,8 @@ export function summarize(trades, minN = 20){
    på rätt mängd. Saknas underlag (< MA-fönstret) behandlas regimen som AV, samma
    strängare riktning vid osäkerhet som i backtest.mjs och i prompterna. */
 export function makeRegimeGate(benchCandles, regimeMa){
-  if (!regimeMa || !benchCandles || !benchCandles.length) return () => true;
+  if (!regimeMa) return () => true;
+  if (!benchCandles || !benchCandles.length) return () => false;
   const sma = smaSeries(benchCandles.map(c => c.c), regimeMa);
   const at = date => {
     let lo = 0, hi = benchCandles.length - 1, res = -1;
@@ -265,7 +266,7 @@ export function makeRegimeGate(benchCandles, regimeMa){
 export function runEarningsArms(candlesBySym, opts = {}){
   const {
     detect = {}, pead = {}, costOf = () => 0, benchCandles = null,
-    momLookback = 20, from = null, to = null, regimeMa = 0
+    momLookback = 20, from = null, to = null, before = null, regimeMa = 0
   } = opts;
   const regimeOk = makeRegimeGate(benchCandles, regimeMa);
   const arms = { PRE_ALL: [], PRE_MOM: [], PEAD_D0: [], PEAD_D0C: [], PEAD_D1: [] };
@@ -277,10 +278,13 @@ export function runEarningsArms(candlesBySym, opts = {}){
     for (const ev of detectEventDays(candles, detect)){
       if (from && ev.d < from) continue;
       if (to && ev.d > to) continue;
-      // Regimen prövas på REAKTIONSDAGEN – det är då beslutet fattas.
-      if (!regimeOk(ev.d)) continue;
+      if (before && ev.d >= before) continue;
       events++;
-      const tag = t => { if (!t) return null; t.sym = sym;
+      const tag = (t, atOpen = false) => {
+        if (!t) return null;
+        const knownAt = atOpen ? new Date(Date.parse(t.entryDate) - 86400000).toISOString().slice(0, 10) : t.entryDate;
+        if (!regimeOk(knownAt)) return null;
+        t.sym = sym;
         t.alphaPct = (() => { const b = benchWindowPct(benchCandles, t.entryDate, t.exitDate);
                               return b == null ? null : t.retPct - b; })();
         return t; };
@@ -292,11 +296,11 @@ export function runEarningsArms(candlesBySym, opts = {}){
         const mom = momentumAt(candles, ev.i, momLookback, 0);
         if (mom != null && mom > 0) arms.PRE_MOM.push(pre);
       }
-      const d0 = tag(peadTrade(candles, ev, Object.assign({}, pead, { offset: 0, costPct: cost })));
+      const d0 = tag(peadTrade(candles, ev, Object.assign({}, pead, { offset: 0, costPct: cost })), true);
       if (d0) arms.PEAD_D0.push(d0);
       const d0c = tag(peadTradeAtClose(candles, ev, Object.assign({}, pead, { costPct: cost })));
       if (d0c) arms.PEAD_D0C.push(d0c);
-      const d1 = tag(peadTrade(candles, ev, Object.assign({}, pead, { offset: 1, costPct: cost })));
+      const d1 = tag(peadTrade(candles, ev, Object.assign({}, pead, { offset: 1, costPct: cost })), true);
       if (d1) arms.PEAD_D1.push(d1);
     }
   }
@@ -308,7 +312,7 @@ async function fetchCandles(sym, range){
   for (const h of ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]){
     try {
       const url = `https://${h}/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d`;
-      const r = await fetch(url, { headers: { "User-Agent": UA, "Accept": "application/json" } });
+      const r = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Accept": "application/json" } });
       if (!r.ok) continue;
       const c = parseCandles(await r.json());
       if (c.length) return c;
@@ -337,6 +341,7 @@ async function main(){
     "us":           "config/backtest_universe_us.txt"
   };
   const uniFile = UNI[market] || UNI.us;
+  if (!UNI[market] || !/^(?:[1-9]\d*(?:d|mo|y)|ytd|max)$/.test(range)) throw new Error("Invalid market or range");
   const isUS = market === "us";
   const benchSym = isUS ? "^GSPC" : "^OMX";
   if (!existsSync(uniFile)){ console.error("Saknar " + uniFile); process.exit(1); }
@@ -350,7 +355,7 @@ async function main(){
     await new Promise(r => setTimeout(r, 400));
   }
   const benchCandles = await fetchCandles(benchSym, range);
-  if (!benchCandles.length) console.log("VARNING: benchmark " + benchSym + " saknas – alpha kan inte räknas.");
+  if (!benchCandles.length) throw new Error("Benchmark unavailable: " + benchSym);
 
   // Kostnad per symbol ur samma källa som rotationsbacktestet.
   let costOf = () => 0;
@@ -363,7 +368,7 @@ async function main(){
       const built = buildCostTable(candlesBySym, b.liquidityTiers);
       costOf = sym => (built.bySym[sym] != null ? built.bySym[sym] + fx : flat);
     } else costOf = () => flat;
-  } catch { console.log("Ingen config/kostnader.json – räknar brutto."); }
+  } catch (error) { if (error.code !== "ENOENT") throw error; console.log("Ingen config/kostnader.json – räknar brutto."); }
 
   /* Stop/mål och hålltid för PEAD-armen tas ur promptens katalysatortabell för
      `earnings`: horisont 3–6 veckor, mål 14–18 %, stop 5–6 %. Mittvärdena
@@ -407,7 +412,7 @@ async function main(){
   for (const s of Object.keys(candlesBySym)) for (const c of candlesBySym[s]) allDates.push(c.d);
   allDates.sort();
   const mid = allDates[Math.floor(allDates.length / 2)];
-  const halfA = measure({ to: mid });
+  const halfA = measure({ before: mid }); // midpoint events belong only to half B
   const halfB = measure({ from: mid });
 
   /* Känslighet. PEAD-armarna svepas över gap-tröskeln, PRE-armarna över

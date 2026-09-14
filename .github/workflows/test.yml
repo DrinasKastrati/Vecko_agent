@@ -39,6 +39,10 @@ jobs:
         run: npm install --no-save --no-audit --no-fund jsdom@29.1.1
       - name: Kör testsviten (rena funktioner, ingen nätåtkomst)
         run: node tests/run.mjs
+      - name: Kontrollera felåterhämtning och säkerhet
+        run: node tests/audit.mjs
+      - name: Validera all beständig JSON
+        run: node .github/scripts/validate-state.mjs
       - name: Kontrollera temalagret (tokentäckning + motorn i jsdom)
         run: node tests/theme.mjs
       - name: Kontrollera datalagret (förbyggd väg + fallback, ~110 hämtningar)
@@ -66,21 +70,4 @@ jobs:
         run: node .github/scripts/validate-action-items.mjs
       - name: Syntaxkontrollera alla JS-moduler
         run: |
-          node --check assets/vparse.js
-          node --check assets/vrender.js
-          node --check assets/app.js
-          node --check assets/theme.js
-          node --check assets/settings.js
-          node --check sw.js
-          node --check .github/scripts/build-dashboard.mjs
-          node --check .github/scripts/fetch-prices.mjs
-          node --check .github/scripts/alerts.mjs
-          node --check .github/scripts/digest.mjs
-          node --check .github/scripts/watchdog.mjs
-          node --check .github/scripts/fetch-news.mjs
-          node --check .github/scripts/backtest.mjs
-          node --check .github/scripts/validate-decisions.mjs
-          node --check .github/scripts/validate-scout-candidates.mjs
-          node --check .github/scripts/validate-action-items.mjs
-          node --check .github/scripts/backtest-earnings.mjs
-          node --check .github/scripts/earnings-calendar.mjs
+          git ls-files -z '*.js' '*.mjs' | xargs -0 -n 1 node --check

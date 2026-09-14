@@ -10,7 +10,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: news
+  group: state-main-writer
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -19,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0   # full historik – krävs för rebase mot samtidiga pushar
       - uses: actions/setup-node@v4
         with:
@@ -35,7 +37,7 @@ jobs:
           else
             git commit -m "Nyheter: $(date -u +'%Y-%m-%d %H:%M UTC')"
             for i in 1 2 3; do
-              if git pull --rebase --autostash -X theirs origin main && git push origin main; then
+              if git pull --rebase --autostash origin main && node .github/scripts/validate-state.mjs && git push origin main; then
                 exit 0
               fi
               git rebase --abort 2>/dev/null || true

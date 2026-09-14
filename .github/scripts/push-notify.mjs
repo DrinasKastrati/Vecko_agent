@@ -18,7 +18,9 @@
         KÖP/SÄLJ är något Dren faktiskt kan behöva agera på. Samma regel som
         styr "något att göra?" i Hem-vyn – håll dem i synk.
 
-   DEDUPE: state/push_sent.json (append-only lista med nycklar, max 400).
+   DEDUPE: state/push_sent.json (lista med färdiga nycklar, max 400).
+   deliveries sparar lyckade endpoints för ofullständiga utskick: nästa körning
+   försöker bara de återstående enheterna. Fältet är valfritt i äldre filer.
    FÖRSTA KÖRNINGEN SKICKAR INGENTING – den fyller bara listan. Utan det hade
    femton historiska beslut landat som femton notiser samtidigt.
 
@@ -33,18 +35,15 @@
    än det som faktiskt kommer, vilket är värre än ingen förhandsvisning alls.
    Varken --test eller --preview rör push_sent.json.
    ========================================================================== */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { sendPush } from "./webpush.mjs";
+import { readJSON, writeAtomic as writeFileSync, hasArray } from "./state-io.mjs";
 
 const SENT_PATH = "state/push_sent.json";
 const SUBS_PATH = "state/push_subs.json";
 const CFG_PATH  = "config/push.json";
 const MAX_PER_RUN = 5;   // spärr mot notislavin om något går fel i en källa
 const MAX_KEYS = 400;
-
-const readJSON = (p, fallback) => {
-  try { return JSON.parse(readFileSync(p, "utf8")); } catch { return fallback; }
-};
 
 /* ---- rena funktioner (testas i tests/run.mjs) ---------------------------- */
 
@@ -106,7 +105,7 @@ function loadSubscriptions(){
       for (const s of (Array.isArray(parsed) ? parsed : [parsed])) subs.push(s);
     } catch (e) { console.error("PUSH_SUBSCRIPTIONS kunde inte tolkas som JSON – hoppar över den."); }
   }
-  const file = readJSON(SUBS_PATH, { subscriptions: [] });
+  const file = readJSON(SUBS_PATH, { subscriptions: [] }, hasArray("subscriptions"));
   for (const s of (file.subscriptions || [])) subs.push(s);
   // Samma endpoint kan ligga i båda – skicka bara en gång.
   const byEndpoint = new Map();
@@ -116,7 +115,7 @@ function loadSubscriptions(){
 
 function dropGone(endpoints){
   if (!endpoints.length || !existsSync(SUBS_PATH)) return;
-  const file = readJSON(SUBS_PATH, { subscriptions: [] });
+  const file = readJSON(SUBS_PATH, { subscriptions: [] }, hasArray("subscriptions"));
   const before = (file.subscriptions || []).length;
   file.subscriptions = (file.subscriptions || []).filter(s => !endpoints.includes(s.endpoint));
   if (file.subscriptions.length !== before){
@@ -143,7 +142,7 @@ export function previewNotifications(today = new Date()){
   ].map((n, i) => Object.assign({}, n, { key: "preview|" + i, tag: "preview-" + i }));
 }
 
-export async function run(argv = []){
+export async function run(argv = [], send = sendPush){
   const test = argv.includes("--test");
   const prev = argv.includes("--preview");
   const dry  = argv.includes("--dry-run");
@@ -164,7 +163,7 @@ export async function run(argv = []){
     return { sent: 0 };
   }
 
-  const sentFile = readJSON(SENT_PATH, null);
+  const sentFile = readJSON(SENT_PATH, null, hasArray("keys"));
   const firstRun = sentFile === null;
   const sentKeys = (sentFile && sentFile.keys) || [];
 
@@ -190,30 +189,38 @@ export async function run(argv = []){
   if (!queue.length){ console.log("Inga nya KÖP/SÄLJ – inga notiser."); return { sent: 0 }; }
   if (dry){ console.log("DRY RUN – skulle skicka:\n" + queue.map(n => "  " + n.title + " — " + n.body).join("\n")); return { sent: 0, dry: queue.length }; }
 
-  let sent = 0; const gone = [];
+  let sent = 0, failed = 0; const gone = [], completed = [];
+  const deliveries = new Map(Object.entries((sentFile && sentFile.deliveries) || {}));
   for (const n of queue){
+    const delivered = new Set(deliveries.get(n.key) || []);
     const payload = JSON.stringify({ title: n.title, body: n.body, tag: n.tag, url: n.url, ts: Date.now() });
     for (const sub of subs){
+      if (delivered.has(sub.endpoint) || gone.includes(sub.endpoint)) continue;
       try {
-        const r = await sendPush(sub, payload, vapid);
-        if (r.ok) { sent++; }
-        else if (r.gone) { gone.push(r.endpoint); console.log("Död prenumeration (" + r.status + ")."); }
-        else console.error("Push misslyckades:", r.status, r.detail);
-      } catch (e){ console.error("Push-fel:", e && e.message); }
+        const r = await send(sub, payload, vapid);
+        if (r.ok) { sent++; delivered.add(sub.endpoint); }
+        else if (r.gone) { gone.push(sub.endpoint); console.log("Död prenumeration (" + r.status + ")."); }
+        else { failed++; console.error("Push misslyckades:", r.status, r.detail); }
+      } catch (e){ failed++; console.error("Push-fel:", e && e.message); }
     }
+    if (subs.every(s => delivered.has(s.endpoint) || gone.includes(s.endpoint))) {
+      completed.push(n.key); deliveries.delete(n.key);
+    } else deliveries.set(n.key, [...delivered]);
   }
   dropGone([...new Set(gone)]);
 
   if (!test && !prev){
-    const keys = [...sentKeys, ...queue.map(n => n.key)].slice(-MAX_KEYS);
-    writeFileSync(SENT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), keys }, null, 2) + "\n");
+    const keys = [...sentKeys, ...completed].slice(-MAX_KEYS);
+    writeFileSync(SENT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), keys,
+      deliveries: Object.fromEntries([...deliveries].slice(-MAX_KEYS)) }, null, 2) + "\n");
   }
   console.log(`Skickade ${sent} notis(er) till ${subs.length} enhet(er).`);
-  return { sent };
+  return { sent, failed };
 }
 
 const invokedDirectly = process.argv[1] && process.argv[1].replace(/\\/g, "/").endsWith("push-notify.mjs");
 if (invokedDirectly){
   mkdirSync("state", { recursive: true });
-  run(process.argv.slice(2)).catch(e => { console.error("Fel:", e); process.exit(1); });
+  run(process.argv.slice(2)).then(r => { if (r.failed) process.exitCode = 1; })
+    .catch(e => { console.error("Fel:", e); process.exit(1); });
 }

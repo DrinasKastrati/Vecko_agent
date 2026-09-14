@@ -17,7 +17,7 @@
   }
 
   function firstNumberPct(s){
-    const m = (s||"").replace(",", ".").match(/(-?\d+(?:\.\d+)?)\s*%/);
+    const m = (s||"").replace(/−/g, "-").replace(",", ".").match(/(-?\d+(?:\.\d+)?)\s*%/);
     return m ? parseFloat(m[1]) : null;
   }
 
@@ -224,7 +224,8 @@
     // pending sits under a ### sub-heading; grab its table directly
     const pendIdx = md.search(/###\s+Pending/i);
     if (pendIdx >= 0){
-      const t = parseTables(md.slice(pendIdx))[0];
+      const section = md.slice(pendIdx).split(/\n(?=##(?:#)?\s)/)[0];
+      const t = parseTables(section)[0];
       if (t) out.pending = t.rows.map(r => {
         const o = rowObj(t.header, r);
         o._struck = r.some(c => /~~/.test(c));
@@ -360,12 +361,13 @@
   }
 
   // ---- return series over time -----------------------------------------
-  function buildReturnSeries(weeklies, portfolio){
+  function buildReturnSeries(weeklies, portfolio, startDate){
     // ascending by date; use each weekly's accumulated return, then portfolio's latest
     const pts = [];
     const asc = [...weeklies].sort((a,b) => a.meta.sortKey - b.meta.sortKey);
     for (const w of asc){
-      pts.push({ date: w.dateISO, value: w.facit.accum == null ? 0 : w.facit.accum });
+      if (w.facit.accum != null && (!startDate || w.dateISO >= startDate))
+        pts.push({ date: w.dateISO, value: w.facit.accum });
     }
     if (portfolio && portfolio.accum != null){
       const last = pts[pts.length-1];
@@ -375,7 +377,7 @@
     // de-dup consecutive identical dates
     const seen = new Set(); const clean = [];
     for (const p of pts){ const k = p.date; if (seen.has(k)) { clean[clean.length-1]=p; } else { seen.add(k); clean.push(p);} }
-    return clean;
+    return startDate ? clean.filter(p => p.date >= startDate) : clean;
   }
 
   // ---- benchmark-serie ur price_history.json (overlay i Avkastning) -----
@@ -1039,8 +1041,8 @@
   // EXKLUDERAS – inte för att smyga in en justering.
   function fxRate(prices, pair){
     const q = prices && prices.quotes && prices.quotes[pair || "USDSEK=X"];
-    if (!q || q.price == null) return null;
-    const prev = q.previousClose;
+    if (!q || !Number.isFinite(q.price) || q.price <= 0 || q.error) return null;
+    const prev = prices.schemaVersion >= 2 ? q.previousClose : null;
     return {
       pair: pair || "USDSEK=X",
       rate: q.price,

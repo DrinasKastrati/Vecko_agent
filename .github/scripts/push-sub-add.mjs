@@ -15,7 +15,8 @@
    över det här flödet och lägg hela JSON:en i hemligheten PUSH_SUBSCRIPTIONS
    i stället – push-notify.mjs läser båda.
    ========================================================================== */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { readJSON, writeAtomic, hasArray } from "./state-io.mjs";
 
 const PATH = "state/push_subs.json";
 const MAX_SUBS = 10;   // en person, några enheter – fler är ett tecken på fel
@@ -50,12 +51,13 @@ export function upsert(file, sub, label, nowISO){
   return { updatedAt: nowISO, subscriptions: kept.slice(-MAX_SUBS) };
 }
 
-const invokedDirectly = process.argv[1] && process.argv[1].replace(/\\/g, "/").endsWith("push-sub-add.mjs");
-if (invokedDirectly){
-  const body = process.argv[2] || readFileSync(0, "utf8");
-  const label = (process.argv[3] || "enhet").slice(0, 40);
+export function registerSubscription(body, label = "enhet"){
   const sub = parseSubscription(body);
-  const file = existsSync(PATH) ? JSON.parse(readFileSync(PATH, "utf8")) : { subscriptions: [] };
-  writeFileSync(PATH, JSON.stringify(upsert(file, sub, label, new Date().toISOString()), null, 2) + "\n");
+  const file = readJSON(PATH, { subscriptions: [] }, hasArray("subscriptions"));
+  writeAtomic(PATH, JSON.stringify(upsert(file, sub, label.slice(0, 40), new Date().toISOString()), null, 2) + "\n");
   console.log("Registrerade prenumeration för " + label + " (" + new URL(sub.endpoint).host + ").");
 }
+
+const invokedDirectly = process.argv[1] && process.argv[1].replace(/\\/g, "/").endsWith("push-sub-add.mjs");
+if (invokedDirectly)
+  registerSubscription(process.argv[2] || readFileSync(0, "utf8"), process.argv[3] || "enhet");

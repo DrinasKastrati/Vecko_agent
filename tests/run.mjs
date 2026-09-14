@@ -1036,8 +1036,8 @@ ok("prevCloseFrom klarar okonsoliderad dagsbar", FP.prevCloseFrom({
   meta: { chartPreviousClose: 80, regularMarketTime: 1785542400 },
   timestamp: [1785283200, 1785369600, 1785542400],
   indicators: { quote: [{ close: [90, 95, null] }] } }) === 95);
-ok("prevCloseFrom faller tillbaka på chartPreviousClose sist",
-  FP.prevCloseFrom({ meta: { chartPreviousClose: 80 }, indicators: { quote: [{ close: [95] }] } }) === 80);
+ok("prevCloseFrom använder inte fönstrets start som föregående stängning",
+  FP.prevCloseFrom({ meta: { chartPreviousClose: 80 }, indicators: { quote: [{ close: [95] }] } }) === null);
 ok("prevCloseFrom null när inget finns", FP.prevCloseFrom({ meta: {} }) === null && FP.prevCloseFrom(null) === null);
 ok("prices.json märks med schemaVersion så läsaren kan se om previousClose är rättad", (() => {
   const src = readFileSync(resolve(root, ".github/scripts/fetch-prices.mjs"), "utf8");
@@ -1354,7 +1354,7 @@ ok("buildTradeSeries netto + brutto per punkt",
   Math.abs(seriesNet[0].pct - 5.75) < 1e-9 && Math.abs(seriesNet[0].grossPct - 6) < 1e-9);
 ok("buildTradeSeries utan kostnad oförändrad",
   Math.abs(VP.buildTradeSeries(costHist)[0].pct - 6) < 1e-9);
-const fxq = { quotes: { "USDSEK=X": { price: 9.5, previousClose: 9.4, marketTime: "2026-07-31T15:00:00Z" } } };
+const fxq = { schemaVersion: 2, quotes: { "USDSEK=X": { price: 9.5, previousClose: 9.4, marketTime: "2026-07-31T15:00:00Z" } } };
 ok("fxRate läser paret", (() => { const f = VP.fxRate(fxq); return f.rate === 9.5 && Math.abs(f.changePct - 1.0638) < 0.001; })());
 ok("fxRate saknat par = null", VP.fxRate({ quotes: {} }) === null && VP.fxRate(null) === null);
 ok("renderTradeStats visar netto", VR.renderTradeStats(tsNet).includes("Netto efter kostnad"));
@@ -1452,9 +1452,9 @@ ok("forwardReturn 5 steg framåt", (() => {
 })());
 ok("forwardReturn null när serien inte räcker",
   DE.forwardReturn(upp, "2026-07-04", 5) === null);
-ok("forwardReturn startar på FÖRSTA stängningen >= beslutsdatum", (() => {
+ok("forwardReturn flyttar inte gamla beslut till seriens nya start", (() => {
   const r = DE.forwardReturn(upp, "2026-06-20", 1);   // före seriens start
-  return r && r.fromDate === "2026-07-01";
+  return r === null;
 })());
 ok("forwardReturn tål trasiga värden",
   DE.forwardReturn([["2026-07-01", 0], ["2026-07-02", 5]], "2026-07-01", 1) === null &&
@@ -2206,11 +2206,11 @@ ok("regimfilter stoppar nya positioner när bench ligger under sitt MA", (() => 
   // fallande bench ⇒ färre affärer; stigande bench ⇒ filtret ska inte bita
   return on.trades < off.trades && up.trades === off.trades;
 })());
-ok("regimfilter blockerar inte när MA saknar underlag", (() => {
+ok("regimfilter blockerar när MA saknar underlag", (() => {
   const p = { lookback: 5, stopPct: 0.05, targetPct: 0.10, maxHoldDays: 30, mode: "hold", topN: 2, weight: 0.5 };
   const off = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { regimeMa: 0 }));
   const huge = BT.backtestUniverse({ X: synthUp }, Object.assign({}, p, { benchCandles: synthBenchUp, regimeMa: 5000 }));
-  return huge.trades === off.trades;
+  return huge.trades === 0 && off.trades > 0;
 })());
 ok("maxHoldDays styr hålltiden i BEHÅLL-läget", (() => {
   // orimligt vida nivåer ⇒ varken stop eller mål kan träffas, enda exiten är
@@ -2653,7 +2653,7 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      !VR.renderCandidates({ candidates: [kand({ thesis: "<img src=x onerror=1>" })] }, "2026-08-05").includes("<img"));
 }
 {
-  const cal = { horizonDays: 10, upcoming: [
+  const cal = { generatedAt: "2026-08-04T08:00:00Z", horizonDays: 10, upcoming: [
     { symbol: "AMD", date: "2026-08-04", tradingDaysAway: 0, isEstimate: false },
     { symbol: "NVO", date: "2026-08-05", tradingDaysAway: 1, isEstimate: true },
     { symbol: "OSSD.ST", date: "2026-08-18", tradingDaysAway: 10, isEstimate: false }
@@ -2662,7 +2662,7 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      VR.renderEarningsSoon(null).includes("earnings_calendar.json"));
   ok("rapportrad: tom lista säger inga rapporter",
      /Inga rapporter/.test(VR.renderEarningsSoon({ horizonDays: 10, upcoming: [] })));
-  const e = VR.renderEarningsSoon(cal, ["AMD"]);
+  const e = VR.renderEarningsSoon(cal, ["AMD"], new Date("2026-08-04T10:00:00Z"));
   ok("rapportrad: i dag / i morgon i klarspråk", e.includes("i dag") && e.includes("i morgon"));
   /* INNEHAV-markeringen är hela nyttan: en rapport i ett innehav är det
      prompten kallar binär händelse och kräver ett explicit beslut. */
@@ -3079,17 +3079,17 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
 
     ok("watchdog larmar på prissatt bubblare utan avgörande",
        WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [] } }))
-         .some(p => p.key === "bubblare-price"));
+         .some(p => p.key === "bubblare-price-nordic"));
     ok("watchdog tiger när bubblaren fått ett avgörande efter veckorapporten",
        WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [
-         { date: "2026-08-05", ticker: "ASSA-B.ST", action: "AVVAKTA" },
-         { date: "2026-08-05", ticker: "BETS-B.ST", action: "AVVAKTA" }
+         { date: "2026-08-05", book: "nordic", ticker: "ASSA-B.ST", action: "AVVAKTA" },
+         { date: "2026-08-05", book: "nordic", ticker: "BETS-B.ST", action: "AVVAKTA" }
        ] } })).length === 0);
     ok("watchdog räknar INTE ett avgörande från före veckorapporten",
        WD.checkStalePricedBubblare(Object.assign({}, base, { decisionsDb: { decisions: [
          { date: "2026-08-01", ticker: "ASSA-B.ST", action: "AVVAKTA" },
          { date: "2026-08-01", ticker: "BETS-B.ST", action: "AVVAKTA" }
-       ] } })).some(p => p.key === "bubblare-price"));
+       ] } })).some(p => p.key === "bubblare-price-nordic"));
     ok("watchdog tiger för bubblare utan verifierad kurs",
        WD.checkStalePricedBubblare(Object.assign({}, base, {
          quotes: { "ASSA-B.ST": { error: "kunde inte hämtas" }, "BETS-B.ST": { price: null } },
@@ -3832,7 +3832,7 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
               "BBB.ST": { price: 20, marketTime: "2026-09-01T15:00:00Z" } };
   const kör = rows => WDb.checkStalePricedBubblare({
     weeklyMd: md, weeklyDate: "2026-09-01", quotes: q,
-    decisionsDb: { decisions: rows }, book: "nordic" });
+    decisionsDb: { decisions: rows.map(r => ({ book: "nordic", ...r })) }, book: "nordic" });
 
   ok("bubblare: rotationens EGNA rader samma dag räknas som avgörande",
      kör([{ date: "2026-09-01", ticker: "AAA.ST", price: 10 },

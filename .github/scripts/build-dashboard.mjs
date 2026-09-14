@@ -102,6 +102,7 @@ const dashboard = {
   metas,
   portfolio: pMd ? P.parsePortfolio(pMd) : null,
   portfolioUs: pUsMd ? P.parsePortfolio(pUsMd) : null,
+  liveStart: JSON.parse(read("state/live_start.json")).startDate,
   dailies: parseSet(dMetas, P.parseDaily),
   weeklies: parseSet(wMetas, P.parseWeekly),
   scouts: parseSet(sMetas, P.parseScout),

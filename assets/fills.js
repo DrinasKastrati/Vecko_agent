@@ -42,11 +42,15 @@
     return (t && d) ? (t + "|" + d) : null;
   }
 
-  function read() {
-    try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; }
+  function read(strict) {
+    try {
+      var value = JSON.parse(localStorage.getItem(KEY) || "{}");
+      if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Ogiltig affärsdata");
+      return value;
+    } catch (e) { if (strict) throw e; return {}; }
   }
   function write(o) {
-    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+    localStorage.setItem(KEY, JSON.stringify(o));
   }
 
   function tal(v) { var n = typeof v === "number" ? v : parseFloat(v); return isFinite(n) ? n : 0; }
@@ -81,6 +85,10 @@
         saknar.push({ ticker: t, key: k, vad: (!harKop && !harSalj) ? "köp och sälj" : (harKop ? "sälj" : "köp") });
         continue;
       }
+      if (tal(f.kop.antal) !== tal(f.salj.antal)) {
+        saknar.push({ ticker: t, key: k, vad: "matchande antal i köp och sälj" });
+        continue;
+      }
       var in_ = tal(f.kop.kurs) * tal(f.kop.antal);
       var ut = tal(f.salj.kurs) * tal(f.salj.antal);
       var avgift = in_ * (tal(costPct) / 100);
@@ -110,18 +118,19 @@
     computeMyStats: computeMyStats,
     all: function () { return read(); },
     get: function (k) { return (k && read()[k]) || null; },
+    setTrade: function (k, post) { var db = read(true); db[k] = post; write(db); },
     setKop: function (k, v) {
-      var db = read(); var post = db[k] || {};
+      var db = read(true); var post = db[k] || {};
       if (v && v.bok) post.bok = v.bok;
       post.kop = { kurs: tal(v && v.kurs), antal: tal(v && v.antal), datum: (v && v.datum) || "" };
       db[k] = post; write(db);
     },
     setSalj: function (k, v) {
-      var db = read(); var post = db[k] || {};
+      var db = read(true); var post = db[k] || {};
       post.salj = { kurs: tal(v && v.kurs), antal: tal(v && v.antal), datum: (v && v.datum) || "" };
       db[k] = post; write(db);
     },
-    remove: function (k) { var db = read(); delete db[k]; write(db); }
+    remove: function (k) { var db = read(true); delete db[k]; write(db); }
   };
   if (typeof module !== "undefined" && module.exports) module.exports = root.VFills;
 })(typeof window !== "undefined" ? window : this);

@@ -444,9 +444,11 @@ ok("kurser: Escape stänger modalen", !doc.getElementById("pxModal").classList.c
 
 // ---- Avkastningsdiagrammet (körs om nu när Chart finns) ----
 charts.length = 0;
-await dash.drawChart();   // async sedan Chart.js laddas lat
+dash.showView("avkastning"); // exercise the production lazy-loading path
+await new Promise(resolve => setTimeout(resolve, 0));
 ok("avkastning: diagrammet byggs", charts.length === 1 && charts[0].data.datasets.length >= 1);
-ok("avkastning: strategiserien har punkter", charts[0].data.labels.length >= 1);
+ok("avkastning: strategiserien har punkter", charts[0]?.data.labels.length >= 1);
+ok("avkastning: pappersperioden visas inte", charts[0]?.data.labels.every(d => d >= dash.state.liveStart));
 
 // ---- Rapporter: typväxling, väljare, rådata, full höjd ----
 dash.showView("rapporter");

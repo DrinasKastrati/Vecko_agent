@@ -4,7 +4,8 @@
    Körs av GitHub Actions (fri nätåtkomst) – INTE av routinen.
    Routinen läser sedan bara den committade filen.
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
+import { readJSON, writeAtomic, hasSeries } from "./state-io.mjs";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
@@ -381,7 +382,7 @@ export function collectUsTickers(){
 // det ge en tvåsessionersrörelse. Därför jämförs mot regularMarketTime.
 export function prevCloseFrom(res){
   const meta = (res && res.meta) || null;
-  if (meta && meta.previousClose != null) return meta.previousClose;
+  if (meta && Number.isFinite(meta.previousClose) && meta.previousClose > 0) return meta.previousClose;
   const ts = (res && res.timestamp) || [];
   const q = res && res.indicators && res.indicators.quote && res.indicators.quote[0];
   const closes = (q && q.close) || [];
@@ -391,16 +392,16 @@ export function prevCloseFrom(res){
   let prev = null;
   for (let i = 0; i < ts.length; i++){
     const c = closes[i];
-    if (c == null || isNaN(c)) continue;
-    if (cur && day(ts[i]) >= cur) continue;   // hoppa dagens bar (och allt senare)
+    if (!Number.isFinite(c) || c <= 0) continue;
+    if (!cur || day(ts[i]) >= cur) continue;   // hoppa dagens bar (och allt senare)
     prev = c;
   }
   if (prev != null) return prev;
 
   // Ingen användbar tidsstämpel att jämföra mot: näst sista giltiga stängningen.
-  const valid = closes.filter(v => v != null && !isNaN(v));
+  const valid = closes.filter(v => Number.isFinite(v) && v > 0);
   if (!cur && valid.length >= 2) return valid[valid.length - 2];
-  return (meta && meta.chartPreviousClose != null) ? meta.chartPreviousClose : null;
+  return null; // chartPreviousClose belongs to the whole window, not yesterday.
 }
 
 export function parseChart(json, sym){
@@ -487,7 +488,7 @@ export async function fetchStooq(sym, fetchImpl = globalThis.fetch){
   if (!s) return null;
   const url = `https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;
   try {
-    const r = await fetchImpl(url, { headers: { "User-Agent": UA } });
+    const r = await fetchImpl(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA } });
     if (!r.ok) return null;
     const txt = await r.text();
     const lines = txt.trim().split("\n");
@@ -512,7 +513,7 @@ export async function fetchQuote(sym, fetchImpl = globalThis.fetch){
   for (const host of hosts){
     const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`;
     try {
-      const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "en-US,en;q=0.9" } });
+      const r = await fetchImpl(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "en-US,en;q=0.9" } });
       if (!r.ok) continue;
       const j = await r.json();
       const q = parseChart(j, sym);
@@ -533,7 +534,7 @@ export async function fetchExtended(sym, fetchImpl = globalThis.fetch){
     const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}` +
                 `?range=2d&interval=1m&includePrePost=true`;
     try {
-      const r = await fetchImpl(url, { headers: { "User-Agent": UA, "Accept": "application/json",
+      const r = await fetchImpl(url, { signal: AbortSignal.timeout(20000), headers: { "User-Agent": UA, "Accept": "application/json",
         "Accept-Language": "en-US,en;q=0.9" } });
       if (!r.ok) continue;
       const ext = parseExtended(await r.json());
@@ -636,6 +637,9 @@ export function nextWideAt(prevWideAt, wide, nowIso){
 
 // ---- main -------------------------------------------------------------
 export async function run(fetchImpl = globalThis.fetch, wide = false){
+  // Validate both histories before fetching or writing any part of this run.
+  const ph = readJSON("state/price_history.json", { series: {} }, hasSeries);
+  readJSON("state/volume_history.json", { series: {} }, hasSeries);
   const sourceTickers = [...new Set([...collectTickers(), ...collectUsTickers(),
                                      ...collectEarningsTickers()])].sort();
   // Symboler som nyligen VAR i en källa hämtas vidare under sin nådetid – annars
@@ -650,15 +654,14 @@ export async function run(fetchImpl = globalThis.fetch, wide = false){
   const universum   = collectMoversUniverse();
   const wideTickers = wide ? universum : [];
   let liveTickers = [];
-  try {
-    const ph = JSON.parse(readFileSync("state/price_history.json", "utf8"));
+  {
     const idag = new Date().toISOString().slice(0, 10);
     const seen = updateLastSeen(ph, sourceTickers, idag);
     liveTickers = collectLiveHistoryTickers(seen, idag, 30, 30,
                     [...sourceTickers, ...universum]);
     mkdirSync("state", { recursive: true });
-    writeFileSync("state/price_history.json", JSON.stringify(ph) + "\n");
-  } catch { /* saknas filen är det första körningen – källorna räcker */ }
+    writeAtomic("state/price_history.json", JSON.stringify(ph) + "\n");
+  }
   const tickers = fetchList(sourceTickers, liveTickers, wideTickers, wide);
   // Utökad session hämtas bara för symboler med en rapport inom räckhåll.
   const today = new Date().toISOString().slice(0, 10);
@@ -706,7 +709,7 @@ export async function run(fetchImpl = globalThis.fetch, wide = false){
     quotes
   };
   mkdirSync("state", { recursive: true });
-  writeFileSync("state/prices.json", JSON.stringify(out, null, 2) + "\n");
+  writeAtomic("state/prices.json", JSON.stringify(out, null, 2) + "\n");
   updatePriceHistory(quotes);
   updateVolumeHistory(quotes);
   console.log(`Skrev state/prices.json: ${okCount}/${tickers.length} tickers hämtade, ` +
@@ -766,7 +769,7 @@ export const MAX_HISTORY = 250;
    inte stoppas in mitt i serien, för då blir avståndet mellan två punkter inte
    längre en handelsdag och varje EMA räknad på indexpositioner blir fel. */
 export function appendPoint(arr, date, value, maxPoints = MAX_HISTORY){
-  if (!Array.isArray(arr) || !date || value == null || isNaN(Number(value))) return arr || [];
+  if (!Array.isArray(arr) || !date || value == null || !Number.isFinite(Number(value))) return arr || [];
   const v = Number(value);
   const last = arr.length ? arr[arr.length - 1] : null;
   if (!last || date > last[0]) arr.push([date, v]);
@@ -782,9 +785,7 @@ export function appendPoint(arr, date, value, maxPoints = MAX_HISTORY){
 
 export function updatePriceHistory(quotes){
   const path = "state/price_history.json";
-  let hist = { series: {} };
-  if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
-  hist.series = hist.series || {};
+  const hist = readJSON(path, { series: {} }, hasSeries);
   let noTime = 0;
   for (const [sym, q] of Object.entries(quotes)){
     if (!q || q.error || q.price == null) continue;
@@ -795,7 +796,7 @@ export function updatePriceHistory(quotes){
   hist.generatedAt = new Date().toISOString();
   if (noTime) console.log(`  ${noTime} kvot(er) utan marketTime – ingen historikpunkt skriven.`);
   mkdirSync("state", { recursive: true });
-  writeFileSync(path, JSON.stringify(hist) + "\n");
+  writeAtomic(path, JSON.stringify(hist) + "\n");
   return hist;
 }
 
@@ -815,9 +816,7 @@ export function updatePriceHistory(quotes){
    så samma hjälpfunktioner fungerar på båda. */
 export function updateVolumeHistory(quotes){
   const path = "state/volume_history.json";
-  let hist = { series: {} };
-  if (existsSync(path)) { try { hist = JSON.parse(readFileSync(path, "utf8")); } catch {} }
-  hist.series = hist.series || {};
+  const hist = readJSON(path, { series: {} }, hasSeries);
   for (const [sym, q] of Object.entries(quotes)){
     if (!q || q.error) continue;
     // 0 ÄR INTE VOLYMDATA (fix 2026-08-26). Filtret fanns i stooq-grenen
@@ -843,7 +842,7 @@ export function updateVolumeHistory(quotes){
               "price_history.json vid varje sidladdning och inte läser volym. " +
               "Läsare: delkriteriet 'volym > 1,5× 20-dagarssnittet' i grind 2.";
   mkdirSync("state", { recursive: true });
-  writeFileSync(path, JSON.stringify(hist) + "\n");
+  writeAtomic(path, JSON.stringify(hist) + "\n");
   return hist;
 }
 

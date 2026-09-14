@@ -19,7 +19,8 @@ permissions:
   issues: write
 
 concurrency:
-  group: monitor
+  group: state-main-writer
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -42,6 +43,8 @@ jobs:
       # decisions.json når main. En egen trigger hade alltså aldrig gått igång.
       # Följden är att latensen är monitorns egen: max en timme under börstid.
       - name: Skicka push-notiser för nya KÖP/SÄLJ
+        id: push
+        continue-on-error: true  # persist successful device receipts before reporting failures
         env:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
@@ -60,7 +63,7 @@ jobs:
           else
             git commit -m "Monitor: signaler $(date -u +'%Y-%m-%d %H:%M UTC')"
             for i in 1 2 3; do
-              if git pull --rebase --autostash -X theirs origin main && git push origin main; then
+              if git pull --rebase --autostash origin main && node .github/scripts/validate-state.mjs && git push origin main; then
                 exit 0
               fi
               git rebase --abort 2>/dev/null || true
@@ -84,8 +87,8 @@ jobs:
           script: |
             const fs = require('fs');
             const S = await import(process.env.GITHUB_WORKSPACE + '/.github/scripts/issue-sync.mjs');
-            let alerts = { active: [] };
-            try { alerts = JSON.parse(fs.readFileSync('state/alerts.json', 'utf8')); } catch (e) {}
+            const alerts = JSON.parse(fs.readFileSync('state/alerts.json', 'utf8'));
+            if (!Array.isArray(alerts.active)) throw new Error('Invalid alerts.active');
             const live = (alerts.active || []).map(s => ({
               key: s.ticker + '|' + s.type,
               title: `⚠️ ${s.type}-signal: ${s.ticker} – ${s.reason}`,
@@ -95,9 +98,9 @@ jobs:
                 `${s.marketTime ? ` · ${s.marketTime}` : ''}.\n\n` +
                 `Automatiserad intradag-signal (LLM-fri, ren nivåkorsning). Beslutsstöd, inte finansiell rådgivning.`
             }));
-            const open = await github.rest.issues.listForRepo({
+            const open = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
-            const plan = S.planIssues(open.data, live, 'monitor');
+            const plan = S.planIssues(open, live, 'monitor');
             for (const l of plan.open) {
               await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo,
                 title: l.title, body: [l.body, S.keyMarker('monitor', l.key)].join('\n\n') });
@@ -111,3 +114,8 @@ jobs:
               core.info('Stangde: ' + c.key);
             }
             core.info(`Aktiva: ${live.length} - oppnade ${plan.open.length}, stangde ${plan.close.length}.`);
+      - name: Rapportera misslyckade push-leveranser
+        if: ${{ always() && steps.push.outcome == 'failure' }}
+        run: |
+          echo "::error::Push failed; successful delivery receipts were retained for retry."
+          exit 1

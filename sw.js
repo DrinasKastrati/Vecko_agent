@@ -34,7 +34,7 @@
 // till dem, så ett cachat skal från v3 saknar dem. Strategin är nät-först och
 // renderingen är null-säkrad, så följden hade blivit tysta tomma rutor snarare än
 // ett fel – men just det är skälet att bumpa: format på det som cachas ändrades.
-const CACHE = "vecko-agent-v7";
+const CACHE = "vecko-agent-v8"; // audit: updated parser, sanitizer and live-start contract
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */
@@ -68,7 +68,7 @@ self.addEventListener("install", e => {
 
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(keys => Promise.all(keys.filter(k => k.startsWith("vecko-agent-") && k !== CACHE).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 
@@ -159,30 +159,27 @@ self.addEventListener("fetch", e => {
      typsnittsfilerna på fonts.gstatic.com har innehållshash i sökvägen. Samma
      URL ger alltid samma byte, och de hämtas med CORS så svaren är inte opaka. */
   const IMMUTABLE = ["cdn.jsdelivr.net", "fonts.gstatic.com"];
+  let cacheWrite = Promise.resolve();
+  function remember(res) {
+    if (res && (res.ok || res.type === "opaque")) {
+      const copy = res.clone();
+      cacheWrite = caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+    }
+    return res;
+  }
+  function respond(response) {
+    e.respondWith(response);
+    // Register during dispatch, before fetch resolves; keep cache writes alive.
+    e.waitUntil(response.then(() => cacheWrite, () => {}));
+  }
   if (IMMUTABLE.indexOf(url.hostname) !== -1) {
-    e.respondWith(
-      caches.match(req).then(hit => hit || fetch(req).then(res => {
-        if (res && (res.ok || res.type === "opaque")) {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }))
-    );
+    respond(caches.match(req).then(hit => hit || fetch(req).then(remember)));
     return;
   }
 
-  e.respondWith(
+  respond(
     fetch(req)
-      .then(res => {
-        // Bara lyckade svar av vår egen sort sparas. Opaka svar (no-cors från
-        // CDN) sparas också – de går inte att inspektera men fungerar offline.
-        if (res && (res.ok || res.type === "opaque")) {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
-        }
-        return res;
-      })
+      .then(remember)
       .catch(() => caches.match(req).then(hit => hit || (
         // Navigering utan träff: servera skalet så appen åtminstone startar.
         req.mode === "navigate" ? caches.match("./index.html") : undefined

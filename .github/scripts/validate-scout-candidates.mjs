@@ -28,7 +28,8 @@ export const BOOKS = ["nordic", "us"];
 
 const isNum = v => typeof v === "number" && isFinite(v);
 const isNumOrNull = v => v === null || isNum(v);
-const isIso = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+const isIso = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+  Number.isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v;
 
 /* Validerar EN kandidat. Returnerar array med felmeddelanden (tom = giltig). */
 export function validateCandidate(c, i){
@@ -59,7 +60,10 @@ export function validateCandidate(c, i){
   // En kurs på 0 eller mindre är inte en kurs. Utan kontrollen kan ett
   // parsningsfel bli ett "verifierat" pris som en bok räknar stop och mål ur.
   else if (isNum(c.price) && c.price <= 0) e.push(at("price måste vara > 0 (eller null om kursen saknas)"));
-  if (c.priceAsOf != null && typeof c.priceAsOf !== "string") e.push(at("priceAsOf måste vara ISO-sträng eller null"));
+  if (c.priceAsOf != null && (typeof c.priceAsOf !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(c.priceAsOf) ||
+      !isIso(c.priceAsOf.slice(0, 10)) || !Number.isFinite(Date.parse(c.priceAsOf))))
+    e.push(at("priceAsOf måste vara giltig ISO-tidsstämpel med tidszon eller null"));
   // En kurs utan tidsstämpel är inte en verifierad kurs. Kravet är detsamma som
   // i prompterna och får inte sänkas här bara för att fältet är valfritt.
   if (isNum(c.price) && !c.priceAsOf) e.push(at("price angiven utan priceAsOf – en kurs utan tidsstämpel är inte verifierad"));

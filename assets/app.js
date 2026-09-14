@@ -96,6 +96,7 @@
 
       const S = this.state;
       S.metas = d.metas;
+      S.liveStart = d.liveStart || null;
       S.portfolio = d.portfolio || { accum: null, cash: "", holdings: [], pending: [], history: [], note: null, updated: "" };
       S.portfolioUs = d.portfolioUs || null;
       S.dailies = d.dailies || [];
@@ -142,7 +143,7 @@
         const sMetas = metas.filter(m => m.type === "scout").slice(0, 12);
         const udMetas = metas.filter(m => m.type === "us_daily").slice(0, 10);
         const uwMetas = metas.filter(m => m.type === "us_weekly").slice(0, 12);
-        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt, decisionEval, candidates, earningsCal] = await Promise.all([
+        const [pMd, dMds, wMds, sMds, prices, queue, priceHistory, alerts, pUsMd, udMds, uwMds, alloc, lessonsMd, costs, decisions, wlTxt, wlUsTxt, decisionEval, candidates, earningsCal, liveStart] = await Promise.all([
           this.getMd(portfPath).catch(() => null),
           Promise.all(dMetas.map(m => this.getMd(m.path))),
           Promise.all(wMetas.map(m => this.getMd(m.path))),
@@ -162,9 +163,11 @@
           wlUsPath ? this.getMd(wlUsPath).catch(() => null) : Promise.resolve(null),
           decEvalPath ? this.fetchJSON(this.raw(decEvalPath)).catch(() => null) : Promise.resolve(null),
           candPath ? this.fetchJSON(this.raw(candPath)).catch(() => null) : Promise.resolve(null),
-          earnCalPath ? this.fetchJSON(this.raw(earnCalPath)).catch(() => null) : Promise.resolve(null)
+          earnCalPath ? this.fetchJSON(this.raw(earnCalPath)).catch(() => null) : Promise.resolve(null),
+          this.fetchJSON(this.raw("state/live_start.json")).catch(() => null)
         ]);
         this.state.prices = prices;
+        this.state.liveStart = liveStart && liveStart.startDate;
         this.state.queue = queue;
         this.state.priceHistory = priceHistory;
         this.state.alerts = alerts;
@@ -654,7 +657,7 @@
       nb.classList.toggle("on", on);
       // Behåll .btn-lbl-spannet – temana döljer det på smala skärmar, och en
       // ren textContent hade tagit bort det och tvingat fram etiketten igen.
-      nb.innerHTML = "🔔<span class=\"btn-lbl\"> " +
+      nb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="btn-lbl"> ' +
         (on ? "Notiser på" : (sub && !registered ? "Slutför notiser" : "Notiser")) + "</span>";
       nb.title = on
         ? "Push-notiser är på: KÖP/SÄLJ skickas hit även när appen är stängd. Tryck för att stänga av."
@@ -996,6 +999,7 @@
     }
     setupUsReportPicker() {
       const sel = this.el("usReportSelect"); if (!sel) return;
+      this.el("usReportBody")._request = Symbol();
       const metas = this.state.metas.filter(m => m.type === "us_weekly" || m.type === "us_daily");
       sel.innerHTML = metas.map((m, i) => `<option value="${this.R.esc(m.name)}"${i === 0 ? " selected" : ""}>${this.R.esc(m.dateISO)} \u2014 ${m.type === "us_weekly" ? "Vecko" : "Daglig"} \u00b7 ${this.R.esc(m.label)}</option>`).join("");
       if (sel.value) this.showUsReport(sel.value);
@@ -1004,18 +1008,19 @@
     async showUsReport(name) {
       const meta = this.state.metas.find(m => m.name === name);
       const body = this.el("usReportBody"); if (!body) return;
+      const request = body._request = Symbol();
       if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
       const gh = this.el("usGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
       body.innerHTML = '<div class="empty">H\u00e4mtar\u2026</div>';
-      try { const md = await this.getMd(meta.path); await this.ensureMarked(); body.innerHTML = this.mdToHtml(md); }
-      catch (e) { body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
+      try { const md = await this.getMd(meta.path); await this.ensureMarked(); if (body._request === request) body.innerHTML = this.mdToHtml(md); }
+      catch (e) { if (body._request === request) body.innerHTML = '<div class="empty">Kunde inte h\u00e4mta rapporten.</div>'; }
     }
 
     // ---- Hem: handlingsytan (innehav + dagens beslut + vad som händer) ----
     /* Modellen bakom enkla vyn. Samma state som den detaljerade vyn läser –
        skillnaden är att allt plockas ned till namn, beslut och en mening.
        Byggs här (DOM/state) så att VRender.renderSimple förblir ren. */
-    simpleModel() {
+    simpleModel(now = new Date()) {
       const S = this.state, P = this.P;
       const SLEEVE = /XACT|SPY|indexsleeve|indexdel/i;
       /* VAD som ägs kommer ur portfolj.md (sanningen om öppna positioner).
@@ -1044,8 +1049,14 @@
       if (S.portfolioUs) books.push(bookOf("Amerikanska aktier", S.portfolioUs, S.usDailies[0]));
 
       // Dagens beslut, oavsett om aktien ligger i portföljen än.
+      const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm" }).format(now);
       const actions = [];
-      [[S.dailies[0], "n"], [S.usDailies[0], "u"]].forEach(([d]) => {
+      const decisionRows = S.decisions && Array.isArray(S.decisions.decisions) ? S.decisions.decisions : null;
+      if (decisionRows) decisionRows.filter(d => d && d.date === today).forEach(d => {
+        actions.push({ decision: d.action, ticker: d.ticker, name: d.ticker, why: P.stripMd(d.reason || "") });
+      });
+      else [[S.dailies[0], "n"], [S.usDailies[0], "u"]].forEach(([d]) => {
+        if (!d || d.dateISO !== today) return;
         ((d && d.holdings) || []).forEach(h => {
           if (!h.decision) return;
           actions.push({ decision: h.decision, ticker: h.ticker, name: h.name,
@@ -1054,13 +1065,18 @@
       });
 
       const nAcc = S.portfolio && S.portfolio.accum, uAcc = S.portfolioUs && S.portfolioUs.accum;
-      const accs = [nAcc, uAcc].filter(v => v != null);
+      const allocation = S.allocation;
+      const split = allocation && typeof allocation.nordic === "number" && allocation.nordic >= 0.2 && allocation.nordic <= 0.8 ? allocation.nordic : 0.5;
+      const freshBook = (key, reports) => reports.some(r => r && r.dateISO === today) ||
+        (decisionRows || []).some(d => d && d.date === today && d.book === key);
+      const stale = !freshBook("nordic", [S.dailies[0], S.weeklies[0]]) ||
+        (!!S.portfolioUs && !freshBook("us", [S.usDailies[0], S.usWeeklies[0]]));
       const nx = P.nextRoutineRun(new Date());
       return {
-        totalAccum: accs.length ? accs.reduce((a, b) => a + b, 0) / accs.length : null,
-        books, actions,
+        totalAccum: S.portfolioUs ? (nAcc != null && uAcc != null ? nAcc * split + uAcc * (1 - split) : null) : (nAcc ?? null),
+        books, actions, stale,
         blocked: !!(S.dailies[0] && S.dailies[0].blocked),
-        dateLabel: (S.dailies[0] && S.dailies[0].dateISO) || "",
+        dateLabel: today,
         next: nx ? `${nx.label} ${nx.when}` : ""
       };
     }
@@ -1072,11 +1088,25 @@
       const st = this.el("hemStatus");
       if (st) st.innerHTML = R.renderStatusRow(S.dailies[0] || null, P.nextRoutineRun(new Date()));
 
+      /* Dagssammanfattningen (KPI-rutor) byggs ur samma modell som enkla vyn.
+         Den renderas i båda lägena; base.css döljer den i enkelt läge, där
+         uppgiftsrutan redan svarar på samma fråga i klarspråk. */
+      const model = this.simpleModel();
+      const sum = this.el("hemSummary");
+      if (sum && R.renderHemSummary) {
+        const live = p => ((p && p.pending) || []).filter(x => !x._struck).length;
+        const views = ["oversikt", "us"], ports = [S.portfolio, S.portfolioUs];
+        sum.innerHTML = R.renderHemSummary(Object.assign({}, model, {
+          books: model.books.map((b, i) => Object.assign({}, b, { view: views[i], pending: live(ports[i]) })),
+          alerts: ((S.alerts && S.alerts.active) || []).length
+        }));
+      }
+
       /* Enkel vy: samma data, klarspråk, ingen högerspalt. Läget ligger som
          data-attribut på <html> (skrivet av VSettings) så CSS kan dölja det
          som bara hör till den detaljerade vyn. */
       if (this.hemMode() === "enkel") {
-        main.innerHTML = R.renderSimple(this.simpleModel());
+        main.innerHTML = R.renderSimple(model);
         rail.innerHTML = "";
         return;
       }
@@ -1133,6 +1163,7 @@
       const lb = this.el("lessonsBody");
       if (lb) lb.innerHTML = this.R.renderLessons(this.state.lessons);
       const sel = this.el("retroSelect"); if (!sel) return;
+      this.el("retroBody")._request = Symbol();
       const metas = this.state.metas.filter(m => m.type === "retro");
       sel.innerHTML = metas.map((m, i) => `<option value="${this.R.esc(m.name)}"${i === 0 ? " selected" : ""}>${this.R.esc(m.dateISO)} — ${this.R.esc(m.label)}</option>`).join("");
       if (sel.value) this.showRetroReport(sel.value);
@@ -1141,32 +1172,41 @@
     async showRetroReport(name) {
       const meta = this.state.metas.find(m => m.name === name);
       const body = this.el("retroBody"); if (!body) return;
+      const request = body._request = Symbol();
       if (!meta) { body.innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
       const gh = this.el("retroGhLink"); if (gh) gh.href = this.ghBlob(meta.path);
       body.innerHTML = '<div class="empty">Hämtar…</div>';
-      try { const md = await this.getMd(meta.path); await this.ensureMarked(); body.innerHTML = this.mdToHtml(md); }
-      catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
+      try { const md = await this.getMd(meta.path); await this.ensureMarked(); if (body._request === request) body.innerHTML = this.mdToHtml(md); }
+      catch (e) { if (body._request === request) body.innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>'; }
     }
 
     // ---- report viewer ----
     setupReportPicker() {
       const sel = this.el("reportSelect");
+      const body = this.el("reportBody");
+      body._request = Symbol();
+      delete body.dataset.raw;
+      this.clearReportRail();
       sel.innerHTML = this.R.renderOptions(this.state.metas, this.state.reportType);
       if (sel.value) this.showReport(sel.value);
       else this.el("reportBody").innerHTML = '<div class="empty">Inga rapporter av denna typ ännu.</div>';
     }
     async showReport(name) {
+      const body = this.el("reportBody");
+      const request = body._request = Symbol();
       const meta = this.state.metas.find(m => m.name === name);
       if (!meta) { this.el("reportBody").innerHTML = '<div class="empty">Ingen rapport vald.</div>'; return; }
       this.el("ghLink").href = this.ghBlob(meta.path);
       this.el("reportBody").innerHTML = '<div class="empty">Hämtar…</div>';
       try {
         const md = await this.getMd(meta.path);
-        this.el("reportBody").dataset.raw = md;
         await this.ensureMarked();
+        if (body._request !== request) return;
+        this.el("reportBody").dataset.raw = md;
         this.el("reportBody").innerHTML = this.el("rawToggle").checked ? '<pre class="raw">' + this.R.esc(md) + '</pre>' : this.mdToHtml(md);
         this.buildReportRail(md, meta);
       } catch (e) {
+        if (body._request !== request) return;
         this.el("reportBody").innerHTML = '<div class="empty">Kunde inte hämta rapporten.</div>';
         this.clearReportRail();
       }
@@ -1248,11 +1288,19 @@
     }
     sanitize(html) {
       const t = document.createElement("template"); t.innerHTML = html;
-      t.content.querySelectorAll("script,style,iframe,object,embed,link,meta,form").forEach(n => n.remove());
+      const tags = new Set("A ABBR B BLOCKQUOTE BR CODE DD DEL DETAILS DIV DL DT EM H1 H2 H3 H4 H5 H6 HR I IMG LI OL P PRE S SMALL SPAN STRONG SUB SUMMARY SUP TABLE TBODY TD TH THEAD TR UL".split(" "));
+      const attrs = new Set("href src alt title class colspan rowspan scope open start reversed".split(" "));
       t.content.querySelectorAll("*").forEach(node => {
+        if (node.namespaceURI !== "http://www.w3.org/1999/xhtml" || !tags.has(node.tagName)) { node.remove(); return; }
         [...node.attributes].forEach(a => {
-          if (/^on/i.test(a.name)) node.removeAttribute(a.name);
-          else if (/^(href|src)$/i.test(a.name) && /^\s*javascript:/i.test(a.value)) node.removeAttribute(a.name);
+          if (!attrs.has(a.name)) node.removeAttribute(a.name);
+          else if (a.name === "href" || a.name === "src") {
+            try {
+              const url = new URL(a.value, location.href);
+              const schemes = a.name === "href" ? ["https:", "http:", "mailto:"] : ["https:", "http:"];
+              if (!schemes.includes(url.protocol)) node.removeAttribute(a.name);
+            } catch (_) { node.removeAttribute(a.name); }
+          }
         });
       });
       t.content.querySelectorAll("a[href]").forEach(a => { a.target = "_blank"; a.rel = "noopener noreferrer"; });
@@ -1273,25 +1321,27 @@
         else this.analyse(b.dataset.ticker);
       }));
     }
-    analyse(rawTicker) {
+    analyse(rawTicker, force = false) {
       const ticker = (rawTicker || "").toUpperCase().trim().replace(/\s+/g, "");
       if (!ticker) return;
       this.showView("analys");
       const cached = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey);
-      if (cached.length) { this.el("analysStatus").innerHTML = "Cachad analys – tryck Re-analysera för en färsk."; this.showAnalysis(cached[0]); return; }
+      if (cached.length && !force) { this.el("analysStatus").innerHTML = "Cachad analys – tryck Re-analysera för en färsk."; this.showAnalysis(cached[0]); return; }
       const url = this.repoURL + "/issues/new?title=" + encodeURIComponent("analys: " + ticker) +
         "&body=" + encodeURIComponent("Begäran om aktieanalys för " + ticker + ". Skicka in ärendet så köas det automatiskt.");
       window.open(url, "_blank", "noopener");
       this.el("analysBody").innerHTML = "";
       this.el("analysStatus").innerHTML = 'Ingen cachad analys för <b>' + this.R.esc(ticker) + '</b>. Skicka in GitHub-ärendet som öppnades, kör sedan "analysera kön" i Cowork – jag lyssnar efter resultatet…';
-      this.pollAnalysis(ticker);
+      this.pollAnalysis(ticker, force && cached[0]);
     }
     async showAnalysis(meta) {
       const body = this.el("analysBody"); if (!body) return;
+      const request = body._request = Symbol();
       body.innerHTML = '<div class="empty">Hämtar…</div>';
       try {
         const md = await this.getMd(meta.path);
         await this.ensureMarked();
+        if (body._request !== request) return;
         const verdict = this.P.stripMd(this.P.field(md, "Slutsats")).slice(0, 70);
         const price = this.P.stripMd(this.P.field(md, "Kurs")).slice(0, 90);
         const head = '<div class="an-head"><div><span class="an-tk">' + this.R.esc(meta.ticker) + '</span> <span class="an-date">' + this.R.esc(meta.dateISO) + '</span></div>' +
@@ -1299,18 +1349,24 @@
           (price ? '<div class="an-price">Kurs: ' + this.R.esc(price) + '</div>' : '') +
           '<div class="an-actions"><a class="btn" target="_blank" rel="noopener" href="' + this.ghBlob(meta.path) + '">GitHub</a> <button class="btn" id="anReana">Re-analysera</button></div>';
         body.innerHTML = head + '<div class="report" style="max-height:none">' + this.mdToHtml(md) + '</div>';
-        const rb = this.el("anReana"); if (rb) rb.addEventListener("click", () => this.analyse(meta.ticker));
-      } catch (e) { body.innerHTML = '<div class="empty">Kunde inte hämta analysen.</div>'; }
+        const rb = this.el("anReana"); if (rb) rb.addEventListener("click", () => this.analyse(meta.ticker, true));
+      } catch (e) { if (body._request === request) body.innerHTML = '<div class="empty">Kunde inte hämta analysen.</div>'; }
     }
-    pollAnalysis(ticker) {
+    pollAnalysis(ticker, previous) {
       if (this._poll) clearInterval(this._poll);
       let tries = 0;
+      const previousText = previous && this.state.md.get(previous.path);
       this._poll = setInterval(async () => {
         tries++;
         try {
           const paths = await this.discoverTree(true);
           this.state.metas = this.metasFromTree(paths);
-          const hit = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey)[0];
+          let hit = this.state.metas.filter(m => m.type === "analysis" && m.ticker === ticker).sort((a, b) => b.sortKey - a.sortKey)[0];
+          if (hit && previous && hit.path === previous.path) {
+              const text = await this.fetchText(this.raw(hit.path));
+              if (previousText == null || text === previousText) hit = null;
+              else this.state.md.set(hit.path, text);
+          }
           if (hit) {
             clearInterval(this._poll); this._poll = null;
             this.el("analysStatus").innerHTML = 'Analys klar för <b>' + this.R.esc(ticker) + '</b>.';
@@ -1323,10 +1379,13 @@
 
     // ---- chart (strategi + benchmark-overlay) ----
     async drawChart() {
+      const view = document.querySelector('.view[data-view="avkastning"]');
+      if (view && !view.classList.contains("active")) return;
       const canvas = this.el("returnChart");
       if (canvas) await this.lib("Chart");   // hämtas först när Avkastning öppnas
+      if (root.VTheme) root.VTheme.registerChartPlugin();
       if (!canvas || !root.Chart) { if (this.el("chartWrap")) this.el("chartWrap").style.display = "none"; this.el("chartNote").textContent = root.Chart ? "" : "Diagram kunde inte laddas (offline?)."; return; }
-      const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio);
+      const strat = this.P.buildReturnSeries(this.state.weeklies, this.state.portfolio, this.state.liveStart);
       const trades = this.P.buildTradeSeries(this.state.portfolio.history, this.P.costFor("nordic", this.state.costs));
       const benches = [];
       /* Benchmarken klipps till strategins EGEN startpunkt. Utan det normaliseras
@@ -1335,7 +1394,7 @@
          Följden var att diagrammet jämförde ett år index med fyra veckor strategi:
          OMXS30 +29,8 % mot strategins +3,2 %, medan facit över samma period var
          +3,0 % mot +3,2 %. Klipp aldrig bort det här argumentet. */
-      const stratFrom = /^\d{4}-\d{2}-\d{2}$/.test((strat[0] && strat[0].date) || "") ? strat[0].date : undefined;
+      const stratFrom = /^\d{4}-\d{2}-\d{2}$/.test((strat[0] && strat[0].date) || "") ? strat[0].date : this.state.liveStart;
       const omx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^OMX", stratFrom);
       const spx = this.P.buildBenchmarkSeries(this.state.priceHistory, "^GSPC", stratFrom);
       if (omx) benches.push({ label: "OMXS30", color: "#3B82F6", pts: omx });
@@ -1468,6 +1527,13 @@
         l.classList.toggle("active", on);
         if (on) activeLink = l;
       });
+      /* Mobilens "Mer": markeras när den aktiva vyn ligger bakom den, och
+         arket stängs vid varje vybyte. Knappen saknas i äldre markup. */
+      const more = this.el("navMore");
+      if (more) {
+        more.classList.toggle("active", !!activeLink && !activeLink.hasAttribute("data-primary"));
+        this.toggleNavMore(false);
+      }
       // Mobilens botten-bar rymmer inte elva flikar – rulla in den aktiva, annars
       // kan man byta vy med tangentbord/hash och inte se var man hamnade.
       const nav = document.querySelector(".subnav");
@@ -1478,14 +1544,34 @@
       }
       try { history.replaceState(null, "", "#" + view); } catch (e) {}
     }
+    /* Mobil: botten-baren visar bara länkar med data-primary; resten ligger i
+       ett ark bakom "Mer". Arket är ren CSS på .subnav.more-open – länkarna är
+       samma element som på desktop, så tangentbord, hash och startvy påverkas
+       inte. På desktop är knappen dold och klassen verkningslös. */
+    toggleNavMore(force) {
+      const nav = document.querySelector(".subnav"), btn = this.el("navMore");
+      if (!nav || !btn) return;
+      const open = typeof force === "boolean" ? force : !nav.classList.contains("more-open");
+      nav.classList.toggle("more-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+    }
     initNav() {
       document.querySelectorAll(".subnav a").forEach(a =>
         a.addEventListener("click", e => { e.preventDefault(); this.showView(a.dataset.view); }));
+      const more = this.el("navMore");
+      if (more) {
+        more.addEventListener("click", e => { e.stopPropagation(); this.toggleNavMore(); });
+        document.addEventListener("click", e => {
+          const nav = document.querySelector(".subnav");
+          if (nav && nav.classList.contains("more-open") && !nav.contains(e.target)) this.toggleNavMore(false);
+        });
+      }
       const h = (location.hash || "").slice(1);
-      if (h && document.querySelector('.view[data-view="' + h + '"]')) { this.showView(h); return; }
+      const hasView = value => [...document.querySelectorAll(".view[data-view]")].some(v => v.dataset.view === value);
+      if (h && hasView(h)) { this.showView(h); return; }
       // Ingen hash: öppna den vy användaren valt i Inställningar (standard "hem").
       const start = root.VSettings && root.VSettings.get("startview");
-      if (start && start !== "hem" && document.querySelector('.view[data-view="' + start + '"]')) this.showView(start);
+      if (start && start !== "hem" && hasView(start)) this.showView(start);
     }
     initEvents() {
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
@@ -1577,19 +1663,25 @@
           const iUs = ((this.state.portfolioUs && this.state.portfolioUs.history) || [])
             .concat((this.state.portfolioUs && this.state.portfolioUs.holdings) || [])
             .some(r => root.VFills.keyFor(r) === key);
-          const num = s => { const n = parseFloat(String(s == null ? "" : s).replace(",", ".")); return isFinite(n) ? n : 0; };
+          const num = s => { const n = Number(String(s == null ? "" : s).trim().replace(",", ".")); return isFinite(n) ? n : 0; };
           const nu = root.VFills.get(key) || {};
           const kk = window.prompt(ticker + " – vad betalade du per aktie?", nu.kop ? String(nu.kop.kurs) : "");
           if (kk === null) return;
           const ka = window.prompt(ticker + " – hur många aktier köpte du?", nu.kop ? String(nu.kop.antal) : "");
           if (ka === null) return;
-          root.VFills.setKop(key, { bok: iUs ? "us" : "nordic", kurs: num(kk), antal: num(ka) });
+          if (!(num(kk) > 0 && num(ka) > 0)) { window.alert("Köppris och antal måste vara positiva tal."); return; }
+          const post = { bok: iUs ? "us" : "nordic", kop: { kurs: num(kk), antal: num(ka), datum: (nu.kop && nu.kop.datum) || "" } };
           const sk = window.prompt(ticker + " – säljkurs per aktie? Lämna tomt om du inte sålt.",
             nu.salj ? String(nu.salj.kurs) : "");
+          if (sk === null) return;
           if (sk) {
             const sa = window.prompt(ticker + " – hur många aktier sålde du?", nu.salj ? String(nu.salj.antal) : ka);
-            root.VFills.setSalj(key, { kurs: num(sk), antal: num(sa) });
+            if (sa === null) return;
+            if (!(num(sk) > 0 && num(sa) > 0)) { window.alert("Säljpris och antal måste vara positiva tal."); return; }
+            post.salj = { kurs: num(sk), antal: num(sa), datum: (nu.salj && nu.salj.datum) || "" };
           }
+          try { root.VFills.setTrade(key, post); }
+          catch (error) { window.alert("Affären kunde inte sparas. Befintlig affärsdata har bevarats. " + error.message); return; }
           this.renderAll();
           this.renderMyBooks();
           return;
@@ -1658,7 +1750,7 @@
       // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
       document.addEventListener("keydown", e => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;
-        if (e.key === "Escape") { this.closePxChart(); this.closePushModal(); return; }
+        if (e.key === "Escape") { this.closePxChart(); this.closePushModal(); this.toggleNavMore(false); return; }
         const t = e.target, tag = (t && t.tagName || "").toLowerCase();
         if (tag === "input" || tag === "textarea" || tag === "select" || (t && t.isContentEditable)) return;
         const links = [...document.querySelectorAll(".subnav a")];

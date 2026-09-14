@@ -471,6 +471,17 @@ Rapportfilnamn: `daglig-yymmdd.md`, `veckorapport-yymmdd.md` (yy=år, mm=månad,
   MutationObserver i stället för att koppla ihop modulerna. **Uppgiftslogiken är hela poängen:
   systemet lägger inga ordrar, så bara KÖP/SÄLJ räknas som "något att göra" – BEHÅLL gör det
   aldrig.** Lägger du till en vy-variant: ändra aldrig `renderSimple` till att läsa DOM.
+- **UI-refaktor 2026-09-14 – tre nya DOM-kontrakt.** (1) `#hemSummary` i Hem renderas av
+  `VRender.renderHemSummary` (ren) ur `simpleModel()` + antal aktiva signaler/planer; den är DOLD i
+  enkelt läge via `[data-hemmode="enkel"] #hemSummary` – uppgiftsrutan svarar redan på samma fråga.
+  (2) Menylänkarna bär `<svg class="ico">` + `<span class="nav-lbl">`; `data-primary` avgör vilka som
+  syns i mobilens botten-bar, resten ligger bakom `#navMore` (en `<button>`, medvetet INTE `<a>` –
+  `.subnav a` räknas som vyer av app.js, startvyn och testerna). Arket är ren CSS på
+  `.subnav.more-open`, växlas av `app.js:toggleNavMore`. (3) Toppraden har två zoner, `.tb-status`
+  och `.tb-actions`; temaknapparna renderas fortfarande i `#themeCtl` men döljs där (valet ligger i
+  Inställningar) – bara lägesknappen syns. Deck-paletten är slate/indigo; färg bär betydelse, inte
+  dekor. Nya tokens (`--s1`…`--s7`, `--tile-bg`, `--hover-bg`, `--quote-*`) står en per rad i
+  `base.css`, eftersom `tests/theme.mjs` bara räknar första definitionen på varje rad.
 - **Inställningar (sedan 2026-08-02):** `assets/settings.js` (`window.VSettings`) – vyn
   `installningar`, nås via kugghjulet i toppraden (medvetet INTE i menyn, elva flikar räcker).
   En deklarativ `SCHEMA`-tabell beskriver varje inställning; vyn RENDERAS ur tabellen, så en ny
@@ -1260,3 +1271,26 @@ sköts av `git pull` före arbete och `push.bat` efter. Endast den gamla OneDriv
 ## 9. Disclaimer
 Allt systemet producerar är **automatiserat beslutsstöd, inte finansiell rådgivning.** Varje
 rapport ska avslutas med den raden.
+
+## 10. Repository-audit 2026-09-14
+
+- Beständig JSON läses med `state-io.mjs`: bara ENOENT får ge initialvärdet. Trasig JSON eller
+  fel struktur stoppar skrivaren; historik får aldrig ersättas med en tom standard. Skrivningar
+  ersätter hela filer via en temporär syskonfil och rename. Detta är atomiskt per fil, inte en
+  transaktion över flera filer. `validate-state.mjs` kontrollerar JSON och skrivarkontrakt i CI.
+- Alla åtta workflows som skriver till main delar `state-main-writer`, `queue: max` och
+  `cancel-in-progress: false`, och checkar ut aktuell main efter köväntan. Återinför inte
+  `-X theirs`: en kollision med en extern push ska faila synligt, inte kasta ena sidans data.
+  Auto-merge kör DOM-sviterna, syntaxkontroll och append-only-validering även efter rebase.
+- Push-kvitton kan ha `deliveries: { eventKey: [endpoint, ...] }`. En delvis lyckad sändning
+  kvitteras per enhet; monitorn committar kvittona även när en annan enhet behöver nytt försök.
+- Unicode-minus `−` betyder minus även i procentfält. `dashboard.liveStart` kommer från
+  `state/live_start.json`; diagrammet får inte blanda paper-perioden med skarp avkastning.
+- Besluts-alpha jämför samma daterade stängningar. Utgångna datum får inte flyttas fram till
+  första kvarvarande historikpunkt. Urvalsedge kräver oberoende fönster i BÅDE KÖP och AVVAKTA.
+- Backtestets MA-grind använder bara data känd vid respektive entry, och saknad MA blockerar.
+  Halvorna i earnings-testet delar inte längre mediandagens händelser. Rotationsbacktestets nya
+  filnamn innehåller också intervallet, så olika intervall samma dag inte skriver över varandra.
+- Kör `node tests/audit.mjs` utöver de fyra ordinarie sviterna. Full rapport och begränsningar:
+  `docs/AUDIT-2026-09-14.md`. Historiska rapporter, beslut, portföljhistorik och retroägd data
+  ändrades inte av auditen. Investeringsregler och trösklar är bevarade.

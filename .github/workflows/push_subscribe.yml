@@ -15,7 +15,8 @@ permissions:
   issues: write
 
 concurrency:
-  group: push-subscribe
+  group: state-main-writer
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -50,7 +51,7 @@ jobs:
             echo "Prenumerationen fanns redan – inget att committa."
           else
             git commit -m "Push: registrera enhet ($LABEL)"
-            git pull --rebase --autostash origin main || true
+            git pull --rebase --autostash origin main
             git push
           fi
       - name: Kvittera och stäng issue
@@ -64,9 +65,9 @@ jobs:
               issue_number: context.issue.number,
               body: ok
                 ? 'Enheten är registrerad för push-notiser. Nästa KÖP/SÄLJ-signal skickas hit. Testa direkt: Actions → "Intradag-monitor" → Run workflow med `testnotis: true`. Ärendet stängs automatiskt.'
-                : 'Kunde INTE registrera enheten – prenumerations-JSON:en i kroppen gick inte att tolka. Öppna 🔔 i appen igen och skicka det förifyllda ärendet oförändrat.'
+                : 'Kunde INTE registrera enheten. Se felet i Actions och kör om jobbet efter åtgärd. Ärendet lämnas öppet.'
             });
-            await github.rest.issues.update({
+            if (ok) await github.rest.issues.update({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.issue.number, state: 'closed'
             });
