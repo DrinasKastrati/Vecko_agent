@@ -1,15 +1,16 @@
 {
-  "generatedAt": "2026-09-14T10:33:53.638Z",
+  "generatedAt": "2026-09-15T10:01:05.775Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 123,
-    "resolved": 116,
+    "requested": 129,
+    "resolved": 121,
+    "retained": 0,
     "failed": 0,
     "notApplicable": 2,
-    "noCoverage": 5,
+    "noCoverage": 6,
     "upcoming": 0
   },
   "upcoming": [],
@@ -58,6 +59,15 @@
       "epsLow": null,
       "epsHigh": null,
       "revenueConsensus": null
+    },
+    {
+      "symbol": "COO",
+      "date": "2026-09-09",
+      "isEstimate": false,
+      "epsConsensus": 1.12007,
+      "epsLow": 1.1,
+      "epsHigh": 1.14,
+      "revenueConsensus": 1067902570
     },
     {
       "symbol": "CHEMM.CO",
@@ -111,7 +121,7 @@
       "epsConsensus": 4.4614,
       "epsLow": 4.26,
       "epsHigh": 4.72,
-      "revenueConsensus": 1454270435790
+      "revenueConsensus": 1454757744140
     },
     {
       "symbol": "HMS.ST",
@@ -171,10 +181,10 @@
       "symbol": "NOKIA.HE",
       "date": "2026-10-22",
       "isEstimate": false,
-      "epsConsensus": 0.06386,
+      "epsConsensus": 0.06454,
       "epsLow": 0.05,
       "epsHigh": 0.08165,
-      "revenueConsensus": 5058741520
+      "revenueConsensus": 5060117120
     },
     {
       "symbol": "SAGA-B.ST",
@@ -201,7 +211,7 @@
       "epsConsensus": 1.33522,
       "epsLow": 1.3,
       "epsHigh": 1.38,
-      "revenueConsensus": 529825530
+      "revenueConsensus": 529658870
     },
     {
       "symbol": "HEXA-B.ST",
@@ -285,6 +295,15 @@
       "revenueConsensus": 60008670
     },
     {
+      "symbol": "SKHY",
+      "date": "2026-10-27",
+      "isEstimate": true,
+      "epsConsensus": 6.23653,
+      "epsLow": 5.7586,
+      "epsHigh": 6.723,
+      "revenueConsensus": 100634003220000
+    },
+    {
       "symbol": "SOBI.ST",
       "date": "2026-10-27",
       "isEstimate": false,
@@ -354,7 +373,7 @@
       "epsConsensus": 4.72455,
       "epsLow": 4.43,
       "epsHigh": 4.83363,
-      "revenueConsensus": 90670106720
+      "revenueConsensus": 90659206720
     },
     {
       "symbol": "PHO.OL",
@@ -418,6 +437,15 @@
       "epsLow": -0.59,
       "epsHigh": 0.95,
       "revenueConsensus": 1161224420
+    },
+    {
+      "symbol": "HII",
+      "date": "2026-10-29",
+      "isEstimate": true,
+      "epsConsensus": 4.49854,
+      "epsLow": 3.88684,
+      "epsHigh": 5.47,
+      "revenueConsensus": 3352749540
     },
     {
       "symbol": "KOG.OL",
@@ -540,10 +568,10 @@
       "symbol": "AMD",
       "date": "2026-11-03",
       "isEstimate": true,
-      "epsConsensus": 1.92514,
+      "epsConsensus": 1.92579,
       "epsLow": 1.72,
       "epsHigh": 2.03,
-      "revenueConsensus": 12992215760
+      "revenueConsensus": 12997554620
     },
     {
       "symbol": "ANET",
@@ -717,6 +745,15 @@
       "revenueConsensus": null
     },
     {
+      "symbol": "EVCM",
+      "date": "2026-11-05",
+      "isEstimate": false,
+      "epsConsensus": 0.17528,
+      "epsLow": 0.13112,
+      "epsHigh": 0.2,
+      "revenueConsensus": 152911200
+    },
+    {
       "symbol": "HNSA.ST",
       "date": "2026-11-05",
       "isEstimate": false,
@@ -738,10 +775,10 @@
       "symbol": "MAERSK-B.CO",
       "date": "2026-11-05",
       "isEstimate": false,
-      "epsConsensus": 241.30063,
-      "epsLow": 202.2,
+      "epsConsensus": 236.2673,
+      "epsLow": 187.1,
       "epsHigh": 281,
-      "revenueConsensus": 17962108880
+      "revenueConsensus": 17903775550
     },
     {
       "symbol": "NNIT.CO",
@@ -1057,6 +1094,15 @@
       "epsLow": 3.53,
       "epsHigh": 3.91,
       "revenueConsensus": 34879356080
+    },
+    {
+      "symbol": "ORCL",
+      "date": "2026-12-10",
+      "isEstimate": true,
+      "epsConsensus": 1.73834,
+      "epsLow": 1.81,
+      "epsHigh": 2.04,
+      "revenueConsensus": 19129103030
     }
   ],
   "errors": {},
@@ -1069,6 +1115,7 @@
     "MGN.OL": "Yahoo har ingen rapportkalender for symbolen",
     "MORLD.OL": "Yahoo har ingen rapportkalender for symbolen",
     "PARKEN.CO": "Yahoo har ingen rapportkalender for symbolen",
-    "STAR-B.ST": "Yahoo har ingen rapportkalender for symbolen"
+    "STAR-B.ST": "Yahoo har ingen rapportkalender for symbolen",
+    "TLX": "Yahoo har ingen rapportkalender for symbolen"
   }
 }
