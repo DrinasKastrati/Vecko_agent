@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T10:01:05.775Z",
+  "generatedAt": "2026-09-16T09:53:09.620Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -11,9 +11,20 @@
     "failed": 0,
     "notApplicable": 2,
     "noCoverage": 6,
-    "upcoming": 0
+    "upcoming": 1
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "symbol": "MU",
+      "date": "2026-09-30",
+      "isEstimate": false,
+      "epsConsensus": 31.33121,
+      "epsLow": 28.04,
+      "epsHigh": 37.44,
+      "revenueConsensus": 50787211780,
+      "tradingDaysAway": 10
+    }
+  ],
   "all": [
     {
       "symbol": "RAP1V.HE",
@@ -433,10 +444,10 @@
       "symbol": "COIN",
       "date": "2026-10-29",
       "isEstimate": true,
-      "epsConsensus": -0.14477,
+      "epsConsensus": -0.20917,
       "epsLow": -0.59,
-      "epsHigh": 0.95,
-      "revenueConsensus": 1161224420
+      "epsHigh": 0.38418,
+      "revenueConsensus": 1166929420
     },
     {
       "symbol": "HII",
@@ -550,7 +561,7 @@
       "symbol": "PLTR",
       "date": "2026-11-02",
       "isEstimate": true,
-      "epsConsensus": 0.41452,
+      "epsConsensus": 0.41367,
       "epsLow": 0.38,
       "epsHigh": 0.48,
       "revenueConsensus": 2176726360
@@ -562,7 +573,7 @@
       "epsConsensus": 0.32,
       "epsLow": 0.32,
       "epsHigh": 0.32,
-      "revenueConsensus": 637512160
+      "revenueConsensus": 638875790
     },
     {
       "symbol": "AMD",
@@ -670,7 +681,7 @@
       "epsConsensus": -0.1,
       "epsLow": -0.1,
       "epsHigh": -0.1,
-      "revenueConsensus": 174767890
+      "revenueConsensus": 175434560
     },
     {
       "symbol": "MOWI.OL",
@@ -769,7 +780,7 @@
       "epsConsensus": -0.51,
       "epsLow": -0.51,
       "epsHigh": -0.51,
-      "revenueConsensus": 223718770
+      "revenueConsensus": 222017060
     },
     {
       "symbol": "MAERSK-B.CO",
