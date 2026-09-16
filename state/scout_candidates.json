@@ -555,11 +555,11 @@
       "price": 12.83,
       "priceAsOf": "2026-09-15T20:00:00.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-23",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260916.md",
+      "decidedAt": "2026-09-16",
+      "decisionReason": "Sparr f, grind 2 (punkt 2): likviditetsgolvet. 20d-snitt 2,9 MUSD/dag mot kravet 20. Volymkvot 4,68x och teknik haller. Andra ledet grind 4: mal +8 % = 13,86 over 250d-hogsta 12,83."
     },
     {
       "id": "260916-XOM",
@@ -575,11 +575,11 @@
       "price": 169.32,
       "priceAsOf": "2026-09-15T20:03:56.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-23",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260916.md",
+      "decidedAt": "2026-09-16",
+      "decisionReason": "Sparr f, grind 2 (punkt 2): volymkvot 0,88x mot 1,5x - kursen steg 2,57 % pa volym under eget snitt. Andra ledet grind 4: mal +8 % = 182,87 over 250d-hogsta 171,47."
     },
     {
       "id": "260916-CVX",
@@ -595,11 +595,11 @@
       "price": 217.77,
       "priceAsOf": "2026-09-15T20:03:26.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-23",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-260916.md",
+      "decidedAt": "2026-09-16",
+      "decisionReason": "Sparr f, grind 2 (punkt 2): volymkvot 1,23x mot 1,5x. RSI 70,6. Andra ledet grind 4: kursen 217,77 AR 250d-hogsta, mal +8 % = 235,19 utanfor serien. Samma case som 260916-XOM."
     }
   ]
 }
