@@ -600,6 +600,26 @@
       "decidedBy": "reports/us_daily/us-daglig-260916.md",
       "decidedAt": "2026-09-16",
       "decisionReason": "Sparr f, grind 2 (punkt 2): volymkvot 1,23x mot 1,5x. RSI 70,6. Andra ledet grind 4: kursen 217,77 AR 250d-hogsta, mal +8 % = 235,19 utanfor serien. Samma case som 260916-XOM."
+    },
+    {
+      "id": "260917-INTC",
+      "date": "2026-09-17",
+      "ticker": "INTC",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "ma_rumor",
+      "catalystDate": "2026-09-16",
+      "confirmed": false,
+      "thesis": "RYKTE (Reuters 16/9, tre kallor med insyn): SK Hynix i samtal med Intel om minnestillverkning i USA - del av Ohio-fabriken eller JV med molnbolag. Traffar Intels flaskhals: fabsutnyttjandet. Bear: explorativa samtal, SK Hynix dementerar, SKHY stangde +0,02 pct, volymkvot 1,31x.",
+      "sourceRef": "Reuters via CNBC 2026-09-16 (Intel, SK Hynix shares jump on report they're discussing U.S. memory chip manufacturing); SK hynix Newsroom 2026-09-16 (no plans confirmed); prices.json mt 2026-09-16T20:00:01Z",
+      "price": 101.05,
+      "priceAsOf": "2026-09-16T20:00:01.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-24",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
