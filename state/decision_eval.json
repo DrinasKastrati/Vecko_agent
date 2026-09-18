@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-17T20:33:16.928Z",
+ "generatedAt": "2026-09-18T07:00:04.281Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 602,
-  "measurable": 602,
+  "decisions": 607,
+  "measurable": 607,
   "missing": 0,
-  "pending": 124
+  "pending": 129
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -11006,6 +11006,56 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Livsmedel/vattenbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "EQNR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "HSHP.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Sjofart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "BWE.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "EMBRAC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Dataspel",
    "reconstructed": false,
    "fwd": {}
   }
