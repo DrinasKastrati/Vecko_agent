@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-18T12:13:01.634Z",
+ "generatedAt": "2026-09-18T13:26:13.731Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 607,
-  "measurable": 607,
+  "decisions": 613,
+  "measurable": 613,
   "missing": 0,
-  "pending": 123
+  "pending": 129
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -11128,6 +11128,66 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "HPE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "IT-infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "TSM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Teknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-18",
+   "ticker": "XOM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
    "reconstructed": false,
    "fwd": {}
   }
