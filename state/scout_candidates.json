@@ -620,6 +620,43 @@
       "decidedBy": "reports/us_daily/us-daglig-260917.md",
       "decidedAt": "2026-09-17",
       "decisionReason": "Sparr a: obekraftad katalysator - bevakas. SK hynix Newsroom 2026-09-16 anger uttryckligen att inga planer ar bekraftade; Reuters-uppgiften ar explorativa samtal."
+    },
+    {
+      "id": "260918-HPE",
+      "date": "2026-09-18",
+      "ticker": "HPE",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-09-02",
+      "confirmed": true,
+      "thesis": "Q3 FY26 2026-09-02: intakt 12,213 mdr USD (+34 pct) vs 11,892 vantat, non-GAAP EPS 1,11 vs 0,93, FCF-rekord 958 MUSD, hojd FY26- och FY27-guide, rekordorderstock. Samma dag 3,5 mdr USD inferensavtal + utvidgat Oracle-natverksavtal. Bear: saknas i prices.json, grind 2 omatbar.",
+      "sourceRef": "HPE investor relations 2026-09-02 (HPE reports fiscal 2026 third quarter results); HPE Newsroom 2026-09-02 (Oracle networking collaboration); MarketBeat 2026-09-17 (+9,2 pct). Kurs ej verifierbar: HPE saknar rad i state/prices.json (tickerCount 146) och serie i price_history.json.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-09-25",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260918-TSM",
+      "date": "2026-09-18",
+      "ticker": "TSM",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-09-10",
+      "confirmed": true,
+      "thesis": "Augustiintakt NT$514,81 mdr, +53,3 pct a/a och +10,1 pct mot juli - hogsta nagonsin, fjarde raka tillvaxtmanaden. Hel EMA-stack 430,26 > 422,46 > 419,94 > 374,72, RSI 54,8. Bear: volymkvot 1,32x mot 1,5x, MACD 1,625 under signal 1,736, kursen +0,52 pct sedan katalysatorn.",
+      "sourceRef": "TSMC monthly revenue report 2026-09-10 (pr.tsmc.com / investor.tsmc.com, August 2026 revenue NT$514,81 mdr, +53,3 pct a/a); kurs ur state/prices.json marketTime 2026-09-17T20:00:03Z (Yahoo Finance chart API)",
+      "price": 430.26,
+      "priceAsOf": "2026-09-17T20:00:03.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-25",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }

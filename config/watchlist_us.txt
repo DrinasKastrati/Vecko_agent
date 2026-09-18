@@ -193,3 +193,14 @@ EVCM
 TLX
 # Telix Pharmaceuticals – FDA godkände hjärncancerdiagnostiken Pixclara, 2026-09-14
 # (GlobeNewswire). Bekräftad regulatorisk katalysator som inte gick att prissätta.
+
+# --- Bevakat case (scout 2026-09-18) ---
+# L-2: en bubblare/case ska ha verifierad kurs samma vecka den flaggas. Utan rad har
+# kan monitorn inte larma, ingen villkorad plan kan laggas och retron kan inte
+# utvardera iden i efterhand.
+HPE
+# Hewlett Packard Enterprise - Q3 FY26 2026-09-02: intakt 12,213 mdr USD (+34 % a/a) vs
+# 11,892 vantat, non-GAAP EPS 1,11 vs 0,93, rekord-FCF 958 MUSD, hojd FY26- och
+# FY27-guide, rekordorderstock. Samma dag 3,5 mdr USD inferensavtal med hyperskalar och
+# utvidgat Oracle-natverksavtal (HPE Newsroom 2026-09-02). Case 1 i scout-260918 men
+# saknade rad i prices.json pa flaggningsdagen -> kandidat 260918-HPE med price: null.
