@@ -660,6 +660,44 @@
       "decidedBy": "reports/us_daily/us-daglig-260918.md",
       "decidedAt": "2026-09-18",
       "decisionReason": "Sparr f, grind 2 (punkt 2): MACD-linjen 1,625 under signallinjen 1,736 (inget kors) och volymkvot 1,32x mot 1,5x. Andra ledet grind 3: katalysator 10/9 utanfor femdagarsfonstret."
+    },
+    {
+      "id": "260919-AMAT",
+      "date": "2026-09-19",
+      "ticker": "AMAT",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-09-18",
+      "confirmed": true,
+      "thesis": "5 mdr USD i Indien over ett decennium, annonserat pa SEMICON India 2026 18/9: 140-acre forskningspark, tiofaldig leverantorskedja till 2035, dubblerad FoU. Bear: omvand EMA-stack (444,57 < EMA20 455,29 < EMA50 484,16), MACD -21,590 under signal -21,233, volymkvot 2,34x omatbar (kvartalsforfall).",
+      "sourceRef": "Reuters via Investing.com 2026-09-18; evertiq 2026-09-18; Datacenter Dynamics 2026-09-18 (Applied Materials to invest $5bn in India, SEMICON India 2026); kurs ur state/prices.json marketTime 2026-09-18T20:00:02Z (Yahoo Finance chart API)",
+      "price": 444.57,
+      "priceAsOf": "2026-09-18T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-25",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260919-COIN",
+      "date": "2026-09-19",
+      "ticker": "COIN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "regulatory",
+      "catalystDate": "2026-09-17",
+      "confirmed": true,
+      "thesis": "SEC utfardade Innovation Exemption 17/9: femarigt villkorat undantag for handel i tokeniserade NMS-aktier pa Tokenized Securities Venues. CFTC lamnade samma dag tva kryptoregelverk till OIRA. Bear: undantaget smalt/intaktslost, kurs under EMA200 204,07, MACD 3,769 under signal 4,225, BTC-beta.",
+      "sourceRef": "SEC pressmeddelande 2026-90 2026-09-17 (SEC Issues Innovation Exemption ... Tokenized NMS Stock); CNBC 2026-09-17; CoinDesk 2026-09-17; Bloomberg/The Block 2026-09-18 (CFTC files crypto rules with OIRA); kurs ur state/prices.json marketTime 2026-09-18T20:00:01Z",
+      "price": 194.25,
+      "priceAsOf": "2026-09-18T20:00:01.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-09-25",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
