@@ -204,3 +204,16 @@ HPE
 # FY27-guide, rekordorderstock. Samma dag 3,5 mdr USD inferensavtal med hyperskalar och
 # utvidgat Oracle-natverksavtal (HPE Newsroom 2026-09-02). Case 1 i scout-260918 men
 # saknade rad i prices.json pa flaggningsdagen -> kandidat 260918-HPE med price: null.
+
+# --- Bevakat case (scout 2026-09-20) ---
+# L-2: en bubblare/case ska ha verifierad kurs samma vecka den flaggas. Utan rad här
+# kan monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand.
+CLSK
+# CleanSpark – dotterbolaget CSDC Finance I, LLC prissatte 2026-09-18 21:18 UTC (EFTER
+# stängning) 2,276 mdr USD i 7,875 % senior secured notes med förfall 2031, till 98,500 %
+# av nominellt belopp, stängning väntad 2026-09-25. Likviden finansierar färdigställandet
+# av Sandersville-anläggningen i Georgia, uthyrd 20 år triple-net (175 MW, ~6,6 mdr USD
+# kontrakterad intäkt) till en icke namngiven "high-investment-grade" teknikkoncern.
+# Case 1 i scout-260920; CLSK saknade rad i prices.json på flaggningsdagen och Yahoo-
+# reserven är egress-blockerad -> kandidat 260920-CLSK med price: null.
