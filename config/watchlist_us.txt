@@ -217,3 +217,20 @@ CLSK
 # kontrakterad intäkt) till en icke namngiven "high-investment-grade" teknikkoncern.
 # Case 1 i scout-260920; CLSK saknade rad i prices.json på flaggningsdagen och Yahoo-
 # reserven är egress-blockerad -> kandidat 260920-CLSK med price: null.
+
+# --- Bevakade case (scout 2026-09-21) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. Utan rad här kan
+# monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand. Båda saknade rad i prices.json på flaggningsdagen
+# (tickerCount 147) och noll punkter i price_history.json; Yahoo-reserven och
+# stooq är egress-blockerade (HTTP 000, testat 2026-09-21).
+BE
+# Bloom Energy – tas in i S&P 500 före handelsstart 2026-09-21 och ersätter Molson
+# Coors (TAP); besked från S&P Dow Jones Indices 2026-09-04. Bränsleceller till
+# AI-datacenter (Aligned "Project Phoenix", 2 GW), +150 % under 2026. Case 1 i
+# scout-260921 -> kandidat 260921-BE med price: null.
+ILMN
+# Illumina – återinträder i S&P 500 före handelsstart 2026-09-21 och ersätter
+# The Trade Desk (TTD); ute ur indexet sedan 2024-06-24 (GRAIL-avknoppningen).
+# +57 % under 2026, nära tvåårshögsta. Case 2 i scout-260921 -> kandidat
+# 260921-ILMN med price: null.

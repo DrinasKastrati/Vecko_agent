@@ -716,6 +716,42 @@
       "expiresAt": "2026-09-25",
       "decidedBy": null,
       "decidedAt": null
+    },
+    {
+      "id": "260921-BE",
+      "date": "2026-09-21",
+      "ticker": "BE",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "index",
+      "catalystDate": "2026-09-21",
+      "confirmed": true,
+      "thesis": "Tas in i S&P 500 fore oppning 21/9, ersatter Molson Coors (TAP); besked 4/9. AI-datacenterkraft, +150 % 2026. Bear: indexflodet redan handlat vid stangningen 18/9, kurs ej verifierbar, vardering efter +150 %, 10-aring ~5 %.",
+      "sourceRef": "S&P Dow Jones Indices pressmeddelande 2026-09-04 (Bloom Energy, Illumina, and Everpure Set to Join S&P 500), press.spglobal.com; Bloomberg 2026-09-04; Seeking Alpha 2026-09-04 (websok 2026-09-21). Ikrafttradande fore handelsstart 2026-09-21, sektor industri. Kurs ej verifierbar: BE saknar rad i state/prices.json (tickerCount 147) och har noll punkter i price_history.json; Yahoo-reserven och stooq egress-blockerade (HTTP 000, testat 2026-09-21 05:50 UTC). BE tillagd i config/watchlist_us.txt samma korning per L-2.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-09-28",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "260921-ILMN",
+      "date": "2026-09-21",
+      "ticker": "ILMN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "index",
+      "catalystDate": "2026-09-21",
+      "confirmed": true,
+      "thesis": "Aterintrader i S&P 500 fore oppning 21/9, ersatter Trade Desk (TTD); ute ur indexet sedan 2024-06-24 (GRAIL-avknoppningen), +57 % 2026. Bear: indexflodet redan handlat 18/9, kurs ej verifierbar, tvaarshogsta, forskningsanslag rantekansliga.",
+      "sourceRef": "S&P Dow Jones Indices pressmeddelande 2026-09-04, press.spglobal.com; Bloomberg 2026-09-04; Seeking Alpha 2026-09-04 (The Trade Desk to leave S&P 500 as Bloom Energy, Everpure, Illumina join index) (websok 2026-09-21). Ikrafttradande fore handelsstart 2026-09-21. Kurs ej verifierbar: ILMN saknar rad i state/prices.json (tickerCount 147) och har noll punkter i price_history.json; reservkallorna egress-blockerade (HTTP 000, testat 2026-09-21). ILMN tillagd i config/watchlist_us.txt samma korning per L-2.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-09-28",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
