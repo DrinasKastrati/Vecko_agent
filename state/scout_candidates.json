@@ -710,12 +710,13 @@
       "confirmed": true,
       "thesis": "CSDC Finance I prissatte 18/9 21:18 UTC (efter stangning) 2,276 mdr USD 7,875 % senior secured notes 2031 till 98,500 - finansierar Sandersville, uthyrt 20 ar triple-net 175 MW, ~6,6 mdr USD. Bear: kurs ej verifierbar, ranta 7,875 %, forsta datahall dec 2027.",
       "sourceRef": "PR Newswire 2026-09-18T21:18Z (CleanSpark, Inc. Announces Pricing of $2.276 Billion of Senior Secured Notes) + 8-K CLEANSPARK, INC. CIK 0000827876 samma tidsstampel, bada i state/news_feed.json; villkor verifierade via Investing.com/newsBTC/Unite.AI (websok 2026-09-20). Kurs ej verifierbar: CLSK saknar rad i state/prices.json (tickerCount 147) och serie i price_history.json; Yahoo-reserven egress-blockerad (HTTP 403, testat 2026-09-20).",
-      "price": null,
-      "priceAsOf": null,
+      "price": 15.065,
+      "priceAsOf": "2026-09-21T10:37:30.000Z",
       "status": "new",
       "expiresAt": "2026-09-25",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     },
     {
       "id": "260921-BE",
