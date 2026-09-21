@@ -11,15 +11,12 @@ XACT-OMXS30.ST
 # finnas i prices.json eftersom sleeven redovisas som ett innehav.
 
 # --- Aktiva bevakningar (bubblare inför kommande rotation) ---
-SF.ST
 HNSA.ST
 SCA-B.ST
 NOKIA.HE
 # Bubblare v32 (veckorapport-260803) – tillagda enligt L-2 så att prices.json får en
 # verifierad kurs till nästa rotation. Ingen av dem fanns i prices.json 2026-08-03 och
 # reservkällorna (Yahoo/Avanza/stooq) är 403-spärrade från routinens körmiljö.
-ASSA-B.ST
-BETS-B.ST
 SUBC.OL
 KOG.OL
 # Kongsberg – bubblare v32 med verifierad kurs redan 2026-08-03. Tillagd 2026-08-07 (LÄGE B)
@@ -44,19 +41,9 @@ NOVO-B.CO
 ZEAL.CO
 DFDS.CO
 # Zealand Pharma (Q2 13/8) och DFDS (Q2 14/8) – namngivna i veckans radar enligt L-1.
-CTY1S.HE
-# Citycon – G Citys ovillkorade kontantbud, MFN 2026-08-04.
-# CTM.ST BORTTAGEN 2026-09-14 (v38, punkt 6): varken innehav, pending, bubblare eller namnd i
-# nagon rapport sedan 2026-08-25 (18 rapporter, 14 handelsdagar). Ligger kvar i
-# config/universe_nordic_movers.txt och forblir darmed rangordningsbar i punkt g1.
-G5EN.ST
 NESTE.HE
 # Tre rader ur state/movers.json som saknade verifierad kurs och darfor foll pa grind 1.
 BOOZT.ST
-HEXA-B.ST
-# Boozt (Q2-rapport 14/8) och Hexagon – bada hade verifierad kurs via senaste veckorapportens
-# case-lista, men den kopplingen bryts nar v33-rapporten ersatter v32:an. Samma skal som KOG.OL
-# tillfordes 2026-08-07.
 
 # Bruttolistan v34 (veckorapport-260817), tillagda 2026-08-17 enligt punkt 6b: varje ticker som
 # fatt en rad i state/decisions.json MASTE hamtas av prices.yml, annars backfillas den aldrig i
@@ -65,7 +52,6 @@ HEXA-B.ST
 RAP1V.HE
 # Rapala VMC – positiv vinstvarning 2026-08-14 (MFN/GlobeNewswire), helar 12–14 MEUR mot 8,4
 # MEUR 2025. Fonstrets starkaste nordiska katalysator och den ENDA som foll pa enbart grind 1.
-PHO.OL
 NAPA.OL
 # NHY.OL BORTTAGEN 2026-09-14 (v38, punkt 6): samma skal som CTM.ST ovan. Ligger kvar i
 # config/universe_nordic_movers.txt.
@@ -227,12 +213,6 @@ HSHP.OL
 # EQNR.OL
 
 # --- Analys-köade tickers (auto) ---
-OSSD.ST
-# OssDsign – analyserad 2026-08-03. Q2-rapport 2026-08-18 är den avgörande mätpunkten;
-# utan verifierad kurs i prices.json går analysen inte att följa upp efter rapporten.
-# SAAB.ST fanns här men EXISTERAR INTE på Yahoo (bolaget handlas som SAAB-B.ST) och stod för
-# hela "1 av 38 misslyckade" i prices.json. Borttagen 2026-08-02. Analyskön skriver in tickers
-# ordagrant som de köats – kontrollera klassbeteckningen innan en ny rad läggs till här.
 
 # Bruttolistan v37 (veckorapport-260907), tillagda 2026-09-07 enligt punkt 6b: varje ticker som
 # fatt en rad i state/decisions.json MASTE hamtas av prices.yml, annars backfillas den aldrig i
@@ -334,3 +314,13 @@ CLAS-B.ST
 COLO-B.CO
 # Coloplast - -6,77 pct pa veckan, mover enligt movers.json (weekPct -10,30).
 
+# --- Tillagda v39-rotationen 2026-09-21 (punkt 6b: beslut loggat, maste prisbevakas) ---
+SCST.ST
+# Scandi Standard - fulltecknad foretradesemission (mfn 2026-09-16), veckans fjarde
+# storsta rorelse (+8,37 pct) av 145 rangordnade. Foll pa grind 1: ligger i
+# universe_nordic_movers.txt men nas bara av den breda hamtningen, som inte ar
+# dygnets sista korning. Se atgardspunkt 2 i veckorapport-260921.
+GMAB.CO
+# Genmab - veckans tredje storsta rorelse (+8,63 pct). Samma grind 1-orsak som SCST.ST.
+AZN.ST
+# AstraZeneca - veckans tionde storsta rorelse (+5,72 pct). Samma grind 1-orsak.
