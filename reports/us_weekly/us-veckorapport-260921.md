@@ -80,6 +80,13 @@ Punkt 0 i NIVÅER & OMSÄTTNING är mätt: det mekaniska skelettet ger **+55,7 %
 
 ---
 
+## Beslut om det befintliga innehavet
+
+### Indexsleeve (SPY) – BEHÅLL, 100 % oförändrat
+**Kurs:** 761,69 USD (`state/prices.json`, source "Yahoo Finance (chart API)", marketTime **2026-09-18T20:00:00Z**), dagsintervall 757,971–762,00, dagsrörelse **−0,12 %** mot `previousClose` 762,60. Mot entry **773,26** står sleeven **−1,50 %**.
+**Motivering:** Sleeven har varken stop-loss eller målkurs och säljs aldrig på nedgång – det är hela konstruktionen, och den prövas därför inte mot några nivåer. Veckans rörelse **−0,34 %** (764,29 → 761,69 på daterade stängningar 11/9 → 18/9) mot `^GSPC` −0,08 % är ETF-spårning och utdelningstiming, inte ett urvalsresultat. Ingen av de 17 bruttokandidaterna passerade samtliga fem grindar, så inget kapital lämnar sleeven denna vecka; vikten står kvar på **100 %** och de fyra aktieplatserna förblir tomma.
+**Att sleeven är full är inte ett fel som ska åtgärdas.** Punkt 0c är mätt: med sleeven korrekt modellerad går samma skelett från +30,8 % till **+42,1 %** – elva procentenheter av "avkastningen" låg hela tiden i det oallokerade kapitalet. Att parkera i SPY när inget case håller måttet är en aktiv och lönsam handling, och punkt 3 i URVAL AV TOPP 4 förbjuder uttryckligen att ett case tvingas fram för att fylla en plats.
+
 ## Bubblare (watchlist inför nästa vecka)
 1. **BE** – 265,63 USD (marketTime 2026-09-18T20:00:03Z). Bäst takhöjd i hela materialet (30,2 % till 250-dagarshögsta) med hel EMA-stack och MACD-histogram +3,459. Blir prövbar om kursen håller sig över EMA20 **248,87** och en **icke-mekanisk** session ger volymkvot ≥ 1,5× – alltså tidigast från och med 22/9, när förfallo- och ombalanseringsvolymen är ute ur 20-dagarssnittets sista punkt. Observera att indexkatalysatorn i sig är förbrukad; det som återstår är AI-krafttemat på egna meriter.
 2. **ILMN** – 239,62 USD (marketTime 2026-09-18T20:00:01Z). Den enda som passerar hela grind 2. Blir köpbar först när kursen **bryter upp genom 245,18** och bygger utrymme, så att ett mål på 8–12 % får en chartreferens; i dag finns det inte i 250-dagarsserien.
