@@ -1,17 +1,20 @@
 {
- "generatedAt": "2026-09-21T12:40:47.317Z",
+ "generatedAt": "2026-09-21T13:32:41.590Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 628,
-  "measurable": 628,
-  "missing": 0,
-  "pending": 111
+  "decisions": 642,
+  "measurable": 640,
+  "missing": 2,
+  "pending": 123
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "AMRX",
+  "SPXC"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -11765,6 +11768,148 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "CLSK",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kryptoinfrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "AMRX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "SPXC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industri",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "AMAT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledarutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "COIN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Kryptoborsen",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "TSM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "HPE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "IT-infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "INTC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Internet/media",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "XOM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-21",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
    "reconstructed": false,
    "fwd": {}
   }
