@@ -675,10 +675,11 @@
       "price": 444.57,
       "priceAsOf": "2026-09-18T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-25",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-260921.md",
+      "decidedAt": "2026-09-21",
+      "decisionReason": "Sparr f, grind 2: RSI 43,8, MACD-linjen -21,590 under signal -21,233, kursen under EMA20 455,29 och EMA50 484,16 (omvand stack). Volymkvot 1,14x den 17/9. Katalysatorn bekraftad - tekniken faller."
     },
     {
       "id": "260919-COIN",
@@ -694,10 +695,11 @@
       "price": 194.25,
       "priceAsOf": "2026-09-18T20:00:01.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-25",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-260921.md",
+      "decidedAt": "2026-09-21",
+      "decisionReason": "Sparr f, grind 2: kursen 194,25 under EMA200 204,07, MACD-linjen 3,769 under signal 4,225, volymkvot 0,89x den 17/9. SEC-undantaget 17/9 ar bekraftat men inget delkriterium i grind 2 ar uppfyllt."
     },
     {
       "id": "260920-CLSK",
@@ -712,11 +714,12 @@
       "sourceRef": "PR Newswire 2026-09-18T21:18Z (CleanSpark, Inc. Announces Pricing of $2.276 Billion of Senior Secured Notes) + 8-K CLEANSPARK, INC. CIK 0000827876 samma tidsstampel, bada i state/news_feed.json; villkor verifierade via Investing.com/newsBTC/Unite.AI (websok 2026-09-20). Kurs ej verifierbar: CLSK saknar rad i state/prices.json (tickerCount 147) och serie i price_history.json; Yahoo-reserven egress-blockerad (HTTP 403, testat 2026-09-20).",
       "price": 15.065,
       "priceAsOf": "2026-09-21T10:37:30.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-25",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_weekly/us-veckorapport-260921.md",
+      "decidedAt": "2026-09-21",
+      "priceSession": "pre",
+      "decisionReason": "Sparr f, grind 2: volymkvot 0,99x den 17/9 mot 1,5x och inverterad EMA-stack (20: 12,91 < 50: 13,07 < 200: 13,16). Grind 1 PASSERAD via forborskurs 15,065 (10:37Z), efter katalysatorn 18/9 21:18Z."
     },
     {
       "id": "260921-BE",
@@ -731,10 +734,11 @@
       "sourceRef": "S&P Dow Jones Indices pressmeddelande 2026-09-04 (Bloom Energy, Illumina, and Everpure Set to Join S&P 500), press.spglobal.com; Bloomberg 2026-09-04; Seeking Alpha 2026-09-04 (websok 2026-09-21). Ikrafttradande fore handelsstart 2026-09-21, sektor industri. Kurs ej verifierbar: BE saknar rad i state/prices.json (tickerCount 147) och har noll punkter i price_history.json; Yahoo-reserven och stooq egress-blockerade (HTTP 000, testat 2026-09-21 05:50 UTC). BE tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-28",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-260921.md",
+      "decidedAt": "2026-09-21",
+      "decisionReason": "Sparr b: enda verifierade kursen 265,63 (18/9 20:00Z) ligger fore catalystDate 2026-09-21 - pre-event-kurs pa post-event-katalysator. L-4 VILANDE. Foll 5,39 pct pa 5,55x volym pa indexflodesdagen."
     },
     {
       "id": "260921-ILMN",
@@ -749,10 +753,11 @@
       "sourceRef": "S&P Dow Jones Indices pressmeddelande 2026-09-04, press.spglobal.com; Bloomberg 2026-09-04; Seeking Alpha 2026-09-04 (The Trade Desk to leave S&P 500 as Bloom Energy, Everpure, Illumina join index) (websok 2026-09-21). Ikrafttradande fore handelsstart 2026-09-21. Kurs ej verifierbar: ILMN saknar rad i state/prices.json (tickerCount 147) och har noll punkter i price_history.json; reservkallorna egress-blockerade (HTTP 000, testat 2026-09-21). ILMN tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-28",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-260921.md",
+      "decidedAt": "2026-09-21",
+      "decisionReason": "Sparr b: enda kursen 239,62 (18/9 20:00Z) ligger fore catalystDate 2026-09-21. L-4 VILANDE. Grind 2 passerar helt, men grind 4 faller: mal +8 pct = 258,79 ar 5,6 pct over 250-hogsta 245,18."
     }
   ]
 }

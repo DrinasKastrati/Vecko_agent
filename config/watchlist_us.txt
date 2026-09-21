@@ -234,3 +234,17 @@ ILMN
 # The Trade Desk (TTD); ute ur indexet sedan 2024-06-24 (GRAIL-avknoppningen).
 # +57 % under 2026, nära tvåårshögsta. Case 2 i scout-260921 -> kandidat
 # 260921-ILMN med price: null.
+
+# --- Nyhetsdrivna kandidater v39 (punkt 6b: varje symbol med ett beslut i ---
+# decisions.json ska ga att prissatta, annars blir raden omatbar for alltid.
+# Samtliga tre foll pa grind 1 (saknades i prices.json) i us-veckorapport-260921
+# och loggades med price: null. Gar FORE taket pa 25 symboler.
+AGNC
+# AGNC Investment – tas in i S&P MidCap 400 (PR Newswire 2026-09-16). Bekraftad
+# index-katalysator som inte gick att prissatta pa beslutsdagen.
+AMRX
+# Amneal Pharmaceuticals – FDA godkande och lanserade Lanreotide-injektion
+# 2026-09-18 (GlobeNewswire, i state/news_feed.json). Bekraftad regulatorisk
+# katalysator utan rad i prices.json och utan serie i price_history.json.
+SPXC
+# SPX Technologies – forvarv av FIS Water 2026-09-15 (GlobeNewswire, i news_feed.json).
