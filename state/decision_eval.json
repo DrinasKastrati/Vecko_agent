@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-22T12:34:44.477Z",
+ "generatedAt": "2026-09-22T13:28:20.975Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 648,
-  "measurable": 648,
+  "decisions": 654,
+  "measurable": 654,
   "missing": 0,
-  "pending": 73
+  "pending": 79
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -12437,6 +12437,66 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "INTC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "WBD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Media",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "MSTR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Finans/kryptoproxy",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Internet/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-22",
+   "ticker": "TSM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
    "reconstructed": false,
    "fwd": {}
   }
