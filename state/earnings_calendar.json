@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-21T10:38:46.274Z",
+  "generatedAt": "2026-09-22T00:04:31.950Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 128,
-    "resolved": 120,
+    "requested": 131,
+    "resolved": 123,
     "retained": 0,
     "failed": 0,
     "notApplicable": 2,
@@ -18,11 +18,11 @@
       "symbol": "MU",
       "date": "2026-09-30",
       "isEstimate": false,
-      "epsConsensus": 31.35415,
+      "epsConsensus": 31.47183,
       "epsLow": 28.04,
       "epsHigh": 37.44,
-      "revenueConsensus": 50972182430,
-      "tradingDaysAway": 7
+      "revenueConsensus": 51098691500,
+      "tradingDaysAway": 6
     }
   ],
   "all": [
@@ -102,10 +102,10 @@
       "symbol": "MU",
       "date": "2026-09-30",
       "isEstimate": false,
-      "epsConsensus": 31.35415,
+      "epsConsensus": 31.47183,
       "epsLow": 28.04,
       "epsHigh": 37.44,
-      "revenueConsensus": 50972182430
+      "revenueConsensus": 51098691500
     },
     {
       "symbol": "JPM",
@@ -144,6 +144,15 @@
       "revenueConsensus": 1454935426950
     },
     {
+      "symbol": "AGNC",
+      "date": "2026-10-19",
+      "isEstimate": false,
+      "epsConsensus": 0.38148,
+      "epsLow": 0.35885,
+      "epsHigh": 0.405,
+      "revenueConsensus": 442681670
+    },
+    {
       "symbol": "SCST.ST",
       "date": "2026-10-20",
       "isEstimate": false,
@@ -165,10 +174,10 @@
       "symbol": "MIPS.ST",
       "date": "2026-10-21",
       "isEstimate": false,
-      "epsConsensus": 2.12447,
-      "epsLow": 1,
+      "epsConsensus": 2.22447,
+      "epsLow": 1.3,
       "epsHigh": 2.99341,
-      "revenueConsensus": 217356060
+      "revenueConsensus": 217606060
     },
     {
       "symbol": "TSLA",
@@ -201,10 +210,10 @@
       "symbol": "NOKIA.HE",
       "date": "2026-10-22",
       "isEstimate": false,
-      "epsConsensus": 0.06309,
+      "epsConsensus": 0.06386,
       "epsLow": 0.05,
       "epsHigh": 0.08165,
-      "revenueConsensus": 5054975980
+      "revenueConsensus": 5053613710
     },
     {
       "symbol": "SAGA-B.ST",
@@ -327,8 +336,8 @@
       "symbol": "BA",
       "date": "2026-10-28",
       "isEstimate": false,
-      "epsConsensus": -0.144,
-      "epsLow": -0.5,
+      "epsConsensus": -0.1465,
+      "epsLow": -0.55,
       "epsHigh": 0.23,
       "revenueConsensus": 25020744650
     },
@@ -387,6 +396,15 @@
       "revenueConsensus": 90659206720
     },
     {
+      "symbol": "SPXC",
+      "date": "2026-10-28",
+      "isEstimate": true,
+      "epsConsensus": 2.18618,
+      "epsLow": 1.91,
+      "epsHigh": 2.33,
+      "revenueConsensus": 708540330
+    },
+    {
       "symbol": "UPM.HE",
       "date": "2026-10-28",
       "isEstimate": false,
@@ -403,6 +421,15 @@
       "epsLow": 1.93,
       "epsHigh": 2.07,
       "revenueConsensus": 113624521680
+    },
+    {
+      "symbol": "AMRX",
+      "date": "2026-10-29",
+      "isEstimate": true,
+      "epsConsensus": 0.23132,
+      "epsLow": 0.202,
+      "epsHigh": 0.28,
+      "revenueConsensus": 812859270
     },
     {
       "symbol": "AMZN",
@@ -465,16 +492,16 @@
       "epsConsensus": 12.63,
       "epsLow": 12.63,
       "epsHigh": 12.63,
-      "revenueConsensus": 129356470
+      "revenueConsensus": 129529410
     },
     {
       "symbol": "NESTE.HE",
       "date": "2026-10-29",
       "isEstimate": false,
-      "epsConsensus": 0.80324,
+      "epsConsensus": 0.82624,
       "epsLow": 0.59,
       "epsHigh": 1.12,
-      "revenueConsensus": 5192789550
+      "revenueConsensus": 5254289550
     },
     {
       "symbol": "NET",
@@ -678,19 +705,19 @@
       "symbol": "NOVO-B.CO",
       "date": "2026-11-04",
       "isEstimate": false,
-      "epsConsensus": 5.11481,
+      "epsConsensus": 5.00714,
       "epsLow": 4.86429,
-      "epsHigh": 5.33013,
-      "revenueConsensus": 72872509450
+      "epsHigh": 5.15,
+      "revenueConsensus": 72890980450
     },
     {
       "symbol": "NVO",
       "date": "2026-11-04",
       "isEstimate": false,
-      "epsConsensus": 5.10867,
+      "epsConsensus": 5.11267,
       "epsLow": 4.68,
       "epsHigh": 5.33,
-      "revenueConsensus": 72872509450
+      "revenueConsensus": 72890980450
     },
     {
       "symbol": "ODF.OL",
@@ -753,7 +780,7 @@
       "epsConsensus": 27.65333,
       "epsLow": 19.884,
       "epsHigh": 39.657,
-      "revenueConsensus": 7885069820
+      "revenueConsensus": 7894680730
     },
     {
       "symbol": "HNSA.ST",
@@ -813,10 +840,10 @@
       "symbol": "SINCH.ST",
       "date": "2026-11-05",
       "isEstimate": false,
-      "epsConsensus": 0.87,
+      "epsConsensus": 0.86,
       "epsLow": 0.79,
-      "epsHigh": 0.95,
-      "revenueConsensus": 6954895500
+      "epsHigh": 0.93,
+      "revenueConsensus": 6966395500
     },
     {
       "symbol": "SKA-B.ST",
