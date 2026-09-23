@@ -865,10 +865,10 @@
       "date": "2026-09-23",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-30",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260923.md",
+      "decidedAt": "2026-09-23",
       "id": "260923-BIIB",
       "ticker": "BIIB",
       "catalystType": "other",
@@ -878,16 +878,17 @@
       "sourceRef": "GlobeNewswire + mfn 2026-09-17T20:15Z, bada i state/news_feed.json (Phase 3 Pediatric EMPAVELI Data Published in Clinical Journal of the American Society of Nephrology); Biogen investor relations 2026-09-17. Publiceringen skedde efter US-stangning; kursen 22/9 ar post-event. Kurs ur state/prices.json marketTime 2026-09-22T20:00:01Z (Yahoo Finance chart API). Wolfe Outperform/300 och RBC 227 raknas som stodsignal, inte katalysator.",
       "price": 225.36,
       "priceAsOf": "2026-09-22T20:00:01.000Z",
-      "priceSession": "regular"
+      "priceSession": "regular",
+      "decisionReason": "Sparr f, grind 4: kursen 225,36 AR 250d-hogsta; malbandet 10-14 pct (other) = 247,90-256,91 saknar chartreferens, aven +8 pct = 243,39. Andra ledet grind 2: volymkvot 1,36x mot 1,5x."
     },
     {
       "date": "2026-09-23",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-30",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260923.md",
+      "decidedAt": "2026-09-23",
       "id": "260923-TLX",
       "ticker": "TLX",
       "catalystType": "ma_rumor",
@@ -897,16 +898,17 @@
       "sourceRef": "Telix Form 6-K till SEC 2026-09-21 (CIK 0002007191, a20260921telixitmasxvfin.htm); GlobeNewswire 2026-09-21 (Telix and ITM Join Forces to Create a Radiopharmaceutical Powerhouse); Bloomberg 2026-09-20; STAT News 2026-09-20. Bakgrund: ITM fick CRL fran FDA 2026-08-07 for ITM-11 pa CMC-skal, ej kliniska data. Kurs ur state/prices.json marketTime 2026-09-22T20:00:00Z, reguljar stangning efter beskedet. OBS: affaren ar undertecknad - ma_rumor ar enum-hinken for M&A, confirmed:true bar skillnaden.",
       "price": 11.95,
       "priceAsOf": "2026-09-22T20:00:00.000Z",
-      "priceSession": "regular"
+      "priceSession": "regular",
+      "decisionReason": "Sparr f, grind 2: likviditetsgolvet, 20d-snitt 4,1 MUSD/dag mot kravet 20 (\"annars stryks\"). Andra ledet: MACD-linjen 0,193 under signal 0,214. Tredje: mal +10 pct = 13,15 over 250d-hogsta 12,83."
     },
     {
       "date": "2026-09-23",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-09-30",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260923.md",
+      "decidedAt": "2026-09-23",
       "id": "260923-MU",
       "ticker": "MU",
       "catalystType": "earnings",
@@ -916,7 +918,8 @@
       "sourceRef": "state/earnings_calendar.json generatedAt 2026-09-22T00:04:31Z: MU 2026-09-30, isEstimate false, epsConsensus 31,47, revenueConsensus 51,10 mdr USD, tradingDaysAway 6. Kurs ur state/prices.json marketTime 2026-09-22T20:00:01Z (Yahoo Finance chart API). Katalysatorn har INTE intraffat - confirmed:false per promptens punkt 7 och punkt 8.",
       "price": 1096.16,
       "priceAsOf": "2026-09-22T20:00:01.000Z",
-      "priceSession": "regular"
+      "priceSession": "regular",
+      "decisionReason": "Sparr a: obekraftad katalysator - bevakas. Rapport 2026-09-30 (isEstimate false, 5 handelsdagar) har inte intraffat. Punkt 2e: PRE_ALL/PRE_MOM underkanda i samtliga fyra backtestkorningar."
     }
   ]
 }

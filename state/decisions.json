@@ -17135,6 +17135,112 @@
       "sector": "Dataspel",
       "rsi": 71.7,
       "reason": "Punkt 4a provad: grind 3 kvar trots +4,84 pct till dagshogsta. Ingen daterad bolagshandelse (0 av 1262 poster, websok utan traff); punkt g1 forbjuder att jaga rorelsen. Volymkvot 0,69x."
+    },
+    {
+      "date": "2026-09-23",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 773.38,
+      "currency": "USD",
+      "weight": 1,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 58.3,
+      "reason": "Sleeven saljs aldrig pa nedgang. 773,38 (22/9 20:00Z), -0,02 pct pa dagen, +0,02 pct mot entry 773,26. Regim PA: ^GSPC +7,96 pct over MA200 7192,28."
+    },
+    {
+      "date": "2026-09-23",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-2"
+      ],
+      "ticker": "MU",
+      "action": "AVVAKTA",
+      "price": 1096.16,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halvledare",
+      "rsi": 66.1,
+      "reason": "Sparr a: obekraftad katalysator. Rapport 2026-09-30 (isEstimate false, 5 handelsdagar) har inte intraffat. Punkt 2e: PRE_ALL/PRE_MOM underkanda i fyra av fyra korningar."
+    },
+    {
+      "date": "2026-09-23",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-2"
+      ],
+      "ticker": "BIIB",
+      "action": "AVVAKTA",
+      "price": 225.36,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 61.4,
+      "reason": "Sparr f, grind 4: kursen 225,36 AR 250d-hogsta, malbandet 10-14 pct = 247,90-256,91 saknar chartreferens. Andra ledet grind 2: volymkvot 1,36x mot 1,5x."
+    },
+    {
+      "date": "2026-09-23",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-2",
+        "L-6"
+      ],
+      "ticker": "TLX",
+      "action": "AVVAKTA",
+      "price": 11.95,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "ma_rumor",
+      "sector": "Radiofarmaka",
+      "rsi": 51.7,
+      "reason": "Sparr f, grind 2: likviditetsgolvet, 4,1 MUSD/dag mot kravet 20 (\"annars stryks\", punkt 2). Andra ledet: MACD-linjen 0,193 under signal 0,214. ITM-affaren undertecknad 21/9."
+    },
+    {
+      "date": "2026-09-23",
+      "book": "us",
+      "mode": "B",
+      "lessonIds": [
+        "L-2"
+      ],
+      "ticker": "ILMN",
+      "action": "AVVAKTA",
+      "price": 247.46,
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Life science",
+      "rsi": 68.6,
+      "reason": "Punkt 4b provad: villkor 1 ej uppfyllt - veckorapporten angav grind 4, inte saknad kurs. Motstandet 245,18 brots (247,46) men nya kursen AR 250d-hogsta. Volymkvot 0,72x."
     }
   ]
 }
