@@ -17373,6 +17373,139 @@
       "sector": "Dataspel",
       "rsi": 72.1,
       "reason": "Punkt 4a provad: grind 2, volymkvot 0,46x mot 1,5x. Grind 3: kreditfacilitet 2000 MSEK daterad 22/9 hittad via websok men EJ lankverifierbar (egress 403), far ej bara beslut."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 767.81,
+      "currency": "USD",
+      "weight": 1,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 53,
+      "reason": "Sleeven saljs aldrig pa nedgang. 767,81 (23/9 20:00Z), -0,72 pct pa dagen, -0,70 pct mot entry 773,26. Regim PA: ^GSPC +7,08 pct over MA200 7196,52."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-2",
+        "L-5",
+        "L-6"
+      ],
+      "ticker": "WOR",
+      "action": "AVVAKTA",
+      "price": 59.7,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "earnings",
+      "sector": "Industri",
+      "rsi": 54.9,
+      "reason": "Grind 4: mal 68,06-70,45 (earnings 14-18 pct) och kostnadsgolvet 64,48 over 250d-hogsta 62,49. Grind 1, 2, 3, 5 passerar helt. 12m-hogsta 67,065 intradag avvisat, stangde +1,29 pct."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-2",
+        "L-4",
+        "L-6"
+      ],
+      "ticker": "AMRX",
+      "action": "AVVAKTA",
+      "price": 19.33,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "regulatory",
+      "sector": "Lakemedel",
+      "rsi": 61.2,
+      "reason": "L-4 uppfylld 21/9 -> 24/9: sparr b upphord, 19,33 reguljar 23/9 ar post-event. Faller pa grind 4 - mal 22,04 och golvet 20,88 over 250d-hogsta 20,16. Grind 2: MACD-hist faller."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-2",
+        "L-5"
+      ],
+      "ticker": "CBRL",
+      "action": "AVVAKTA",
+      "price": 47.52,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "earnings",
+      "sector": "Restaurang",
+      "rsi": 40.9,
+      "reason": "Grind 2: kursen under EMA20 49,83 och EMA50 51,00, MACD-linjen -2,719 under signal -2,053, RSI 40,9. Grind 4 hade passerat (mal 54,17 mot 250d-hogsta 59,04). Serien saknar 22/9."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-2",
+        "L-4"
+      ],
+      "ticker": "AGNC",
+      "action": "AVVAKTA",
+      "price": 9.91,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "index",
+      "sector": "Bolan-REIT",
+      "rsi": 32.3,
+      "reason": "L-4 uppfylld: sparr b upphord (9,91 reguljar 23/9). Grind 2: RSI 32,3, inverterad EMA-stack, MACD under signal, volymkvot 0,90x. Grind 5: taket 7,82 pct vid 15 dagar < 10 pct."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 614.61,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 71,
+      "reason": "Punkt 4b provad: villkor 1 ej uppfyllt - veckorapporten angav grind 4 och 3, inte saknad kurs. Niva 580,91 brots men 250d-hogsta flyttade till 623,77, sa mal 663,78 ar utanfor serien."
     }
   ]
 }

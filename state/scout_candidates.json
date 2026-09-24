@@ -925,10 +925,10 @@
       "date": "2026-09-24",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-01",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260924.md",
+      "decidedAt": "2026-09-24",
       "id": "260924-WOR",
       "ticker": "WOR",
       "catalystType": "earnings",
@@ -936,18 +936,19 @@
       "confirmed": true,
       "thesis": "Q1 FY2027 2026-09-22 AMC: intakt 343,9 MUSD +13 pct, EPS 0,87 mot 0,70, just. EBITDA +74,0 MUSD +10 pct. Efterfragan pa kylprodukter till datacenter. Aktien +~16 pct 23/9, fonstrets storsta rapportreaktion. KURS EJ VERIFIERAD: saknar rad i prices.json, Yahoo egress-blockerad.",
       "sourceRef": "state/news_feed.json, globenewswire 2026-09-22T20:10Z: Worthington Enterprises Reports First Quarter Fiscal 2027 Results. GlobeNewswire 2026-09-22 direkt. Reaktion +~16 pct enligt CNBC Stocks making the biggest moves midday 2026-09-23 (nyhetskalla, EJ anvand som kurs). Tillagd i config/watchlist_us.txt per L-2.",
-      "price": 59.4,
-      "priceAsOf": "2026-09-23T23:24:00.000Z",
-      "priceSession": "pre"
+      "price": 59.7,
+      "priceAsOf": "2026-09-23T20:00:03.000Z",
+      "priceSession": "regular",
+      "decisionReason": "Grind 4: mal 68,06-70,45 (earnings 14-18 pct) och kostnadsgolvet 64,48 ligger over 250d-hogsta 62,49. Grind 1, 2, 3 och 5 passerar helt."
     },
     {
       "date": "2026-09-24",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-01",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260924.md",
+      "decidedAt": "2026-09-24",
       "id": "260924-AMRX",
       "ticker": "AMRX",
       "catalystType": "regulatory",
@@ -957,16 +958,17 @@
       "sourceRef": "Katalysator: state/news_feed.json, globenewswire 2026-09-18 (FDA-godkannande Lanreotide), aven belagd i config/watchlist_us.txt och i state/decisions.json-raden 2026-09-21. Kurs ur state/prices.json marketTime 2026-09-23T20:00:00Z (Yahoo Finance chart API), reguljar stangning strikt efter catalystDate. Teknik ur state/price_history.json, 250 daterade punkter.",
       "price": 19.33,
       "priceAsOf": "2026-09-23T20:00:00.000Z",
-      "priceSession": "regular"
+      "priceSession": "regular",
+      "decisionReason": "Grind 4: mal 22,04-22,81 och kostnadsgolvet 20,88 over 250d-hogsta 20,16. Andra ledet grind 2: MACD-hist faller 0,271 -> 0,262."
     },
     {
       "date": "2026-09-24",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-01",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260924.md",
+      "decidedAt": "2026-09-24",
       "id": "260924-CBRL",
       "ticker": "CBRL",
       "catalystType": "earnings",
@@ -974,18 +976,19 @@
       "confirmed": true,
       "thesis": "Q4 FY2026 2026-09-23 BMO: just. EPS 0,99 USD mot konsensus ~0,26, intakt 849,3 MUSD (-2,2 pct) mot ~845, just. EBITDA 62,1 mot 55,7 MUSD, FY2027-guide hogre EBITDA. Aktien +7,88 pct. KURS EJ VERIFIERAD: saknar rad i prices.json, Yahoo egress-blockerad. Intakten faller.",
       "sourceRef": "PR Newswire 2026-09-23 (Cracker Barrel Reports Fourth Quarter and Full Year Fiscal 2026 Results and Provides Fiscal 2027 Outlook); Cracker Barrel investor relations 2026-09-23; CNBC 2026-09-23; Bloomberg Stock Movers 2026-09-23. Reaktion +7,88 pct ur nyhetskalla, EJ anvand som kurs. Tillagd i config/watchlist_us.txt per L-2.",
-      "price": 46.77,
-      "priceAsOf": "2026-09-24T08:00:09.000Z",
-      "priceSession": "pre"
+      "price": 47.52,
+      "priceAsOf": "2026-09-23T20:00:01.000Z",
+      "priceSession": "regular",
+      "decisionReason": "Grind 2: kursen under EMA20 49,83 och EMA50 51,00, MACD-linjen -2,719 under signal -2,053, RSI 40,9. Grind 4 hade passerat."
     },
     {
       "date": "2026-09-24",
       "book": "us",
       "source": "scout",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-01",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-260924.md",
+      "decidedAt": "2026-09-24",
       "id": "260924-AGNC",
       "ticker": "AGNC",
       "catalystType": "index",
@@ -995,7 +998,8 @@
       "sourceRef": "PR Newswire 2026-09-16 (AGNC Investment Corp. to Join the S&P MidCap 400 Index), ikrafttradande fore oppning 2026-09-21; aven belagd i config/watchlist_us.txt och i state/decisions.json-raden 2026-09-21. Kurs ur state/prices.json marketTime 2026-09-23T20:00:01Z (Yahoo Finance chart API). Teknik ur state/price_history.json, 250 daterade punkter.",
       "price": 9.91,
       "priceAsOf": "2026-09-23T20:00:01.000Z",
-      "priceSession": "regular"
+      "priceSession": "regular",
+      "decisionReason": "Grind 2: RSI 32,3, inverterad EMA-stack, MACD under signal, volymkvot 0,90x. Oberoende grind 5: taket 7,82 pct vid 15 dagar < 10 pct."
     }
   ]
 }
