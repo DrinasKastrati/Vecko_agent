@@ -17241,6 +17241,138 @@
       "sector": "Life science",
       "rsi": 68.6,
       "reason": "Punkt 4b provad: villkor 1 ej uppfyllt - veckorapporten angav grind 4, inte saknad kurs. Motstandet 245,18 brots (247,46) men nya kursen AR 250d-hogsta. Volymkvot 0,72x."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 493.8,
+      "currency": "SEK",
+      "weight": 1,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 55.6,
+      "reason": "Kapitalparkering, saljs aldrig pa nedgang. 493,80 (23/9 15:24Z), -0,74 pct pa dagen, -0,16 pct mot entry 494,60. Ingen omviktning. Regim PA: +6,77 pct over MA200."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "NOKIA.HE",
+      "action": "AVVAKTA",
+      "price": 9.446,
+      "currency": "EUR",
+      "weight": 0,
+      "catalystType": "index",
+      "sector": "Telekomutrustning",
+      "rsi": 55.5,
+      "reason": "Punkt 4a provad: faller nu pa grind 2, fore grind 3. Volymkvot 0,57x mot 1,5x och EMA-stacken bruten (EMA20 9,10 < EMA50 9,22). STOXX-intradet forbrukat 21/9."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "FRO.OL",
+      "action": "AVVAKTA",
+      "price": 449.3,
+      "currency": "NOK",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Tankrederi",
+      "rsi": 52.9,
+      "reason": "Punkt 4a provad: grind 2. Volymkvot 1,21x mot 1,5x och MACD-hist vant negativt, 2,087 -> -0,624, forsta bearish korsningen. -7,44 pct sedan 485,40 den 18/9. Grind 3 kvar."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "NESTE.HE",
+      "action": "AVVAKTA",
+      "price": 35.24,
+      "currency": "EUR",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Fornybar diesel",
+      "rsi": 66.2,
+      "reason": "Punkt 4a provad: grind 2. Volymkvot 1,16x mot kravet 1,5x. Teknik i ovrigt faltets basta - hel EMA-stack, stigande MACD-hist 0,128 -> 0,164. Grind 3 obesvarad, 0 traffar i fonstret."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "EQNR.OL",
+      "action": "AVVAKTA",
+      "price": 406.2,
+      "currency": "NOK",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Energi",
+      "rsi": 52.5,
+      "reason": "Punkt 4a provad: faller pa tva grindar femte veckan. Grind 2: volymkvot 0,71x och MACD-hist fordjupas -2,001 -> -2,230 trots +2,09 pct pa dagen. Grind 3 obesvarad."
+    },
+    {
+      "date": "2026-09-24",
+      "book": "nordic",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4",
+        "L-5"
+      ],
+      "ticker": "EMBRAC-B.ST",
+      "action": "AVVAKTA",
+      "price": 86.42,
+      "currency": "SEK",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Dataspel",
+      "rsi": 72.1,
+      "reason": "Punkt 4a provad: grind 2, volymkvot 0,46x mot 1,5x. Grind 3: kreditfacilitet 2000 MSEK daterad 22/9 hittad via websok men EJ lankverifierbar (egress 403), far ej bara beslut."
     }
   ]
 }
