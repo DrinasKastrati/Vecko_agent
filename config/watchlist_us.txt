@@ -248,3 +248,21 @@ AMRX
 # katalysator utan rad i prices.json och utan serie i price_history.json.
 SPXC
 # SPX Technologies – forvarv av FIS Water 2026-09-15 (GlobeNewswire, i news_feed.json).
+
+# --- Bevakade case (scout 2026-09-24) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. Utan rad här kan
+# monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand. Båda saknade rad i prices.json på flaggningsdagen
+# (tickerCount 175) och noll punkter i price_history.json; Yahoo-reserven är
+# egress-blockerad (CONNECT 403, testat 2026-09-24 05:51 UTC).
+WOR
+# Worthington Enterprises – Q1 FY2027 2026-09-22 AMC: intäkt 343,9 MUSD (+13 %,
+# varav 7 pp organiskt), EPS utspätt 0,87 mot 0,70, justerad EBITDA 74,0 MUSD
+# (+10 %); efterfrågan på kylprodukter till datacenter. Aktien +~16 % 23/9,
+# fönstrets största rapportreaktion (GlobeNewswire 2026-09-22, posten ligger i
+# state/news_feed.json). Case 1 i scout-260924 -> kandidat 260924-WOR, price: null.
+CBRL
+# Cracker Barrel – Q4 FY2026 2026-09-23 BMO: justerad EPS 0,99 USD mot konsensus
+# ~0,26, intäkt 849,3 MUSD (−2,2 % å/å) mot ~845, justerad EBITDA 62,1 mot 55,7
+# MUSD, FY2027-guide med högre justerad EBITDA. Aktien +7,88 % (PR Newswire
+# 2026-09-23). Case 3 i scout-260924 -> kandidat 260924-CBRL, price: null.
