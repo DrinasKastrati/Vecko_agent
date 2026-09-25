@@ -17506,6 +17506,131 @@
       "sector": "Halvledare",
       "rsi": 71,
       "reason": "Punkt 4b provad: villkor 1 ej uppfyllt - veckorapporten angav grind 4 och 3, inte saknad kurs. Niva 580,91 brots men 250d-hogsta flyttade till 623,77, sa mal 663,78 ar utanfor serien."
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 487.85,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -1,37 pct mot entry.",
+      "lessonIds": []
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "NOKIA.HE",
+      "action": "AVVAKTA",
+      "price": 9.07,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Telekomutrustning",
+      "rsi": 49.84,
+      "reason": "Punkt 4a provad. Grind 2: volymkvot 0,57x < 1,5x, EMA-stack bruten (EMA20 9,10 < EMA50 9,21), RSI 49,84 under bandet. Grind 3 obesvarad.",
+      "lessonIds": [
+        "L-3",
+        "L-8"
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "FRO.OL",
+      "action": "AVVAKTA",
+      "price": 461.3,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Tankfart",
+      "rsi": 56.16,
+      "reason": "Punkt 4a provad. Grind 2: volymkvot 1,03x < 1,5x och MACD-histogram fordjupas (-0,624 -> -1,716) trots +2,67 pct. Grind 3 obesvarad.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "NESTE.HE",
+      "action": "AVVAKTA",
+      "price": 35.82,
+      "currency": "EUR",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Fornybart bransle",
+      "rsi": 68.62,
+      "reason": "Punkt 4a provad. Grind 2: volymkvot 0,77x < 1,5x. Tekniken forbattrades (hist +0,164 -> +0,209, hel stack) men grind 3 obesvarad.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "EQNR.OL",
+      "action": "AVVAKTA",
+      "price": 416.3,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Energi",
+      "rsi": 58.4,
+      "reason": "Punkt 4a provad. Grind 2: volymkvot 0,77x < 1,5x och MACD-histogram fortsatt negativt (-1,688). Grind 3 obesvarad tredje veckan.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "EMBRAC-B.ST",
+      "action": "AVVAKTA",
+      "price": 83.72,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Dataspel",
+      "rsi": 62.75,
+      "reason": "Punkt 4a provad. Grind 2: volymkvot 0,53x < 1,5x och MACD-histogram avtar (+0,506 -> +0,280) efter -3,12 pct. Grind 3 obesvarad.",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
