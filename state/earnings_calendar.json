@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-24T09:56:12.700Z",
+  "generatedAt": "2026-09-25T10:09:29.181Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
   "note": "Rapportdatum för kommande rapporter. 'isEstimate: true' = Yahoo GISSAR datumet ur förra årets kadens och det får INTE behandlas som en bekräftad binär händelse. 'upcoming' är de symboler som ska prisbevakas nu; fetch-prices.mjs läser den listan.",
   "counts": {
-    "requested": 133,
-    "resolved": 125,
+    "requested": 134,
+    "resolved": 126,
     "retained": 0,
     "failed": 0,
     "notApplicable": 2,
@@ -22,7 +22,7 @@
       "epsLow": 28.04,
       "epsHigh": 37.44,
       "revenueConsensus": 51199717270,
-      "tradingDaysAway": 4
+      "tradingDaysAway": 3
     }
   ],
   "all": [
@@ -99,13 +99,13 @@
       "revenueConsensus": 118000000
     },
     {
-      "symbol": "CBRL",
-      "date": "2026-09-23",
+      "symbol": "COST",
+      "date": "2026-09-24",
       "isEstimate": false,
-      "epsConsensus": -0.46019,
-      "epsLow": -0.86115,
-      "epsHigh": 0,
-      "revenueConsensus": 820650020
+      "epsConsensus": 6.52396,
+      "epsLow": 6.3,
+      "epsHigh": 6.71126,
+      "revenueConsensus": 94886134450
     },
     {
       "symbol": "MU",
@@ -120,19 +120,19 @@
       "symbol": "JPM",
       "date": "2026-10-13",
       "isEstimate": false,
-      "epsConsensus": 5.89365,
+      "epsConsensus": 5.91435,
       "epsLow": 5.71,
       "epsHigh": 6.26,
-      "revenueConsensus": 50747214570
+      "revenueConsensus": 50847437750
     },
     {
       "symbol": "WFC",
       "date": "2026-10-13",
       "isEstimate": false,
-      "epsConsensus": 1.82234,
+      "epsConsensus": 1.81934,
       "epsLow": 1.71,
       "epsHigh": 1.88,
-      "revenueConsensus": 22354428570
+      "revenueConsensus": 22340285710
     },
     {
       "symbol": "KINV-B.ST",
@@ -192,10 +192,10 @@
       "symbol": "TSLA",
       "date": "2026-10-21",
       "isEstimate": true,
-      "epsConsensus": 0.4544,
+      "epsConsensus": 0.4556,
       "epsLow": 0.3,
       "epsHigh": 0.6,
-      "revenueConsensus": 27500849980
+      "revenueConsensus": 27523887010
     },
     {
       "symbol": "HEM.ST",
@@ -222,7 +222,7 @@
       "epsConsensus": 0.06386,
       "epsLow": 0.05,
       "epsHigh": 0.08165,
-      "revenueConsensus": 5053613710
+      "revenueConsensus": 5052747050
     },
     {
       "symbol": "SAGA-B.ST",
@@ -393,7 +393,7 @@
       "epsConsensus": 6.73846,
       "epsLow": 3.92,
       "epsHigh": 7.64,
-      "revenueConsensus": 63315490060
+      "revenueConsensus": 63317075380
     },
     {
       "symbol": "MSFT",
@@ -507,10 +507,10 @@
       "symbol": "NESTE.HE",
       "date": "2026-10-29",
       "isEstimate": false,
-      "epsConsensus": 0.85662,
+      "epsConsensus": 0.83962,
       "epsLow": 0.59,
-      "epsHigh": 1.12,
-      "revenueConsensus": 5254289550
+      "epsHigh": 1.04,
+      "revenueConsensus": 5220956220
     },
     {
       "symbol": "NET",
@@ -570,7 +570,7 @@
       "symbol": "CVX",
       "date": "2026-10-30",
       "isEstimate": true,
-      "epsConsensus": 4.74227,
+      "epsConsensus": 4.73219,
       "epsLow": 3.61,
       "epsHigh": 5.7,
       "revenueConsensus": 56753640260
@@ -1095,7 +1095,7 @@
       "epsConsensus": 4.02212,
       "epsLow": 3.73427,
       "epsHigh": 4.44,
-      "revenueConsensus": 10353273330
+      "revenueConsensus": 10353256000
     },
     {
       "symbol": "NOL.OL",
@@ -1134,6 +1134,15 @@
       "revenueConsensus": 34883319430
     },
     {
+      "symbol": "CBRL",
+      "date": "2026-12-09",
+      "isEstimate": true,
+      "epsConsensus": 0.12,
+      "epsLow": -0.02,
+      "epsHigh": 0.26,
+      "revenueConsensus": 817650020
+    },
+    {
       "symbol": "ORCL",
       "date": "2026-12-10",
       "isEstimate": true,
@@ -1146,10 +1155,10 @@
       "symbol": "WOR",
       "date": "2026-12-15",
       "isEstimate": true,
-      "epsConsensus": 0.75,
-      "epsLow": 0.74,
+      "epsConsensus": 0.715,
+      "epsLow": 0.7,
       "epsHigh": 0.76,
-      "revenueConsensus": 348400000
+      "revenueConsensus": 354489130
     }
   ],
   "errors": {},
