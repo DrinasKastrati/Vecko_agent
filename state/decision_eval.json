@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-25T12:45:04.504Z",
+ "generatedAt": "2026-09-25T13:41:53.234Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 673,
-  "measurable": 673,
+  "decisions": 676,
+  "measurable": 676,
   "missing": 0,
-  "pending": 66
+  "pending": 69
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -13097,6 +13097,36 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "CBRL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Restaurang",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Internet/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "COST",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Detaljhandel",
    "reconstructed": false,
    "fwd": {}
   }
