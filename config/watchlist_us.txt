@@ -266,3 +266,19 @@ CBRL
 # ~0,26, intäkt 849,3 MUSD (−2,2 % å/å) mot ~845, justerad EBITDA 62,1 mot 55,7
 # MUSD, FY2027-guide med högre justerad EBITDA. Aktien +7,88 % (PR Newswire
 # 2026-09-23). Case 3 i scout-260924 -> kandidat 260924-CBRL, price: null.
+
+# --- Bevakat case (scout 2026-09-25) ---
+# L-2: en bekräftad katalysator ska ha verifierad kurs samma vecka den flaggas.
+# Utan rad här kan monitorn inte larma, ingen villkorad plan kan läggas och retron
+# kan inte utvärdera idén i efterhand. COST saknade rad i prices.json på
+# flaggningsdagen (tickerCount 177) och noll punkter i price_history.json;
+# Yahoo-reserven är egress-blockerad (CONNECT 403, testat 2026-09-25 05:52 och
+# 06:00 UTC). L-5: bolaget rapporterade 2026-09-24 UTAN att finnas i
+# state/earnings_calendar.json, som bara ser symboler prices.yml redan hämtar –
+# raden nedan är åtgärden på precis den luckan.
+COST
+# Costco – Q4 och helår FY2026 2026-09-24 AMC: EPS 6,75 USD mot konsensus ~6,55,
+# intäkt 95,72 mdr mot ~94,85, jämförbar försäljning +9,4 % mot ~9,0 %, digitala
+# jämförbara +19,5 %; 0,15 USD av beatet är engångspost (IEEPA-tullåterbetalningar).
+# GlobeNewswire/mfn 2026-09-24T20:15Z, posten ligger i state/news_feed.json.
+# Kandidat 260925-COST, price: null.
