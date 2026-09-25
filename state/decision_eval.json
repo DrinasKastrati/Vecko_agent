@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-24T21:28:43.960Z",
+ "generatedAt": "2026-09-25T06:49:02.866Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 669,
-  "measurable": 669,
+  "decisions": 673,
+  "measurable": 673,
   "missing": 0,
-  "pending": 67
+  "pending": 71
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -12992,6 +12992,46 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "FRO.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Tankfart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "NESTE.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fornybart bransle",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "EQNR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-25",
+   "ticker": "EMBRAC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Dataspel",
    "reconstructed": false,
    "fwd": {}
   }
