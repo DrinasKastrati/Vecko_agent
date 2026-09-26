@@ -282,3 +282,43 @@ COST
 # jämförbara +19,5 %; 0,15 USD av beatet är engångspost (IEEPA-tullåterbetalningar).
 # GlobeNewswire/mfn 2026-09-24T20:15Z, posten ligger i state/news_feed.json.
 # Kandidat 260925-COST, price: null.
+
+# --- Bevakade case (scout 2026-09-26) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. Utan rad här kan
+# monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand. Båda saknade rad i state/prices.json på
+# flaggningsdagen (tickerCount 178) och noll punkter i price_history.json;
+# BÅDA reservkällorna är egress-blockerade (CONNECT tunnel failed, response 403
+# mot query1.finance.yahoo.com OCH stooq.com, testat 2026-09-26 05:55 UTC).
+AKAM
+# Akamai Technologies – sjuårigt åtagande med Anthropic på 11,6 mdr USD med
+# option på ytterligare 9 mdr (totalt ~20 mdr), bolagets största kontrakt
+# någonsin. Warrant till Anthropic på 7,7 miljoner stamaktier, upp till ~5 % av
+# utestående, lösenpris 111,33 USD; capex kopplad till grundåtagandet ~5,5 mdr.
+# mfn 2026-09-24T20:01Z (posten ligger i state/news_feed.json) + SEC 8-K,
+# CIK 0001086222, accession 0001193125-26-401048. Case 1 i scout-260926 ->
+# kandidat 260926-AKAM med price: null.
+AESI
+# Atlas Energy Solutions – två helägda indirekta dotterbolag har tecknat
+# separata cost-reimbursement-avtal med "a leading frontier AI lab" plus
+# utrustningsköpsavtal om 613,5 MUSD: balance-of-plant (emissionskontroll,
+# eldistribution, batterilager) och inkrementell kraftgenerering till
+# datacenterprojekt, kopplat till ramavtalet med Caterpillar. sec-8k
+# 2026-09-24T21:22:29Z, CIK 0001984060 (posten ligger i state/news_feed.json).
+# Fönstrets största rörelse, +19,8 % den 25/9. Bekräftad katalysator utan fullt
+# case -> kandidat 260926-AESI med price: null.
+
+# --- Rapporterar inom 10 handelsdagar (L-5, tillagda 2026-09-26) ---
+# L-5 kräver att varje bolag som uppräkningen visar rapportera inom 10
+# handelsdagar och som saknar rad här läggs till i samma körning, så att
+# kursserien börjar byggas FÖRE eventet. Datumen kommer ur websök 2026-09-26
+# (Trading Economics "Week Ahead – Sep 28th", CMC Markets, Globe and Mail,
+# earnings-edge), INTE ur state/earnings_calendar.json, som bara kan se de
+# symboler prices.yml redan hämtar – resten av universumet är OKONTROLLERAT och
+# får inte sammanfattas som "inga fler". Rapportförbudet (promptens punkt 8,
+# PRE_ALL/PRE_MOM underkända i samtliga fyra backtestkörningar) gäller
+# oförändrat för båda: en rad här är bevakning, aldrig ett köpförslag.
+CCL
+# Carnival – Q3, måndag 2026-09-28 före öppning. Konsumtionsavläsning.
+NKE
+# Nike – Q1, torsdag 2026-10-01.
