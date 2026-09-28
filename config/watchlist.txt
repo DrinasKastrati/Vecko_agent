@@ -324,3 +324,38 @@ GMAB.CO
 # Genmab - veckans tredje storsta rorelse (+8,63 pct). Samma grind 1-orsak som SCST.ST.
 AZN.ST
 # AstraZeneca - veckans tionde storsta rorelse (+5,72 pct). Samma grind 1-orsak.
+
+# --- Tillagda v40-rotationen 2026-09-28 (punkt 6b: beslut loggat, maste prisbevakas) ---
+# Varje ticker som far en rad i state/decisions.json MASTE hamtas av prices.yml, annars blir
+# beslutet omatbart for alltid: price_history.json backfillas bara for hamtade symboler och
+# decision_eval.mjs mater varje rad - aven de avvisade - mot efterfoljande kurs och index.
+# EN RAD HAR BETYDER BEVAKNING, INTE ATT AKTIEN FAR KOPAS. Samtliga fem grindar galler oforandrat.
+# Samtliga atta foll pa grind 1 och saknar rad i BADE prices.json och price_history.json - de
+# kunde alltsa inte poangsattas alls, trots namngiven och daterad katalysator ur news_feed.json.
+# OBS: tickerformaten ar standardformer for respektive bors men EJ VERIFIERADE mot Yahoo -
+# mfn.se och globenewswire.com ar EGRESS_BLOCKED fran korningsmiljon. Mandagens prices.json ar
+# kontrollen; jamfor med SAAB.ST-fallet langst ned i filen.
+SSH1V.HE
+# SSH Communications Security - VINSTVARNING, sankt EBITDA-guidning for 2026 medan omsattning och
+# kassaflode lamnas oforandrade (mfn 2026-09-22T18:40Z). catalystType earnings, men riktningen ar
+# NEGATIV. Tillagd for matbarhet, inte som ide.
+HAFNI.OL
+# Hafnia Limited - overvagd aktieemission (mfn 2026-09-23T20:26Z) plus prospekttillagg
+# (mfn 2026-09-25T20:23Z). catalystType other. Utspadande - bevakning, aldrig ett case.
+EG7.ST
+# Enad Global 7 - personalneddragning vid Cold Iron Studios (mfn 2026-09-25T18:00Z).
+# catalystType turnaround.
+NYKD.OL
+# Nykode Therapeutics - besked fran Skatteklagenemnda i pagaende skattemal (mfn 2026-09-25T21:35Z).
+# catalystType regulatory. Utfallets riktning ar INTE verifierad via lanken och far inte antas.
+EAST.ST
+# Eastnine - slutfort forvarv av The Bridge (mfn 2026-09-24T22:45Z). catalystType other.
+AKVA.OL
+# AKVA group - slutford koncernintern fusion med Submerged AS (mfn 2026-09-23T19:00Z).
+# catalystType other; administrativ handelse, bevakning for matbarhet.
+VOW.OL
+# Vow ASA - samarbete med Danieli Corus om lag-koldioxidteknik for stalproduktion
+# (mfn 2026-09-22T18:35Z). catalystType order, men inget kontraktsvarde och ingen leveransplan.
+FLEXQ.ST
+# FlexQube - fortsattningsorder i AMR-projekt om ca 1,1 MUSD / 11 MSEK (mfn 2026-09-23T21:00Z).
+# catalystType order. Mikrobolag: likviditetsgolvet 3 MSEK/dag maste RAKNAS, inte uppskattas.
