@@ -1072,12 +1072,13 @@
       "confirmed": true,
       "thesis": "Sjuarigt atagande med Anthropic pa 11,6 mdr USD (option +9 mdr), bolagets storsta kontrakt nagonsin; warrant upp till ~5 pct av aktierna vid 111,33 USD, capex ~5,5 mdr. KURS EJ VERIFIERAD: saknar rad i prices.json (178) och 0 punkter i price_history; Yahoo och stooq egress-blockerade.",
       "sourceRef": "state/news_feed.json, mfn 2026-09-24T20:01:00Z: Akamai Announces $11.6 Billion Multi-year Agreement with Anthropic to Support Growing Demand. Aven SEC Form 8-K, CIK 0001086222, accession 0001193125-26-401048 (exhibit 99.1). Villkoren (warrant 7,7 miljoner aktier / ~5 pct vid 111,33 USD, ~2 pp vestar mot 11,6 mdr, capex ~5,5 mdr) verifierade via TechCrunch 2026-09-25, Qz 2026-09-25 och Investing.com 2026-09-25 (websok 2026-09-26). Reaktion +8,1 pct 25/9 ur nyhetskalla, EJ anvand som kurs. Kurs ej verifierbar: CONNECT tunnel failed, response 403 mot query1.finance.yahoo.com OCH stooq.com, testat 2026-09-26 05:55 UTC. AKAM tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 112.36,
+      "priceAsOf": "2026-09-28T11:39:16.000Z",
       "status": "new",
       "expiresAt": "2026-10-02",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     },
     {
       "id": "260926-COST",
@@ -1128,12 +1129,13 @@
       "confirmed": true,
       "thesis": "Tva helagda dotterbolag har tecknat separata cost-reimbursement-avtal med ett ledande frontier AI-lab plus utrustningskopsavtal om 613,5 MUSD: balance-of-plant och kraftgenerering till datacenterprojekt, kopplat till ramavtalet med Caterpillar. KURS EJ VERIFIERAD: saknar rad i prices.json.",
       "sourceRef": "state/news_feed.json, sec-8k 2026-09-24T21:22:29Z: 8-K - Atlas Energy Solutions Inc. (0001984060) (Filer). Innehallet (tva cost-reimbursement-avtal med a leading frontier AI lab, utrustningskopsavtal, balance-of-plant: emissionskontroll, eldistribution, batterilager, kopplat till Global Framework Agreement med Caterpillar; 613,5 MUSD) verifierat via Atlas IR pressmeddelande, Benzinga 2026-09-25, GuruFocus 2026-09-25 och Motley Fool 2026-09-25 (websok 2026-09-26). Reaktion +19,8 pct 25/9 ur nyhetskalla, EJ anvand som kurs. Kurs ej verifierbar: AESI saknar rad i state/prices.json (178 symboler) och har 0 punkter i price_history.json; Yahoo och stooq egress-blockerade (CONNECT 403, testat 2026-09-26 05:55 UTC). AESI tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 12.76,
+      "priceAsOf": "2026-09-28T11:34:08.000Z",
       "status": "new",
       "expiresAt": "2026-10-02",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     }
   ]
 }
