@@ -1,17 +1,26 @@
 {
- "generatedAt": "2026-09-25T21:31:57.350Z",
+ "generatedAt": "2026-09-28T07:02:10.261Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 676,
-  "measurable": 676,
-  "missing": 0,
-  "pending": 63
+  "decisions": 699,
+  "measurable": 691,
+  "missing": 8,
+  "pending": 78
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "AKVA.OL",
+  "EAST.ST",
+  "EG7.ST",
+  "FLEXQ.ST",
+  "HAFNI.OL",
+  "NYKD.OL",
+  "SSH1V.HE",
+  "VOW.OL"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -13207,6 +13216,244 @@
    "sector": "Detaljhandel",
    "reconstructed": false,
    "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "SINCH.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kommunikationsteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "GMAB.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Lax/livsmedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "CADLR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Offshore vind",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "ORK.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Konglomerat",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "HEM.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Digitala marknadsplatser",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "STAR-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fastigheter",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "NOVO-B.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "FRO.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Tankfart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "NESTE.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fornybara branslen",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "EQNR.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "EMBRAC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "NIBE-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Varmeteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "BETS-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Spel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "SSH1V.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "IT-sakerhet",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "HAFNI.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Tankfart",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "EG7.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Dataspel",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "NYKD.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "EAST.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fastigheter",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "AKVA.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Havsbruksteknik",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "VOW.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Miljoteknik",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-09-28",
+   "ticker": "FLEXQ.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Industriautomation",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
   }
  ]
 }
