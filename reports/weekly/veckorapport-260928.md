@@ -49,7 +49,7 @@ Kravet i punkt 2 är ändå UPPFYLLT: Stockholm har inte öppnat, och `generated
 
 **Noll av 24 bruttokandidater passerade samtliga fem grindar. Boken öppnar ingen position och samtliga fyra platser ligger kvar i indexsleeven (100,0 %).**
 
-Detta är **inte** ett datafel och inte en utebliven insats. Regimfiltret är PÅ, kursförsörjningen räckte för 16 av 24 kandidater, och funneln stoppade i år för första gången på **omdöme och geometri** i stället för på saknad data:
+Detta är **inte** ett datafel och inte en utebliven insats. Regimfiltret är PÅ och kursförsörjningen räckte för 16 av 24 kandidater. Det som är NYTT denna vecka är däremot inte att funneln stoppar på omdöme – grind 3 fällde **6 av 20** kandidater redan i v39, mot 3 av 24 nu – utan att **grind 4 för första gången är den bindande spärren**, och att den binder på exakt samma sätt för fem kandidater samtidigt:
 
 | Grind | Fäller (primärt) | Andel |
 |---|---|---|
@@ -57,6 +57,7 @@ Detta är **inte** ett datafel och inte en utebliven insats. Regimfiltret är P�
 | 2 – teknisk filtrering (RSI/MACD/EMA/volym/likviditet) | 13 | 54 % |
 | 3 – namngiven, bekräftad och daterad katalysator | 3 | 13 % |
 | 4 – R/R ≥ 2:1 och kostnadströskel ≥ 6 % | 0 primärt, **5 oberoende** | – |
+| **Jämförelse v39** | grind 1: 8, grind 2: 6, grind 3: 6, grind 4: 0 av 20 | – |
 | 5 – nåbarhetstak | 0 | 0 % |
 
 Grind 5 fällde noll kandidater denna vecka: nåbarhetstaket (2 × dagsrörelse × √handelsdagar) låg på 11,62 % för SALM.OL vid 15 dagar och 18,69 % för SINCH.ST vid 20 dagar, alltså långt över vad kostnadströskeln kräver. **Det är grind 4 som binder, och den binder på ankringen, inte på nåbarheten.**
