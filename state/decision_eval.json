@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-28T21:23:33.495Z",
+ "generatedAt": "2026-09-29T06:59:55.348Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 699,
-  "measurable": 699,
+  "decisions": 704,
+  "measurable": 704,
   "missing": 0,
-  "pending": 57
+  "pending": 62
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -13839,6 +13839,56 @@
    "action": "AVVAKTA",
    "catalystType": "order",
    "sector": "Industriautomation",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-29",
+   "ticker": "GMAB.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-29",
+   "ticker": "SALM.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "insider",
+   "sector": "Havsbruk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-29",
+   "ticker": "NIBE-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Varmepumpar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-29",
+   "ticker": "NESTE.HE",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Fornybara branslen",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-09-29",
+   "ticker": "SINCH.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Molnkommunikation",
    "reconstructed": false,
    "fwd": {}
   }
