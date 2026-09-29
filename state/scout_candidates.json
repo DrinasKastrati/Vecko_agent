@@ -1148,12 +1148,13 @@
       "confirmed": true,
       "thesis": "Forvarvar World Labs for ~8,2 mdr USD helt i egen aktie, stangning fore arsskiftet villkorat av myndighetsgodkannanden; Fei-Fei Li blir EVP/chief scientist. KURS EJ VERIFIERAD efter katalysatorn: enda kursen bar marketTime 20:00:01Z, fyra minuter FORE beskedet 20:05Z.",
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-28T20:05:00Z: AMD to Acquire World Labs to Advance the Future of AI Compute (AMD:s eget pressmeddelande). Villkoren (8,2 mdr USD, helt aktiefinansierat, stangning fore utgangen av 2026, Fei-Fei Li som EVP och chief scientist) verifierade via Bloomberg 2026-09-28, CNBC 2026-09-28 och Business Standard 2026-09-29 (websok 2026-09-29). Lanken i flodet kunde INTE oppnas: globenewswire.com och mfn.se ar egress-blockerade (EGRESS_BLOCKED, testat 2026-09-29 05:58 UTC). catalystType satt till ma_rumor eftersom det ar enumets enda M&A-bucket; affaren ar undertecknad, vilket confirmed:true bar. Pre-event-stangning 607,87 USD 2026-09-28T20:00:01Z redovisas i rapporten men skrivs INTE som price.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 615,
+      "priceAsOf": "2026-09-29T11:19:15.000Z",
       "status": "new",
       "expiresAt": "2026-10-06",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     },
     {
       "id": "260929-TEVA",
@@ -1166,12 +1167,13 @@
       "confirmed": true,
       "thesis": "FDA godkande 28/9 DEGEVMA (denosumab-adet), biosimilar till Xgeva, for samtliga referensproduktens indikationer; med PONLIMSI (godkand 30/3) tacks hela denosumab-franchisen i USA. KURS EJ VERIFIERAD: saknar rad i prices.json (235 symboler) och 0 punkter i price_history.json.",
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-28T20:00:00Z: Teva Continues Biosimilar Momentum with U.S. FDA Approval of DEGEVMA (denosumab-adet), a Biosimilar to Xgeva (denosumab). Verifierat via Tevas egen IR-sida ir.tevapharm.com (pressmeddelande 2026-09-28), BioSpace och StockTitan (websok 2026-09-29). Kurs ej verifierbar: query1.finance.yahoo.com, stooq.com och www.sec.gov ger CONNECT rejected / HTTP 000, och globenewswire.com/mfn.se ar EGRESS_BLOCKED, testat 2026-09-29 05:58 UTC. TEVA tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 38.99,
+      "priceAsOf": "2026-09-29T10:29:00.000Z",
       "status": "new",
       "expiresAt": "2026-10-06",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     }
   ]
 }
