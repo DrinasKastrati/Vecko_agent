@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T11:39:16.103Z",
+  "generatedAt": "2026-09-29T00:58:28.017Z",
   "schemaVersion": "2026-08-04-earnings",
   "source": "Yahoo Finance quoteSummary/calendarEvents",
   "horizonDays": 10,
@@ -11,7 +11,7 @@
     "failed": 0,
     "notApplicable": 2,
     "noCoverage": 9,
-    "upcoming": 3
+    "upcoming": 5
   },
   "upcoming": [
     {
@@ -22,7 +22,7 @@
       "epsLow": 1.3,
       "epsHigh": 1.38,
       "revenueConsensus": 8390786500,
-      "tradingDaysAway": 1
+      "tradingDaysAway": 0
     },
     {
       "symbol": "MU",
@@ -32,7 +32,7 @@
       "epsLow": 28.04,
       "epsHigh": 37.44,
       "revenueConsensus": 51316671560,
-      "tradingDaysAway": 2
+      "tradingDaysAway": 1
     },
     {
       "symbol": "NKE",
@@ -42,7 +42,27 @@
       "epsLow": 0.37,
       "epsHigh": 0.49,
       "revenueConsensus": 11333633900,
-      "tradingDaysAway": 3
+      "tradingDaysAway": 2
+    },
+    {
+      "symbol": "JPM",
+      "date": "2026-10-13",
+      "isEstimate": false,
+      "epsConsensus": 5.91102,
+      "epsLow": 5.71,
+      "epsHigh": 6.23,
+      "revenueConsensus": 50847437750,
+      "tradingDaysAway": 10
+    },
+    {
+      "symbol": "WFC",
+      "date": "2026-10-13",
+      "isEstimate": false,
+      "epsConsensus": 1.81334,
+      "epsLow": 1.71,
+      "epsHigh": 1.88,
+      "revenueConsensus": 22340285710,
+      "tradingDaysAway": 10
     }
   ],
   "all": [
