@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-29T14:02:16.415Z",
+ "generatedAt": "2026-09-29T19:23:17.769Z",
  "horizons": [
   5,
   20
@@ -19,7 +19,7 @@
     "meanAlphaPct": 0.64,
     "medianAlphaPct": 0.27,
     "meanPct": 0.79,
-    "beatIndexPct": 52.75
+    "beatIndexPct": 52.91
    },
    "byAction": {
     "KÖP": {
@@ -31,9 +31,9 @@
     },
     "SÄLJ": {
      "n": 8,
-     "meanAlphaPct": 3.49,
+     "meanAlphaPct": 3.52,
      "medianAlphaPct": 3.28,
-     "meanPct": 4.01,
+     "meanPct": 3.97,
      "beatIndexPct": 75
     },
     "BEHÅLL": {
@@ -45,10 +45,10 @@
     },
     "AVVAKTA": {
      "n": 598,
-     "meanAlphaPct": 0.67,
+     "meanAlphaPct": 0.68,
      "medianAlphaPct": 0.35,
      "meanPct": 0.83,
-     "beatIndexPct": 53.34
+     "beatIndexPct": 53.51
     }
    },
    "byBook": {
@@ -57,12 +57,12 @@
      "meanAlphaPct": 0.12,
      "medianAlphaPct": 0.25,
      "meanPct": 0.25,
-     "beatIndexPct": 52.84
+     "beatIndexPct": 53.13
     },
     "us": {
      "n": 302,
      "meanAlphaPct": 1.24,
-     "medianAlphaPct": 0.44,
+     "medianAlphaPct": 0.46,
      "meanPct": 1.42,
      "beatIndexPct": 52.65
     }
@@ -70,17 +70,17 @@
    "byCatalyst": {
     "earnings": {
      "n": 162,
-     "meanAlphaPct": 0.93,
-     "medianAlphaPct": 0.97,
-     "meanPct": 0.82,
+     "meanAlphaPct": 0.95,
+     "medianAlphaPct": 1.09,
+     "meanPct": 0.83,
      "beatIndexPct": 53.7
     },
     "macro": {
      "n": 48,
-     "meanAlphaPct": -0.57,
+     "meanAlphaPct": -0.61,
      "medianAlphaPct": -1.45,
-     "meanPct": -0.03,
-     "beatIndexPct": 43.75
+     "meanPct": -0.07,
+     "beatIndexPct": 41.67
     },
     "order": {
      "n": 69,
@@ -92,9 +92,9 @@
     "other": {
      "n": 258,
      "meanAlphaPct": 0.77,
-     "medianAlphaPct": 0.32,
-     "meanPct": 1.07,
-     "beatIndexPct": 55.04
+     "medianAlphaPct": 0.35,
+     "meanPct": 1.06,
+     "beatIndexPct": 55.81
     },
     "regulatory": {
      "n": 33,
@@ -143,12 +143,12 @@
     },
     "passed": {
      "n": 598,
-     "meanAlphaPct": 0.67,
+     "meanAlphaPct": 0.68,
      "medianAlphaPct": 0.35,
      "meanPct": 0.83,
-     "beatIndexPct": 53.34
+     "beatIndexPct": 53.51
     },
-    "edgePct": 0.58,
+    "edgePct": 0.57,
     "verdict": "ingen skillnad utöver brus mellan köpta och avvisade",
     "effectiveN": 6,
     "clusterCaveat": "vilar på 6 oberoende mätfönster av 8 — behandla som riktning, inte som svar"
@@ -160,7 +160,7 @@
     "meanAlphaPct": 0.64,
     "clusterMeanAlphaPct": 1.17,
     "medianAlphaPct": 0.27,
-    "beatIndexPct": 52.75
+    "beatIndexPct": 52.91
    },
    "poolAlpha": {
     "horizon": 5,
@@ -170,7 +170,7 @@
     "meanAlphaPct": 0.64,
     "clusterMeanAlphaPct": 1.17,
     "medianAlphaPct": 0.27,
-    "beatIndexPct": 52.75,
+    "beatIndexPct": 52.91,
     "verdict": "kandidatflödet slår index -- värdet kan ligga i urvalet AV kandidater, inte i grindarna"
    },
    "holdRule": {
@@ -191,10 +191,10 @@
      "n": 598,
      "nDates": 37,
      "effectiveN": 8,
-     "meanAlphaPct": 0.67,
+     "meanAlphaPct": 0.68,
      "clusterMeanAlphaPct": 0.75,
      "medianAlphaPct": 0.35,
-     "beatIndexPct": 53.34
+     "beatIndexPct": 53.51
     },
     "gapPct": null,
     "verdict": "för tidigt att uttala sig",
@@ -212,7 +212,7 @@
     },
     "boughtClusters": 6,
     "passedClusters": 8,
-    "edgePct": 0.58,
+    "edgePct": 0.57,
     "decision": "avvakta",
     "reason": "inte moget: 6/20 KÖP-fönster, 8/20 AVVAKTA-fönster"
    }
@@ -220,17 +220,17 @@
   "20": {
    "all": {
     "n": 357,
-    "meanAlphaPct": -0.23,
-    "medianAlphaPct": -0.72,
+    "meanAlphaPct": -0.18,
+    "medianAlphaPct": -0.68,
     "meanPct": -0.66,
     "beatIndexPct": 45.94
    },
    "byAction": {
     "KÖP": {
      "n": 11,
-     "meanAlphaPct": 1.78,
+     "meanAlphaPct": 1.8,
      "medianAlphaPct": 2.79,
-     "meanPct": 2.34,
+     "meanPct": 2.31,
      "beatIndexPct": 63.64
     },
     "SÄLJ": {
@@ -244,15 +244,15 @@
     },
     "BEHÅLL": {
      "n": 23,
-     "meanAlphaPct": -0.65,
+     "meanAlphaPct": -0.64,
      "medianAlphaPct": -0.84,
-     "meanPct": -1.01,
+     "meanPct": -1.02,
      "beatIndexPct": 39.13
     },
     "AVVAKTA": {
      "n": 316,
-     "meanAlphaPct": -0.36,
-     "medianAlphaPct": -1.07,
+     "meanAlphaPct": -0.31,
+     "medianAlphaPct": -0.97,
      "meanPct": -0.86,
      "beatIndexPct": 44.94
     }
@@ -260,8 +260,8 @@
    "byBook": {
     "nordic": {
      "n": 218,
-     "meanAlphaPct": -1.31,
-     "medianAlphaPct": -1.39,
+     "meanAlphaPct": -1.23,
+     "medianAlphaPct": -1.35,
      "meanPct": -1.48,
      "beatIndexPct": 44.5
     },
@@ -276,51 +276,51 @@
    "byCatalyst": {
     "earnings": {
      "n": 114,
-     "meanAlphaPct": 0.05,
+     "meanAlphaPct": 0.07,
      "medianAlphaPct": -1.15,
-     "meanPct": -0.49,
+     "meanPct": -0.5,
      "beatIndexPct": 46.49
     },
     "macro": {
      "n": 19,
-     "meanAlphaPct": 3.83,
+     "meanAlphaPct": 3.88,
      "medianAlphaPct": 2.13,
-     "meanPct": 4.22,
+     "meanPct": 4.24,
      "beatIndexPct": 57.89
     },
     "order": {
      "n": 38,
-     "meanAlphaPct": -0.03,
+     "meanAlphaPct": 0.08,
      "medianAlphaPct": 0.44,
-     "meanPct": -0.32,
+     "meanPct": -0.28,
      "beatIndexPct": 55.26
     },
     "other": {
      "n": 98,
-     "meanAlphaPct": -1.05,
-     "medianAlphaPct": -0.73,
-     "meanPct": -1.51,
+     "meanAlphaPct": -0.99,
+     "medianAlphaPct": -0.72,
+     "meanPct": -1.53,
      "beatIndexPct": 42.86
     },
     "regulatory": {
      "n": 26,
-     "meanAlphaPct": 0.1,
+     "meanAlphaPct": 0.11,
      "medianAlphaPct": 0.31,
-     "meanPct": -0.29,
+     "meanPct": -0.3,
      "beatIndexPct": 53.85
     },
     "buyback": {
      "n": 15,
-     "meanAlphaPct": 4.8,
+     "meanAlphaPct": 4.74,
      "medianAlphaPct": 7.18,
-     "meanPct": 4.1,
+     "meanPct": 3.97,
      "beatIndexPct": 80
     },
     "ma_rumor": {
      "n": 30,
-     "meanAlphaPct": -4.13,
+     "meanAlphaPct": -4.02,
      "medianAlphaPct": -4.46,
-     "meanPct": -4.54,
+     "meanPct": -4.49,
      "beatIndexPct": 13.33
     },
     "turnaround": {
@@ -332,9 +332,9 @@
     },
     "insider": {
      "n": 5,
-     "meanAlphaPct": -4.96,
-     "medianAlphaPct": -2.15,
-     "meanPct": -4.67,
+     "meanAlphaPct": -4.87,
+     "medianAlphaPct": -2.14,
+     "meanPct": -4.85,
      "beatIndexPct": 20,
      "insufficient": true,
      "need": 3
@@ -344,19 +344,19 @@
     "horizon": 20,
     "bought": {
      "n": 11,
-     "meanAlphaPct": 1.78,
+     "meanAlphaPct": 1.8,
      "medianAlphaPct": 2.79,
-     "meanPct": 2.34,
+     "meanPct": 2.31,
      "beatIndexPct": 63.64
     },
     "passed": {
      "n": 316,
-     "meanAlphaPct": -0.36,
-     "medianAlphaPct": -1.07,
+     "meanAlphaPct": -0.31,
+     "medianAlphaPct": -0.97,
      "meanPct": -0.86,
      "beatIndexPct": 44.94
     },
-    "edgePct": 2.14,
+    "edgePct": 2.11,
     "verdict": "urvalet skiljer köpta från avvisade i rätt riktning",
     "effectiveN": 2,
     "clusterCaveat": "vilar på 2 oberoende mätfönster av 8 — behandla som riktning, inte som svar"
@@ -365,9 +365,9 @@
     "n": 357,
     "nDates": 27,
     "effectiveN": 2,
-    "meanAlphaPct": -0.23,
-    "clusterMeanAlphaPct": 0.84,
-    "medianAlphaPct": -0.72,
+    "meanAlphaPct": -0.18,
+    "clusterMeanAlphaPct": 0.86,
+    "medianAlphaPct": -0.68,
     "beatIndexPct": 45.94,
     "insufficient": true,
     "need": 6,
@@ -378,9 +378,9 @@
     "n": 357,
     "nDates": 27,
     "effectiveN": 2,
-    "meanAlphaPct": -0.23,
-    "clusterMeanAlphaPct": 0.84,
-    "medianAlphaPct": -0.72,
+    "meanAlphaPct": -0.18,
+    "clusterMeanAlphaPct": 0.86,
+    "medianAlphaPct": -0.68,
     "beatIndexPct": 45.94,
     "insufficient": true,
     "need": 6,
@@ -393,8 +393,8 @@
      "n": 23,
      "nDates": 15,
      "effectiveN": 2,
-     "meanAlphaPct": -0.65,
-     "clusterMeanAlphaPct": -0.65,
+     "meanAlphaPct": -0.64,
+     "clusterMeanAlphaPct": -0.64,
      "medianAlphaPct": -0.84,
      "beatIndexPct": 39.13,
      "insufficient": true,
@@ -405,9 +405,9 @@
      "n": 316,
      "nDates": 22,
      "effectiveN": 2,
-     "meanAlphaPct": -0.36,
-     "clusterMeanAlphaPct": -0.36,
-     "medianAlphaPct": -1.07,
+     "meanAlphaPct": -0.31,
+     "clusterMeanAlphaPct": -0.34,
+     "medianAlphaPct": -0.97,
      "beatIndexPct": 44.94,
      "insufficient": true,
      "need": 6,
@@ -429,7 +429,7 @@
     },
     "boughtClusters": 2,
     "passedClusters": 2,
-    "edgePct": 2.14,
+    "edgePct": 2.11,
     "decision": "avvakta",
     "reason": "inte moget: 2/20 KÖP-fönster, 2/20 AVVAKTA-fönster"
    }
@@ -7812,9 +7812,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 1.74,
-     "benchPct": 1.07,
-     "alphaPct": 0.67,
+     "pct": 1.48,
+     "benchPct": 0.6,
+     "alphaPct": 0.88,
      "toDate": "2026-09-29"
     }
    }
@@ -7835,9 +7835,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 4.51,
-     "benchPct": 1.07,
-     "alphaPct": 3.44,
+     "pct": 4.69,
+     "benchPct": 0.6,
+     "alphaPct": 4.09,
      "toDate": "2026-09-29"
     }
    }
@@ -7858,9 +7858,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 7.76,
-     "benchPct": 1.07,
-     "alphaPct": 6.69,
+     "pct": 6.84,
+     "benchPct": 0.6,
+     "alphaPct": 6.24,
      "toDate": "2026-09-29"
     }
    }
@@ -7881,9 +7881,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -9.35,
-     "benchPct": 1.07,
-     "alphaPct": -10.42,
+     "pct": -9.84,
+     "benchPct": 0.6,
+     "alphaPct": -10.44,
      "toDate": "2026-09-29"
     }
    }
@@ -7904,9 +7904,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 7.16,
-     "benchPct": 1.07,
-     "alphaPct": 6.09,
+     "pct": 6.88,
+     "benchPct": 0.6,
+     "alphaPct": 6.27,
      "toDate": "2026-09-29"
     }
    }
@@ -7927,9 +7927,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 2.98,
-     "benchPct": 1.07,
-     "alphaPct": 1.91,
+     "pct": 2.16,
+     "benchPct": 0.6,
+     "alphaPct": 1.55,
      "toDate": "2026-09-29"
     }
    }
@@ -7950,9 +7950,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -9.09,
-     "benchPct": 1.07,
-     "alphaPct": -10.16,
+     "pct": -10.35,
+     "benchPct": 0.6,
+     "alphaPct": -10.96,
      "toDate": "2026-09-29"
     }
    }
@@ -7973,9 +7973,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -2.82,
-     "benchPct": 1.07,
-     "alphaPct": -3.89,
+     "pct": -1.41,
+     "benchPct": 0.6,
+     "alphaPct": -2.01,
      "toDate": "2026-09-29"
     }
    }
@@ -7997,8 +7997,8 @@
     },
     "20": {
      "pct": -5.63,
-     "benchPct": 1.07,
-     "alphaPct": -6.7,
+     "benchPct": 0.6,
+     "alphaPct": -6.23,
      "toDate": "2026-09-29"
     }
    }
@@ -8019,9 +8019,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -3.24,
-     "benchPct": 1.07,
-     "alphaPct": -4.31,
+     "pct": -3.28,
+     "benchPct": 0.6,
+     "alphaPct": -3.88,
      "toDate": "2026-09-29"
     }
    }
@@ -8042,9 +8042,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -1.08,
-     "benchPct": 1.07,
-     "alphaPct": -2.15,
+     "pct": -1.53,
+     "benchPct": 0.6,
+     "alphaPct": -2.14,
      "toDate": "2026-09-29"
     }
    }
@@ -8065,9 +8065,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 8.4,
-     "benchPct": 1.07,
-     "alphaPct": 7.33,
+     "pct": 8.07,
+     "benchPct": 0.6,
+     "alphaPct": 7.47,
      "toDate": "2026-09-29"
     }
    }
@@ -8088,9 +8088,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 0.33,
-     "benchPct": 1.07,
-     "alphaPct": -0.74,
+     "pct": -0.33,
+     "benchPct": 0.6,
+     "alphaPct": -0.94,
      "toDate": "2026-09-29"
     }
    }
@@ -8111,9 +8111,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -11.06,
-     "benchPct": 1.07,
-     "alphaPct": -12.13,
+     "pct": -11.09,
+     "benchPct": 0.6,
+     "alphaPct": -11.7,
      "toDate": "2026-09-29"
     }
    }
@@ -8134,9 +8134,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 7.69,
-     "benchPct": 1.07,
-     "alphaPct": 6.62,
+     "pct": 6.78,
+     "benchPct": 0.6,
+     "alphaPct": 6.18,
      "toDate": "2026-09-29"
     }
    }
@@ -8157,9 +8157,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -2.96,
-     "benchPct": 1.07,
-     "alphaPct": -4.03,
+     "pct": -0.68,
+     "benchPct": 0.6,
+     "alphaPct": -1.29,
      "toDate": "2026-09-29"
     }
    }
@@ -8180,9 +8180,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -0.14,
-     "benchPct": 1.07,
-     "alphaPct": -1.21,
+     "pct": 0.42,
+     "benchPct": 0.6,
+     "alphaPct": -0.18,
      "toDate": "2026-09-29"
     }
    }
@@ -8203,9 +8203,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -2.43,
-     "benchPct": 1.07,
-     "alphaPct": -3.5,
+     "pct": -2.58,
+     "benchPct": 0.6,
+     "alphaPct": -3.19,
      "toDate": "2026-09-29"
     }
    }
@@ -8226,9 +8226,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -2.31,
-     "benchPct": 1.07,
-     "alphaPct": -3.39,
+     "pct": -2.97,
+     "benchPct": 0.6,
+     "alphaPct": -3.57,
      "toDate": "2026-09-29"
     }
    }
@@ -8249,9 +8249,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -9.36,
-     "benchPct": 1.07,
-     "alphaPct": -10.43,
+     "pct": -9.19,
+     "benchPct": 0.6,
+     "alphaPct": -9.8,
      "toDate": "2026-09-29"
     }
    }
@@ -8272,9 +8272,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 1.27,
-     "benchPct": 1.07,
-     "alphaPct": 0.2,
+     "pct": 1.77,
+     "benchPct": 0.6,
+     "alphaPct": 1.16,
      "toDate": "2026-09-29"
     }
    }
@@ -8295,9 +8295,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 4.56,
-     "benchPct": 1.07,
-     "alphaPct": 3.49,
+     "pct": 4.12,
+     "benchPct": 0.6,
+     "alphaPct": 3.51,
      "toDate": "2026-09-29"
     }
    }
@@ -8318,9 +8318,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -23.09,
-     "benchPct": 1.07,
-     "alphaPct": -24.17,
+     "pct": -24.03,
+     "benchPct": 0.6,
+     "alphaPct": -24.63,
      "toDate": "2026-09-29"
     }
    }
@@ -8341,9 +8341,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 2.95,
-     "benchPct": 1.07,
-     "alphaPct": 1.88,
+     "pct": 3.45,
+     "benchPct": 0.6,
+     "alphaPct": 2.85,
      "toDate": "2026-09-29"
     }
    }
@@ -8364,9 +8364,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -6.13,
-     "benchPct": 1.07,
-     "alphaPct": -7.2,
+     "pct": -5.51,
+     "benchPct": 0.6,
+     "alphaPct": -6.11,
      "toDate": "2026-09-29"
     }
    }
@@ -8387,9 +8387,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 6.66,
-     "benchPct": 1.07,
-     "alphaPct": 5.58,
+     "pct": 6.35,
+     "benchPct": 0.6,
+     "alphaPct": 5.75,
      "toDate": "2026-09-29"
     }
    }
@@ -8410,9 +8410,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 14.31,
-     "benchPct": 1.07,
-     "alphaPct": 13.24,
+     "pct": 14.69,
+     "benchPct": 0.6,
+     "alphaPct": 14.09,
      "toDate": "2026-09-29"
     }
    }
@@ -8433,9 +8433,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -4.82,
-     "benchPct": 1.07,
-     "alphaPct": -5.89,
+     "pct": -4.84,
+     "benchPct": 0.6,
+     "alphaPct": -5.45,
      "toDate": "2026-09-29"
     }
    }
@@ -8456,9 +8456,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -8,
-     "benchPct": 1.07,
-     "alphaPct": -9.07,
+     "pct": -7.42,
+     "benchPct": 0.6,
+     "alphaPct": -8.03,
      "toDate": "2026-09-29"
     }
    }
@@ -8479,9 +8479,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 20.55,
-     "benchPct": 1.07,
-     "alphaPct": 19.48,
+     "pct": 20.09,
+     "benchPct": 0.6,
+     "alphaPct": 19.49,
      "toDate": "2026-09-29"
     }
    }
@@ -8502,9 +8502,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 12,
-     "benchPct": 1.07,
-     "alphaPct": 10.93,
+     "pct": 12.97,
+     "benchPct": 0.6,
+     "alphaPct": 12.36,
      "toDate": "2026-09-29"
     }
    }
@@ -9069,9 +9069,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 1.74,
-     "benchPct": 1.07,
-     "alphaPct": 0.67,
+     "pct": 1.48,
+     "benchPct": 0.6,
+     "alphaPct": 0.88,
      "toDate": "2026-09-29"
     }
    }
@@ -9092,9 +9092,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 4.51,
-     "benchPct": 1.07,
-     "alphaPct": 3.44,
+     "pct": 4.69,
+     "benchPct": 0.6,
+     "alphaPct": 4.09,
      "toDate": "2026-09-29"
     }
    }
@@ -9115,9 +9115,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -9.36,
-     "benchPct": 1.07,
-     "alphaPct": -10.43,
+     "pct": -9.19,
+     "benchPct": 0.6,
+     "alphaPct": -9.8,
      "toDate": "2026-09-29"
     }
    }
@@ -9138,9 +9138,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 4.56,
-     "benchPct": 1.07,
-     "alphaPct": 3.49,
+     "pct": 4.12,
+     "benchPct": 0.6,
+     "alphaPct": 3.51,
      "toDate": "2026-09-29"
     }
    }
@@ -9161,9 +9161,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": 1.27,
-     "benchPct": 1.07,
-     "alphaPct": 0.2,
+     "pct": 1.77,
+     "benchPct": 0.6,
+     "alphaPct": 1.16,
      "toDate": "2026-09-29"
     }
    }
@@ -9184,9 +9184,9 @@
      "toDate": "2026-09-08"
     },
     "20": {
-     "pct": -1.08,
-     "benchPct": 1.07,
-     "alphaPct": -2.15,
+     "pct": -1.53,
+     "benchPct": 0.6,
+     "alphaPct": -2.14,
      "toDate": "2026-09-29"
     }
    }
@@ -13502,9 +13502,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 7.16,
-     "benchPct": -1.03,
-     "alphaPct": 8.2,
+     "pct": 6.89,
+     "benchPct": -1.49,
+     "alphaPct": 8.38,
      "toDate": "2026-09-29"
     }
    }
@@ -13519,9 +13519,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -0.47,
-     "benchPct": -1.03,
-     "alphaPct": 0.56,
+     "pct": -1.31,
+     "benchPct": -1.49,
+     "alphaPct": 0.18,
      "toDate": "2026-09-29"
     }
    }
@@ -13536,9 +13536,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 1.7,
-     "benchPct": -1.03,
-     "alphaPct": 2.73,
+     "pct": 1.74,
+     "benchPct": -1.49,
+     "alphaPct": 3.23,
      "toDate": "2026-09-29"
     }
    }
@@ -13553,9 +13553,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -2.72,
-     "benchPct": -1.03,
-     "alphaPct": -1.68,
+     "pct": -3.97,
+     "benchPct": -1.49,
+     "alphaPct": -2.48,
      "toDate": "2026-09-29"
     }
    }
@@ -13570,9 +13570,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -0.15,
-     "benchPct": -1.03,
-     "alphaPct": 0.88,
+     "pct": 0.13,
+     "benchPct": -1.49,
+     "alphaPct": 1.62,
      "toDate": "2026-09-29"
     }
    }
@@ -13587,9 +13587,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -1.35,
-     "benchPct": -1.03,
-     "alphaPct": -0.31,
+     "pct": -1.16,
+     "benchPct": -1.49,
+     "alphaPct": 0.33,
      "toDate": "2026-09-29"
     }
    }
@@ -13604,9 +13604,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -5.97,
-     "benchPct": -1.07,
-     "alphaPct": -4.89,
+     "pct": -6.13,
+     "benchPct": -1.14,
+     "alphaPct": -5,
      "toDate": "2026-09-29"
     }
    }
@@ -13621,9 +13621,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": 0.08,
-     "benchPct": -1.07,
-     "alphaPct": 1.15,
+     "pct": 0.05,
+     "benchPct": -1.14,
+     "alphaPct": 1.18,
      "toDate": "2026-09-29"
     }
    }
@@ -13638,9 +13638,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -6.26,
-     "benchPct": -1.07,
-     "alphaPct": -5.18,
+     "pct": -7.87,
+     "benchPct": -1.14,
+     "alphaPct": -6.73,
      "toDate": "2026-09-29"
     }
    }
@@ -13655,9 +13655,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -0.75,
-     "benchPct": -1.07,
-     "alphaPct": 0.32,
+     "pct": -2.37,
+     "benchPct": -1.14,
+     "alphaPct": -1.23,
      "toDate": "2026-09-29"
     }
    }
@@ -13672,9 +13672,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -1.94,
-     "benchPct": -1.07,
-     "alphaPct": -0.87,
+     "pct": -0.5,
+     "benchPct": -1.14,
+     "alphaPct": 0.63,
      "toDate": "2026-09-29"
     }
    }
@@ -13689,9 +13689,9 @@
    "reconstructed": false,
    "fwd": {
     "5": {
-     "pct": -0.36,
-     "benchPct": -1.07,
-     "alphaPct": 0.71,
+     "pct": 1.53,
+     "benchPct": -1.14,
+     "alphaPct": 2.67,
      "toDate": "2026-09-29"
     }
    }
