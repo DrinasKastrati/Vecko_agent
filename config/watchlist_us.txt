@@ -327,3 +327,20 @@ CCL
 # mot bolagets egen kallelse, aldrig mot en veckoöversikt ensam.
 NKE
 # Nike – Q1, torsdag 2026-10-01.
+
+# --- Bevakat case (scout 2026-09-29) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. Utan rad här kan
+# monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand. TEVA saknade rad i state/prices.json på
+# flaggningsdagen (tickerCount 235, okCount 230) och noll punkter i
+# price_history.json; reservkällorna är egress-blockerade (CONNECT rejected /
+# HTTP 000 mot query1.finance.yahoo.com, stooq.com och www.sec.gov, testat
+# 2026-09-29 05:58 UTC).
+TEVA
+# Teva Pharmaceutical – FDA godkände 2026-09-28 20:00 UTC DEGEVMA™ (denosumab-adet),
+# biosimilar till Amgens Xgeva®, för samtliga referensproduktens indikationer
+# (skelettrelaterade händelser vid myelom och skelettmetastaser, jättecellstumör i ben,
+# hyperkalcemi vid malignitet). Tevas andra FDA-godkända biosimilar 2026; tillsammans
+# med PONLIMSI™ (godkänd 2026-03-30, biosimilar till Prolia®) täcks hela denosumab-
+# franchisen i USA. GlobeNewswire + mfn 2026-09-28T20:00:00Z, posten ligger i
+# state/news_feed.json. Case 2 i scout-260929 -> kandidat 260929-TEVA, price: null.
