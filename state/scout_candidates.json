@@ -1205,12 +1205,13 @@
       "confirmed": true,
       "thesis": "Tilldelat RCOH-kontrakt for USS Harry S. Truman (CVN 75): 5 099 973 132 USD, optioner 5 183 380 744, klart nov 2031 - cirka en tredjedel av arsintakten. Samma kvall aven tio ROMULUS-USV:er (varde ej offentliggjort). KURS EJ VERIFIERAD efter katalysatorn: enda kursen ar 75 min FORE beskedet.",
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-29T21:15:00Z: HII is Awarded Contract to Execute USS Harry S. Truman (CVN 75) Refueling and Complex Overhaul; samt globenewswire + mfn 2026-09-29T22:30:00Z: HII Wins U.S. Navy Contract for 10 ROMULUS USVs; samt mfn 2026-09-29T19:45:00Z: Newport News Achieves Preliminary Acceptance of John F. Kennedy (CVN 79). Kontraktsvardet verifierat via GuruFocus 2026-09-29 (tva oberoende artiklar), Investing.com 2026-09-29 och GlobeNewswire-syndikering via Manila Times 2026-09-30; Kennedy-milstolpen via USNI News 2026-09-29, som skriver partially accepts dar bolaget skriver preliminary acceptance - bada redovisas (websok 2026-09-30). ROMULUS-vardet offentliggors INTE och uttalas inte. Lankarna i flodet kunde inte oppnas: www.globenewswire.com ger HTTP 000, testat 2026-09-30 05:55 UTC. Pre-event-stangning 259,64 USD 2026-09-29T20:00:03Z redovisas i rapporten men skrivs INTE som price. Teknik ur price_history.json (250 punkter) ar bruten: RSI 26,5, kurs under EMA20/50/200, MACD under signal.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 261.98,
+      "priceAsOf": "2026-09-30T10:16:00.000Z",
       "status": "new",
       "expiresAt": "2026-10-07",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     },
     {
       "id": "260930-VNDA",
@@ -1223,12 +1224,13 @@
       "confirmed": true,
       "thesis": "Pivotal fas III med HETLIOZ 20 mg vid Delayed Sleep-Wake Phase Disorder nadde primar endpoint: insomning 42,5 min tidigare mot 5,4 pa placebo, skillnad 37,1 min, p = 0,022. Indikationsutvidgning fran sallsynt Non-24 till en vanlig diagnos utan godkand behandling. KURS EJ VERIFIERAD.",
       "sourceRef": "state/news_feed.json, prnewswire 2026-09-29T22:45:00Z: Vanda Pharmaceuticals Announces Positive Phase III Results for HETLIOZ (tasimelteon) in Delayed Sleep-Wake Phase Disorder. Verifierat via BioSpace, RTTNews 2026-09-29 och Mugglehead 2026-09-29; studiedesignen mot ClinicalTrials.gov NCT04652882 (websok 2026-09-30). www.prnewswire.com ar EGRESS_BLOCKED for WebFetch. catalystType satt till regulatory eftersom enumet saknar en klinisk bucket; handelsen ar en STUDIEUTLASNING, inte ett godkannande - bolaget avser forst diskutera med FDA och darefter lamna sNDA, sa det kommersiella beskedet ligger minst ett granskningsfonster bort. Explorativ responderanalys 60 pct mot 15 pct (p = 0,008) ar EXPLORATIV och bar ingen regulatorisk vikt. Kurs ej verifierbar: VNDA saknar rad i state/prices.json (236 symboler, okCount 231) och har 0 punkter i price_history.json; query1.finance.yahoo.com, stooq.com, www.sec.gov och www.globenewswire.com ger samtliga HTTP 000, testat 2026-09-30 05:55 UTC. En sekundarkalla har rubriken Stock Up - den anvands INTE som kurs. VNDA tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 5.3611,
+      "priceAsOf": "2026-09-30T11:08:21.000Z",
       "status": "new",
       "expiresAt": "2026-10-07",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     }
   ]
 }
