@@ -344,3 +344,50 @@ TEVA
 # med PONLIMSI™ (godkänd 2026-03-30, biosimilar till Prolia®) täcks hela denosumab-
 # franchisen i USA. GlobeNewswire + mfn 2026-09-28T20:00:00Z, posten ligger i
 # state/news_feed.json. Case 2 i scout-260929 -> kandidat 260929-TEVA, price: null.
+
+# --- Bevakat case (scout 2026-09-30) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. Utan rad här kan
+# monitorn inte larma, ingen villkorad plan kan läggas och retron kan inte
+# utvärdera idén i efterhand. VNDA saknade rad i state/prices.json på
+# flaggningsdagen (tickerCount 236, okCount 231) och noll punkter i
+# price_history.json; samtliga reservkällor är egress-blockerade (HTTP 000 mot
+# query1.finance.yahoo.com, stooq.com, www.sec.gov och www.globenewswire.com,
+# testat 2026-09-30 05:55 UTC).
+VNDA
+# Vanda Pharmaceuticals – pivotal fas III (VP-VEC-162-3502) med HETLIOZ
+# (tasimelteon) 20 mg vid Delayed Sleep-Wake Phase Disorder nådde primär endpoint
+# 2026-09-29 22:45 UTC: insomning 42,5 min tidigare mot 5,4 min på placebo,
+# skillnad 37,1 min, p = 0,022 (sömndagbok). Explorativ responderanalys 60 % mot
+# 15 % (p = 0,008), inga nya säkerhetssignaler över 28 dygn. Nästa steg enligt
+# bolaget: FDA-diskussion och sNDA. prnewswire 2026-09-29T22:45:00Z, posten
+# ligger i state/news_feed.json. Case 3 i scout-260930 -> kandidat 260930-VNDA,
+# price: null.
+
+# --- Rapporterar inom 10 handelsdagar (L-5, tillagda 2026-09-30) ---
+# L-5 kräver att varje bolag som uppräkningen visar rapportera inom 10
+# handelsdagar och som saknar rad här läggs till i samma körning, så att
+# kursserien börjar byggas FÖRE eventet. Datumen kommer ur websök 2026-09-30
+# (Kiplinger "This Week's Economic Calendar", ii.co.uk "US earnings season –
+# Q3 2026", EarningsWhispers 2026-10-01), INTE ur state/earnings_calendar.json,
+# som bara kan se de symboler prices.yml redan hämtar – den såg ingen av de åtta
+# nedan. Resten av universumet är OKONTROLLERAT och får inte sammanfattas som
+# "inga fler". Rapportförbudet (promptens punkt 8, PRE_ALL/PRE_MOM underkända i
+# samtliga fyra backtestkörningar) gäller oförändrat för samtliga: en rad här är
+# bevakning, ALDRIG ett köpförslag.
+ACN
+# Accenture – Q4 FY2026, torsdag 2026-10-01.
+PEP
+# PepsiCo – Q3, torsdag 2026-10-08.
+DAL
+# Delta Air Lines – Q3, fredag 2026-10-09.
+C
+# Citigroup – Q3, tisdag 2026-10-13 (tionde handelsdagen räknat från 2026-09-30).
+BLK
+# BlackRock – Q3, tisdag 2026-10-13.
+BK
+# BNY Mellon – Q3, tisdag 2026-10-13.
+PNC
+# PNC Financial – Q3, tisdag 2026-10-13.
+USB
+# U.S. Bancorp – Q3, tisdag 2026-10-13.
+# JPM och WFC har redan rad ovan och bär isEstimate: false i earnings_calendar.json.
