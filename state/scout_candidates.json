@@ -1074,11 +1074,12 @@
       "sourceRef": "state/news_feed.json, mfn 2026-09-24T20:01:00Z: Akamai Announces $11.6 Billion Multi-year Agreement with Anthropic to Support Growing Demand. Aven SEC Form 8-K, CIK 0001086222, accession 0001193125-26-401048 (exhibit 99.1). Villkoren (warrant 7,7 miljoner aktier / ~5 pct vid 111,33 USD, ~2 pp vestar mot 11,6 mdr, capex ~5,5 mdr) verifierade via TechCrunch 2026-09-25, Qz 2026-09-25 och Investing.com 2026-09-25 (websok 2026-09-26). Reaktion +8,1 pct 25/9 ur nyhetskalla, EJ anvand som kurs. Kurs ej verifierbar: CONNECT tunnel failed, response 403 mot query1.finance.yahoo.com OCH stooq.com, testat 2026-09-26 05:55 UTC. AKAM tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 112.36,
       "priceAsOf": "2026-09-28T11:39:16.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-02",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: RSI 44,5, kurs under EMA20 110,11/EMA50 112,73/EMA200 109,98, MACD-histogram fallande 0,879->0,157, volymkvot 1,14x. Reaktionen fran 24/9 aterlamnad."
     },
     {
       "id": "260926-COST",
@@ -1094,10 +1095,11 @@
       "price": 922.765,
       "priceAsOf": "2026-09-25T20:00:01.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-02",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "decisionReason": "Grind 2: RSI 46,2, kurs under EMA20 914,52/EMA50 928,73/EMA200 949,18, volymkvot 0,93x. Oberoende grind 5: taket 10,1 pct vid 30 dagar nar ej 14 pct."
     },
     {
       "id": "260926-MSFT",
@@ -1113,10 +1115,11 @@
       "price": 516.17,
       "priceAsOf": "2026-09-25T20:00:01.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-02",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "decisionReason": "Grind 3: katalysatorn 23/9 ligger 6 handelsdagar bak. Oberoende grind 4: mal 10-14 pct (564-585) over 250d-hogsta 542,07, ingen chartreferens. MACD under signal."
     },
     {
       "id": "260926-AESI",
@@ -1131,11 +1134,12 @@
       "sourceRef": "state/news_feed.json, sec-8k 2026-09-24T21:22:29Z: 8-K - Atlas Energy Solutions Inc. (0001984060) (Filer). Innehallet (tva cost-reimbursement-avtal med a leading frontier AI lab, utrustningskopsavtal, balance-of-plant: emissionskontroll, eldistribution, batterilager, kopplat till Global Framework Agreement med Caterpillar; 613,5 MUSD) verifierat via Atlas IR pressmeddelande, Benzinga 2026-09-25, GuruFocus 2026-09-25 och Motley Fool 2026-09-25 (websok 2026-09-26). Reaktion +19,8 pct 25/9 ur nyhetskalla, EJ anvand som kurs. Kurs ej verifierbar: AESI saknar rad i state/prices.json (178 symboler) och har 0 punkter i price_history.json; Yahoo och stooq egress-blockerade (CONNECT 403, testat 2026-09-26 05:55 UTC). AESI tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 12.76,
       "priceAsOf": "2026-09-28T11:34:08.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-02",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: RSI 44,9, kurs under EMA20 12,57/EMA50 12,98/EMA200 13,25, MACD -0,283 under signal -0,109, volymkvot 1,23x. Reaktionen +19,8 pct 25/9 aterlamnad."
     },
     {
       "id": "260929-AMD",
@@ -1150,11 +1154,12 @@
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-28T20:05:00Z: AMD to Acquire World Labs to Advance the Future of AI Compute (AMD:s eget pressmeddelande). Villkoren (8,2 mdr USD, helt aktiefinansierat, stangning fore utgangen av 2026, Fei-Fei Li som EVP och chief scientist) verifierade via Bloomberg 2026-09-28, CNBC 2026-09-28 och Business Standard 2026-09-29 (websok 2026-09-29). Lanken i flodet kunde INTE oppnas: globenewswire.com och mfn.se ar egress-blockerade (EGRESS_BLOCKED, testat 2026-09-29 05:58 UTC). catalystType satt till ma_rumor eftersom det ar enumets enda M&A-bucket; affaren ar undertecknad, vilket confirmed:true bar. Pre-event-stangning 607,87 USD 2026-09-28T20:00:01Z redovisas i rapporten men skrivs INTE som price.",
       "price": 615,
       "priceAsOf": "2026-09-29T11:19:15.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-06",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: volymkvot 0,75x, MACD-histogram fallande 11,27->6,48. Grind 4: mal 10-12 pct (673-685) over 250d-hogsta 630,63 (3,1 pct takhojd)."
     },
     {
       "id": "260929-TEVA",
@@ -1169,11 +1174,12 @@
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-28T20:00:00Z: Teva Continues Biosimilar Momentum with U.S. FDA Approval of DEGEVMA (denosumab-adet), a Biosimilar to Xgeva (denosumab). Verifierat via Tevas egen IR-sida ir.tevapharm.com (pressmeddelande 2026-09-28), BioSpace och StockTitan (websok 2026-09-29). Kurs ej verifierbar: query1.finance.yahoo.com, stooq.com och www.sec.gov ger CONNECT rejected / HTTP 000, och globenewswire.com/mfn.se ar EGRESS_BLOCKED, testat 2026-09-29 05:58 UTC. TEVA tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 38.99,
       "priceAsOf": "2026-09-29T10:29:00.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-06",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: MACD 0,877 under signal 0,886 (histogram -0,009), volymkvot 1,08x. Grind 4: mal 14-18 pct (45,1-46,7) over 250d-hogsta 40,22."
     },
     {
       "id": "260930-CCL",
@@ -1189,10 +1195,11 @@
       "price": 25.11,
       "priceAsOf": "2026-09-29T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-07",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "decisionReason": "Grind 2: kurs 24,54 under EMA50 24,59 och EMA200 26,74, inverterad stack EMA20<EMA50<EMA200; 3m -14,0 pct (punkt 1b). Volymkvot 1,39x dag 2. Grind 4/5 ok."
     },
     {
       "id": "260930-HII",
@@ -1207,11 +1214,12 @@
       "sourceRef": "state/news_feed.json, globenewswire OCH mfn 2026-09-29T21:15:00Z: HII is Awarded Contract to Execute USS Harry S. Truman (CVN 75) Refueling and Complex Overhaul; samt globenewswire + mfn 2026-09-29T22:30:00Z: HII Wins U.S. Navy Contract for 10 ROMULUS USVs; samt mfn 2026-09-29T19:45:00Z: Newport News Achieves Preliminary Acceptance of John F. Kennedy (CVN 79). Kontraktsvardet verifierat via GuruFocus 2026-09-29 (tva oberoende artiklar), Investing.com 2026-09-29 och GlobeNewswire-syndikering via Manila Times 2026-09-30; Kennedy-milstolpen via USNI News 2026-09-29, som skriver partially accepts dar bolaget skriver preliminary acceptance - bada redovisas (websok 2026-09-30). ROMULUS-vardet offentliggors INTE och uttalas inte. Lankarna i flodet kunde inte oppnas: www.globenewswire.com ger HTTP 000, testat 2026-09-30 05:55 UTC. Pre-event-stangning 259,64 USD 2026-09-29T20:00:03Z redovisas i rapporten men skrivs INTE som price. Teknik ur price_history.json (250 punkter) ar bruten: RSI 26,5, kurs under EMA20/50/200, MACD under signal.",
       "price": 261.98,
       "priceAsOf": "2026-09-30T10:16:00.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-07",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: RSI 37,3 under 40 (ej turnaround), kurs under EMA20 275,08/EMA50 287,70/EMA200 316,27, MACD under signal. Kurs 267,07 ar post-event."
     },
     {
       "id": "260930-VNDA",
@@ -1226,11 +1234,12 @@
       "sourceRef": "state/news_feed.json, prnewswire 2026-09-29T22:45:00Z: Vanda Pharmaceuticals Announces Positive Phase III Results for HETLIOZ (tasimelteon) in Delayed Sleep-Wake Phase Disorder. Verifierat via BioSpace, RTTNews 2026-09-29 och Mugglehead 2026-09-29; studiedesignen mot ClinicalTrials.gov NCT04652882 (websok 2026-09-30). www.prnewswire.com ar EGRESS_BLOCKED for WebFetch. catalystType satt till regulatory eftersom enumet saknar en klinisk bucket; handelsen ar en STUDIEUTLASNING, inte ett godkannande - bolaget avser forst diskutera med FDA och darefter lamna sNDA, sa det kommersiella beskedet ligger minst ett granskningsfonster bort. Explorativ responderanalys 60 pct mot 15 pct (p = 0,008) ar EXPLORATIV och bar ingen regulatorisk vikt. Kurs ej verifierbar: VNDA saknar rad i state/prices.json (236 symboler, okCount 231) och har 0 punkter i price_history.json; query1.finance.yahoo.com, stooq.com, www.sec.gov och www.globenewswire.com ger samtliga HTTP 000, testat 2026-09-30 05:55 UTC. En sekundarkalla har rubriken Stock Up - den anvands INTE som kurs. VNDA tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 5.3611,
       "priceAsOf": "2026-09-30T11:08:21.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-07",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: likviditet 4,3 MUSD/dag under golvet 20 MUSD; kurs under EMA20/50/200. Studieutlasning, ej godkannande."
     },
     {
       "id": "261001-MU",
@@ -1245,11 +1254,12 @@
       "sourceRef": "state/news_feed.json, mfn 2026-09-30T20:01Z: Micron Technology, Inc. Reports Record Fiscal Fourth-Quarter and Full-Year 2026 Results. Siffror via CNBC 2026-09-30, MarketScreener och Investing.com Q4-slides (websok 2026-10-01). Pre-event-stangning 1065,11 USD 2026-09-30T20:00:01Z redovisas i rapporten men skrivs INTE som price.",
       "price": 1056.1534,
       "priceAsOf": "2026-10-01T11:34:45.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-08",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: MACD-histogram fallande 8,87->7,10->5,37, volymkvot 1,16x. Kurs 1054 forbors 2026-10-01T13:01Z (pre) = aldrig direktkop. Grind 4/5 ok."
     },
     {
       "id": "261001-UTHR",
@@ -1264,11 +1274,12 @@
       "sourceRef": "Bloomberg Law 2026-09-30 (Liquidia Loses Bid to Nix United Therapeutics Lung-Drug Patent), GuruFocus, Seeking Alpha 2026-09-30, Liquidias pressmeddelande via QuiverQuant, CNBC midday 2026-09-30 (UTHR +~15 pct, ur nyhetskalla, EJ anvand som kurs). Ej i news_feed.json. UTHR tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 549.68,
       "priceAsOf": "2026-10-01T11:30:31.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-08",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261001.md",
+      "decidedAt": "2026-10-01",
+      "priceSession": "pre",
+      "decisionReason": "Grind 2: teknik och likviditet ej beraknbara, 1 punkt i price_/volume_history (ny symbol). Kurs 541,89 post-event. Provas om nar serien backfillats."
     }
   ]
 }

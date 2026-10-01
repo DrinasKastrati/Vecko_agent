@@ -18645,6 +18645,259 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 762.63,
+      "currency": "USD",
+      "weight": 1,
+      "catalystType": "index",
+      "sector": "Index",
+      "rsi": 47.8,
+      "reason": "Indexsleeve 100 pct, ingen stop/mal. 762,63 (marketTime 2026-09-30T20:00Z), -1,38 pct mot entry 773,26. Regim PA: ^GSPC +6,02 pct over MA200 7217,06."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "AKAM",
+      "action": "AVVAKTA",
+      "price": 106.35,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "order",
+      "sector": "Infrastruktur/moln",
+      "rsi": 44.5,
+      "reason": "Grind 2: RSI 44,5, kurs under EMA20 110,11/EMA50 112,73/EMA200 109,98, MACD-histogram fallande 0,879->0,157, volymkvot 1,14x. Reaktionen fran 24/9 aterlamnad."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "COST",
+      "action": "AVVAKTA",
+      "price": 910.34,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "earnings",
+      "sector": "Detaljhandel",
+      "rsi": 46.2,
+      "reason": "Grind 2: RSI 46,2, kurs under EMA20 914,52/EMA50 928,73/EMA200 949,18, volymkvot 0,93x. Oberoende grind 5: taket 10,1 pct vid 30 dagar nar ej 14 pct."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "MSFT",
+      "action": "AVVAKTA",
+      "price": 512.9,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Mjukvara/AI",
+      "rsi": 60.3,
+      "reason": "Grind 3: katalysatorn 23/9 ligger 6 handelsdagar bak. Oberoende grind 4: mal 10-14 pct (564-585) over 250d-hogsta 542,07, ingen chartreferens. MACD under signal."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "AESI",
+      "action": "AVVAKTA",
+      "price": 12.01,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "order",
+      "sector": "Energi/AI-kraft",
+      "rsi": 44.9,
+      "reason": "Grind 2: RSI 44,9, kurs under EMA20 12,57/EMA50 12,98/EMA200 13,25, MACD -0,283 under signal -0,109, volymkvot 1,23x. Reaktionen +19,8 pct 25/9 aterlamnad."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 611.76,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "ma_rumor",
+      "sector": "Halvledare",
+      "rsi": 66.3,
+      "reason": "Grind 2: volymkvot 0,75x, MACD-histogram fallande 11,27->6,48. Grind 4: mal 10-12 pct (673-685) over 250d-hogsta 630,63 (3,1 pct takhojd)."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "TEVA",
+      "action": "AVVAKTA",
+      "price": 39.6,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "regulatory",
+      "sector": "Lakemedel",
+      "rsi": 58.5,
+      "reason": "Grind 2: MACD 0,877 under signal 0,886 (histogram -0,009), volymkvot 1,08x. Grind 4: mal 14-18 pct (45,1-46,7) over 250d-hogsta 40,22."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "CCL",
+      "action": "AVVAKTA",
+      "price": 24.54,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "earnings",
+      "sector": "Kryssning/resor",
+      "rsi": 56.8,
+      "reason": "Grind 2: kurs 24,54 under EMA50 24,59 och EMA200 26,74, inverterad stack EMA20<EMA50<EMA200; 3m -14,0 pct (punkt 1b). Volymkvot 1,39x dag 2. Grind 4/5 ok."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "HII",
+      "action": "AVVAKTA",
+      "price": 267.07,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "order",
+      "sector": "Forsvar/varv",
+      "rsi": 37.3,
+      "reason": "Grind 2: RSI 37,3 under 40 (ej turnaround), kurs under EMA20 275,08/EMA50 287,70/EMA200 316,27, MACD under signal. Kurs 267,07 ar post-event."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "VNDA",
+      "action": "AVVAKTA",
+      "price": 4.91,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 40.2,
+      "reason": "Grind 2: likviditet 4,3 MUSD/dag under golvet 20 MUSD; kurs under EMA20/50/200. Studieutlasning, ej godkannande."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "MU",
+      "action": "AVVAKTA",
+      "price": 1054,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "earnings",
+      "sector": "Halvledare",
+      "rsi": 59.7,
+      "reason": "Grind 2: MACD-histogram fallande 8,87->7,10->5,37, volymkvot 1,16x. Kurs 1054 forbors 2026-10-01T13:01Z (pre) = aldrig direktkop. Grind 4/5 ok."
+    },
+    {
+      "date": "2026-10-01",
+      "book": "us",
+      "mode": "B",
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-3",
+        "L-6"
+      ],
+      "ticker": "UTHR",
+      "action": "AVVAKTA",
+      "price": 541.89,
+      "currency": "USD",
+      "weight": 0,
+      "catalystType": "other",
+      "sector": "Lakemedel",
+      "rsi": null,
+      "reason": "Grind 2: teknik och likviditet ej beraknbara, 1 punkt i price_/volume_history (ny symbol). Kurs 541,89 post-event. Provas om nar serien backfillats."
     }
   ]
 }
