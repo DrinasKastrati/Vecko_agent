@@ -1243,12 +1243,13 @@
       "confirmed": true,
       "thesis": "FQ4 2026 30/9 AMC: intakt 54,23 mdr USD mot ~51,07, EPS 33,42 mot ~31,61; Q1 FY27-guide ~61,5 mdr / EPS ~38,15. Efterbors ca -1 pct (ej kurs). KURS EJ VERIFIERAD efter katalysatorn: enda kursen 20:00:01Z ar en minut FORE beskedet 20:01Z.",
       "sourceRef": "state/news_feed.json, mfn 2026-09-30T20:01Z: Micron Technology, Inc. Reports Record Fiscal Fourth-Quarter and Full-Year 2026 Results. Siffror via CNBC 2026-09-30, MarketScreener och Investing.com Q4-slides (websok 2026-10-01). Pre-event-stangning 1065,11 USD 2026-09-30T20:00:01Z redovisas i rapporten men skrivs INTE som price.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 1056.1534,
+      "priceAsOf": "2026-10-01T11:34:45.000Z",
       "status": "new",
       "expiresAt": "2026-10-08",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     },
     {
       "id": "261001-UTHR",
@@ -1261,12 +1262,13 @@
       "confirmed": true,
       "thesis": "Delaware District Court 30/9: Liquidias Yutrepia gor intrang i giltiga claims 1 och 14 i US-patent 11826327 (inhalerat treprostinil vid PH-ILD); ovriga claims ogiltiga. Skyddar Tyvasos PH-ILD-marknad. Liquidia overklagar. KURS EJ VERIFIERAD: saknas i prices.json.",
       "sourceRef": "Bloomberg Law 2026-09-30 (Liquidia Loses Bid to Nix United Therapeutics Lung-Drug Patent), GuruFocus, Seeking Alpha 2026-09-30, Liquidias pressmeddelande via QuiverQuant, CNBC midday 2026-09-30 (UTHR +~15 pct, ur nyhetskalla, EJ anvand som kurs). Ej i news_feed.json. UTHR tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 549.68,
+      "priceAsOf": "2026-10-01T11:30:31.000Z",
       "status": "new",
       "expiresAt": "2026-10-08",
       "decidedBy": null,
-      "decidedAt": null
+      "decidedAt": null,
+      "priceSession": "pre"
     }
   ]
 }
