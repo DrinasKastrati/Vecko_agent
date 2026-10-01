@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-01T13:02:17.840Z",
+ "generatedAt": "2026-10-01T13:25:24.626Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 714,
-  "measurable": 714,
+  "decisions": 725,
+  "measurable": 725,
   "missing": 0,
-  "pending": 49
+  "pending": 60
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -14670,6 +14670,116 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Molnkommunikation",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "AKAM",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Infrastruktur/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "COST",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "MSFT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Mjukvara/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "AESI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Energi/AI-kraft",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "TEVA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "CCL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kryssning/resor",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "HII",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Forsvar/varv",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "VNDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "MU",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-01",
+   "ticker": "UTHR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Lakemedel",
    "reconstructed": false,
    "fwd": {}
   }
