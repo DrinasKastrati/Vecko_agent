@@ -391,3 +391,12 @@ PNC
 USB
 # U.S. Bancorp – Q3, tisdag 2026-10-13.
 # JPM och WFC har redan rad ovan och bär isEstimate: false i earnings_calendar.json.
+
+# --- Bevakat case (scout 2026-10-01) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. UTHR saknade rad i
+# state/prices.json på flaggningsdagen (tickerCount 245) och noll punkter i
+# price_history.json.
+UTHR
+# United Therapeutics – Delaware District Court fann 2026-09-30 att Liquidias Yutrepia
+# gör intrång i giltiga claims 1 och 14 i U.S. Patent 11 826 327 (inhalerat treprostinil
+# vid PH-ILD). Case 2 i scout-261001 -> kandidat 261001-UTHR, price: null.
