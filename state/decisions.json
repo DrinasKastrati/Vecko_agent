@@ -19025,6 +19025,91 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 763.99,
+      "weight": 0.875,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven minskad 100 -> 87,5 pct for att finansiera ACN ben 1 (12,5 pct) - enda tillatna skalet i LAGE B. -1,20 pct mot entry 773,26. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-10-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "ACN",
+      "action": "KÖP",
+      "price": 212.3,
+      "weight": 0.125,
+      "entry": 212.3,
+      "stop": 200.5,
+      "target": 242.1,
+      "rr": 2.53,
+      "catalystType": "earnings",
+      "sector": "IT-tjanster",
+      "rsi": 70,
+      "horizonDays": 25,
+      "reason": "Scout 261002-ACN promotad, alla fem grindar. Q4 FY26 beat 1/10, +15,78 pct pa 5,5x volym. Stop 200,50 (-5,56 pct), mal 242,10 (+14,04 pct) vid feb-basen, tak 22,3 pct, R/R 2,53. Ben 1 av 2."
+    },
+    {
+      "date": "2026-10-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "SYNA",
+      "action": "AVVAKTA",
+      "price": 122.49,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": null,
+      "reason": "Grind 4: onsemi kontantbud 123 USD ar taket, 122,49 forbors (pre) ger +0,4 pct mot krav >= 8 pct. Grind 2: 1 historikpunkt."
+    },
+    {
+      "date": "2026-10-02",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "UTHR",
+      "action": "AVVAKTA",
+      "price": 571.38,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Lakemedel",
+      "rsi": 72,
+      "reason": "L-4 omprovning (serien backfilld, 250 pkt). Grind 2 passerar (RSI 72,0, over EMA20/50/200, MACD-kors, volym 1,89x). Grind 4: mal +10-14 pct (628-651) over 250d-hogsta 596,76 - ingen chartreferens."
     }
   ]
 }
