@@ -400,3 +400,13 @@ UTHR
 # United Therapeutics – Delaware District Court fann 2026-09-30 att Liquidias Yutrepia
 # gör intrång i giltiga claims 1 och 14 i U.S. Patent 11 826 327 (inhalerat treprostinil
 # vid PH-ILD). Case 2 i scout-261001 -> kandidat 261001-UTHR, price: null.
+
+# --- Bevakat case (scout 2026-10-02) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. SYNA saknade rad i
+# state/prices.json på flaggningsdagen (tickerCount 246) och noll punkter i
+# price_history.json.
+SYNA
+# Synaptics – omförhandlat samgående med onsemi 2026-10-01 20:34 UTC: 123 USD/aktie
+# kontant (~5,7 mdr USD) i stället för aktieavtalet från 2026-06-25, efter ett
+# oinbjudet bud från en strategisk part 2026-09-02. Case 2 i scout-261002 ->
+# kandidat 261002-SYNA, price: null.

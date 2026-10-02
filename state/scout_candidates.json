@@ -1280,6 +1280,38 @@
       "decidedAt": "2026-10-01",
       "priceSession": "pre",
       "decisionReason": "Grind 2: teknik och likviditet ej beraknbara, 1 punkt i price_/volume_history (ny symbol). Kurs 541,89 post-event. Provas om nar serien backfillats."
+    },
+    {
+      "id": "261002-ACN",
+      "date": "2026-10-02",
+      "ticker": "ACN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-01",
+      "confirmed": true,
+      "thesis": "Q4 FY26 1/10 BMO: intakt 18,68 mdr USD (+6 pct) over eget intervall 17,75-18,40; order 22,2 mdr, rekord 141 storaffarer >=100 MUSD; FY27-guide +3-6 pct lokal valuta, GAAP-EPS 14,39-14,81. Aktien +15,78 pct pa 5,5x volym, stangning over EMA20/50/200. RSI 70.",
+      "sourceRef": "Accenture 8-K (SEC CIK 0001467373) 2026-10-01; Yahoo Finance/Quartz, Benzinga och RTTNews 2026-10-01 (websok 2026-10-02). www.sec.gov EGRESS_BLOCKED for WebFetch. Kurs = reguljar stangning efter katalysatorn (slappt fore oppning).",
+      "price": 212.3,
+      "priceAsOf": "2026-10-01T20:00:03.000Z",
+      "status": "new",
+      "expiresAt": "2026-10-09"
+    },
+    {
+      "id": "261002-SYNA",
+      "date": "2026-10-02",
+      "ticker": "SYNA",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-01",
+      "confirmed": true,
+      "thesis": "Omforhandlat samgaende 1/10 AMC: onsemi forvarvar Synaptics for 123 USD/aktie kontant (~5,7 mdr USD, mot ~7 mdr i aktieavtalet 25/6), efter oinbjudet bud fran strategisk part 2/9. Stangning mitten 2027. Fusionsarbitrage, uppsida i praktiken taket 123. KURS EJ VERIFIERAD: saknas i prices.json.",
+      "sourceRef": "state/news_feed.json: mfn 2026-10-01T20:34Z (onsemi and Synaptics Announce Revised Merger Agreement) och sec-8k 2026-10-01T21:19Z (CIK 0000817720, accession 0001140361-26-038301); innehall via websok i 8-K/DEFA14A 2026-10-02. catalystType other: undertecknat avtal, inte rykte. SYNA tillagd i config/watchlist_us.txt samma korning per L-2.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-09"
     }
   ]
 }
