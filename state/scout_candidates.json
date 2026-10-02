@@ -1308,10 +1308,11 @@
       "confirmed": true,
       "thesis": "Omforhandlat samgaende 1/10 AMC: onsemi forvarvar Synaptics for 123 USD/aktie kontant (~5,7 mdr USD, mot ~7 mdr i aktieavtalet 25/6), efter oinbjudet bud fran strategisk part 2/9. Stangning mitten 2027. Fusionsarbitrage, uppsida i praktiken taket 123. KURS EJ VERIFIERAD: saknas i prices.json.",
       "sourceRef": "state/news_feed.json: mfn 2026-10-01T20:34Z (onsemi and Synaptics Announce Revised Merger Agreement) och sec-8k 2026-10-01T21:19Z (CIK 0000817720, accession 0001140361-26-038301); innehall via websok i 8-K/DEFA14A 2026-10-02. catalystType other: undertecknat avtal, inte rykte. SYNA tillagd i config/watchlist_us.txt samma korning per L-2.",
-      "price": null,
-      "priceAsOf": null,
+      "price": 122.49,
+      "priceAsOf": "2026-10-02T11:04:07.000Z",
       "status": "new",
-      "expiresAt": "2026-10-09"
+      "expiresAt": "2026-10-09",
+      "priceSession": "pre"
     }
   ]
 }
