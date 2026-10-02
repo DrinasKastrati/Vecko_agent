@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-02T13:36:00.762Z",
+  "updatedAt": "2026-10-02T18:59:41.059Z",
   "keys": [
     "beslut|2026-08-03|nordic|XACT-OMXS30.ST|KÖP",
     "beslut|2026-08-03|us|AMZN|KÖP",
@@ -29,7 +29,9 @@
     "beslut|2026-09-07|nordic|SALM.OL|KÖP",
     "alert|SALM.OL|SÄLJ|stop-loss träffad|544",
     "beslut|2026-09-22|nordic|SALM.OL|SÄLJ",
-    "beslut|2026-10-02|us|ACN|KÖP"
+    "beslut|2026-10-02|us|ACN|KÖP",
+    "alert|ACN|SÄLJ|stop-loss träffad|200.5",
+    "alert|ACN|KÖP|entry-villkor uppfyllt|205"
   ],
   "deliveries": {}
 }
