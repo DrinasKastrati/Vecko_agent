@@ -18898,6 +18898,133 @@
       "sector": "Lakemedel",
       "rsi": null,
       "reason": "Grind 2: teknik och likviditet ej beraknbara, 1 punkt i price_/volume_history (ny symbol). Kurs 541,89 post-event. Provas om nar serien backfillats."
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 480.5,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -1,71 pct pa dagen, -2,85 pct mot entry. Regim PA: +3,40 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "GMAB.CO",
+      "action": "AVVAKTA",
+      "price": 2313,
+      "currency": "DKK",
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 65.04,
+      "reason": "Punkt 4a provad. Grind 1, 2, 5 passerade (volym 2,67x pa nedgangsdag, tak 9,75 pct). Grind 3: ingen daterad katalysator i flodet. Grind 4 oberoende: inget motstand over 250d-hogsta.",
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SALM.OL",
+      "action": "AVVAKTA",
+      "price": 564,
+      "currency": "NOK",
+      "catalystType": "insider",
+      "sector": "Havsbruk",
+      "rsi": 51.97,
+      "reason": "Punkt 4a provad. Grind 2: farskt bearish MACD-kors (histogram 0,843 -> -0,061) och volymkvot 0,99x < 1,5x. Kurs -1,40 pct pa dagen.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NIBE-B.ST",
+      "action": "AVVAKTA",
+      "price": 44.71,
+      "currency": "SEK",
+      "catalystType": "macro",
+      "sector": "Varmepumpar",
+      "rsi": 58.69,
+      "reason": "Punkt 4a provad. Grind 2: MACD-histogram under noll och fallande (-0,026 -> -0,084), volymkvot 1,12x < 1,5x. Grind 4 oberoende: 250d-hogsta 46,04 ar +2,97 pct, under kostnadstroskeln 6 pct.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NESTE.HE",
+      "action": "AVVAKTA",
+      "price": 33.21,
+      "currency": "EUR",
+      "catalystType": "other",
+      "sector": "Fornybara branslen",
+      "rsi": 50.72,
+      "reason": "Punkt 4a provad. Grind 2: kurs 33,21 under EMA20 33,38, MACD-histogram -0,199 -> -0,226, volymkvot 0,65x < 1,5x.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SINCH.ST",
+      "action": "AVVAKTA",
+      "price": 45.58,
+      "currency": "SEK",
+      "catalystType": "other",
+      "sector": "Molnkommunikation",
+      "rsi": 47.31,
+      "reason": "Punkt 4a provad. Grind 2: RSI 47,31 under bandet, MACD-histogram -0,405 -> -0,471, kurs under EMA20 46,76, volymkvot 1,16x. Ingen daterad nyhet i flodet.",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
