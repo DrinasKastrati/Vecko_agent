@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-02T12:23:27.528Z",
+ "generatedAt": "2026-10-02T13:25:46.099Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 730,
-  "measurable": 730,
+  "decisions": 733,
+  "measurable": 733,
   "missing": 0,
-  "pending": 57
+  "pending": 60
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -14950,6 +14950,36 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Molnkommunikation",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-02",
+   "ticker": "ACN",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "earnings",
+   "sector": "IT-tjanster",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-02",
+   "ticker": "SYNA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-02",
+   "ticker": "UTHR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Lakemedel",
    "reconstructed": false,
    "fwd": {}
   }
