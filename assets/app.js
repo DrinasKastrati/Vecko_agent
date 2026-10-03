@@ -1055,6 +1055,7 @@
 
       // Dagens beslut, oavsett om aktien ligger i portföljen än.
       const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm" }).format(now);
+      const nonTradingDay = /^(Sat|Sun)$/.test(new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Stockholm", weekday: "short" }).format(now));
       const actions = [];
       const decisionRows = S.decisions && Array.isArray(S.decisions.decisions) ? S.decisions.decisions : null;
       if (decisionRows) decisionRows.filter(d => d && d.date === today).forEach(d => {
@@ -1079,7 +1080,7 @@
       const nx = P.nextRoutineRun(new Date());
       return {
         totalAccum: S.portfolioUs ? (nAcc != null && uAcc != null ? nAcc * split + uAcc * (1 - split) : null) : (nAcc ?? null),
-        books, actions, stale,
+        books, actions, stale, nonTradingDay,
         blocked: !!(S.dailies[0] && S.dailies[0].blocked),
         dateLabel: today,
         pending: books.reduce((n, b) => n + b.pending, 0),

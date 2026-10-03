@@ -3900,6 +3900,8 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   const incomplete = VR.renderSimple({ stale: true });
   ok("hem: gammalt underlag är varning, inte klartecken", incomplete.includes("sv-verdict--warn") && !incomplete.includes("sv-verdict--ok"));
   ok("hem: blockerade kurser förklaras i huvudbeskedet", VR.renderSimple({ blocked: true }).includes('<div class="sv-a">Kurser kunde inte bekräftas.'));
+  ok("hem: helg påstår inte att en ordinarie rotation saknas", VR.renderSimple({ stale: true, nonTradingDay: true }).includes("Ingen ordinarie aktierotation i dag.") && !VR.renderSimple({ stale: true, nonTradingDay: true }).includes("inte komplett ännu"));
+  ok("hem: helg döljer inte ett kursfel", VR.renderSimple({ blocked: true, nonTradingDay: true }).includes('<div class="sv-a">Kurser kunde inte bekräftas.'));
   const owns = VR.renderSimple({ books: [{ key: "us", holdings: [{ ticker: 'X"<', name: '<img src=x>', price: 12, currency: "USD" }] }] });
   ok("hem: innehav är bokmärkta och escapes", owns.includes('data-holding-book="us"') && !owns.includes('<img') && owns.includes('data-inspect-ticker="X&quot;&lt;"'));
 }

@@ -1043,8 +1043,8 @@
       allocMeta = `<div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> baslinje 50/50 – allokerings-routinen har inte kört ännu.</div>`;
     } else if (meta && (meta.rationale || meta.updatedAt)){
       const upd = meta.updatedAt ? String(meta.updatedAt).slice(0, 10) : "";
-      allocMeta = `<div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> ${esc(strip(meta.rationale) || "–")}`
-        + `<span class="alloc-meta-t">satt av allokerings-routinen${upd ? " · " + esc(upd) : ""}${meta.week ? " · " + esc(meta.week) : ""}</span></div>`;
+      allocMeta = `<details class="alloc-reason"><summary>Visa motivering till kapitalfördelningen${upd ? " · " + esc(upd) : ""}</summary><div class="alloc-meta"><span class="alloc-meta-k">Kapitalvikt</span> ${esc(strip(meta.rationale) || "–")}`
+        + `<span class="alloc-meta-t">satt av allokerings-routinen${upd ? " · " + esc(upd) : ""}${meta.week ? " · " + esc(meta.week) : ""}</span></div></details>`;
     }
     // Valutaupplysning: us-boken är USD-denominerad och blended-talet räknar
     // procent mot procent. För en SEK-depå tillkommer USD/SEK-rörelsen – den
@@ -1171,8 +1171,8 @@
     } else {
       verdict = `<div class="sv-verdict ${m.stale || m.blocked ? "sv-verdict--warn" : "sv-verdict--ok"}">
         <div class="sv-q">Behöver du göra något i dag?</div>
-        <div class="sv-a">${m.blocked ? "Kurser kunde inte bekräftas." : m.stale ? "Dagens underlag är inte komplett ännu." : "Nej."}</div>
-        <p class="sv-note">${m.stale || m.blocked ? "Kontrollera senaste rapport och kursunderlag innan du agerar." : held.length
+        <div class="sv-a">${m.blocked ? "Kurser kunde inte bekräftas." : m.nonTradingDay ? "Ingen ordinarie aktierotation i dag." : m.stale ? "Dagens underlag är inte komplett ännu." : "Nej."}</div>
+        <p class="sv-note">${m.nonTradingDay && !m.blocked ? "Det är helg. Aktierotationerna körs på vardagar. Läs senaste handelsdagens rapport och kurser innan du agerar." : m.stale || m.blocked ? "Kontrollera senaste rapport och kursunderlag innan du agerar." : held.length
           ? "Roboten behåller allt den äger. Att inte handla är ett aktivt beslut, inte en utebliven insats."
           : "Roboten äger inget just nu och har inte hittat något värt att köpa."}</p>
       </div>`;
@@ -1272,7 +1272,7 @@
 
     let state = "ok", head = "Inget att göra i dag";
     if (todo) { state = "act"; head = `${todo} ${todo === 1 ? "affär" : "affärer"} att lägga`; }
-    else if (m.blocked || m.stale) { state = "warn"; head = m.blocked ? "Kurser kunde inte bekräftas" : "Dagens underlag inte komplett"; }
+    else if (m.blocked || m.stale) { state = "warn"; head = m.blocked ? "Kurser kunde inte bekräftas" : m.nonTradingDay ? "Ingen ordinarie aktierotation i dag" : "Dagens underlag inte komplett"; }
     const sub = todo
       ? acts.filter(a => a.decision === "KÖP" || a.decision === "SÄLJ").slice(0, 3)
           .map(a => `${a.decision === "KÖP" ? "Köp" : "Sälj"} ${a.name || a.ticker || ""}`).join(" · ")

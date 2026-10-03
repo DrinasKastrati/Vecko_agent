@@ -801,6 +801,7 @@ if (!tkWithHistory) {
   dash.closeCommand(); dash.state.metas = originalReports;
   dash.showView("hem");
   const originalAlerts = dash.state.alerts;
+  ok("hem: helg bestäms i svensk tid", dash.simpleModel(new Date("2026-10-02T22:30:00Z")).nonTradingDay && !dash.simpleModel(new Date("2026-10-02T12:00:00Z")).nonTradingDay);
   dash.state.alerts = { active: [] }; dash.renderWorkspace();
   ok("signalcenter: noll signaler är tydligt", doc.getElementById("signalCount").textContent === "0 aktiva signaler" && doc.getElementById("signalCenter").dataset.active === "false");
   dash.state.alerts = originalAlerts; dash.renderWorkspace();
