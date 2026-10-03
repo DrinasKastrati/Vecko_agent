@@ -18,8 +18,8 @@
   "use strict";
 
   var THEMES = [
-    { id: "deck",     label: "Deck",    css: "assets/themes/deck.css",     defaultMode: "dark",
-      title: "Quant Deck – mörk sidopanel, full skärmbredd" },
+    { id: "deck",     label: "Deck",    css: "assets/themes/deck.css",     defaultMode: "light",
+      title: "Vecko Deck – lugn arbetsyta, tydligt beslutsstöd" },
     { id: "nordlys",  label: "Nordlys", css: "assets/themes/nordlys.css",  defaultMode: "light",
       title: "Nordlys – redaktionell, serif, luftig spalt" },
     { id: "terminal", label: "Term",    css: "assets/themes/terminal.css", defaultMode: "dark",

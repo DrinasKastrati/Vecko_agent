@@ -34,7 +34,7 @@
 // till dem, så ett cachat skal från v3 saknar dem. Strategin är nät-först och
 // renderingen är null-säkrad, så följden hade blivit tysta tomma rutor snarare än
 // ett fel – men just det är skälet att bumpa: format på det som cachas ändrades.
-const CACHE = "vecko-agent-v8"; // audit: updated parser, sanitizer and live-start contract
+const CACHE = "vecko-agent-v9"; // 2026-10-03: ny arbetsyta och snabbsök
 
 /* Skalet som måste finnas för att sidan ska kunna rendera offline.
    Sökvägarna är relativa till service workerns scope (GitHub Pages: /Vecko_agent/). */

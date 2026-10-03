@@ -1154,7 +1154,7 @@
     const books = m.books || [];
     const todo = (m.actions || []).filter(a => a.decision === "KÖP" || a.decision === "SÄLJ");
     const held = [];
-    books.forEach(b => (b.holdings || []).forEach(h => held.push(Object.assign({ book: b.label }, h))));
+    books.forEach(b => (b.holdings || []).forEach(h => held.push(Object.assign({ book: b.label, bookKey: b.key || "nordic" }, h))));
 
     /* 1. Uppgiften. Roboten är beslutsSTÖD – den lägger inga ordrar. Står det
           KÖP eller SÄLJ i dagens rapport är det något Dren faktiskt ska göra. */
@@ -1169,10 +1169,10 @@
         <p class="sv-note">Roboten lägger inga ordrar själv. Den föreslår, du bestämmer.</p>
       </div>`;
     } else {
-      verdict = `<div class="sv-verdict sv-verdict--ok">
+      verdict = `<div class="sv-verdict ${m.stale || m.blocked ? "sv-verdict--warn" : "sv-verdict--ok"}">
         <div class="sv-q">Behöver du göra något i dag?</div>
-        <div class="sv-a">${m.stale ? "Dagens underlag är inte komplett ännu." : "Nej."}</div>
-        <p class="sv-note">${m.stale ? "Kontrollera senaste rapportdatum innan du agerar." : held.length
+        <div class="sv-a">${m.blocked ? "Kurser kunde inte bekräftas." : m.stale ? "Dagens underlag är inte komplett ännu." : "Nej."}</div>
+        <p class="sv-note">${m.stale || m.blocked ? "Kontrollera senaste rapport och kursunderlag innan du agerar." : held.length
           ? "Roboten behåller allt den äger. Att inte handla är ett aktivt beslut, inte en utebliven insats."
           : "Roboten äger inget just nu och har inte hittat något värt att köpa."}</p>
       </div>`;
@@ -1195,13 +1195,22 @@
     /* 3. Vad roboten äger, i klarspråk. */
     const ownList = held.length
       ? `<ul class="sv-own">${held.map(h => {
-          const sinceTxt = h.since ? ` <span class="sv-since">${esc(h.since)} sedan köpet</span>` : "";
-          const sleeve = h.isSleeve
-            ? ` <span class="sv-tag">indexfond – här parkeras pengar som inte ligger i enskilda aktier</span>` : "";
-          return `<li><b>${esc(plainName(h))}</b>${sinceTxt}${sleeve}</li>`;
-        }).join("")}</ul>`
-      : `<p class="sv-empty">Inget innehav just nu. Pengarna står i indexfonden.</p>`;
-    const owns = `<div class="sv-card sv-card--own"><h3>Vad roboten äger</h3>${ownList}</div>`;
+          const price = Number.isFinite(h.price) ? h.price.toLocaleString("sv-SE", { maximumFractionDigits: 2 }) : "–";
+          const cls = h.pnlPct > 0 ? "pos" : h.pnlPct < 0 ? "neg" : "";
+          const history = (h.history || []).filter(p => Array.isArray(p) && Number.isFinite(p[1]) && p[1] > 0);
+          return `<li data-holding-book="${esc(h.bookKey)}"><button type="button" class="sv-holding"${h.ticker ? ` data-inspect-ticker="${esc(h.ticker)}"` : " disabled"} title="${esc(h.ticker ? "Visa kurshistorik för " + h.ticker : "Ticker saknas")}">
+            <span class="sv-monogram" aria-hidden="true">${h.isSleeve ? "≋" : esc((h.ticker || plainName(h)).slice(0, 2))}</span>
+            <span><span class="sv-holding-name">${esc(plainName(h))}</span><span class="sv-holding-meta">${esc(h.ticker || "")} · ${h.bookKey === "us" ? "USA" : "Norden"}${h.isSleeve ? " · indexfond" : ""}</span></span>
+            <span class="sv-holding-spark">${sparkline(history, 76, 28)}</span>
+            <span class="sv-holding-value"><strong>${esc(price)}${h.currency ? " " + esc(h.currency) : ""}</strong><span class="sv-since ${cls}">${h.since ? esc(h.since) + " sedan köpet" : "Utfall saknas"}</span></span>
+          </button></li>`;
+        }).join("")}</ul>` : "";
+    const filters = `<div class="sv-own-filters" role="group" aria-label="Filtrera innehav på startsidan">
+      <button type="button" data-homebook="all" aria-pressed="true">Alla</button>
+      <button type="button" data-homebook="nordic" aria-pressed="false">Norden</button>
+      <button type="button" data-homebook="us" aria-pressed="false">USA</button></div>`;
+    const owns = `<div class="sv-card sv-card--own"><div class="sv-own-head"><h3>Vad roboten äger</h3>${filters}</div>${ownList}<p class="sv-own-empty"${held.length ? " hidden" : ""}>Inga öppna innehav i den valda boken.</p>
+      <button type="button" class="card-link" data-goto-view="total">Portföljvikter &amp; allokering <span aria-hidden="true">↗</span></button></div>`;
 
     /* 4. Dagens händelser som meningar. */
     const acts = (m.actions || []);
@@ -1231,13 +1240,18 @@
     const words = `<details class="sv-words"><summary>Vad betyder orden?</summary>
       <ul>
         <li><b>Köp / Sälj / Behåll</b> – vad roboten tycker att du ska göra med en aktie i dag.</li>
-        <li><b>Avvakta</b> – kursen kunde inte bekräftas mot en pålitlig källa, så roboten avstår hellre än gissar.</li>
+        <li><b>Avvakta</b> – villkoren för ett köp är inte uppfyllda. Rapportens motivering förklarar varför.</li>
         <li><b>Stopp</b> – kursen där en förlorande position säljs, bestämd i förväg.</li>
         <li><b>Mål</b> – kursen där vinsten tas hem.</li>
         <li><b>Indexfond</b> – pengar utan eget case parkeras i en fond som följer börsen, i stället för att ligga still.</li>
       </ul></details>`;
 
-    return `<div class="sv">${verdict}${howsit}${owns}${today}${next}${words}</div>`;
+    const shortcuts = `<div class="sv-shortcuts">
+      <button type="button" class="sv-shortcut" data-goto-view="rapporter"><span><span class="eyebrow">BESLUTSUNDERLAG</span><strong>Läs senaste rapporten</strong></span><span aria-hidden="true">↗</span></button>
+      <button type="button" class="sv-shortcut" data-goto-view="scout"><span><span class="eyebrow">IDÉFLÖDE</span><strong>${m.candidateCount != null ? esc(m.candidateCount) + " nya kandidater" : "Scout &amp; kandidater"}</strong></span><span aria-hidden="true">↗</span></button>
+      <button type="button" class="sv-shortcut" data-goto-view="total"><span><span class="eyebrow">PÅ BEVAKNING</span><strong>${m.pending != null ? esc(m.pending) + " villkorade planer" : "Planer &amp; portfölj"}</strong></span><span aria-hidden="true">↗</span></button>
+    </div>`;
+    return `<div class="sv">${verdict}${howsit}${owns}${today}${shortcuts}${next}${words}</div>`;
   }
 
   /* ---- HEM: DAGSSAMMANFATTNING (detaljerat läge) ---------------------------
@@ -1302,7 +1316,26 @@
     return `<div class="hs">${today}${total}${bookTiles}${alerts}</div>`;
   }
 
-  const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple, renderHemSummary,
+  // Senast tillgängliga marknadskurser. Aldrig ett konstruerat live-flöde.
+  function renderMarketPulse(prices){
+    const quotes = (prices && prices.quotes) || {};
+    const indexes = [["^OMX", "OMXS30"], ["^GSPC", "S&P 500"], ["^IXIC", "Nasdaq"], ["BTC-USD", "Bitcoin"]];
+    return indexes.map(([ticker, label]) => {
+      const q = quotes[ticker];
+      const valid = q && !q.error && Number.isFinite(q.price) && q.price > 0;
+      const price = valid ? q.price.toLocaleString("sv-SE", { maximumFractionDigits: 2 }) : "–";
+      const change = valid && prices.schemaVersion && Number.isFinite(q.previousClose) && q.previousClose > 0 ? (q.price / q.previousClose - 1) * 100 : null;
+      const stamp = valid && q.marketTime && Number.isFinite(Date.parse(q.marketTime))
+        ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(q.marketTime))
+        : "Tidsstämpel saknas";
+      return `<button type="button" class="pulse-item"${valid ? ` data-inspect-ticker="${esc(ticker)}"` : " disabled"} title="${esc(label)} · ${esc(valid ? stamp + " · " + (q.source || "källa ej angiven") : "Kurs saknas")}">
+        <span class="pulse-name">${esc(label)}</span><span class="pulse-value">${esc(price)}${ticker === "BTC-USD" && valid ? '<span class="pulse-currency">USD</span>' : ""}</span>
+        <span class="pulse-change ${change > 0 ? "pos" : change < 0 ? "neg" : ""}">${plainPct(change)}</span><span class="pulse-time">${valid ? esc(stamp) : "Underlag saknas"} · snapshot</span>
+      </button>`;
+    }).join("");
+  }
+
+  const API = { esc, signPct, plainPct, trendClass, decClass, truncate, clamp, tickerPill, diffStrip, sparkline, pxAge, renderSimple, renderHemSummary, renderMarketPulse,
     renderStatusRow, renderKPIs, renderMarket, renderHoldings, renderFeed, fillRow, renderFillsPending, renderMyStats,
     renderHistory, renderBubblare, renderOptions, renderBanner, renderPrices, renderScout,
     renderAnalysisIndex, renderTradeStats, renderAlerts, renderSearchResults, renderReportRail, renderTotal,

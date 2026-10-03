@@ -178,22 +178,24 @@ try {
   });
   await test("service worker registers cache lifetime during dispatch and retains other caches", async () => {
     const handlers = {}, deleted = [];
+    const workerSource = readFileSync(resolve(originalCwd, "sw.js"), "utf8");
+    const currentCache = workerSource.match(/const CACHE\s*=\s*["']([^"']+)["']/)[1];
     let finishWrite, response, lifetime, dispatching = false;
     const worker = {
       self: { addEventListener: (name, fn) => { handlers[name] = fn; }, clients: { claim: async () => {} } },
       URL, Promise,
       caches: {
-        keys: async () => ["other-app-v1", "vecko-agent-v7", "vecko-agent-v8"],
+        keys: async () => ["other-app-v1", "vecko-agent-obsolete", currentCache],
         delete: async key => { deleted.push(key); },
         match: async () => undefined,
         open: async () => ({ put: () => new Promise(resolve => { finishWrite = resolve; }) })
       },
       fetch: async () => ({ ok: true, clone: () => ({}) })
     };
-    runInNewContext(readFileSync(resolve(originalCwd, "sw.js"), "utf8"), worker);
+    runInNewContext(workerSource, worker);
     handlers.activate({ waitUntil: p => { lifetime = p; } });
     await lifetime;
-    assert.deepEqual(deleted, ["vecko-agent-v7"]);
+    assert.deepEqual(deleted, ["vecko-agent-obsolete"]);
     for (const url of ["https://example.com/assets/app.js", "https://cdn.jsdelivr.net/npm/chart.js@4.4.3"]) {
       response = lifetime = undefined;
       dispatching = true;

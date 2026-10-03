@@ -98,7 +98,7 @@ ok("hem: statusrad med nästa körning", txt("hemStatus").includes("status-row")
 // --- enkelt läge (standard) ---
 ok("hem/enkel är standardläget", doc.documentElement.getAttribute("data-hemmode") !== "detaljerad");
 ok("hem/enkel: uppgiftsrutan renderad", txt("hemMain").includes("Behöver du göra något"));
-ok("hem/enkel: svarar ja eller nej", /sv-verdict--(ok|act)/.test(txt("hemMain")));
+ok("hem/enkel: visar uppgift eller ofullständigt underlag", /sv-verdict--(ok|act|warn)/.test(txt("hemMain")));
 ok("hem/enkel: högerspalten tom", txt("hemRail").trim() === "");
 ok("hem/enkel: ingen rå jargong i uppgiftsrutan", !/P\/L|R\/R|sleeve/i.test(txt("hemMain")));
 /* Innehaven MÅSTE komma ur portfolj.md, inte ur dagsrapportens beslutslista.
@@ -738,6 +738,72 @@ if (!tkWithHistory) {
     dash.cacheGet("vr_push_registered") !== true);
   dash.closePushModal();
   ok("push: reservrutan går att stänga", !modal.classList.contains("open"));
+}
+
+// Nya arbetsytan: verkliga klick, fokushantering och sökning utan beställning.
+{
+  dash.showView("hem");
+  doc.querySelector('[data-hemmode-set="enkel"]').click();
+  await new Promise(r => setTimeout(r, 0)); // MutationObserver renderar det nya läget.
+  const rows = [...doc.querySelectorAll("[data-holding-book]")];
+  doc.querySelector('[data-homebook="us"]').click();
+  ok("hemfilter: endast US-innehav visas", rows.every(r => r.hidden === (r.dataset.holdingBook !== "us")));
+  ok("hemfilter: skärmläsaren ser vald bok", doc.querySelector('[data-homebook="us"]').getAttribute("aria-pressed") === "true");
+  ok("hemfilter: tomläge följer vald bok", doc.querySelector(".sv-own-empty").hidden === rows.some(r => r.dataset.holdingBook === "us"));
+  dash.renderHem();
+  ok("hemfilter: vald bok behålls efter uppdatering", doc.querySelector('[data-homebook="us"]').getAttribute("aria-pressed") === "true");
+  doc.querySelector('[data-homebook="all"]').click();
+  ok("hemfilter: alla återställer listan", [...doc.querySelectorAll("[data-holding-book]")].every(r => !r.hidden));
+  let opened = null;
+  const originalChart = dash.openPxChart;
+  dash.openPxChart = t => { opened = t; };
+  const holding = doc.querySelector(".sv-holding[data-inspect-ticker]");
+  if (holding) {
+    holding.click();
+    ok("innehav: klick öppnar rätt kurshistorik", opened === holding.dataset.inspectTicker);
+  }
+  dash.openPxChart = originalChart;
+  const beforeFetch = fetchCount;
+  const trigger = doc.getElementById("commandBtn"), modal = doc.getElementById("commandModal"), input = doc.getElementById("commandInput");
+  trigger.focus(); trigger.click();
+  ok("snabbsök: öppnar och fokuserar sökfältet", !modal.hidden && doc.activeElement === input);
+  ok("snabbsök: bakgrunden är inaktiv", doc.querySelector(".shell").inert === true);
+  input.value = "samlad"; input.dispatchEvent(new window.Event("input"));
+  ok("snabbsök: vyträff hittas", dash._commandMatches[0]?.value === "total");
+  input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  ok("snabbsök: Enter öppnar rätt vy", doc.querySelector('.view.active').dataset.view === "total" && modal.hidden);
+  ok("snabbsök: stängning frigör bakgrunden", !doc.querySelector(".shell").inert && doc.body.style.overflow === "");
+  trigger.focus();
+  doc.dispatchEvent(new window.KeyboardEvent("keydown", { key: "k", ctrlKey: true, bubbles: true }));
+  ok("snabbsök: Ctrl K fungerar", !modal.hidden && doc.activeElement === input);
+  input.value = "zzzz-ingen-träff"; input.dispatchEvent(new window.Event("input"));
+  ok("snabbsök: inga träffar har ett begripligt tomläge", doc.getElementById("commandResults").textContent.includes("Inga träffar"));
+  input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  ok("snabbsök: Escape återställer fokus", modal.hidden && doc.activeElement === trigger);
+  trigger.click();
+  const results = [...modal.querySelectorAll("[data-command-index]")];
+  results.at(-1).focus();
+  results.at(-1).dispatchEvent(new window.KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+  ok("snabbsök: Tab stannar i dialogen", doc.activeElement === doc.getElementById("commandClose"));
+  input.focus(); input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+  ok("snabbsök: pil väljer ett fokuserat resultat", doc.activeElement.matches("[data-command-index]") && doc.activeElement.classList.contains("active"));
+  ok("snabbsök: ingen extra hämtning vid sökning", fetchCount === beforeFetch);
+  let issueOpened = false;
+  const originalOpen = window.open, originalQueue = JSON.stringify(dash.state.queue);
+  window.open = () => { issueOpened = true; };
+  dash._commandMatches = [{ kind: "ticker", value: "ZZZ-SNABBTEST" }]; dash.chooseCommand(0);
+  ok("snabbsök: ticker öppnas utan analysbeställning", doc.getElementById("analysInput").value === "ZZZ-SNABBTEST" && !issueOpened && JSON.stringify(dash.state.queue) === originalQueue);
+  window.open = originalOpen;
+  const originalReports = dash.state.metas;
+  dash.state.metas = [{ name: '<img src=x onerror=alert(1)>.md', type: "daily", dateISO: "2026-10-02" }];
+  trigger.click(); input.value = "2026-10-02"; input.dispatchEvent(new window.Event("input"));
+  ok("snabbsök: rapportmetadata escapes", !doc.querySelector("#commandResults img") && doc.getElementById("commandResults").textContent.includes("<img"));
+  dash.closeCommand(); dash.state.metas = originalReports;
+  dash.showView("hem");
+  const originalAlerts = dash.state.alerts;
+  dash.state.alerts = { active: [] }; dash.renderWorkspace();
+  ok("signalcenter: noll signaler är tydligt", doc.getElementById("signalCount").textContent === "0 aktiva signaler" && doc.getElementById("signalCenter").dataset.active === "false");
+  dash.state.alerts = originalAlerts; dash.renderWorkspace();
 }
 
 console.log(`\nSIM: ${pass} passed, ${fail} failed`);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Aktie bot</title>
+<title>Vecko · Portfölj & beslutsstöd</title>
 <meta name="theme-color" content="#0E1422" />
 <link rel="manifest" href="manifest.json" />
 <!--
@@ -47,17 +47,23 @@
 <script src="assets/fills.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#mainContent">Hoppa till innehåll</a>
 <div class="shell">
 
   <div class="headwrap">
     <header class="topbar">
       <div class="side-brand">
-        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" fill-opacity=".08"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
+        <svg class="logo" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="currentColor" fill-opacity=".08"/><path d="m9 12 9 14 9-14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="9" r="2" fill="currentColor"/></svg>
         <div>
-          <h1>Aktie bot</h1>
-          <div class="sub">automatiserat beslutsstöd</div>
+          <h1>Vecko<span class="brand-period">.</span></h1>
+          <div class="sub">Ditt beslutsrum</div>
         </div>
       </div>
+      <div class="tb-identity"><span class="eyebrow">DITT BESLUTSRUM</span><strong id="currentViewLabel">Översikt</strong></div>
+      <button type="button" id="commandBtn" class="command-trigger" aria-haspopup="dialog" aria-controls="commandModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+        <span>Sök ticker, rapport eller vy</span><kbd>⌘ K</kbd>
+      </button>
       <!-- Zon 1: systemstatus och datans ålder. Id:na skrivs av app.js. -->
       <div class="tb-status">
         <div class="status"><span id="liveDot" class="dot"></span><span id="statusTxt">Startar…</span></div>
@@ -85,32 +91,32 @@
       </div>
     </header>
 
-    <nav class="subnav" role="tablist" aria-label="Huvudmeny">
+    <nav class="subnav" aria-label="Huvudmeny">
       <!-- andra varumärkesplatsen: syns bara när temat lägger menyn som sidopanel -->
       <div class="brand-nav">
-        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" fill-opacity=".08"/><rect x="8" y="11" width="4" height="13" rx="1" fill="#10B981"/><rect x="9" y="6" width="2" height="6" fill="#10B981"/><rect x="9" y="23" width="2" height="4" fill="#10B981"/><rect x="20" y="8" width="4" height="11" rx="1" fill="#EF4444"/><rect x="21" y="5" width="2" height="4" fill="#EF4444"/><rect x="21" y="18" width="2" height="7" fill="#EF4444"/></svg>
+        <svg class="logo" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="currentColor" fill-opacity=".08"/><path d="m9 12 9 14 9-14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="9" r="2" fill="currentColor"/></svg>
         <div>
-          <h1>Aktie bot</h1>
-          <div class="sub">automatiserat beslutsstöd</div>
+          <h1>Vecko<span class="brand-period">.</span></h1>
+          <div class="sub">Ditt beslutsrum</div>
         </div>
       </div>
 
       <!-- Varje länk: ikon + etikett. data-short är mobilens etikett (base.css).
            data-primary = syns i mobilens botten-bar; övriga ligger bakom "Mer".
            Ordningen styr kortkommandona 1–9 – ändra den inte i onödan. -->
-      <span class="nav-group">Portfölj</span>
-      <a href="#hem" class="active" data-view="hem" data-short="Hem" data-primary><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span class="nav-lbl">Hem</span></a>
-      <a href="#total" data-view="total" data-short="Total"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15.5 3.7A9 9 0 0 1 20.3 8.5h-4.8z"/></svg><span class="nav-lbl">Total</span></a>
+      <span class="nav-group">Arbetsyta</span>
+      <a href="#hem" class="active" data-view="hem" data-short="Hem" data-primary><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span class="nav-lbl">Översikt</span></a>
+      <a href="#total" data-view="total" data-short="Total"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15.5 3.7A9 9 0 0 1 20.3 8.5h-4.8z"/></svg><span class="nav-lbl">Samlad portfölj</span></a>
       <a href="#oversikt" data-view="oversikt" data-short="Nordisk" data-primary><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg><span class="nav-lbl">Nordisk rotation</span></a>
       <a href="#us" data-view="us" data-short="US" data-primary><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span class="nav-lbl">US-rotation</span></a>
 
       <span class="nav-group">Analys</span>
-      <a href="#scout" data-view="scout" data-short="USA &amp; Krypto"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span class="nav-lbl">USA &amp; Krypto</span></a>
+      <a href="#scout" data-view="scout" data-short="USA &amp; Krypto"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span class="nav-lbl">Scout &amp; idéer</span></a>
       <a href="#analys" data-view="analys" data-short="Analys"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="nav-lbl">Aktieanalys</span></a>
       <a href="#rapporter" data-view="rapporter" data-short="Rapporter" data-primary><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span class="nav-lbl">Rapporter</span></a>
       <a href="#nyheter" data-view="nyheter" data-short="Nyheter"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5"/></svg><span class="nav-lbl">Nyheter &amp; radar</span></a>
 
-      <span class="nav-group">Data &amp; historik</span>
+      <span class="nav-group">Uppföljning</span>
       <a href="#kurser" data-view="kurser" data-short="Kurser"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M7 16V9M12 16V5M17 16v-4"/></svg><span class="nav-lbl">Kurser</span></a>
       <a href="#avkastning" data-view="avkastning" data-short="Avkastning"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg><span class="nav-lbl">Avkastning</span></a>
       <a href="#retro" data-view="retro" data-short="Retro"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg><span class="nav-lbl">Retro &amp; lärdomar</span></a>
@@ -128,13 +134,24 @@
     </nav>
   </div>
 
-  <div class="main">
+  <main class="main" id="mainContent" tabindex="-1">
     <div class="wrap">
       <div id="banner"></div>
-      <div id="alerts"></div>
+      <details class="signal-center" id="signalCenter">
+        <summary><span class="signal-mark" aria-hidden="true">↗</span><b>Signalcenter</b><span id="signalCount">Hämtar bevakning…</span><span class="signal-tip">Granska signaler före åtgärd</span></summary>
+        <div id="alerts"></div>
+      </details>
 
       <section class="view active" id="view-hem" data-view="hem">
-        <div class="sec-head"><h2>Hem</h2><span class="hint">dagens läge, innehav &amp; beslut</span>
+        <header class="workspace-intro">
+          <div><p class="eyebrow">ÖVERBLICK · <span id="workspaceDate">SENASTE UNDERLAGET</span></p>
+            <h2>Portföljen, i fokus<span class="title-dot">.</span></h2>
+            <p>Ditt läge. Dina innehav. Nästa välgrundade beslut.</p>
+          </div>
+          <button type="button" class="btn btn--primary" data-goto-view="total" aria-label="Öppna samlad portfölj">Samlad portfölj <span aria-hidden="true">↗</span></button>
+        </header>
+        <div id="marketPulse" class="market-pulse" aria-label="Marknadssnapshot"></div>
+        <div class="sec-head workspace-head"><h2>Dagens överblick</h2><span class="hint">senaste beslut &amp; portföljstatus</span>
           <div class="hemtoggle" role="group" aria-label="Detaljnivå på Hem">
             <button type="button" class="btn" data-hemmode-set="enkel" aria-pressed="true"
               title="Klarspråk: behöver du göra något, hur går det, vad hände i dag">Enkel</button>
@@ -185,11 +202,11 @@
       </section>
 
       <section class="view" id="view-us" data-view="us">
-        <div class="sec-head"><h2>US-rotation</h2><span class="hint">USD · conviction-viktad · egen bok, separat från nordiska</span></div>
+        <div class="sec-head"><h2>US-rotation</h2><span class="hint">USD · egen portfölj · separat från nordiska</span></div>
         <div id="usBody"></div>
         <h3 class="sub">US-rapporter</h3>
         <div class="report-ctrl">
-          <select id="usReportSelect"></select>
+          <select id="usReportSelect" aria-label="Välj US-rapport"></select>
           <a id="usGhLink" class="btn" target="_blank" rel="noopener" href="#">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.4-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.4-5.28 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
             GitHub
@@ -207,11 +224,11 @@
       </section>
 
       <section class="view" id="view-analys" data-view="analys">
-        <div class="sec-head"><h2>Aktieanalys</h2><span class="hint">på begäran · cachas i git</span></div>
+        <div class="sec-head"><h2>Aktieanalys</h2><span class="hint">bolag, scenarier &amp; risker</span></div>
         <p class="lead">Skriv en ticker och tryck Analysera. Finns analysen redan visas den direkt,
           annars öppnas en färdig beställning på GitHub som du skickar med ett klick.</p>
         <div class="an-bar">
-          <input id="analysInput" type="text" placeholder="Ticker, t.ex. NVDA, BTC-USD, VOLV-B.ST" autocomplete="off" spellcheck="false" />
+          <input id="analysInput" aria-label="Ticker att analysera" type="text" placeholder="Ticker, t.ex. NVDA, BTC-USD, VOLV-B.ST" autocomplete="off" spellcheck="false" />
           <button id="analysBtn" class="btn">Analysera</button>
           <button id="cmpBtn" class="btn" title="Jämför två cachade analyser sida vid sida – klicka två i listan">Jämför två</button>
         </div>
@@ -223,8 +240,8 @@
 
       <section class="view" id="view-rapporter" data-view="rapporter">
         <div class="sec-head"><h2>Rapporter</h2><span class="hint">daglig bevakning &amp; veckorapport</span></div>
-        <p class="lead">Robotens egen text för dagen. Välj datum i listan – måndagens rapport är den
-          stora genomgången, övriga dagar är kortare bevakning.</p>
+        <p class="lead">Besluten med hela sammanhanget. Välj en daglig rapport eller veckans stora
+          genomgång, eller sök efter ett bolag i arkivet.</p>
         <!-- Tre grupper: välj rapport · sök · visningsverktyg. -->
         <div class="report-ctrl">
           <div class="rc-group">
@@ -262,7 +279,7 @@
       </section>
 
       <section class="view" id="view-kurser" data-view="kurser">
-        <div class="sec-head"><h2>Kurser</h2><span class="hint">verifierade kurser ur prices.json</span></div>
+        <div class="sec-head"><h2>Kurser</h2><span class="hint">senast tillgängliga kurser · källa och tidsstämpel</span></div>
         <div id="prices"></div>
       </section>
 
@@ -392,10 +409,22 @@
 
       <div class="footer">
         <span class="disclaimer">Detta är automatiserat beslutsstöd, inte finansiell rådgivning.</span>
-        <span class="kbd-hint">Kortkommandon: 1–9 flikar · R uppdatera · Esc stänger</span>
+        <span class="kbd-hint">Snabbsök: Ctrl/⌘ K · 1–9 vyer · R uppdatera · Esc stänger</span>
         <span>Data hämtas live från <a id="repoFoot" target="_blank" rel="noopener" href="#">DrinasKastrati/Vecko_agent</a> · uppdateras när roboten pushar.</span>
       </div>
     </div>
+  </main>
+</div>
+
+<!-- Snabbsök använder redan laddade vyer, tickers och rapportmetadata. -->
+<div id="commandModal" class="command-modal" role="dialog" aria-modal="true" aria-labelledby="commandTitle" hidden>
+  <div class="command-box">
+    <div class="command-head"><div><p class="eyebrow">SNABBSÖK</p><h2 id="commandTitle">Vart vill du gå?</h2></div><button id="commandClose" type="button" class="btn" aria-label="Stäng snabbsök">Esc</button></div>
+    <label class="sr-only" for="commandInput">Sök vy, ticker eller rapport</label>
+    <input id="commandInput" type="search" placeholder="Ett bolag, ett datum, en vy…" autocomplete="off" spellcheck="false" aria-controls="commandResults"/>
+    <div id="commandResultCount" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="commandResults" class="command-results"></div>
+    <div class="command-foot"><span><kbd>↑</kbd><kbd>↓</kbd> välj</span><span><kbd>Enter</kbd> öppna</span><span>Ingen beställning skickas av snabbsök.</span></div>
   </div>
 </div>
 

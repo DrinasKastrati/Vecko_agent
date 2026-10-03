@@ -783,6 +783,7 @@
         const alerts = await this.fetchJSON(this.raw(this._alertsPath));
         this.state.alerts = alerts;
         const alEl = this.el("alerts"); if (alEl) alEl.innerHTML = this.R.renderAlerts(alerts, this.P.monitorStatus(alerts));
+        this.renderWorkspace();
         const act = (alerts && alerts.active) || [];
         if (!act.length) return;
         const key = s => [s.ticker, s.type, s.reason, s.level].join("|");
@@ -1028,10 +1029,11 @@
          en LÄGE B-rapport kan sakna beslutsrader helt utan att innehavet ändrats,
          och en tidig version av den här vyn påstod då "äger inget" trots att
          portföljen hade en position. */
-      const bookOf = (label, portfolio, daily) => {
+      const bookOf = (label, portfolio, daily, key) => {
         const live = this.liveMapFor(portfolio, daily);
         return {
-          label,
+          label, key,
+          pending: ((portfolio && portfolio.pending) || []).filter(p => !p._struck).length,
           accum: portfolio && portfolio.accum != null ? portfolio.accum : null,
           holdings: ((portfolio && portfolio.holdings) || []).map(row => {
             const name = this.P.stripMd(row["Aktie"] || "");
@@ -1039,14 +1041,17 @@
             const lv = live[(ticker || "").toUpperCase()];
             return {
               name, ticker,
+              price: lv && lv.price, currency: lv && lv.currency,
+              pnlPct: lv && lv.pnlPct, marketTime: lv && lv.marketTime,
+              history: (((S.priceHistory || {}).series || {})[ticker] || []).slice(-30),
               since: lv && lv.pnlPct != null ? this.R.plainPct(lv.pnlPct) : "",
               isSleeve: SLEEVE.test(ticker) || SLEEVE.test(name)
             };
           })
         };
       };
-      const books = [bookOf("Nordiska aktier", S.portfolio, S.dailies[0])];
-      if (S.portfolioUs) books.push(bookOf("Amerikanska aktier", S.portfolioUs, S.usDailies[0]));
+      const books = [bookOf("Nordiska aktier", S.portfolio, S.dailies[0], "nordic")];
+      if (S.portfolioUs) books.push(bookOf("Amerikanska aktier", S.portfolioUs, S.usDailies[0], "us"));
 
       // Dagens beslut, oavsett om aktien ligger i portföljen än.
       const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm" }).format(now);
@@ -1077,6 +1082,8 @@
         books, actions, stale,
         blocked: !!(S.dailies[0] && S.dailies[0].blocked),
         dateLabel: today,
+        pending: books.reduce((n, b) => n + b.pending, 0),
+        candidateCount: ((S.candidates && S.candidates.candidates) || []).filter(c => c.status === "new" && c.expiresAt >= today).length,
         next: nx ? `${nx.label} ${nx.when}` : ""
       };
     }
@@ -1092,6 +1099,7 @@
          Den renderas i båda lägena; base.css döljer den i enkelt läge, där
          uppgiftsrutan redan svarar på samma fråga i klarspråk. */
       const model = this.simpleModel();
+      this.renderWorkspace();
       const sum = this.el("hemSummary");
       if (sum && R.renderHemSummary) {
         const live = p => ((p && p.pending) || []).filter(x => !x._struck).length;
@@ -1108,6 +1116,7 @@
       if (this.hemMode() === "enkel") {
         main.innerHTML = R.renderSimple(model);
         rail.innerHTML = "";
+        this.filterHomeBook(this._homeBook || "all");
         return;
       }
 
@@ -1488,6 +1497,120 @@
     }
     nowStr() { try { return new Date().toLocaleString("sv-SE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" }); } catch (e) { return new Date().toISOString().slice(0, 16).replace("T", " "); } }
 
+    // Arbetsytan använder bara redan hämtade data; inga extra nätanrop.
+    renderWorkspace() {
+      const pulse = this.el("marketPulse");
+      if (pulse && this.R.renderMarketPulse) pulse.innerHTML = this.R.renderMarketPulse(this.state.prices);
+      const date = this.el("workspaceDate");
+      if (date) date.textContent = new Intl.DateTimeFormat("sv-SE", {
+        timeZone: "Europe/Stockholm", day: "numeric", month: "long", year: "numeric"
+      }).format(new Date()).toUpperCase();
+      const center = this.el("signalCenter"), count = this.el("signalCount");
+      const active = ((this.state.alerts && this.state.alerts.active) || []).length;
+      if (center) center.dataset.active = String(active > 0);
+      if (count) count.textContent = this.state.alerts ? `${active} ${active === 1 ? "aktiv signal" : "aktiva signaler"}` : "Bevakningsdata saknas";
+    }
+    filterHomeBook(book) {
+      if (!["all", "nordic", "us"].includes(book)) book = "all";
+      this._homeBook = book;
+      const host = this.el("hemMain"); if (!host) return;
+      let visible = 0;
+      host.querySelectorAll("[data-holding-book]").forEach(row => {
+        row.hidden = book !== "all" && row.dataset.holdingBook !== book;
+        if (!row.hidden) visible++;
+      });
+      host.querySelectorAll("[data-homebook]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.homebook === book)));
+      const empty = host.querySelector(".sv-own-empty"); if (empty) empty.hidden = visible > 0;
+    }
+    commandItems(query) {
+      const fold = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const q = fold(query).trim();
+      const views = [...document.querySelectorAll(".subnav a[data-view]")].map(a => ({
+        kind: "view", label: a.textContent.trim(), sub: "Öppna vy", value: a.dataset.view, icon: "↗"
+      }));
+      const symbols = new Set(Object.keys((this.state.prices && this.state.prices.quotes) || {}));
+      [this.state.portfolio, this.state.portfolioUs].forEach(p =>
+        ((p && p.holdings) || []).forEach(h => { const t = this.P.stripMd(h["Yahoo-ticker"] || ""); if (t) symbols.add(t); }));
+      const tickers = [...symbols].sort().map(t => ({ kind: "ticker", label: t,
+        sub: "Öppna analys · ingen beställning skickas", value: t, icon: "A" }));
+      const typeName = { daily: "Daglig rapport", weekly: "Veckorapport", us_daily: "US daglig", us_weekly: "US veckorapport", scout: "Scout", retro: "Retro", analysis: "Aktieanalys" };
+      const reports = (this.state.metas || []).map(m => ({ kind: "report", label: `${typeName[m.type] || "Rapport"} · ${m.dateISO || ""}${m.ticker ? " · " + m.ticker : ""}`,
+        sub: m.name, value: m.name, type: m.type, icon: "≡" }));
+      if (!q) return views.slice(0, 6).concat(reports.slice(0, 3));
+      return views.concat(tickers, reports).filter(x => fold(x.label + " " + x.sub + " " + x.value).includes(q))
+        .sort((a, b) => Number(fold(b.label).startsWith(q)) - Number(fold(a.label).startsWith(q))).slice(0, 10);
+    }
+    renderCommands() {
+      const input = this.el("commandInput"), host = this.el("commandResults"); if (!input || !host) return;
+      this._commandMatches = this.commandItems(input.value);
+      this._commandIndex = 0;
+      const esc = this.R.esc;
+      host.innerHTML = this._commandMatches.length ? this._commandMatches.map((r, i) =>
+        `<button type="button" class="command-result${i === 0 ? " active" : ""}" data-command-index="${i}"><span class="command-kind" aria-hidden="true">${esc(r.icon)}</span><span><strong>${esc(r.label)}</strong><small>${esc(r.sub)}</small></span><span class="command-arrow" aria-hidden="true">↵</span></button>`).join("")
+        : '<div class="empty">Inga träffar. Prova en ticker, ett rapportdatum eller en vy.</div>';
+      const count = this.el("commandResultCount"); if (count) count.textContent = `${this._commandMatches.length} träffar`;
+    }
+    openCommand() {
+      const modal = this.el("commandModal"), input = this.el("commandInput"); if (!modal || !input || !modal.hidden) return;
+      this._commandFocus = document.activeElement;
+      this._commandOverflow = document.body.style.overflow;
+      this._commandShell = document.querySelector(".shell");
+      if (this._commandShell) { this._commandInert = this._commandShell.inert; this._commandShell.inert = true; }
+      document.body.style.overflow = "hidden";
+      modal.hidden = false;
+      input.value = ""; this.renderCommands(); input.focus();
+    }
+    closeCommand() {
+      const modal = this.el("commandModal"); if (!modal || modal.hidden) return;
+      modal.hidden = true;
+      document.body.style.overflow = this._commandOverflow || "";
+      if (this._commandShell) this._commandShell.inert = !!this._commandInert;
+      if (this._commandFocus && this._commandFocus.isConnected) this._commandFocus.focus();
+    }
+    chooseCommand(index) {
+      const item = (this._commandMatches || [])[index]; if (!item) return;
+      this.closeCommand();
+      if (item.kind === "view") { this.showView(item.value); return; }
+      if (item.kind === "ticker") { this.gotoTicker(item.value); return; }
+      if (item.type === "us_daily" || item.type === "us_weekly") {
+        this.showView("us"); const sel = this.el("usReportSelect"); if (sel) sel.value = item.value; this.showUsReport(item.value);
+      } else if (item.type === "retro") {
+        this.showView("retro"); const sel = this.el("retroSelect"); if (sel) sel.value = item.value; this.showRetroReport(item.value);
+      } else {
+        this.showView(item.type === "analysis" ? "analys" : "rapporter"); this.openReportByName(item.value, item.type);
+      }
+    }
+    initCommands() {
+      const modal = this.el("commandModal"), input = this.el("commandInput");
+      const trigger = this.el("commandBtn"), close = this.el("commandClose");
+      if (!modal || !input) return;
+      if (trigger) trigger.addEventListener("click", () => this.openCommand());
+      if (close) close.addEventListener("click", () => this.closeCommand());
+      input.addEventListener("input", () => this.renderCommands());
+      modal.addEventListener("click", e => {
+        if (e.target === modal) { this.closeCommand(); return; }
+        const button = e.target.closest("[data-command-index]");
+        if (button) this.chooseCommand(Number(button.dataset.commandIndex));
+      });
+      modal.addEventListener("keydown", e => {
+        if (e.key === "Escape") { e.preventDefault(); this.closeCommand(); return; }
+        if ((e.key === "ArrowDown" || e.key === "ArrowUp") && this._commandMatches.length) {
+          e.preventDefault();
+          this._commandIndex = (this._commandIndex + (e.key === "ArrowDown" ? 1 : -1) + this._commandMatches.length) % this._commandMatches.length;
+          const buttons = [...modal.querySelectorAll("[data-command-index]")];
+          buttons.forEach((b, i) => b.classList.toggle("active", i === this._commandIndex));
+          buttons[this._commandIndex].focus();
+        } else if (e.key === "Enter" && document.activeElement === input) {
+          e.preventDefault(); this.chooseCommand(this._commandIndex);
+        } else if (e.key === "Tab") {
+          const focusable = [...modal.querySelectorAll("button,input")].filter(x => !x.disabled);
+          const first = focusable[0], last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+    }
+
     // ---- wiring ----
     showView(view) {
       // View Transitions API (inbyggt i webbläsaren, inget bibliotek): mjuk
@@ -1521,10 +1644,14 @@
       const views = [...document.querySelectorAll(".view")];
       if (!views.some(v => v.dataset.view === view)) view = views.some(v => v.dataset.view === "hem") ? "hem" : "oversikt";
       views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
+      const label = this.el("currentViewLabel");
+      const activeTitle = document.querySelector(`.view[data-view="${view}"] h2`);
+      if (label) label.textContent = view === "hem" ? "Översikt" : (activeTitle ? activeTitle.textContent : "Inställningar");
       let activeLink = null;
       document.querySelectorAll(".subnav a").forEach(l => {
         const on = l.dataset.view === view;
         l.classList.toggle("active", on);
+        l.setAttribute("aria-current", on ? "page" : "false");
         if (on) activeLink = l;
       });
       /* Mobilens "Mer": markeras när den aktiva vyn ligger bakom den, och
@@ -1574,6 +1701,7 @@
       if (start && start !== "hem" && hasView(start)) this.showView(start);
     }
     initEvents() {
+      this.initCommands();
       this.el("refreshBtn").addEventListener("click", () => { this.state.md.clear(); this.load(true); });
 
       /* Bokväljaren i Avkastning-vyn. Båda böckerna renderas alltid – knappen
@@ -1694,6 +1822,10 @@
           more.setAttribute("aria-expanded", String(open));
           return;
         }
+        const homebook = e.target.closest("[data-homebook]");
+        if (homebook) { this.filterHomeBook(homebook.dataset.homebook); return; }
+        const inspect = e.target.closest("[data-inspect-ticker]");
+        if (inspect) { this.openPxChart(inspect.dataset.inspectTicker); return; }
         const tp = e.target.closest("[data-goto-ticker]");
         if (tp) { this.gotoTicker(tp.dataset.gotoTicker); return; }
         const gv = e.target.closest("[data-goto-view]");
@@ -1749,6 +1881,11 @@
       }
       // Kortkommandon: 1–7 byter flik, R uppdaterar (inte när man skriver i fält).
       document.addEventListener("keydown", e => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault(); const modal = this.el("commandModal");
+          if (modal && !modal.hidden) this.closeCommand(); else this.openCommand(); return;
+        }
+        if (this.el("commandModal") && !this.el("commandModal").hidden) return;
         if (e.altKey || e.ctrlKey || e.metaKey) return;
         if (e.key === "Escape") { this.closePxChart(); this.closePushModal(); this.toggleNavMore(false); return; }
         const t = e.target, tag = (t && t.tagName || "").toLowerCase();

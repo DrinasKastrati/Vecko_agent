@@ -89,7 +89,7 @@ if (!JSDOM) {
   const doc = w.document, T = w.VTheme;
   ok("motor: VTheme exponerad med 4 teman", !!T && T.themes.length === 4);
   ok("boot: data-theme satt före första målningen", doc.documentElement.getAttribute("data-theme") === "deck");
-  ok("boot: data-mode = temats standardläge", doc.documentElement.getAttribute("data-mode") === "dark");
+  ok("boot: data-mode = temats standardläge", doc.documentElement.getAttribute("data-mode") === T.themes[0].defaultMode);
   ok("boot: themeCss pekar på rätt fil", doc.getElementById("themeCss").getAttribute("href") === "assets/themes/deck.css");
   ok("växlare: en knapp per tema + lägesknapp",
     doc.querySelectorAll("#themeCtl [data-theme-set]").length === 4 && !!doc.getElementById("modeBtn"));

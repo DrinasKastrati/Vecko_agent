@@ -3885,5 +3885,24 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
           { date: "2026-08-31", ticker: "BBB.ST", price: 20 }]).length === 1);
 }
 
+// Marknadssnapshot: saknade/äldre kurser får aldrig bli en påhittad dagsrörelse.
+{
+  const quote = { price: 110, previousClose: 100, marketTime: "2026-10-02T15:30:00Z", source: '<img src=x onerror=alert(1)>' };
+  const pulse = VR.renderMarketPulse({ schemaVersion: 2, quotes: { "^OMX": quote } });
+  ok("snapshot: verklig dagsrörelse med schemaspärr", pulse.includes("+10,0 %"));
+  ok("snapshot: datumet tillhör kursen", pulse.includes("2 okt") && pulse.includes("snapshot"));
+  ok("snapshot: källa escapes i attribut", !pulse.includes('<img') && pulse.includes("&lt;img"));
+  ok("snapshot: äldre schema ger ingen falsk dagsrörelse", !VR.renderMarketPulse({ quotes: { "^OMX": quote } }).includes("+10,0 %"));
+  ok("snapshot: saknade kurser är otillgängliga", (VR.renderMarketPulse(null).match(/ disabled/g) || []).length === 4);
+  ok("snapshot: felaktig kurs får inte öppnas", !VR.renderMarketPulse({ quotes: { "^OMX": { ...quote, error: "avbrott" } } }).includes('data-inspect-ticker="^OMX"'));
+  ok("snapshot: nollkurs redovisas som saknad", !VR.renderMarketPulse({ quotes: { "^OMX": { ...quote, price: 0 } } }).includes('data-inspect-ticker="^OMX"'));
+  ok("snapshot: saknad tidsstämpel sägs uttryckligen", VR.renderMarketPulse({ quotes: { "^OMX": { price: 100 } } }).includes("Tidsstämpel saknas"));
+  const incomplete = VR.renderSimple({ stale: true });
+  ok("hem: gammalt underlag är varning, inte klartecken", incomplete.includes("sv-verdict--warn") && !incomplete.includes("sv-verdict--ok"));
+  ok("hem: blockerade kurser förklaras i huvudbeskedet", VR.renderSimple({ blocked: true }).includes('<div class="sv-a">Kurser kunde inte bekräftas.'));
+  const owns = VR.renderSimple({ books: [{ key: "us", holdings: [{ ticker: 'X"<', name: '<img src=x>', price: 12, currency: "USD" }] }] });
+  ok("hem: innehav är bokmärkta och escapes", owns.includes('data-holding-book="us"') && !owns.includes('<img') && owns.includes('data-inspect-ticker="X&quot;&lt;"'));
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
