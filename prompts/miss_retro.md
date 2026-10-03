@@ -1,5 +1,8 @@
 # Miss-retro – veckovis post-mortem av missade vinnare (fredag kväll / helg)
 
+> Läs först `prompts/gemensam_korning.md` i sin helhet. Dess regler om datum,
+> omkörning, watchlist, validering och publiceringskvitto gäller hela körningen.
+
 > **Repo-struktur:** instruktioner i `prompts/`, mallar i `templates/`, levande tillstånd i
 > `state/`, genererade rapporter i `reports/`. Denna routine är systemets LÄRANDE-loop: den
 > granskar veckans stora vinnare som INGEN av rotationerna/scouten fångade, spårar VARFÖR de
@@ -28,7 +31,7 @@ att processen var fel.
 5. DATUM & FILNAMN: verifiera dagens FAKTISKA datum (t.ex. via `date`) innan filnamnet skapas.
 6. Committa och pusha retro-rapporten, uppdaterad `state/lessons.md`, `state/action_items.json`
    (STEG 5) OCH – om STEG 4b lagt någon rad – `config/watchlist.txt` / `config/watchlist_us.txt`
-   DIREKT till main. Skapa ALDRIG ny branch, PR eller fork.
+   till main enligt publiceringsvägen och kvittokravet i `prompts/gemensam_korning.md`.
 7. OM PUSH MISSLYCKAS (sandlådan saknar ofta credentials): committa lokalt om det går, annars
    lämna filerna korrekt skrivna och notera att Dren publicerar med `push.bat`. Fastna ALDRIG i
    upprepade push-försök.
@@ -38,19 +41,18 @@ att processen var fel.
    "veckans vinnare Stockholmsbörsen", "biggest weekly gainers S&P 500 / Nasdaq", earnings-beats
    med stora kursreaktioner, budsituationer. Samma källkrav som övriga routiner: endast
    etablerade finansmedier; ignorera HELT X/Twitter, Reddit, forum.
-2. **BÖRJA I `state/movers.json`** (skrivs lördag 06:00 UTC av `movers.yml`, LLM-fritt). Filen
-   listar veckans största rörelser i ett BREDDAT nordiskt universum om ~110 namn – Large och
-   Mid Cap, inte bara de tickers systemet redan bevakar. Detta är den primära missdetektionen
-   för Norden. Gå igenom `movers`-listan uppifrån och pröva varje rad mot punkt 3.
-   Kontrollera `okCount`/`failed`: hämtades färre än ~90 % av universumet är underlaget
-   ofullständigt och det ska stå i rapporten.
-   Saknas filen eller är `asOf` äldre än fredagens stängning: notera det uttryckligen som en
-   åtgärdspunkt (L-3) och fall tillbaka på punkt 1 + 2b.
-2b. Komplettera med `state/price_history.json`: räkna veckoutveckling för alla spårade tickers
-   och flagga rörelser > ~10 % (Norden) / > ~8 % (US large cap) som systemet inte ägde.
-   OBS: `price_history.json` täcker bara de ~10 bevakade nordiska tickerna och kan därför per
-   konstruktion inte hitta en vinnare systemet inte redan tittat på – den är ett komplement till
-   `movers.json`, aldrig ett substitut. För USA är nyhetssöket (punkt 1) fortfarande primärt.
+2. **BÖRJA I `state/price_history.json` enligt L-7.** Rangordna separat för varje boks
+   tillåtna universum ALLA symboler som har daterad stängning på både basdagen (sista
+   handelsdagen före veckan) och mätdagen (veckans senaste avslutade handelsdag).
+   Räkna veckoutvecklingen och pröva tydliga rörelser mot punkt 3. Ange per bok antal
+   rangordnade symboler, båda datumen och `state/movers.json`:s `asOf` (eller att den saknas).
+   Saknade ändpunkter är ofullständigt underlag, inte noll avkastning. Historiken täcker
+   hämtade symboler, inte hela marknaden; märk resten OKONTROLLERAD enligt L-5.
+2b. Använd `state/movers.json` och nyhetssök som KOMPLEMENT för bredare täckning.
+   Kontrollera `asOf`, `okCount` och `failed`; ofullständig eller för gammal data anges
+   som åtgärdspunkt enligt L-3. Är `asOf` äldre än basdagen får movers inte bära något
+   urvalspåstående. För jämförbara veckotal krävs rätt mätdatum eller verifierade
+   daterade ändpunkter. Fasta antaganden om antalet bevakade symboler får inte användas.
 2c. **LÄS `state/scout_candidates.json` – den DYRASTE sortens miss står där.** Filen listar varje
    kandidat som flaggats av scouten eller en beställd analys, med den NAMNGIVNA spärr som fällde
    den (`decisionReason`). Skillnaden mot punkt 1–2b är avgörande: de letar efter vinnare systemet
@@ -115,8 +117,9 @@ granskningsperioden, `state/portfolj.md` + `state/portfolj_us.md`):
 4. Samma facit-filter som STEG 3: LÄMNADE PÅ BORDET är PROCESSFEL ENDAST om en daterad signal
    fanns FÖRE säljbeslutet som talade för fortsatt innehav OCH en generaliserbar regel hade
    behållit positionen utan höjd risk (t.ex. trailing stop under stigande stöd i stället för
-   hård målkurs vid intakt momentum). Rotationssälj enligt 5-dagarsregeln som sedan stiger är
-   normalt ACCEPTABELT UTFALL – regeln är design, inte ett misstag.
+   hård målkurs vid intakt momentum). Sälj enligt den faktiskt gällande handelsplanens stop, mål eller tidsstopp kan
+   vara ACCEPTABELT UTFALL även om kursen senare stiger. Det finns ingen generell
+   5-dagarsregel; jämför med aktuell rotationsprompt och den ursprungliga planen.
 5. SKYDD: en stop-loss som träffades och där kursen sedan vände upp är KOSTNADEN för skyddet,
    inte ett processfel – sälj-facit får ALDRIG generera lärdomar som mjukar upp stoppdisciplin,
    sänker stoppar eller uppmuntrar att "ge det lite till". Lärdomar härifrån delar budgeten
@@ -161,7 +164,9 @@ och ägs av STEG 4 punkt 5):
    aldrig bli en lärdom.
 1. `counts` – antal beslut, mätbara, ännu inte mogna. Utan detta går siffrorna inte att tolka.
 2. `byHorizon.5.selectionEdge` – skillnaden i snitt-alpha mellan köpta och avvisade. Står
-   `insufficient: true`: skriv **"för tidigt"** plus hur många rader som fattas. Skriv ALDRIG ut
+   `insufficient: true`: skriv **"för tidigt"** med fältets egna trösklar, skäl och saknade antal.
+   Skilj på rader och oberoende mätfönster; använd objektets eget `effectiveN`
+   när det finns, inte ett globalt antal som om det gällde varje grupp. Skriv ALDRIG ut
    en edge-siffra som fältet inte ger. **Bär fältet `clusterCaveat` är siffran en RIKTNING, inte
    ett svar** – det fältet finns därför att `selectionEdge` gatear på radantal av historiska skäl
    medan blocken bär den verkliga osäkerheten. Citera caveaten ordagrant bredvid talet.
@@ -177,8 +182,9 @@ och ägs av STEG 4 punkt 5):
    utfallet är precis det fel fördeklarationen finns för att förhindra.
 3. `byHorizon.5.byCatalyst` – vilka katalysatortyper som gett positiv alpha. Grupper med
    `insufficient` är BRUS och får inte bli lärdom.
-4. `missingSymbols` – tickers vi fattat beslut om som saknar kurshistorik. De är **omätbara för
-   alltid**: historiken backfillas bara för symboler som hämtas. Är listan icke-tom är det ett
+4. `missingSymbols` – tickers vi fattat beslut om som saknar kurshistorik. De saknar mätunderlag tills
+   daterad historik för det ursprungliga fönstret kan verifieras. Flytta aldrig
+   beslutsdatum eller mätfönster för att få en siffra. Är listan icke-tom är det ett
    PROCESSFEL av den mätbara sorten – åtgärden är att lägga dem i `config/watchlist.txt` respektive
    `config/watchlist_us.txt`, och den får skrivas som lärdom även utan tre veckors svit.
 
@@ -187,11 +193,13 @@ och ägs av STEG 4 punkt 5):
    - **(A)** en lärdomskandidat härledd ur `selectionEdge` eller `byCatalyst`, som tas vidare till
      STEG 4 på samma villkor som övriga kandidater (den kan alltså falla där), ELLER
    - **(B)** raden **"Ingen lärdom ur urvalsmätningen: `<skäl>`"**, där `<skäl>` måste vara ett av
-     exakt tre: **(a)** fältet som annars gett lärdomen bär `insufficient: true` – ange fältet och
+     följande: **(a)** fältet som annars gett lärdomen bär `insufficient: true` – ange fältet och
      hur många rader som fattas; **(b)** mönstret är yngre än 3 retros – ange löpande svit, samma
      krav som STEG 3c punkt 4; **(c)** mönstret finns och är moget, men remedien är KOD eller
      KONFIGURATION, inte en processregel – då skrivs i stället en **åtgärdspunkt** med kvantifierat
-     omfång, och den ska namnges här.
+     omfång, och den ska namnges här; **(d)** inget stabilt, generaliserbart mönster
+     kan beläggas, eller nödvändigt underlag saknas – ange vad som kontrollerats eller
+     saknas. Tvinga aldrig fram en lärdom för att fylla mallen.
    Att inte nämna steget alls, eller att beskriva talen utan att landa i (A) eller (B), är ett
    BROTT mot den här punkten. Skälet till tvånget: `selectionEdge` fanns och mättes i fem retros
    i rad utan att en enda rad skrevs ur den, medan fältet hela tiden bar systemets mest
@@ -275,14 +283,18 @@ fortsätter skriva åtgärdspunkter i prosa precis som förut – du konsolidera
      watchdogens nyckel och hamnar i issue-sync:ens HTML-kommentar), `title`, `file` (eller
      `null`), `scope` med KVANTIFIERAT omfång, `firstSeen` = `lastSeen` = dagens datum,
      `weeksOpen: 1`, `status: "open"`, `resolvedAt: null`, `resolvedBy: null`.
-   - **Återkommer** → uppdatera `lastSeen` till dagens datum och räkna upp `weeksOpen` med 1.
+   - **Återkommer** → öka `weeksOpen` med 1 endast om `lastSeen` ligger i en annan
+     ISO-vecka, uppdatera sedan `lastSeen`. Omkörningar samma vecka får inte öka räknaren.
+     Återkommer exakt samma defekt efter en verifierad lösning: återöppna befintligt ID
+     (`status: "open"`, `resolvedAt: null`, `resolvedBy: null`) och dokumentera vilken
+     tidigare lösning som inte längre håller. En gammal lösning bevisar inte dagens status.
    - **Åtgärdad** → `status: "resolved"`, `resolvedAt` = dagens datum, `resolvedBy` = vad som
      faktiskt löste den. Issuet stängs då av sig självt vid nästa watchdog-körning.
 3. **`id` FÅR ALDRIG ÄNDRAS** för en punkt som redan finns. Ändras det tappas kopplingen och ett
    andra issue öppnas för samma defekt.
 4. **`weeksOpen` räknas av dig, inte ur datum.** En retro kan hoppas över (helg, sandlåda utan
    credentials), och en beräkning ur `firstSeen` hade då räknat upp en punkt ingen observerat.
-   Räknaren mäter antalet retros som SETT punkten.
+   Räknaren mäter antalet DISTINKTA ISO-veckor där en retro SETT punkten.
 5. En punkt som visar sig inte längre gälla stängs med `resolved` och ett `resolvedBy` som säger
    varför – lämna den ALDRIG öppen "för säkerhets skull". Radera aldrig en post.
 6. Committa filen tillsammans med rapporten. Validatorn `validate-action-items.mjs` körs i CI och

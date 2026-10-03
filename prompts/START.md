@@ -14,7 +14,10 @@ Texterna nedan är kompletta: kopiera hela blocket in i routinens prompt-fält, 
 
 ## Variant A – routinen kör i den lokala arbetskopian (rekommenderas)
 
-Använd denna när routinen har tillgång till `C:\Users\drini\code\Vecko_agent`. Den är säkrast:
+Använd denna när routinen har en giltig lokal arbetskopia. Både
+`C:\Users\drini\code\Vecko_agent` och `C:\Users\kastrdri\Git_proj\gitVecko_agent`
+är aktiva; använd sökvägen på aktuell dator i laddarna nedan. Alla tider gäller
+`Europe/Stockholm`. Den är säkrast:
 prompten läses från disk och rapporterna kan skrivas och committas direkt.
 
 ### Scout USA & Krypto (dagligen 07:47)
@@ -33,8 +36,8 @@ i stället för att gissa dig fram.
 Arbeta i C:\Users\drini\code\Vecko_agent.
 1. Kör `git pull` så arbetskopian är färsk.
 2. Läs prompts/dagligprompt.md i sin helhet.
-3. Följ den instruktionen exakt, från början till slut. Den väljer själv LÄGE A (måndag) eller
-   LÄGE B (övriga handelsdagar) – gör inte det valet åt den.
+3. Följ den instruktionen exakt, från början till slut. Den väljer själv LÄGE A eller
+   LÄGE B utifrån veckans publicerade rotation – gör inte det valet åt den.
 Avvik inte från prompten och sammanfatta den inte. Är filen oläsbar: avbryt och rapportera det
 i stället för att gissa dig fram.
 ```
@@ -44,8 +47,8 @@ i stället för att gissa dig fram.
 Arbeta i C:\Users\drini\code\Vecko_agent.
 1. Kör `git pull` så arbetskopian är färsk.
 2. Läs prompts/us_dagligprompt.md i sin helhet.
-3. Följ den instruktionen exakt, från början till slut. Den väljer själv LÄGE A (måndag) eller
-   LÄGE B (övriga handelsdagar).
+3. Följ den instruktionen exakt, från början till slut. Den väljer själv LÄGE A eller
+   LÄGE B utifrån veckans publicerade rotation.
 Avvik inte från prompten och sammanfatta den inte. Är filen oläsbar: avbryt och rapportera det
 i stället för att gissa dig fram.
 ```
@@ -88,8 +91,9 @@ sammanfatta den inte – arbeta igenom den steg för steg.
 hämtas på samma sätt:
 https://raw.githubusercontent.com/DrinasKastrati/Vecko_agent/main/<sökväg>
 
-Kan du inte skriva tillbaka till repot: skriv rapporten i svaret och notera tydligt att den
-behöver sparas manuellt.
+Läs även prompts/gemensam_korning.md från samma repo och följ dess körregler.
+Kan du inte skriva tillbaka: lämna rapport och hela innehållet för samtliga ändrade
+state-/config-filer med exakta sökvägar. Ange EJ PUBLICERAD; state är då inte uppdaterat.
 ```
 
 Byt ut `dagligprompt.md` mot `scoutprompt.md`, `us_dagligprompt.md`, `allokering.md` respektive
@@ -107,7 +111,7 @@ den bara när A inte är möjlig.
    producerar samma sorts rapport som tidigare.
 2. Därefter: **ändra bara filerna i `prompts/` och pusha.** Nästa körning använder den nya
    versionen automatiskt.
-3. Lägg ALDRIG till en separat måndagsprompt – `dagligprompt.md` gör LÄGE A på måndagar. Den
+3. Lägg ALDRIG till en separat måndagsprompt – `dagligprompt.md` väljer LÄGE A när veckans fullständiga rotation saknas. Den
    gamla `veckoprompt.md` körde rotationen en andra gång, skapade dubbletter och är raderad.
 4. `prompts/analysprompt.md` är MANUELL (körs när analyskön har poster) och behöver ingen routine.
 

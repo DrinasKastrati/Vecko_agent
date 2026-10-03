@@ -26,7 +26,9 @@ välgrundad slutsats baserad på faktisk, aktuell data.
    vinstvarning, studiedata, affär eller guidance-ändring som förändrar hela caset.
    Den ska i så fall vara analysens nav, inte en fotnot.
 5. FAKTA FÖRE SNABBHET. Hellre en extra sökning än en snygg siffra som är fel.
-   Om ett nyckeltal inte går att belägga – skriv "uppskattning" och visa hur du räknat.
+   Skilj verifierade fakta från beräknade uppskattningar; visa antaganden och uträkning.
+   Saknas nödvändigt underlag – skriv "EJ VERIFIERAT", hitta inte på ingångsvärden.
+   Använd bolagets IR/rapport och andra primärkällor för bolagsfakta; medier ger kontext.
 
 ## Struktur – följ dessa fem punkter
 
@@ -63,6 +65,9 @@ med både riktkurs och procentuell avkastning från dagens kurs. Motivera varje 
 1–2 stycken som beskriver *vad som konkret måste hända* för att det ska inträffa – inte bara
 "det går bra" respektive "det går dåligt". Ange om utdelning tillkommer utöver kursavkastningen.
 Ge varje scenario en kort rubrik i citattecken som fångar berättelsen.
+Saknas verifierad referenskurs: ange ingen procentavkastning. Saknas underlag för
+scenariopriser: redovisa villkoren kvalitativt i stället för att hitta på riktkurser.
+Ett långsiktigt analysomdöme uppfyller inte automatiskt rotationsbokens entry-krav.
 
 ## Slutsats & rekommendation
 

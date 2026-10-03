@@ -37,7 +37,10 @@ export const MIN_N = 8;                 // samma tröskel som Systemguidens per-
 export const BENCH = { nordic: "^OMX", us: "^GSPC" };
 // Indexsleeven är kapitalparkering, inte ett urvalsbeslut – den skulle späda ut
 // statistiken åt fel håll (den följer per definition sitt eget benchmark).
-export const SKIP_CATALYST = "index";
+// Aktiecase med en indexförändring som katalysator (L-8) ska däremot mätas.
+export function isSleeveDecision(row){
+  return row?.ticker === "SPY" || row?.ticker === "XACT-OMXS30.ST";
+}
 
 // ---- rena funktioner (testas i tests/run.mjs) --------------------------
 
@@ -321,8 +324,8 @@ export function withClusterCaveat(res, rows, horizon, cal, minClusters = MIN_CLU
 }
 
 // Beslut som inte KAN mätas: tickern saknas i price_history.json. Det är en
-// åtgärdslista, inte en felnotis – saknas symbolen är beslutet omätbart för alltid,
-// eftersom historiken bara backfillas för symboler som hämtas.
+// åtgärdslista, inte en felnotis – mätning kräver verifierad daterad historik
+// för det ursprungliga fönstret; beslutsdatum får aldrig flyttas.
 export function missingSymbols(evaluated){
   return [...new Set(evaluated.filter(r => r.missing).map(r => r.ticker))].sort();
 }
@@ -334,7 +337,7 @@ export function evaluate(decisionsDb, priceHistory, opts = {}){
   const series = (priceHistory && priceHistory.series) || {};
   const seriesFor = sym => series[sym] || null;
   const rows = ((decisionsDb && decisionsDb.decisions) || [])
-    .filter(r => r && r.ticker && r.date && r.catalystType !== SKIP_CATALYST);
+    .filter(r => r && r.ticker && r.date && !isSleeveDecision(r));
   const evaluated = rows.map(r => evalRow(r, seriesFor, horizons));
   const scored = evaluated.filter(r => !r.missing);
   const out = {

@@ -657,8 +657,12 @@ ok("beslutsutvärdering: normal lucka efter en rotation tolereras",
 /* Indexsleeven räknas ALDRIG – den är kapitalparkering och följer per definition
    sitt eget benchmark. Räknades den med skulle checken larma varje vecka. */
 ok("beslutsutvärdering: sleeve-rader räknas inte in", (() => {
-  const db = { decisions: [...dRad(60, "order").decisions, ...dRad(50, "index").decisions] };
+  const db = { decisions: [...dRad(60, "order").decisions, ...dRad(50, "index").decisions.map(r => ({ ...r, ticker: "SPY" }))] };
   return WD.checkDecisionEval({ decisionsDb: db, evalDb: { counts: { decisions: 60 } } }).length === 0;
+})());
+ok("beslutsutvärdering: indexkatalysator i aktiecase räknas in", (() => {
+  const db = { decisions: dRad(50, "index").decisions.map(r => ({ ...r, ticker: "NOKIA.HE" })) };
+  return WD.checkDecisionEval({ decisionsDb: db, evalDb: { counts: { decisions: 0 } } }).length === 1;
 })());
 ok("beslutsutvärdering: saknad data är tyst (bakåtkompatibelt)",
   WD.checkDecisionEval({}).length === 0 &&
@@ -1632,6 +1636,12 @@ ok("evaluate filtrerar bort indexsleeven", (() => {
   const r = DE.evaluate(db, { series: { "X.ST": upp, "^OMX": upp } }, { horizons: [5], minN: 8 });
   return r.counts.decisions === 1 && !r.rows.some(x => x.ticker === "XACT-OMXS30.ST");
 })());
+ok("evaluate behåller aktiecase med indexkatalysator och filtrerar båda sleeves", (() => {
+  const db = { decisions: ["NOKIA.HE", "SPY", "XACT-OMXS30.ST"].map(ticker =>
+    ({ date: "2026-07-01", ticker, book: "nordic", action: "AVVAKTA", catalystType: "index" })) };
+  const r = DE.evaluate(db, { series: { "NOKIA.HE": upp, "^OMX": upp } }, { horizons: [5], minN: 8 });
+  return r.counts.decisions === 1 && r.rows[0].ticker === "NOKIA.HE" && r.counts.measurable === 1;
+})());
 ok("evaluate listar omätbara tickers", (() => {
   const db = { decisions: [{ date: "2026-07-01", ticker: "SAKNAS.ST", book: "nordic", action: "AVVAKTA", catalystType: "order" }] };
   const r = DE.evaluate(db, { series: {} }, { horizons: [5], minN: 8 });
@@ -1970,6 +1980,13 @@ ok("decisionStats räknar alla rader", ds.rows === 5);
 ok("decisionStats räknar bara utvärderbara SÄLJ", ds.closedCount === 2);
 ok("decisionStats exkluderar indexsleeven ur urvalsstatistiken",
   !ds.byCatalyst.some(c => c.type === "index"));
+ok("decisionStats behåller stängda aktiecase med indexkatalysator", (() => {
+  const r = VP.decisionStats({ decisions: [
+    { ticker: "NOKIA.HE", action: "SÄLJ", catalystType: "index", outcomePct: 6 },
+    { ticker: "SPY", action: "SÄLJ", catalystType: "index", outcomePct: 40 }
+  ] });
+  return r.closedCount === 1 && r.byCatalyst.some(c => c.type === "index" && c.avgPct === 6);
+})());
 ok("decisionStats vet hur många som fattas till kalibrering",
   ds.needed === 13 && ds.calibratable === false);
 ok("decisionStats flaggar tunna kategorier som brus", ds.byCatalyst.every(c => c.reliable === false));
@@ -3003,7 +3020,7 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
 /* ---- WATCHDOG: bruttolistan och kandidattystnaden ------------------------ */
 {
   const WD = await mod(".github/scripts/watchdog.mjs");
-  const row = (t, book) => ({ date: "2026-08-03", book, ticker: t, action: "AVVAKTA" });
+  const row = (t, book) => ({ date: "2026-08-03", mode: "A", book, ticker: t, action: "AVVAKTA" });
   // Exakt fallet från 2026-08-03: US-boken loggade 2 rader av 16 kandidater.
   const thin = { decisions: [row("MSFT", "us"), row("JPM", "us")] };
   const pThin = WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: thin });
@@ -3016,6 +3033,13 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
      WD.checkGrossList({ isoDate: "2026-08-03", isMonday: false, decisionsDb: thin }).length === 0);
   ok("watchdog: bok utan rader dubbelrapporteras inte",
      WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: { decisions: [] } }).length === 0);
+
+  const catchup = { decisions: thin.decisions.map(r => ({ ...r, date: "2026-08-04" })) };
+  ok("watchdog: tunn bruttolista i återhämtad LÄGE A larmar",
+     WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true, decisionsDb: catchup }).length === 1);
+  ok("watchdog: LÄGE B räknas inte som veckans bruttolista",
+     WD.checkGrossList({ isoDate: "2026-08-03", isMonday: true,
+       decisionsDb: { decisions: thin.decisions.map(r => ({ ...r, mode: "B" })) } }).length === 0);
 
   ok("watchdog: utgången kandidat larmar",
      WD.checkScoutCandidates({ candidatesDb: { candidates: [{ id: "260801-PLTR", book: "us",
@@ -3579,22 +3603,33 @@ const PS = await mod(".github/scripts/push-sub-add.mjs");
   ok("watchdog: utebliven US-rotation larmar", p.length === 1);
   ok("watchdog: US-rotationen får en egen stabil nyckel",
      p[0] && p[0].key === "us-rotation");
-  ok("watchdog: tyst när dagens us-veckorapport finns",
+  ok("watchdog: veckorapport utan motsvarande LÄGE A-beslut larmar",
      WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
-       decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-24" }).length === 0);
-  const medUs = { decisions: [...nordicOnly.decisions,
-    { date: "2026-08-24", book: "us", ticker: "NVDA", action: "AVVAKTA" }] };
-  ok("watchdog: tyst när US-beslut loggats för dagen (rapporten kan vara på väg)",
-     WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
-       decisionsDb: medUs, latestUsWeeklyDate: "2026-08-17" }).length === 0);
-  ok("watchdog: prövas bara i LÄGE A (måndag)",
+       decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-24" }).length === 1);
+  const usA = { date: "2026-08-24", mode: "A", book: "us", ticker: "NVDA", action: "AVVAKTA" };
+  const medUs = { decisions: [...nordicOnly.decisions, usA] };
+  const check = (db, date) => WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
+    decisionsDb: db, latestUsWeeklyDate: date });
+  ok("watchdog: tyst när veckorapport och LÄGE A-beslut matchar",
+     check(medUs, "2026-08-24").length === 0);
+  ok("watchdog: LÄGE A-beslut utan publicerad veckorapport larmar",
+     check(medUs, null).length === 1 && check(medUs, "2026-08-17").length === 1);
+  ok("watchdog: enbart LÄGE B kan inte tysta rotationslarmet",
+     check({ decisions: [{ ...usA, mode: "B" }] }, "2026-08-24").length === 1);
+  const catchup = { decisions: [{ ...usA, date: "2026-08-25" }] };
+  ok("watchdog: återhämtad LÄGE A med dagens datum tystar rotationslarmet",
+     check(catchup, "2026-08-25").length === 0);
+  ok("watchdog: rapport och LÄGE A-beslut på olika dagar räcker inte",
+     check(catchup, "2026-08-24").length === 1);
+  ok("watchdog: föregående veckas LÄGE A räcker inte",
+     check({ decisions: [{ ...usA, date: "2026-08-17" }] }, "2026-08-17").length === 1);
+  ok("watchdog: nästa veckas LÄGE A räcker inte",
+     check({ decisions: [{ ...usA, date: "2026-08-31" }] }, "2026-08-31").length === 1);
+  ok("watchdog: prövas bara när veckokontrollen anropas",
      WDus.checkUsRotation({ isoDate: "2026-08-25", isMonday: false,
        decisionsDb: nordicOnly, latestUsWeeklyDate: "2026-08-17" }).length === 0);
   ok("watchdog: tyst utan underlag (bakåtkompatibel)",
      WDus.checkUsRotation({}).length === 0);
-  ok("watchdog: en tom us_weekly-katalog larmar inte i sig",
-     WDus.checkUsRotation({ isoDate: "2026-08-24", isMonday: true,
-       decisionsDb: medUs, latestUsWeeklyDate: null }).length === 0);
 }
 
 

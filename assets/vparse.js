@@ -874,7 +874,8 @@
   function decisionStats(db, opts){
     const { minTotal = 15, minPerType = 8 } = opts || {};
     const rows = parseDecisions(db);
-    const closed = rows.filter(r => r.action === "SÄLJ" && r.outcomePct != null && r.catalystType !== "index");
+    const closed = rows.filter(r => r.action === "SÄLJ" && r.outcomePct != null &&
+      r.ticker !== "SPY" && r.ticker !== "XACT-OMXS30.ST");
     const by = {};
     for (const r of closed){
       const k = r.catalystType || "other";

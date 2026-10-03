@@ -1,5 +1,8 @@
 # PROMPT: Daglig Scout – USA & Krypto (nyheter, makro & case)
 
+> Läs först `prompts/gemensam_korning.md` i sin helhet. Dess regler om datum,
+> omkörning, watchlist, validering och publiceringskvitto gäller hela körningen.
+
 > **Repo-struktur:** instruktioner i `prompts/`, mallar i `templates/`, preferenser i
 > `config/`, genererade rapporter i `reports/`. Kurser läses från `state/prices.json`
 > (fylls av en GitHub Action). Denna routine är FRISTÅENDE från den nordiska rotationen
@@ -25,11 +28,11 @@ och rapportflöde samt trovärdiga marknadsrykten.
    "rapport-yymmdd.md" (ex: `reports/scout/rapport-260710.md`). Finns filen för dagens
    datum redan (t.ex. vid omkörning): skriv över/uppdatera DEN filen – skapa ALDRIG en
    suffixad dubblett (`...-yymmdd_1.md`).
-4. Committa och pusha rapporten DIREKT till standardbranchen (main). Skapa ALDRIG ny
-   branch, pull request eller fork.
+4. Committa och pusha rapporten DIREKT till standardbranchen (main). Följ
+   publiceringsvägen och kvittokravet i `prompts/gemensam_korning.md`.
 5. WATCHLIST-HYGIEN: håll `config/watchlist_us.txt` fokuserad (riktmärke ≤ 25 symboler).
-   Ta bort symboler som inte nämnts i scout-rapporterna de senaste 14 dagarna. Behåll
-   alltid indexen (`^GSPC`, `^IXIC`) samt `BTC-USD` och `ETH-USD`.
+   Följ skydden i `prompts/gemensam_korning.md` för hela US-bokens bevakning, inte
+   enbart scoutens rapporter. Behåll alltid `SPY`, `^GSPC`, `^IXIC`, `BTC-USD` och `ETH-USD`.
 6. DATUM & FILNAMN: verifiera dagens FAKTISKA datum (t.ex. via `date`) innan filnamnet
    skapas – fel datum ger dubbletter och trasig sortering i dashboarden.
 7. OM PUSH MISSLYCKAS (Cowork-sandlådan saknar ofta git-credentials): committa lokalt om
@@ -120,13 +123,14 @@ och rapportflöde samt trovärdiga marknadsrykten.
    - `book`: vilken bok som äger namnet (`us` för dina case; nordiska namn hör inte hemma
      i scouten).
    - `expiresAt`: 5 handelsdagar från `date`.
-   - `status`: alltid `"new"` när du skapar posten. Du avgör den ALDRIG själv – det gör
+   - `status`: `"new"` endast för en NY post; vid befintligt ID behåll ansvarig boks
+     avgörande och skapa ingen dubblett. Du avgör den ALDRIG själv – det gör
      ansvarig bok.
 
    Sätt `price`/`priceAsOf` bara om kursen ligger EFTER katalysatorn. En reguljär
    stängning samma dag som en AMC-rapport är en PRE-event-kurs – lämna då `price: null`
-   och skriv varför i tesen. `prices.yml` fyller i kursen automatiskt så snart en
-   post-event-kurs finns (förbörs, efterbörs eller nästa dags reguljära), och märker den
+   och skriv varför i tesen. `prices.yml` fyller i kursen automatiskt när en
+   kvalificerad post-event-kurs kan hämtas (förbörs, efterbörs eller nästa dags reguljära), och märker den
    med `priceSession`. Fyll aldrig i en pre-event-kurs för att fältet ska bli ifyllt.
 
    Validera före commit: `node .github/scripts/validate-scout-candidates.mjs`. Samma

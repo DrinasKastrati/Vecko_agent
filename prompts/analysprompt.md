@@ -1,5 +1,8 @@
 # PROMPT: Aktieanalys på begäran (kö-arbetare)
 
+> Läs först `prompts/gemensam_korning.md` i sin helhet. Dess regler om datum,
+> omkörning, watchlist, validering och publiceringskvitto gäller hela körningen.
+
 > Körs MANUELLT i Claude/Cowork (ingen API-nyckel). Bearbetar kön i
 > `state/analysis_queue.json` och skriver en analys per ticker till `reports/analysis/`.
 > FRISTÅENDE från den nordiska rotationen och scouten. Committar direkt till main.
@@ -10,7 +13,8 @@ grundlig men koncis analys (fundamenta, teknik, katalysatorer/nyheter, bull/bear
 slutsats) och spara den som en cachad rapport i git.
 
 ## ARBETSGÅNG
-1. Läs `state/analysis_queue.json`. Ta alla poster i `pending`. Finns inga → skriv inget och
+1. Uppdatera arbetskopian enligt `prompts/gemensam_korning.md` innan kön läses.
+   Läs `state/analysis_queue.json`. Ta alla poster i `pending`. Finns inga → skriv inget och
    avsluta.
 2. Läs `prompts/aktieanalys_prompt.md` – **huvudprompten** i det dokumentet är analysens
    struktur och ton (fem numrerade avsnitt, Bull/Base/Bear-tabell med riktkurser, tydligt
@@ -20,9 +24,10 @@ slutsats) och spara den som en cachad rapport i git.
    den renderar dem som markdown – så strukturen får utvecklas fritt, till skillnad från
    mallarna i `templates/`.
 3. För VARJE pending-ticker:
-   a. Bestäm typ ur tickerformatet: vanlig symbol = USA (NYSE/Nasdaq); `<X>.ST/.OL/.CO/.HE` =
-      Norden; `<MYNT>-USD` = krypto; `^...` = index.
-   b. KURS: kör `git pull` först (pris-actionen kan ha committat nyare data), hämta sedan i FÖRSTA
+   a. Tickerformatet ger en första ledtråd, men verifiera instrumenttyp och börs.
+      `<X>.ST/.OL/.CO/.HE` kan vara Norden, `<MYNT>-USD` krypto och `^...` index.
+      En symbol utan suffix bevisar inte att instrumentet är en tillåten US-aktie.
+   b. KURS: hämta i FÖRSTA
       HAND ur `state/prices.json` (verifierad `marketTime`). Saknas den eller är inaktuell – hämta
       via Yahoo Finance och ange källa + tidsstämpel. Kan ingen färsk kurs verifieras: skriv
       "KURS EJ VERIFIERAD".
@@ -37,7 +42,8 @@ slutsats) och spara den som en cachad rapport i git.
       - TEKNISK BILD: trend; närmaste stöd/motstånd; RSI(14); MACD; volym; kurs mot EMA20/50/200.
       - KATALYSATORER & NYHETER (senaste dagarna–veckorna): rapporter, guidance, order/kontrakt,
         godkännanden, förvärv/bud, insiderköp, regulatoriska besked – var och en med datum + källa.
-      - Källkrav: etablerade finansmedier (Bloomberg, Reuters, WSJ, FT, CNBC, DI m.fl.). Rykten
+      - Källkrav: verifiera bolagsfakta mot primärkällor (IR, rapport, myndighet).
+        Etablerade finansmedier (Bloomberg, Reuters, WSJ, FT, CNBC, DI m.fl.) ger kontext. Rykten
         markeras "⚠️ RYKTE – EJ BEKRÄFTAT (källa, datum)". Ignorera sociala medier och forum.
    c2. DELTA MOT CACHE: finns en tidigare analys för samma ticker i `reports/analysis/` – läs den
       senaste och lägg in en sektion "## Sedan senast (yymmdd)" direkt efter ansvarsfriskrivningen,
@@ -63,23 +69,27 @@ slutsats) och spara den som en cachad rapport i git.
       Att skriva ett köpomdöme som ingen läser är inte beslutsstöd.
 
       Fyll fälten enligt filens `comment`:
-      - `source`: `"analys"` · `id`: `yymmdd-TICKER` · `status`: alltid `"new"` (du avgör den
-        ALDRIG själv – det gör ansvarig bok i sin punkt 2d)
-      - `book`: `"nordic"` för nordiska tickers (`.ST`/`.OL`/`.CO`/`.HE`), annars `"us"`
+      - `source`: `"analys"` · `id`: `yymmdd-TICKER` · `status`: `"new"` för en NY post.
+        Finns ID:t redan: skapa ingen dubblett och återställ aldrig ett befintligt avgörande.
+      - `book`: `"nordic"` respektive `"us"` ENDAST för verifierade aktier i bokens
+        tillåtna universum. Krypto, index och instrument utanför båda böckerna kan
+        analyseras men skapar ingen rotationskandidat; ange skälet i analysen.
       - `confirmed`: `true` bara när analysen vilar på en INTRÄFFAD katalysator (rapport släppt,
         order tecknad, besked lämnat). Ett värderingsargument utan färsk utlösare är `false` –
         då blir kandidaten en bevakningspost, vilket är korrekt och inte en nedgradering.
-      - `price` + `priceAsOf`: samma verifierade kurs som analysen bygger på. Går kursen inte att
-        verifiera skrivs `null` i BÅDA – kandidaten kan då avfärdas men aldrig köpas.
+      - `price` + `priceAsOf`: verifierad kurs EFTER katalysatorn enligt scoutens regler.
+        Reguljär stängning före en AMC-rapport är inte kvalificerad. Saknas kvalificerad
+        kurs skriv `null` i BÅDA; analysen får redovisa en äldre kurs med tydlig tidsstämpel,
+        men kandidaten kan inte köpas på den.
       - `catalystType` ur enumen · `thesis`: max 300 tecken, kärnan i köpskälet ·
-        `sourceRef`: analysfilens namn · `expiresAt`: 5 handelsdagar från `date`
+        `sourceRef`: analysfilens fullständiga reposökväg · `expiresAt`: 5 handelsdagar från `date`
 
       Omdömena `[BEHÅLL]`, `[AVVAKTA]` och `[AVSTÅ]` skapar INGEN kandidat – de innehåller inget
       köpförslag att avgöra. Validera före commit:
       `node .github/scripts/validate-scout-candidates.mjs`.
 4. Committa och pusha alla nya `reports/analysis/…`-filer, `state/analysis_queue.json` OCH
    `state/scout_candidates.json` (om steg 3g skapade en kandidat) DIREKT
-   till main. Skapa ALDRIG ny branch, pull request eller fork. Misslyckas push (sandlådan saknar
+   till main enligt publiceringsvägen och kvittokravet i `prompts/gemensam_korning.md`. Misslyckas push (sandlådan saknar
    ofta credentials): lämna filerna korrekt skrivna och notera att Dren publicerar med `push.bat`
    – fastna aldrig i upprepade push-försök.
 

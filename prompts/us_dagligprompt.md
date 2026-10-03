@@ -1,4 +1,7 @@
-# PROMPT: US-Rotationsportfölj – daglig körning (före US-öppning ~15:00 CET)
+# PROMPT: US-Rotationsportfölj – daglig körning (kl. 15:00 Europe/Stockholm)
+
+> Läs först `prompts/gemensam_korning.md` i sin helhet. Dess regler om datum,
+> omkörning, watchlist, validering och publiceringskvitto gäller hela körningen.
 
 > **Repo-struktur:** instruktioner i `prompts/`, mallar i `templates/`, preferenser i
 > `config/`, levande tillstånd i `state/`, genererade rapporter i `reports/`. Kurser läses från
@@ -12,12 +15,15 @@ krypto ingår INTE i den handlade boken (scout genererar kryptoidéer separat).
 
 Strategin: portföljen består normalt av upp till 4 US-aktier à ~25 %, plus en indexsleeve (SPY)
 som håller det oallokerade kapitalet. Positionerna omprövas varje vecka men säljs inte automatiskt.
-Denna prompt körs VARJE handelsdag FÖRE US-öppning (~15:00 CET / före 09:30 ET) och har två
-lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut per aktie
+Denna prompt körs VARJE US-handelsdag kl. 15:00 Europe/Stockholm. Verifiera aktuell
+US-session separat; tidsskillnaden varierar kring sommartidsbyten. Den har två
+lägen: veckans första slutförda rotation = LÄGE A, därefter LÄGE B med ett beslut per aktie
 (KÖP / SÄLJ / BEHÅLL, eller AVVAKTA om kurs ej kan verifieras). All P/L i **USD**.
 
 ## POSITIONSSTORLEK (4 positioner à 25 %, PLATT — conviction-bandet borttaget 2026-08-08)
-- **Varje aktieposition väger exakt 25 %.** Ingen viktning efter conviction. Summan av
+- **En fullt fylld aktieposition väger 25 %.** Vid delad entry är ben 1
+  12,5 % och ben 2 ytterligare 12,5 %; om ben 2 inte triggas kvarstår 12,5 %.
+  Ingen viktning efter conviction. Summan av
   aktievikterna + indexsleeven (nedan) = 100 %.
 - **Skälet till att bandet 15–35 % togs bort:** totalpoängen styrde tidigare BÅDE om aktien
   köptes och hur mycket kapital som riskerades. Poängvikterna (35/30/15/20) är uttryckligen
@@ -33,19 +39,23 @@ lägen: måndag = full veckorotation, övriga dagar = bevakning med ett beslut p
   positioner kostar inte mer per krona (växlingspåslaget är också procentuellt).
 - Färre än 4 godkända case är OK: fyll de platser som håller, resten går till sleeven. Tvinga
   ALDRIG fram ett case för att fylla en plats.
-- **Avvikelse från 25 % är inte tillåten.** Har boken färre än 4 innehav går skillnaden till
+- **Övervikt över 25 % och conviction-viktning är inte tillåtna.**
+  Delad entry enligt reglerna nedan är undantaget för lägre vikt.
+  Har boken färre än 4 innehav går skillnaden till
   indexsleeven – aldrig till att övervikta ett befintligt innehav. Ange alltid vikten per
   position i `state/portfolj_us.md` (kolumnen "Vikt") och i veckorapporten.
 
 ## INDEXSLEEVE (oallokerat kapital ligger i index, ALDRIG på konto)
 - Oallokerat USD-kapital parkeras i **SPY** (S&P 500 ETF) – inte i kassa.
 - Skälet: backtestet 2026-07-31 visade ^GSPC köp-och-behåll +70,9 % över 5 år mot skelettets
-  +61,4 % brutto. Att stå utanför marknaden är en garanterad kostnad. US-boken har dessutom
-  stått i 100 % kassa sedan 2026-07-30 – exakt det läge sleeven finns för att undvika.
+  +61,4 % brutto. I just det testfönstret kostade kassa avkastning mot index; det
+  garanterar inte samma utfall framåt. Vid införandet stod US-boken i 100 % kassa
+  efter starten 2026-07-30 – det var bakgrunden till att sleeven infördes.
 - Redovisas som egen rad i "Aktuellt innehav": Aktie = "Indexsleeve (SPY)", ticker `SPY`,
   utan stop-loss och utan målkurs (`–`). Ingen stop – sleeven säljs aldrig på nedgång.
 - Balanseras om vid rotationen (LÄGE A). Rör den i LÄGE B endast när ett aktieköp/-sälj kräver det.
-- Sleevens köp/sälj loggas i `state/decisions.json` med `catalystType: "index"` så att den kan
+- Sleevens köp/sälj loggas i `state/decisions.json` med `catalystType: "index"`.
+  Endast sleevens ticker ska
   filtreras bort ur urvalsstatistiken.
 - **Kassa (0 %) endast** om sleeven inte kan handlas; motivera då i rapporten.
 
@@ -184,22 +194,23 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
 2. Läs `state/portfolj_us.md` – aktuellt US-innehav, kassa och historik (USD). Filen SKA
    uppdateras vid varje körning enligt "PORTFÖLJFILEN" nedan. Rör ALDRIG `state/portfolj.md`
    (det är den nordiska boken).
-3. Läs rätt mall: `templates/us_vecko_rapport.md` (måndagar) eller `templates/us_daglig_mall.md`
-   (övriga dagar). Strikta MALLAR – modifiera dem ALDRIG.
-4. Skapa rapportfilen för DAGENS datum: måndagar i `reports/us_weekly/` döpt
-   "us-veckorapport-yymmdd.md", övriga handelsdagar i `reports/us_daily/` döpt
+3. Läs rätt mall: `templates/us_vecko_rapport.md` (LÄGE A) eller `templates/us_daglig_mall.md`
+   (LÄGE B). Strikta MALLAR – modifiera dem ALDRIG.
+4. Skapa rapportfilen för DAGENS datum: LÄGE A i `reports/us_weekly/` döpt
+   "us-veckorapport-yymmdd.md", LÄGE B i `reports/us_daily/` döpt
    "us-daglig-yymmdd.md" (ex: `reports/us_daily/us-daglig-260717.md`). Finns filen för dagens
    datum redan: skriv över DEN – skapa ALDRIG en suffixad dubblett (`...-yymmdd_1.md`).
-5. Committa och pusha rapportfilen OCH `state/portfolj_us.md` DIREKT till main. Skapa ALDRIG ny
-   branch, pull request eller fork.
+5. Committa och pusha rapportfilen OCH `state/portfolj_us.md` DIREKT till main. Följ
+   publiceringsvägen och kvittokravet i `prompts/gemensam_korning.md`.
 6. WATCHLIST-HYGIEN: håll `config/watchlist_us.txt` fokuserad (≤ 25 symboler). Ta bort symboler
-   som varken är innehav, pending, bubblare eller nämnts de senaste 14 dagarna. Behåll alltid
-   indexen `^GSPC`/`^IXIC`. Ta ALDRIG bort aktiva innehav eller pending-planer.
+   som varken är innehav, pending, bubblare eller nämnts de senaste 14 handelsdagarna. Behåll alltid
+   indexen `^GSPC`/`^IXIC`. Skydda även giltiga kandidater och ännu omogna beslut enligt
+   `prompts/gemensam_korning.md`; ta aldrig bort aktiva innehav eller pending-planer.
    **`^GSPC` är dessutom regimfiltrets serie** (punkt 2b) – faller den ur hämtningen kan MA200 inte
    beräknas, regimen behandlas som AV och boken slutar öppna nya positioner utan att något går fel.
 6b. VARJE SYMBOL DU FATTAT ETT BESLUT OM SKA IN I WATCHLISTEN – ÄVEN AVVAKTA (sedan 2026-08-03).
-   En rad i `state/decisions.json` för en symbol som `prices.yml` inte hämtar blir **omätbar för
-   alltid**: `price_history.json` backfillas bara för hämtade symboler, så det finns ingen kurs att
+   En rad i `state/decisions.json` för en symbol som `prices.yml` inte hämtar saknar mätunderlag tills daterad historik för det ursprungliga
+   fönstret kan verifieras: `price_history.json` backfillas bara för hämtade symboler, så det finns ingen kurs att
    jämföra beslutet mot i efterhand. `.github/scripts/decision_eval.mjs` mäter varje beslut mot
    efterföljande kurs och mot `^GSPC` över samma fönster, och de AVVISADE kandidaterna är hela det
    kontrafaktiska underlaget – går de systematiskt bättre än de köpta är urvalsfiltret för strängt.
@@ -211,10 +222,11 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
    lämna filerna korrekt skrivna och notera att Dren publicerar med `push.bat`. Fastna ALDRIG i
    upprepade push-försök.
 
-## VÄLJ LÄGE EFTER DAG
+## VÄLJ LÄGE EFTER VECKANS PUBLICERADE ROTATION
 - Denna prompt är den ENDA ingången till US-rotationen. Schemalägg endast denna, alla US-handelsdagar (mån–fre).
-- Måndag (eller veckans första US-handelsdag om måndag är US-helgdag) → LÄGE A: VECKOROTATION.
-- Övriga handelsdagar → LÄGE B: DAGLIG BEVAKNING.
+- Kontrollera veckans publicerade LÄGE A enligt `prompts/gemensam_korning.md`.
+- Saknas den helt → LÄGE A på dagens öppna US-handelsdag. Finns den komplett → LÄGE B.
+- Delvis publicerad rotation repareras först; gör inga dubbla affärer.
 - Är US-börserna stängda idag (helgdag): skapa en kort fil i `reports/us_daily/` som noterar detta, gör inga beslut.
 
 ## KRAV PÅ FÄRSK DATA (högsta prioritet, gäller båda lägena)
@@ -259,7 +271,7 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
 7. Kontrollera kommande kända händelser: har något innehav rapport (before/after close), ex-datum,
    eller finns Fed-tal/CPI/PCE/NFP idag eller imorgon?
 
-## LÄGE A – VECKOROTATION (måndagar)
+## LÄGE A – VECKOROTATION (första slutförda rotationen i veckan)
 0. FACIT: hämta färsk kurs (inkl. pre-/after-hours enligt datakraven) för varje innehav i
    `state/portfolj_us.md`, beräkna utfall sedan entry, kontrollera om stop/mål träffats.
    **Innehav som hållits 5 handelsdagar säljs INTE automatiskt** – enligt "NIVÅER & OMSÄTTNING"
@@ -341,7 +353,7 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
      marknadskurs. Ingen limit.
    - **Ben 2 – andra halvan, villkorad limit** på rekylnivån som en vanlig rad i Pending-sektionen
      (samma ticker, "Planerad vikt" = resterande halva). Ej triggad inom 5 handelsdagar ⇒ avförs,
-     den delen stannar i kassa.
+     den delen stannar i indexsleeven (SPY).
    Undantag där HELA positionen får läggas som limit: aktien har gapat upp > 3 % samma dag, eller
    en binär händelse (rapport, Fed-besked, FDA) infaller inom 2 handelsdagar – US-boken har fler
    sådana kluster än den nordiska, så undantaget kommer att användas oftare. Motivera skriftligt.
@@ -374,8 +386,8 @@ att de vann. Läs alla tal som ett tak, inte som en prognos.
 4c. SLEEVE-MIGRERING (gäller tills den är gjord): står rubriken "Kassa" i `state/portfolj_us.md`
    på mer än 0 % när rotationen börjar är det kapital från tiden FÖRE sleeve-regeln – boken har
    stått i 100 % kassa sedan 2026-07-30. Det ska flyttas till SPY-sleeven i DENNA körning, inte
-   vänta på ett bättre aktieläge: tid utanför marknaden är en garanterad kostnad mot index och
-   är hela skälet till att sleeven finns. Logga sleeve-köpet i `state/decisions.json` med
+   vänta på ett bättre aktieläge: strategin använder sleeven för fortsatt indexexponering,
+   vilket även innebär marknadsrisk och inte garanterad avkastning. Logga sleeve-köpet i `state/decisions.json` med
    `catalystType: "index"` och skriv i rapporten hur stor andel som migrerades. Enda undantaget
    är att sleeven inte går att handla – motivera då.
 5. Uppdatera `state/portfolj_us.md` med nytt innehav och ev. kassa.
@@ -429,15 +441,16 @@ Gör följande för VARJE innehav i `state/portfolj_us.md`:
    2026-08-05 12:58 UTC)". En utökad kurs som redovisas utan sessionsmärkning ska
    behandlas som overifierad.
 
-   c) **Regimfiltret av** (S&P 500 under MA200 ur `state/price_history.json`)? → `rejected`,
+   c) **Regimfiltret av eller ej verifierbart** (S&P 500 ≤ MA200 eller underlag saknas
+      i `state/price_history.json`)? → `rejected`,
       "regimen av – inga nya positioner".
    d) **Binär händelse inom 2 handelsdagar** enligt `state/earnings_calendar.json` (fältet
       `isEstimate: true` betyder att Yahoo GISSAT datumet och räknas INTE som bekräftad
       binär händelse)? → `rejected`, "binär händelse inom 2 handelsdagar".
    e) **Full bok (4 innehav) eller ingen ledig kapacitet?** → `rejected`, "ingen ledig plats".
-   f) Annars: pröva mot veckorotationens FEM GRINDAR (verifierbar kurs · katalysator senaste
-      5 handelsdagarna · RSI ≤ 75 eller exceptionell katalysator · målavstånd ≥ 8 % och ≤
-      nåbarhetstaket · R/R ≥ 2:1). Faller den på en grind → `rejected` med den NAMNGIVNA
+   f) Annars: pröva mot ALLA krav i LÄGE A, inklusive likviditet, EMA/trend, volym,
+      RSI, katalysator, kostnadströskel, nåbarhet och R/R. Den förkortade uppräkningen
+      här ersätter aldrig det fullständiga tekniska filtret eller katalysatortabellen. Faller den på en grind → `rejected` med den NAMNGIVNA
       grinden i `decisionReason`. Håller alla → `status: "promoted"`, köp enligt punkt 4,
       kapitalet ur sleeven.
 
@@ -539,7 +552,7 @@ EXAKT samma hållperiod går att räkna fram ur `state/price_history.json`. `alp
 `outcomePct − benchPct`, annars faller valideringen; kan perioden inte täckas utelämnas båda
 hellre än att gissa (0 är ett påstående). Vid KÖP fylls `horizonDays` (> 0) enligt
 katalysatortabellen, plus `entry`, `stop`, `target`, `rr` och `weight`. VALIDERA innan commit:
-`node .github/scripts/validate-decisions.mjs` (schema, enum-värden, SÄLJ-fält och append-only –
+`node .github/scripts/validate-decisions.mjs --base <basfil>` (schema, enum-värden, SÄLJ-fält och append-only –
 enbart JSON.parse räcker INTE). Laga filen om valideringen fallerar. Samma kontroll körs i CI, och
 watchdogen larmar om dagens rapport pushas utan rader i loggen. Committa tillsammans med rapporten.
 

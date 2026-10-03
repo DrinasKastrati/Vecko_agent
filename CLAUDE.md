@@ -14,6 +14,15 @@ committar till main flera gånger per dag (kurser var 30:e minut, rapporter dagl
 
 ---
 
+## Körning och publiceringsbevis (förtydligat 2026-10-03)
+
+Alla rutiner läser `prompts/gemensam_korning.md` före sin egen prompt. Den anger
+Europe/Stockholm, idempotenta omkörningar, återhämtning av saknat LÄGE A och kvitto
+med commit + återlästa filer på main. En befintlig molnbranch kan gå via auto_merge;
+en lyckad branch-push eller sluttext är inte i sig publicering på main. Lokal
+publicering med `push.bat` följs av samma återläsning. Äldre nulägesnoteringar i
+detta dokument ersätter inte den verifieringen.
+
 ## 1. Vad projektet är
 Ett automatiserat system för aktie-beslutsstöd. Sex ursprungliga delar beskrivs nedan; delarna
 7–9 (US-rotation, allokerings-routine, miss-retro) tillkom senare och beskrivs i `docs/HISTORIK.md`.

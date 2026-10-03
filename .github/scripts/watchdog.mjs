@@ -11,6 +11,7 @@
    öppnar issues (med dedupe mot redan öppna).
    ============================================================ */
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { isSleeveDecision } from "./decision_eval.mjs";
 import { staleCandidates } from "./validate-scout-candidates.mjs";
 import { postCatalystQuote } from "./refresh-candidate-prices.mjs";
 import { symbolsWithGaps, buildCalendars } from "./backfill-history.mjs";
@@ -194,12 +195,25 @@ export function decisionRowsOn(db, isoDate, book){
    avvisade. Tröskeln är medvetet LÅG – prompten kräver 10–15 kandidater, så 6
    flaggar bara det uppenbara fallet och ger inga falsklarm på en vecka med få
    kandidater. */
+// isoDate är måndagen för den vecka vars rotation nu ska vara publicerad.
+// En återhämtad LÄGE A får dagens faktiska datum, inte en bakdaterad måndag.
+function rotationRowsThisWeek(decisionsDb, isoDate, book){
+  const start = Date.parse(isoDate + "T00:00:00Z");
+  if (!Number.isFinite(start)) return [];
+  const end = new Date(start + 7 * 86400000).toISOString().slice(0, 10);
+  const rows = Array.isArray(decisionsDb?.decisions) ? decisionsDb.decisions : [];
+  return rows.filter(r => r && r.book === book &&
+    r.mode === "A" && r.date >= isoDate && r.date < end);
+}
+
 export function checkGrossList(opts){
   const { isoDate, isMonday, decisionsDb, minRows = 6, books = ["nordic", "us"] } = opts || {};
   const problems = [];
   if (!isMonday || !isoDate || !decisionsDb) return problems;
   for (const book of books){
-    const rows = decisionRowsOn(decisionsDb, isoDate, book);
+    const weekRows = rotationRowsThisWeek(decisionsDb, isoDate, book);
+    const rotationDate = weekRows.map(r => r.date).sort().at(-1);
+    const rows = weekRows.filter(r => r.date === rotationDate);
     // Ingen rad alls = boken kördes förmodligen inte; det fångas av "decisions"-
     // kontrollen ovan och ska inte dubbelrapporteras här.
     if (!rows.length) continue;
@@ -208,7 +222,7 @@ export function checkGrossList(opts){
         `Watchdog: ${book}-boken loggade bara ${rows.length} beslut i veckorotationen`,
         body: "LÄGE A ska logga HELA bruttolistan (10–15 kandidater), inte bara de valda – varje " +
           "bortfallen kandidat som en `AVVAKTA`-rad med den namngivna spärren i `reason`. " +
-          `Bara ${rows.length} rad(er) för ${isoDate} i \`state/decisions.json\`. De avvisade är det ` +
+          `Bara ${rows.length} rad(er) för ${rotationDate} i \`state/decisions.json\`. De avvisade är det ` +
           "KONTRAFAKTISKA underlaget i `state/decision_eval.json`: utan dem går det inte att mäta " +
           "om urvalsfiltret är för strängt. Det här hände 2026-08-03 (13 avvisade i prosa, 2 rader)." });
   }
@@ -233,31 +247,25 @@ export function checkGrossList(opts){
    En US-körning som helt uteblir passerar därför båda. Bruttolistspärren fångar en
    rotation som loggar FÖR LITE; den här fångar en rotation som inte loggar ALLS.
 
-   Bara på måndagar: LÄGE A är veckorotationen, och det är den som öppnar positioner.
-   En utebliven LÄGE B-dag är en dags bevakning, inte en förlorad köpväg.
-
-   Två tystnadsregler: finns dagens us-veckorapport är allt bra, och finns US-rader i
-   beslutsloggen för dagen har rotationen kört även om rapportfilen ännu inte
-   committats (auto_merge kan ligga efter). Saknas `latestUsWeeklyDate` helt går
-   kontrollen på beslutsloggen ensam – ett tomt reports/us_weekly/ är inte i sig ett
-   bevis på en utebliven körning. */
+   Kontrollens veckankare är måndag, men en försenad LÄGE A kan publiceras
+   tisdag–fredag. Rapport och mode="A"-beslut för samma datum måste finnas:
+   LÄGE B eller bara en av artefakterna bevisar inte en slutförd publicering. */
 export function checkUsRotation(opts){
   const { isoDate, isMonday, decisionsDb, latestUsWeeklyDate } = opts || {};
   if (!isMonday || !isoDate || !decisionsDb) return [];
-  if (latestUsWeeklyDate === isoDate) return [];
-  if (decisionRowsOn(decisionsDb, isoDate, "us").length) return [];
-  return [{ key: "us-rotation", title: "Watchdog: US-rotationens LÄGE A har inte kört",
-    body: "Måndag " + isoDate + " har varken en `reports/us_weekly/us-veckorapport-" +
-      isoDate.slice(2).replace(/-/g, "") + ".md` (senaste: " + (latestUsWeeklyDate || "ingen") +
-      ") eller en enda rad med `book: \"us\"` i `state/decisions.json`. US-boken saknar då " +
-      "köpväg hela veckan och står kvar i sleeven med sina lediga platser.\n\n" +
-      "Det här är INTE samma sak som bruttolistspärren: den fångar en rotation som loggar " +
-      "för lite, medan en rotation som uteblir helt passerar både den (`checkGrossList` " +
-      "hoppar över en bok med noll rader) och färskhetskontrollen (som grindar på den " +
-      "NORDISKA rapportens datum). Det var precis så 2026-08-24 och 2026-08-31 kunde gå " +
-      "obemärkta förbi i tio handelsdagar.\n\n" +
-      "Kontrollera att US-rotationens routine (mån–fre 15:00 CEST, `prompts/us_dagligprompt.md`) " +
-      "faktiskt startade, och kör den för hand om måndagen redan passerat." }];
+  const rows = rotationRowsThisWeek(decisionsDb, isoDate, "us");
+  if (rows.some(r => r.date === latestUsWeeklyDate)) return [];
+  return [{ key: "us-rotation", title: "Watchdog: US-rotationens LÄGE A är inte verifierad på main",
+    body: "Veckan från " + isoDate + " saknar en verifierad publicering med både " +
+      "`reports/us_weekly/`-rapport och beslut med `book: \"us\"`, `mode: \"A\"` " +
+      "för samma datum. Senaste veckorapport: " + (latestUsWeeklyDate || "ingen") +
+      "; LÄGE A-rader denna vecka: " + rows.length + ". LÄGE B-rader räcker inte.\n\n" +
+      "Kontrollera rutinens körlogg, pushad commit, eventuell claude-branch och " +
+      "`auto_merge.yml`; statusen Slutförd är inget publiceringsbevis. " +
+      "Finns opublicerat arbete, slutför det utan dubbla affärer. Saknas rotationen helt, " +
+      "kör `prompts/us_dagligprompt.md` nästa öppna US-handelsdag: prompten väljer LÄGE A " +
+      "med dagens datum. Schemat är mån–fre kl. 15:00 Europe/Stockholm. " +
+      "Verifiera sedan rapport, portfölj och beslutsrader på main." }];
 }
 
 /* SCOUT-KANDIDATER SOM ALDRIG FICK ETT AVGÖRANDE.
@@ -656,7 +664,7 @@ export function checkDecisionEval(opts){
   const counts = evalDb && evalDb.counts;
   if (!Array.isArray(rows) || !counts || typeof counts.decisions !== "number") return problems;
 
-  const matbara = rows.filter(r => r && r.catalystType !== "index").length;
+  const matbara = rows.filter(r => r && !isSleeveDecision(r)).length;
   const efter = matbara - counts.decisions;
   if (efter > tolerated)
     problems.push({ key: "decision-eval-stale",
