@@ -1,22 +1,23 @@
 {
- "generatedAt": "2026-10-02T21:20:40.904Z",
+ "generatedAt": "2026-10-05T12:20:08.416Z",
  "feeds": {
   "globenewswire": "20 poster",
   "globenewswire-earnings": "20 poster",
-  "prnewswire": "20 poster",
+  "prnewswire": "HTTP 404 – båda försöken (0.4 s)",
   "mfn": "48 poster",
   "sec-8k": "40 poster",
   "fed-press": "20 poster"
  },
- "count": 1268,
+ "count": 1233,
  "window": {
   "tradingDays": 10,
   "oldest": "2026-09-21",
-  "newest": "2026-10-02",
-  "distinctDays": 11,
+  "newest": "2026-10-05",
+  "distinctDays": 12,
   "tradingDaysCovered": 10,
   "missingDays": [],
   "perDay": {
+   "2026-10-05": 82,
    "2026-10-02": 126,
    "2026-10-01": 129,
    "2026-09-30": 142,
@@ -27,18 +28,510 @@
    "2026-09-24": 123,
    "2026-09-23": 125,
    "2026-09-22": 125,
-   "2026-09-21": 123
+   "2026-09-21": 6
   },
   "perSource": {
-   "sec-8k": 305,
-   "globenewswire": 300,
-   "prnewswire": 300,
+   "sec-8k": 306,
    "mfn": 300,
-   "fed-press": 9,
-   "globenewswire-earnings": 54
+   "globenewswire": 291,
+   "globenewswire-earnings": 53,
+   "prnewswire": 274,
+   "fed-press": 9
   }
  },
  "items": [
+  {
+   "t": "8-K - Hudson Pacific Properties, L.P. (0001496264) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1496264/000148251226000077/0001482512-26-000077-index.htm",
+   "d": "2026-10-05T12:19:50.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Hudson Pacific Properties, Inc. (0001482512) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1482512/000148251226000077/0001482512-26-000077-index.htm",
+   "d": "2026-10-05T12:19:50.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - DeFi Development Corp. (0001805526) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1805526/000180552626000125/0001805526-26-000125-index.htm",
+   "d": "2026-10-05T12:19:10.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - RXO, Inc. (0001929561) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1929561/000114036126038548/0001140361-26-038548-index.htm",
+   "d": "2026-10-05T12:17:10.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "Meddelelse nr. 19/2026: Indre værdi pr. 30. september 2026",
+   "u": "https://mfn.se/one/a/strategic-investments/meddelelse-nr-19-2026-indre-vaerdi-pr-30-september-2026-e30ca252",
+   "d": "2026-10-05T12:16:27.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "InterTabac World Alternative Awards Names AIR’s Crown Switch™ 2026 Best Vape Device of the Year",
+   "u": "https://mfn.se/one/a/air-global/intertabac-world-alternative-awards-names-airs-crown-switch-2026-best-vape-device-of-the-year-dab0e9e1",
+   "d": "2026-10-05T12:16:19.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Meddelelse nr. 19/2026: Indre værdi pr. 30. september 2026",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374527/0/da/meddelelse-nr-19-2026-indre-v%C3%A6rdi-pr-30-september-2026.html",
+   "d": "2026-10-05T12:16:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "InterTabac World Alternative Awards Names AIR’s Crown Switch™ 2026 Best Vape Device of the Year",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374526/0/en/intertabac-world-alternative-awards-names-air-s-crown-switch-2026-best-vape-device-of-the-year.html",
+   "d": "2026-10-05T12:16:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "TeraWulf Expands Contracted Power Capacity at its Muskie Data Campus to 1 GW",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374525/0/en/terawulf-expands-contracted-power-capacity-at-its-muskie-data-campus-to-1-gw.html",
+   "d": "2026-10-05T12:15:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "TeraWulf Expands Contracted Power Capacity at its Muskie Data Campus to 1 GW",
+   "u": "https://mfn.se/one/a/terawulf/terawulf-expands-contracted-power-capacity-at-its-muskie-data-campus-to-1-gw-fc3fad47",
+   "d": "2026-10-05T12:15:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Share buy-back program",
+   "u": "https://mfn.se/one/a/royal-unibrew/share-buy-back-program-aff69455",
+   "d": "2026-10-05T12:13:44.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Share buy-back program",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374522/0/en/share-buy-back-program.html",
+   "d": "2026-10-05T12:13:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Form 8.3 Eleco Plc",
+   "u": "https://mfn.se/one/a/rathbones-group/form-8-3-eleco-plc-e376d519",
+   "d": "2026-10-05T12:10:07.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Form 8.3 Eleco Plc",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374517/0/en/form-8-3-eleco-plc.html",
+   "d": "2026-10-05T12:10:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "8-K - Benitec Biopharma Inc. (0001808898) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1808898/000119312526413177/0001193125-26-413177-index.htm",
+   "d": "2026-10-05T12:08:08.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - FLEX LTD. (0000866374) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/866374/000119312526413173/0001193125-26-413173-index.htm",
+   "d": "2026-10-05T12:07:19.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - FTC Solar, Inc. (0001828161) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1828161/000121390026106656/0001213900-26-106656-index.htm",
+   "d": "2026-10-05T12:05:34.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Stablecoin Development Corp (0001389545) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1389545/000143774926031972/0001437749-26-031972-index.htm",
+   "d": "2026-10-05T12:05:32.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - TELA Bio, Inc. (0001561921) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1561921/000110465926113506/0001104659-26-113506-index.htm",
+   "d": "2026-10-05T12:05:26.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - FORUM MARKETS Inc (0001690080) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1690080/000121390026106655/0001213900-26-106655-index.htm",
+   "d": "2026-10-05T12:04:40.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Butterfly Network, Inc. (0001804176) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000033/0001804176-26-000033-index.htm",
+   "d": "2026-10-05T12:03:40.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "Finansinspektionen: Flaggningsmeddelande i Munters Group AB",
+   "u": "https://mfn.se/cis/a/fi-se/finansinspektionen-flaggningsmeddelande-i-munters-group-ab-58fc8953",
+   "d": "2026-10-05T12:03:02.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "8-K - Vaxcyte, Inc. (0001649094) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1649094/000119312526413168/0001193125-26-413168-index.htm",
+   "d": "2026-10-05T12:01:08.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "Ardelyx to Present New Data on Hyperphosphatemia Management at ASN Kidney Week 2026",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374508/0/en/ardelyx-to-present-new-data-on-hyperphosphatemia-management-at-asn-kidney-week-2026.html",
+   "d": "2026-10-05T12:01:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "FTC Solar Announces Waiver and Amendment to Credit Agreement",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374509/0/en/ftc-solar-announces-waiver-and-amendment-to-credit-agreement.html",
+   "d": "2026-10-05T12:01:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Ardelyx to Present New Data on Hyperphosphatemia Management at ASN Kidney Week 2026",
+   "u": "https://mfn.se/one/a/ardelyx/ardelyx-to-present-new-data-on-hyperphosphatemia-management-at-asn-kidney-week-2026-3db3df29",
+   "d": "2026-10-05T12:01:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "8-K - SS Innovations International, Inc. (0001676163) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1676163/000121390026106654/0001213900-26-106654-index.htm",
+   "d": "2026-10-05T12:00:49.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Jasper Therapeutics, Inc. (0001788028) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1788028/000121390026106651/0001213900-26-106651-index.htm",
+   "d": "2026-10-05T12:00:38.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Quality Industrial Corp. (0001393781) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1393781/000149315226045694/0001493152-26-045694-index.htm",
+   "d": "2026-10-05T12:00:22.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Rezolute, Inc. (0001509261) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1509261/000110465926113503/0001104659-26-113503-index.htm",
+   "d": "2026-10-05T12:00:15.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Strategy Inc (0001050446) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1050446/000119312526413164/0001193125-26-413164-index.htm",
+   "d": "2026-10-05T12:00:15.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "GRK Infra Plc: Share repurchase during week 40",
+   "u": "https://mfn.se/nir/a/grk-infra/grk-infra-plc-share-repurchase-during-week-40-60781f47",
+   "d": "2026-10-05T12:00:12.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "GRK Infra Oyj: Omien osakkeiden hankinta viikolla 40, 2026",
+   "u": "https://mfn.se/nir/a/grk-infra/grk-infra-oyj-omien-osakkeiden-hankinta-viikolla-40-2026-40c4f88b",
+   "d": "2026-10-05T12:00:12.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "TELA Bio Announces 510(k) Clearance for Liora™ Monofilament Scaffold for Soft Tissue Reinforcement",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374465/0/en/tela-bio-announces-510-k-clearance-for-liora-monofilament-scaffold-for-soft-tissue-reinforcement.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Kratos Secures More Than $100 Million in Contracts for Space and Cyber Mission Capabilities",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374464/224/en/kratos-secures-more-than-100-million-in-contracts-for-space-and-cyber-mission-capabilities.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Prime Medicine Announces First Patient Dosed in Global Phase 1/2 Clinical Trial of PM577a for H1069Q-Mutated Wilson Disease",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374466/0/en/prime-medicine-announces-first-patient-dosed-in-global-phase-1-2-clinical-trial-of-pm577a-for-h1069q-mutated-wilson-disease.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Sofwave to Participate in the Jefferies Private MedTech Virtual Summit",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374467/0/en/sofwave-to-participate-in-the-jefferies-private-medtech-virtual-summit.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "vTv Therapeutics Announces Completion of Enrollment in Phase 3 CATT1 Study of Cadisegliatin in Type 1 Diabetes (T1D)",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374468/0/en/vtv-therapeutics-announces-completion-of-enrollment-in-phase-3-catt1-study-of-cadisegliatin-in-type-1-diabetes-t1d.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Rani Therapeutics Announces Acceptance into U.S. FDA's Emerging Technology Program (ETP)",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374470/0/en/rani-therapeutics-announces-acceptance-into-u-s-fda-s-emerging-technology-program-etp.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "DFDV Preliminary Q3’26 Estimates Indicate Double-Digit SPS Growth and More Than 100% NAV Per Share Growth In Q3; SOL Treasury Growth Rises to 11% Since August 12",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374471/0/en/dfdv-preliminary-q3-26-estimates-indicate-double-digit-sps-growth-and-more-than-100-nav-per-share-growth-in-q3-sol-treasury-growth-rises-to-11-since-august-12.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "CoreCivic Announces 2026 Third Quarter Earnings Release and Conference Call Dates",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374472/0/en/corecivic-announces-2026-third-quarter-earnings-release-and-conference-call-dates.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Pacira Announces Exclusive Agreement with Molteni Farmaceutici to Commercialize EXPAREL® in the European Union and United Kingdom",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374473/0/en/pacira-announces-exclusive-agreement-with-molteni-farmaceutici-to-commercialize-exparel-in-the-european-union-and-united-kingdom.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Marea Therapeutics, a Subsidiary of Lisata Therapeutics, Announces First Patient Dosed in Phase 2 Clinical Trial of MAR002, a Potential Best-in-disease Investigational Therapy for the Treatment of Acromegaly",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374474/18623/en/marea-therapeutics-a-subsidiary-of-lisata-therapeutics-announces-first-patient-dosed-in-phase-2-clinical-trial-of-mar002-a-potential-best-in-disease-investigational-therapy-for-the.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Celcuity Announces Multiple Presentations At The European Society For Medical Oncology (ESMO) Congress 2026",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374475/0/en/celcuity-announces-multiple-presentations-at-the-european-society-for-medical-oncology-esmo-congress-2026.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Zscaler Collaborates with IBM and Red Hat to Protect Private Applications from Frontier AI-Powered Threats",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374476/0/en/zscaler-collaborates-with-ibm-and-red-hat-to-protect-private-applications-from-frontier-ai-powered-threats.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "Mastercard Selects Rezolve Ai in Worldwide Reseller Agreement to Advance AI-Powered Commerce",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374478/0/en/mastercard-selects-rezolve-ai-in-worldwide-reseller-agreement-to-advance-ai-powered-commerce.html",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "globenewswire"
+  },
+  {
+   "t": "STMicroelectronics announces status of common share repurchase program",
+   "u": "https://mfn.se/one/a/stmicroelectronics/stmicroelectronics-announces-status-of-common-share-repurchase-program-3e698ea0",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Zscaler Collaborates with IBM and Red Hat to Protect Private Applications from Frontier AI-Powered Threats",
+   "u": "https://mfn.se/one/a/zscaler-inc/zscaler-collaborates-with-ibm-and-red-hat-to-protect-private-applications-from-frontier-ai-powered-threats-bf3e51cd",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Kratos Secures More Than $100 Million in Contracts for Space and Cyber Mission Capabilities",
+   "u": "https://mfn.se/one/a/kratos-defense-and-security/kratos-secures-more-than-100-million-in-contracts-for-space-and-cyber-mission-capabilities-5e88e034",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Ensimmäinen potilas on saanut hoitoa Orion Pharman Faasi 1/2 -tutkimuksessa ODM-216-molekyylillä, joka on yhtiön ensimmäinen kliiniseen kehitysvaiheeseen edennyt biologinen syöpälääkeaihio",
+   "u": "https://mfn.se/one/a/orion/ensimmainen-potilas-on-saanut-hoitoa-orion-pharman-faasi-1-2-tutkimuksessa-odm-216-molekyylilla-joka-on-yhtion-ensimmainen-kliiniseen-kehitysvaiheeseen-edennyt-biologinen-syopalaakeaihio-7a1bbeb2",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Orion Pharma announces first patient dosed in Phase 1/2 clinical trial of ODM-216, the company’s first biologic candidate to reach clinical testing",
+   "u": "https://mfn.se/one/a/orion/orion-pharma-announces-first-patient-dosed-in-phase-1-2-clinical-trial-of-odm-216-the-companys-first-biologic-candidate-to-reach-clinical-testing-a071acb0",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Inside Information: Preliminary result of Martela Corporation’s directed share issue",
+   "u": "https://mfn.se/one/a/martela/inside-information-preliminary-result-of-martela-corporations-directed-share-issue-082dca87",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Sisäpiiritieto: Martela Oyj:n suunnatun osakeannin alustava tulos",
+   "u": "https://mfn.se/one/a/martela/sisapiiritieto-martela-oyj-n-suunnatun-osakeannin-alustava-tulos-5b5f3eac",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Ovaro Kiinteistösijoitus Oyj - Johdon liiketoimet – Pekka Ollikainen",
+   "u": "https://mfn.se/ind/a/ovaro-kiinteistosijoitus/ovaro-kiinteistosijoitus-oyj-johdon-liiketoimet-pekka-ollikainen-a879cad0",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Admicom Oyj: Osakkeenomistajien nimitystoimikunnan kokoonpano",
+   "u": "https://mfn.se/ind/a/admicom/admicom-oyj-osakkeenomistajien-nimitystoimikunnan-kokoonpano-25f1b5b2",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Admicom Oyj: Composition of Admicom’s Shareholders’ Nomination Committee",
+   "u": "https://mfn.se/ind/a/admicom/admicom-oyj-composition-of-admicoms-shareholders-nomination-committee-2ddac326",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Posti Group Corporation: Share repurchase during week 40",
+   "u": "https://mfn.se/cis/a/posti-group/posti-group-corporation-share-repurchase-during-week-40-7933f629",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Raute Corporation: SHARE REPURCHASE during week 40",
+   "u": "https://mfn.se/cis/a/raute/raute-corporation-share-repurchase-during-week-40-96339c01",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Fodelia Oyj: Omien osakkeiden hankinta viikolla 40, 2026",
+   "u": "https://mfn.se/cis/a/fodelia/fodelia-oyj-omien-osakkeiden-hankinta-viikolla-40-2026-137c4e15",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Tieto: Share repurchases on week 40",
+   "u": "https://mfn.se/cis/a/tieto-corporation/tieto-share-repurchases-on-week-40-47c14cf2",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Raute Oyj: OMIEN OSAKKEIDEN HANKINTA viikolla 40, 2026",
+   "u": "https://mfn.se/cis/a/raute/raute-oyj-omien-osakkeiden-hankinta-viikolla-40-2026-a2516f6c",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Alma Media Oyj: Omien osakkeiden hankinta viikolla 40, 2026",
+   "u": "https://mfn.se/cis/a/alma-media/alma-media-oyj-omien-osakkeiden-hankinta-viikolla-40-2026-b0196691",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Alma Media Corporation: Share repurchase during week 40",
+   "u": "https://mfn.se/cis/a/alma-media/alma-media-corporation-share-repurchase-during-week-40-4c73ddf8",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Posti Group Oyj: Omien osakkeiden hankinta viikolla 40, 2026",
+   "u": "https://mfn.se/cis/a/posti-group/posti-group-oyj-omien-osakkeiden-hankinta-viikolla-40-2026-db3d303d",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Tieto: Omien osakkeiden hankinta viikolla 40",
+   "u": "https://mfn.se/cis/a/tieto-corporation/tieto-omien-osakkeiden-hankinta-viikolla-40-09597129",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Incap Oyj: Omien osakkeiden hankinta viikolla 40, 2026",
+   "u": "https://mfn.se/a/incap/incap-oyj-omien-osakkeiden-hankinta-viikolla-40-2026",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "Incap Corporation: Share repurchase during week 40",
+   "u": "https://mfn.se/a/incap/incap-corporation-share-repurchase-during-week-40",
+   "d": "2026-10-05T12:00:00.000Z",
+   "src": "mfn"
+  },
+  {
+   "t": "8-K - Strive, Inc. (0001920406) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1920406/000162828026064753/0001628280-26-064753-index.htm",
+   "d": "2026-10-05T11:59:57.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Distribution Solutions Group, Inc. (0000703604) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/703604/000119312526413150/0001193125-26-413150-index.htm",
+   "d": "2026-10-05T11:45:09.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Matador Resources Co (0001520006) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1520006/000152000626000050/0001520006-26-000050-index.htm",
+   "d": "2026-10-05T11:36:02.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - HARROW, INC. (0001360214) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1360214/000162828026064749/0001628280-26-064749-index.htm",
+   "d": "2026-10-05T11:32:18.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - PTC INC. (0000857005) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/857005/000119312526413124/0001193125-26-413124-index.htm",
+   "d": "2026-10-05T11:22:43.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K/A - Processa Pharmaceuticals, Inc. (0001533743) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1533743/000114036126038535/0001140361-26-038535-index.htm",
+   "d": "2026-10-05T11:21:13.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - NEIGHBORHOOD INTELLIGENCE, INC. (0001130713) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1130713/000114036126038532/0001140361-26-038532-index.htm",
+   "d": "2026-10-05T11:19:52.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - INSMED Inc (0001104506) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1104506/000114036126038529/0001140361-26-038529-index.htm",
+   "d": "2026-10-05T11:01:19.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - TIDEWATER INC (0000098222) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/98222/000110465926113492/0001104659-26-113492-index.htm",
+   "d": "2026-10-05T11:00:36.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - ADVANCED DRAINAGE SYSTEMS, INC. (0001604028) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1604028/000119312526413092/0001193125-26-413092-index.htm",
+   "d": "2026-10-05T11:00:28.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Camping World Holdings, Inc. (0001669779) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1669779/000110465926113490/0001104659-26-113490-index.htm",
+   "d": "2026-10-05T11:00:14.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - Alector, Inc. (0001653087) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/1653087/000119312526413090/0001193125-26-413090-index.htm",
+   "d": "2026-10-05T11:00:14.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "8-K - GEO GROUP INC (0000923796) (Filer)",
+   "u": "https://www.sec.gov/Archives/edgar/data/923796/000119312526413085/0001193125-26-413085-index.htm",
+   "d": "2026-10-05T10:57:07.000Z",
+   "src": "sec-8k"
+  },
+  {
+   "t": "Nykredit Realkredit A/S: Ledende medarbejdere og disses nærtstående transaktioner",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374251/0/da/nykredit-realkredit-a-s-ledende-medarbejdere-og-disses-n%C3%A6rtst%C3%A5ende-transaktioner.html",
+   "d": "2026-10-05T09:05:00.000Z",
+   "src": "globenewswire-earnings"
+  },
+  {
+   "t": "Reporting of Manager’s transaction in Bang & Olufsen shares",
+   "u": "https://www.globenewswire.com/news-release/2026/10/05/3374229/0/en/reporting-of-manager-s-transaction-in-bang-olufsen-shares.html",
+   "d": "2026-10-05T08:34:00.000Z",
+   "src": "globenewswire-earnings"
+  },
   {
    "t": "8-K - Healthcare Triangle, Inc. (0001839285) (Filer)",
    "u": "https://www.sec.gov/Archives/edgar/data/1839285/000121390026106533/0001213900-26-106533-index.htm",
@@ -2326,6 +2819,12 @@
    "src": "globenewswire-earnings"
   },
   {
+   "t": "Federal Reserve Board finalizes changes to enhance the transparency and public accountability of its stress test and reduce volatility in its stress test-related capital requirements",
+   "u": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260930a.htm",
+   "d": "2026-09-30T13:00:00.000Z",
+   "src": "fed-press"
+  },
+  {
    "t": "Oma Savings Bank Plc - Managers' transactions - Virtanen",
    "u": "https://www.globenewswire.com/news-release/2026/09/30/3371907/0/en/oma-savings-bank-plc-managers-transactions-virtanen.html",
    "d": "2026-09-30T13:00:00.000Z",
@@ -2336,12 +2835,6 @@
    "u": "https://www.globenewswire.com/news-release/2026/09/30/3371908/0/fi/oma-s%C3%A4%C3%A4st%C3%B6pankki-oyj-johdon-liiketoimet-volotinen.html",
    "d": "2026-09-30T13:00:00.000Z",
    "src": "globenewswire-earnings"
-  },
-  {
-   "t": "Federal Reserve Board finalizes changes to enhance the transparency and public accountability of its stress test and reduce volatility in its stress test-related capital requirements",
-   "u": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260930a.htm",
-   "d": "2026-09-30T13:00:00.000Z",
-   "src": "fed-press"
   },
   {
    "t": "Oma Savings Bank Plc - Managers' transactions - Volotinen",
@@ -6944,708 +7437,6 @@
    "u": "https://www.prnewswire.com/news-releases/rosen-law-firm-encourages-tigo-energy-inc-investors-to-inquire-about-securities-class-action-investigation--tygo-302885245.html",
    "d": "2026-09-21T23:34:00.000Z",
    "src": "prnewswire"
-  },
-  {
-   "t": "Merry Life Biomedical Advances Global Phase 2 Trial of TML-6, Exploring Cellular Protein Clearance in Early Alzheimer's Disease",
-   "u": "https://www.prnewswire.com/news-releases/merry-life-biomedical-advances-global-phase-2-trial-of-tml-6-exploring-cellular-protein-clearance-in-early-alzheimers-disease-302880875.html",
-   "d": "2026-09-21T23:20:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "International Day of Peace Celebrated by Family Federation Volunteers With Community Service Across North America",
-   "u": "https://www.prnewswire.com/news-releases/international-day-of-peace-celebrated-by-family-federation-volunteers-with-community-service-across-north-america-302885305.html",
-   "d": "2026-09-21T23:05:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "TC Energy announces sale of Guadalajara-Manzanillo Pipeline",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365920/0/en/tc-energy-announces-sale-of-guadalajara-manzanillo-pipeline.html",
-   "d": "2026-09-21T23:00:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Ridgeway Pharmacy Statement Regarding Website Security Incident Involving Third-Party Vendor",
-   "u": "https://www.prnewswire.com/news-releases/ridgeway-pharmacy-statement-regarding-website-security-incident-involving-third-party-vendor-302884264.html",
-   "d": "2026-09-21T23:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "ESENTIA Announces the Execution of an Agreement to Acquire the Guadalajara-Manzanillo Natural Gas Pipeline System, Connecting Existing System to the Port of Manzanillo",
-   "u": "https://www.prnewswire.com/news-releases/esentia-announces-the-execution-of-an-agreement-to-acquire-the-guadalajara-manzanillo-natural-gas-pipeline-system-connecting-existing-system-to-the-port-of-manzanillo-302885289.html",
-   "d": "2026-09-21T23:00:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "TC Energy announces sale of Guadalajara-Manzanillo Pipeline",
-   "u": "https://mfn.se/one/a/tc-energy/tc-energy-announces-sale-of-guadalajara-manzanillo-pipeline-bb2fae29",
-   "d": "2026-09-21T23:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "8-K - Bridgeline Digital, Inc. (0001378590) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1378590/000143774926030847/0001437749-26-030847-index.htm",
-   "d": "2026-09-21T22:58:43.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "Talisker Announces Preliminary Economic Assessment for the Bralorne Gold Project Highlighting C$1.0 Billion After-Tax NPV5% and 31.3% IRR at a Base-Case Gold Price of US$3,500/oz; At US$4,300/oz Spot Gold, C$1.9 Billion After-Tax NPV5% and ",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365918/0/en/talisker-announces-preliminary-economic-assessment-for-the-bralorne-gold-project-highlighting-c-1-0-billion-after-tax-npv5-and-31-3-irr-at-a-base-case-gold-price-of-us-3-500-oz-at-.html",
-   "d": "2026-09-21T22:52:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "i-80 Gold Announces Positive Feasibility Study and Initial Mineral Reserves for Granite Creek Underground; After-Tax NPV(5%) of $118 Million at $2,750/oz Au Increasing to $598 Million at $4,500/oz Au",
-   "u": "https://www.prnewswire.com/news-releases/i-80-gold-announces-positive-feasibility-study-and-initial-mineral-reserves-for-granite-creek-underground-after-tax-npv5-of-118-million-at-2-750oz-au-increasing-to-598-million-at-4-500oz-au-302885287.html",
-   "d": "2026-09-21T22:48:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "1 WEEK BE INVESTOR DEADLINE: Bloom Energy Corporation Investors with Substantial Losses Have Opportunity to Lead Class Action Lawsuit, Robbins Geller Rudman &amp; Dowd LLP Announces",
-   "u": "https://www.prnewswire.com/news-releases/1-week-be-investor-deadline-bloom-energy-corporation-investors-with-substantial-losses-have-opportunity-to-lead-class-action-lawsuit-robbins-geller-rudman--dowd-llp-announces-302885241.html",
-   "d": "2026-09-21T22:45:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Employment Law Attorneys, at Blumenthal Nordrehaug Bhowmik De Blouw LLP, Filed a Lawsuit Against Bnbuilders, Inc., for Alleged Violation of Meal &amp; Rest Period Requirements",
-   "u": "https://www.prnewswire.com/news-releases/employment-law-attorneys-at-blumenthal-nordrehaug-bhowmik-de-blouw-llp-filed-a-lawsuit-against-bnbuilders-inc-for-alleged-violation-of-meal--rest-period-requirements-302882843.html",
-   "d": "2026-09-21T22:35:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - ServisFirst Bancshares, Inc. (0001430723) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1430723/000117184326006146/0001171843-26-006146-index.htm",
-   "d": "2026-09-21T22:34:59.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "TMGM and Chelsea Football Club Extend Partnership into Fourth Year, Expanding into the Middle East",
-   "u": "https://www.prnewswire.com/news-releases/tmgm-and-chelsea-football-club-extend-partnership-into-fourth-year-expanding-into-the-middle-east-302884283.html",
-   "d": "2026-09-21T22:30:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "ServisFirst Bancshares, Inc. Declares Third Quarter Cash Dividend",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365915/0/en/servisfirst-bancshares-inc-declares-third-quarter-cash-dividend.html",
-   "d": "2026-09-21T22:23:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Century Fasteners Corp. Exhibiting at the 2026 International Fastener Expo",
-   "u": "https://www.prnewswire.com/news-releases/century-fasteners-corp-exhibiting-at-the-2026-international-fastener-expo-302885273.html",
-   "d": "2026-09-21T22:21:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Apollo Silver Clarifies Media Reports Regarding Ejido Benito Juárez Assembly",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365912/0/en/apollo-silver-clarifies-media-reports-regarding-ejido-benito-ju%C3%A1rez-assembly.html",
-   "d": "2026-09-21T22:12:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "1 WEEK CAPR INVESTOR DEADLINE: Capricor Therapeutics, Inc. Investors with Substantial Losses Have Opportunity to Lead Class Action Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/1-week-capr-investor-deadline-capricor-therapeutics-inc-investors-with-substantial-losses-have-opportunity-to-lead-class-action-lawsuit-302884246.html",
-   "d": "2026-09-21T22:10:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Pricing of CNH Industrial Capital Canada Ltd. Cdn$200 million notes due 2028 and Cdn$350 million notes due 2030",
-   "u": "https://mfn.se/one/a/cnh-industrial/pricing-of-cnh-industrial-capital-canada-ltd-cdn-200-million-notes-due-2028-and-cdn-350-million-notes-due-2030-b6c93f7e",
-   "d": "2026-09-21T22:08:52.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Pricing of CNH Industrial Capital Canada Ltd. Cdn$200 million notes due 2028 and Cdn$350 million notes due 2030",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365909/0/en/pricing-of-cnh-industrial-capital-canada-ltd-cdn-200-million-notes-due-2028-and-cdn-350-million-notes-due-2030.html",
-   "d": "2026-09-21T22:08:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "/C O R R E C T I O N -- Procter &amp; Gamble/",
-   "u": "https://www.prnewswire.com/news-releases/always-and-tampax-put-period-preparedness-on-the-college-checklist-302883726.html",
-   "d": "2026-09-21T22:07:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - BRUNSWICK CORP (0000014930) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/14930/000001493026000115/0000014930-26-000115-index.htm",
-   "d": "2026-09-21T21:41:28.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "MARKSMEN ANNOUNCES CLOSING OF PRIVATE PLACEMENT",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365906/36633/en/marksmen-announces-closing-of-private-placement.html",
-   "d": "2026-09-21T21:38:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Bombardier Announces 2025 Winners of its Supplier Recognition Program",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365902/0/en/bombardier-announces-2025-winners-of-its-supplier-recognition-program.html",
-   "d": "2026-09-21T21:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Bombardier annonce les gagnants 2025 de son Programme de reconnaissance fournisseur",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365902/0/fr/bombardier-annonce-les-gagnants-2025-de-son-programme-de-reconnaissance-fournisseur.html",
-   "d": "2026-09-21T21:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "BOSS Zhipin Reports Accelerated Second-Quarter Growth and Strengthened Shareholder Returns",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365903/0/en/boss-zhipin-reports-accelerated-second-quarter-growth-and-strengthened-shareholder-returns.html",
-   "d": "2026-09-21T21:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "8-K - GENERATION INCOME PROPERTIES, INC. (0001651721) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526396828/0001193125-26-396828-index.htm",
-   "d": "2026-09-21T21:20:15.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - STORE CAPITAL LLC (0001538990) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1538990/000119312526396826/0001193125-26-396826-index.htm",
-   "d": "2026-09-21T21:19:55.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - VISTA GOLD CORP (0000783324) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/783324/000110465926109364/0001104659-26-109364-index.htm",
-   "d": "2026-09-21T21:17:51.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - Algorhythm Holdings, Inc. (0000923601) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/923601/000149315226043599/0001493152-26-043599-index.htm",
-   "d": "2026-09-21T21:17:20.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - Woodward, Inc. (0000108312) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/108312/000117184326006140/0001171843-26-006140-index.htm",
-   "d": "2026-09-21T21:15:15.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "Woodward Plans to Transition Its Santa Clarita, California, Aerospace Controls Production to Spartanburg, South Carolina",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365897/32326/en/woodward-plans-to-transition-its-santa-clarita-california-aerospace-controls-production-to-spartanburg-south-carolina.html",
-   "d": "2026-09-21T21:15:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Brookfield Corporation Announces Pricing of $600 Million Notes Due 2031",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365898/0/en/brookfield-corporation-announces-pricing-of-600-million-notes-due-2031.html",
-   "d": "2026-09-21T21:15:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Helus Pharma to Participate at the TD Cowen 6th Annual Novel Mechanisms in Neuropsychiatry Summit",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365899/0/en/helus-pharma-to-participate-at-the-td-cowen-6th-annual-novel-mechanisms-in-neuropsychiatry-summit.html",
-   "d": "2026-09-21T21:15:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Woodward Plans to Transition Its Santa Clarita, California, Aerospace Controls Production to Spartanburg, South Carolina",
-   "u": "https://mfn.se/one/a/woodward/woodward-plans-to-transition-its-santa-clarita-california-aerospace-controls-production-to-spartanburg-south-carolina-a3274322",
-   "d": "2026-09-21T21:15:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "8-K - HYCROFT MINING HOLDING CORP (0001718405) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1718405/000149315226043593/0001493152-26-043593-index.htm",
-   "d": "2026-09-21T21:11:05.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "ZAL: Mandatory notification of trade",
-   "u": "https://mfn.se/ob/a/zalaris/zal-mandatory-notification-of-trade-7a1882d1",
-   "d": "2026-09-21T21:09:26.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "8-K - Rainmaker Worldwide Inc. (0001872292) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1872292/000149315226043592/0001493152-26-043592-index.htm",
-   "d": "2026-09-21T21:09:24.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - HAWAIIAN ELECTRIC INDUSTRIES INC (0000354707) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/354707/000035470726000066/0000354707-26-000066-index.htm",
-   "d": "2026-09-21T21:08:41.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - APTARGROUP, INC. (0000896622) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/896622/000110465926109359/0001104659-26-109359-index.htm",
-   "d": "2026-09-21T21:08:06.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "HelloNation Article Featuring Patio Solutions Expert Philip Hart Compares Retractable Awnings and Canopy Systems",
-   "u": "https://www.prnewswire.com/news-releases/hellonation-article-featuring-patio-solutions-expert-philip-hart-compares-retractable-awnings-and-canopy-systems-302774268.html",
-   "d": "2026-09-21T21:06:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - MAGNITE, INC. (0001595974) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1595974/000159597426000032/0001595974-26-000032-index.htm",
-   "d": "2026-09-21T21:05:19.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - GENERATION INCOME PROPERTIES, INC. (0001651721) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526396787/0001193125-26-396787-index.htm",
-   "d": "2026-09-21T21:05:13.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - IB Acquisition Corp. (0001998781) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1998781/000149315226043585/0001493152-26-043585-index.htm",
-   "d": "2026-09-21T21:03:15.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - EverCommerce Inc. (0001853145) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1853145/000185314526000038/0001853145-26-000038-index.htm",
-   "d": "2026-09-21T21:03:05.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - INSULET CORP (0001145197) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1145197/000119312526396779/0001193125-26-396779-index.htm",
-   "d": "2026-09-21T21:02:46.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - Axos Financial, Inc. (0001299709) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1299709/000129970926000066/0001299709-26-000066-index.htm",
-   "d": "2026-09-21T21:02:14.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "Sun Life announces intention to redeem Series 2021-1 Subordinated Unsecured 2.46% Fixed/Floating Debentures",
-   "u": "https://www.prnewswire.com/news-releases/sun-life-announces-intention-to-redeem-series-2021-1-subordinated-unsecured-2-46-fixedfloating-debentures-302885207.html",
-   "d": "2026-09-21T21:02:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - Weave Communications, Inc. (0001609151) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1609151/000160915126000105/0001609151-26-000105-index.htm",
-   "d": "2026-09-21T21:01:03.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "Sun Life Reports Results of Conversion Privilege of Class A Non-Cumulative Rate Reset Preferred Shares Series 10R and Class A Non-Cumulative Floating Rate Preferred Shares Series 11QR",
-   "u": "https://www.prnewswire.com/news-releases/sun-life-reports-results-of-conversion-privilege-of-class-a-non-cumulative-rate-reset-preferred-shares-series-10r-and-class-a-non-cumulative-floating-rate-preferred-shares-series-11qr-302885208.html",
-   "d": "2026-09-21T21:01:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - TOMI Environmental Solutions, Inc. (0000314227) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/314227/000165495426008492/0001654954-26-008492-index.htm",
-   "d": "2026-09-21T21:00:46.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - NETLIST INC (0001282631) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1282631/000110465926109358/0001104659-26-109358-index.htm",
-   "d": "2026-09-21T21:00:39.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - Optimum Communications, Inc. (0001702780) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000057/0001702780-26-000057-index.htm",
-   "d": "2026-09-21T21:00:26.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - SmartKem, Inc. (0001817760) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1817760/000110465926109357/0001104659-26-109357-index.htm",
-   "d": "2026-09-21T21:00:23.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - LandBridge Co LLC (0001995807) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1995807/000119312526396773/0001193125-26-396773-index.htm",
-   "d": "2026-09-21T21:00:15.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - WaterBridge Infrastructure LLC (0002064947) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/2064947/000119312526396772/0001193125-26-396772-index.htm",
-   "d": "2026-09-21T21:00:14.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "8-K - TOP Financial Group Ltd (0001848275) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1848275/000121390026101845/0001213900-26-101845-index.htm",
-   "d": "2026-09-21T21:00:14.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "Eldorado Gold Provides Q3 2026 Conference Call Details and Updated Reporting and Conference Call Date",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365889/0/en/eldorado-gold-provides-q3-2026-conference-call-details-and-updated-reporting-and-conference-call-date.html",
-   "d": "2026-09-21T21:00:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "LGI Homes & Terrata Homes Launches “Make Your Move” National Sales Event with Limited-Time Savings and Incentives",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365890/28788/en/lgi-homes-terrata-homes-launches-make-your-move-national-sales-event-with-limited-time-savings-and-incentives.html",
-   "d": "2026-09-21T21:00:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "ArrowMark Financial Corp. Releases Month End Estimated Net Asset Value as of August 2026",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365891/0/en/arrowmark-financial-corp-releases-month-end-estimated-net-asset-value-as-of-august-2026.html",
-   "d": "2026-09-21T21:00:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "8-K - Construction Partners, Inc. (0001718227) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/1718227/000162828026062927/0001628280-26-062927-index.htm",
-   "d": "2026-09-21T20:59:01.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "FTK Investors Have Opportunity to Lead Flotek Industries, Inc. Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/ftk-investors-have-opportunity-to-lead-flotek-industries-inc-securities-fraud-lawsuit-302885185.html",
-   "d": "2026-09-21T20:59:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "8-K - Matternet, Inc. (0002075109) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/2075109/000121390026101840/0001213900-26-101840-index.htm",
-   "d": "2026-09-21T20:56:43.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "TOMI Environmental Solutions Announces Mutual Termination of Merger Agreement with Carbonium Core",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365883/34752/en/tomi-environmental-solutions-announces-mutual-termination-of-merger-agreement-with-carbonium-core.html",
-   "d": "2026-09-21T20:56:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "8-K - BAR HARBOR BANKSHARES (0000743367) (Filer)",
-   "u": "https://www.sec.gov/Archives/edgar/data/743367/000110465926109353/0001104659-26-109353-index.htm",
-   "d": "2026-09-21T20:54:48.000Z",
-   "src": "sec-8k"
-  },
-  {
-   "t": "KEYSTONE RV BREAKS MULTIPLE SALES RECORDS AT HERSHEY RV SHOW",
-   "u": "https://www.prnewswire.com/news-releases/keystone-rv-breaks-multiple-sales-records-at-hershey-rv-show-302885210.html",
-   "d": "2026-09-21T20:53:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Flexent Reports Over $14 Million in Second Quarter Growth",
-   "u": "https://www.prnewswire.com/news-releases/flexent-reports-over-14-million-in-second-quarter-growth-302885067.html",
-   "d": "2026-09-21T20:50:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Georgia Power agreement with Google to provide approximately $900 million in projected benefits for customers and advance nuclear energy in Georgia",
-   "u": "https://www.prnewswire.com/news-releases/georgia-power-agreement-with-google-to-provide-approximately-900-million-in-projected-benefits-for-customers-and-advance-nuclear-energy-in-georgia-302885197.html",
-   "d": "2026-09-21T20:50:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Avis Budget Deadline: CAR Investors Have Opportunity to Lead Avis Budget Group, Inc. Securities Fraud Lawsuit Against Pentwater Capital Management LP",
-   "u": "https://www.prnewswire.com/news-releases/avis-budget-deadline-car-investors-have-opportunity-to-lead-avis-budget-group-inc-securities-fraud-lawsuit-against-pentwater-capital-management-lp-302885183.html",
-   "d": "2026-09-21T20:49:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Toro Corp. Announces Record Date for the Proposed Spin-off of its LPG Carrier Business",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365881/0/en/toro-corp-announces-record-date-for-the-proposed-spin-off-of-its-lpg-carrier-business.html",
-   "d": "2026-09-21T20:46:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Royal Canadian Mint Announces Follow-On Offering of Gold Exchange-Traded Receipts",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365880/0/en/royal-canadian-mint-announces-follow-on-offering-of-gold-exchange-traded-receipts.html",
-   "d": "2026-09-21T20:46:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "La Monnaie royale canadienne annonce un placement subséquent de reçus de transactions boursières sur l’or",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365880/0/fr/la-monnaie-royale-canadienne-annonce-un-placement-subs%C3%A9quent-de-re%C3%A7us-de-transactions-boursi%C3%A8res-sur-l-or.html",
-   "d": "2026-09-21T20:46:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Around 100 Former Heads of State and Government Call on Current Leaders to Renew International Cooperation",
-   "u": "https://www.prnewswire.com/news-releases/around-100-former-heads-of-state-and-government-call-on-current-leaders-to-renew-international-cooperation-302885201.html",
-   "d": "2026-09-21T20:45:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Oliveda International, Inc. (OLVI) Announces Subsidiary Olive Tree People Inc.’s Successful Completion of Demeter Certification Audit for Its First Olive Groves",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365878/0/en/oliveda-international-inc-olvi-announces-subsidiary-olive-tree-people-inc-s-successful-completion-of-demeter-certification-audit-for-its-first-olive-groves.html",
-   "d": "2026-09-21T20:41:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Valour, la filiale de DeFi Technologies, lance Valour Funds SPC, une nouvelle branche d’activité, et présente son premier fonds spéculatif, le Smart Crypto Fund SP, alimenté par la stratégie d’IA propriétaire de Neuronomics",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365877/0/fr/valour-la-filiale-de-defi-technologies-lance-valour-funds-spc-une-nouvelle-branche-d-activit%C3%A9-et-pr%C3%A9sente-son-premier-fonds-sp%C3%A9culatif-le-smart-crypto-fund-sp-aliment%C3%A9-par-la-strat.html",
-   "d": "2026-09-21T20:40:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Valour, eine Tochtergesellschaft von DeFi Technologies, führt mit „Valour Funds SPC“ einen neuen Geschäftsbereich ein und präsentiert ihren ersten Hedgefonds, den „Smart Crypto Fund SP“, der auf der proprietären KI-Strategie von Neuronomics",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365877/0/de/valour-eine-tochtergesellschaft-von-defi-technologies-f%C3%BChrt-mit-valour-funds-spc-einen-neuen-gesch%C3%A4ftsbereich-ein-und-pr%C3%A4sentiert-ihren-ersten-hedgefonds-den-smart-crypto-fund-sp-d.html",
-   "d": "2026-09-21T20:40:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "SPRY Deadline: SPRY Investors Have Opportunity to Lead ARS Pharmaceuticals, Inc. Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/spry-deadline-spry-investors-have-opportunity-to-lead-ars-pharmaceuticals-inc-securities-fraud-lawsuit-302885168.html",
-   "d": "2026-09-21T20:39:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Rosen Law Firm Encourages Disc Medicine, Inc. Investors to Inquire About Securities Class Action Investigation - IRON",
-   "u": "https://www.prnewswire.com/news-releases/rosen-law-firm-encourages-disc-medicine-inc-investors-to-inquire-about-securities-class-action-investigation--iron-302885159.html",
-   "d": "2026-09-21T20:39:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Rosen Law Firm Encourages TruBridge, Inc. Investors to Inquire About Securities Class Action Investigation - TBRG",
-   "u": "https://www.prnewswire.com/news-releases/rosen-law-firm-encourages-trubridge-inc-investors-to-inquire-about-securities-class-action-investigation--tbrg-302885140.html",
-   "d": "2026-09-21T20:38:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Corgi Insurance Appoints Stuart Wilkinson as VP of State Government Affairs",
-   "u": "https://www.prnewswire.com/news-releases/corgi-insurance-appoints-stuart-wilkinson-as-vp-of-state-government-affairs-302885191.html",
-   "d": "2026-09-21T20:37:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "EVA Air Wins Three No. 1 Honors at 2026 SKYTRAX World Airline Awards, Earns 5-Star Airline Certification for 11th Consecutive Year",
-   "u": "https://www.prnewswire.com/news-releases/eva-air-wins-three-no-1-honors-at-2026-skytrax-world-airline-awards-earns-5-star-airline-certification-for-11th-consecutive-year-302885189.html",
-   "d": "2026-09-21T20:36:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "AARD Deadline: AARD Investors with Losses in Excess of $100K Have Opportunity to Lead Aardvark Therapeutics, Inc. Securities Fraud Lawsuit",
-   "u": "https://www.prnewswire.com/news-releases/aard-deadline-aard-investors-with-losses-in-excess-of-100k-have-opportunity-to-lead-aardvark-therapeutics-inc-securities-fraud-lawsuit-302885135.html",
-   "d": "2026-09-21T20:31:00.000Z",
-   "src": "prnewswire"
-  },
-  {
-   "t": "Terminal1, the operating system built for public companies, announced today that BioStem Technologies, Inc. (NASDAQ: BSEM) has joined the Terminal1 platform",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365876/0/en/terminal1-the-operating-system-built-for-public-companies-announced-today-that-biostem-technologies-inc-nasdaq-bsem-has-joined-the-terminal1-platform.html",
-   "d": "2026-09-21T20:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Cadrenal Therapeutics to Participate in the Lytham Partners Fall 2026 Investor Conference",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365872/0/en/cadrenal-therapeutics-to-participate-in-the-lytham-partners-fall-2026-investor-conference.html",
-   "d": "2026-09-21T20:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "newcleo Completes Business Combination, Raises $247 Million and Will Start Trading on Nasdaq Under Ticker Symbol “NWCL” on September 22, 2026",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365874/0/en/newcleo-completes-business-combination-raises-247-million-and-will-start-trading-on-nasdaq-under-ticker-symbol-nwcl-on-september-22-2026.html",
-   "d": "2026-09-21T20:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Gauzy Announces Receipt of Delisting Notice from Nasdaq; Intends to Appeal",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365875/0/en/gauzy-announces-receipt-of-delisting-notice-from-nasdaq-intends-to-appeal.html",
-   "d": "2026-09-21T20:30:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "Host Digital Inc. Announces Closing of Common Stock Offering",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365869/0/en/host-digital-inc-announces-closing-of-common-stock-offering.html",
-   "d": "2026-09-21T20:23:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "H2O America Receives Regulatory Approval for Texas Subsidiary’s Cibolo Valley Acquisition",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365868/0/en/h2o-america-receives-regulatory-approval-for-texas-subsidiary-s-cibolo-valley-acquisition.html",
-   "d": "2026-09-21T20:17:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "CADLR: Cadeler initiates its redomiciliation from Denmark to the United Kingdom, to be implemented through a share exchange offer by Cadeler plc for all outstanding shares of Cadeler A/S",
-   "u": "https://mfn.se/ob/a/cadeler/cadlr-cadeler-initiates-its-redomiciliation-from-denmark-to-the-united-kingdom-to-be-implemented-through-a-share-exchange-offer-by-cadeler-plc-for-all-outstanding-shares-of-cadeler-a-s-3ea8502f",
-   "d": "2026-09-21T20:15:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "LI BANG INTERNATIONAL CORPORATION INC. Announces Adjournment of Extraordinary General Meeting",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365865/0/en/li-bang-international-corporation-inc-announces-adjournment-of-extraordinary-general-meeting.html",
-   "d": "2026-09-21T20:15:00.000Z",
-   "src": "globenewswire"
-  },
-  {
-   "t": "EQS-News: Abivax Presents Business Updates and First Half 2026 Financial Results",
-   "u": "https://mfn.se/eqs/a/abivax/eqs-news-abivax-presents-business-updates-and-first-half-2026-financial-results-b42fd744",
-   "d": "2026-09-21T20:05:04.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Abivax présente les dernières avancées de ses activités et ses résultats financiers du premier semestre 2026",
-   "u": "https://mfn.se/eqs/a/abivax/abivax-presente-les-dernieres-avancees-de-ses-activites-et-ses-resultats-financiers-du-premier-semestre-2026-6482ae5b",
-   "d": "2026-09-21T20:05:03.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Abivax présente les dernières avancées de ses activités et ses résultats financiers du premier semestre 2026",
-   "u": "https://mfn.se/one/a/abivax/abivax-presente-les-dernieres-avancees-de-ses-activites-et-ses-resultats-financiers-du-premier-semestre-2026-bcad936a",
-   "d": "2026-09-21T20:05:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Abivax Presents Business Updates and First Half 2026 Financial Results",
-   "u": "https://mfn.se/one/a/abivax/abivax-presents-business-updates-and-first-half-2026-financial-results-1fb8755f",
-   "d": "2026-09-21T20:05:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "CSX Corp. Announces Date for Third Quarter Earnings Release and Conference Call",
-   "u": "https://mfn.se/one/a/csx/csx-corp-announces-date-for-third-quarter-earnings-release-and-conference-call-481aa476",
-   "d": "2026-09-21T20:02:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Nyxoah Annonce une Transition au Poste de Chief Financial Officer",
-   "u": "https://mfn.se/one/a/nyxoah/nyxoah-annonce-une-transition-au-poste-de-chief-financial-officer-6790bcdc",
-   "d": "2026-09-21T20:01:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Nyxoah Announces Chief Financial Officer Transition",
-   "u": "https://mfn.se/one/a/nyxoah/nyxoah-announces-chief-financial-officer-transition-123d2acb",
-   "d": "2026-09-21T20:01:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Xenon to Present at TD Cowen Novel Mechanisms in Neuropsychiatry & Epilepsy Summit",
-   "u": "https://mfn.se/one/a/xenon-pharmaceuticals/xenon-to-present-at-td-cowen-novel-mechanisms-in-neuropsychiatry-and-epilepsy-summit-14f50cad",
-   "d": "2026-09-21T20:01:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Toll Brothers Announces Final Opportunity to Own a New Home at Lacamas Hills in Camas, Washington",
-   "u": "https://mfn.se/one/a/toll-brothers/toll-brothers-announces-final-opportunity-to-own-a-new-home-at-lacamas-hills-in-camas-washington-8030e66d",
-   "d": "2026-09-21T19:39:46.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Otovo ASA - Correction to Q2 2026 results",
-   "u": "https://mfn.se/ob/a/otovo/otovo-asa-correction-to-q2-2026-results-dc9c22b4",
-   "d": "2026-09-21T18:38:03.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "STECH: MANDATORY NOTIFICATION OF TRADE BY PRIMARY INSIDERS",
-   "u": "https://mfn.se/ob/a/soiltech/stech-mandatory-notification-of-trade-by-primary-insiders-6d96eb66",
-   "d": "2026-09-21T18:06:51.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Déclaration des transactions sur actions propres réalisées le 21 septembre 2026",
-   "u": "https://mfn.se/one/a/scor/declaration-des-transactions-sur-actions-propres-realisees-le-21-septembre-2026-b2d050ef",
-   "d": "2026-09-21T17:24:40.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Alzinova Advances Dual Approach to Alzheimer’s Treatment and Diagnosis as World Alzheimer’s Day Highlights Unmet Need",
-   "u": "https://mfn.se/one/a/alzinova/alzinova-advances-dual-approach-to-alzheimers-treatment-and-diagnosis-as-world-alzheimers-day-highlights-unmet-need-7a734b89",
-   "d": "2026-09-21T17:12:38.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Gereglementeerde informatie: Fagron verhoogt kapitaal door uitoefening van inschrijvingsrechten",
-   "u": "https://mfn.se/one/a/fagron/gereglementeerde-informatie-fagron-verhoogt-kapitaal-door-uitoefening-van-inschrijvingsrechten-642f20e4",
-   "d": "2026-09-21T17:08:06.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Regulated information: Fagron increases share capital through exercise subscription rights",
-   "u": "https://mfn.se/one/a/fagron/regulated-information-fagron-increases-share-capital-through-exercise-subscription-rights-4f8ce8ae",
-   "d": "2026-09-21T17:08:06.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "PATRIMOINE ET COMMERCE: Déclaration des transactions sur actions propres (Hors contrat de liquidité) réalisées du 14 septembre 2026 au 18 septembre 2026",
-   "u": "https://mfn.se/eqs/a/patrimoine-et-commerce/patrimoine-et-commerce-declaration-des-transactions-sur-actions-propres-hors-contrat-de-liquidite-realisees-du-14-septembre-2026-au-18-septembre-2026-b41f65c6",
-   "d": "2026-09-21T17:00:03.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Ohio Valley Conference and Gray Media Again Partner to Bring Collegiate Sporting Events to Free Over-the-Air Television Viewers",
-   "u": "https://mfn.se/one/a/gray-media/ohio-valley-conference-and-gray-media-again-partner-to-bring-collegiate-sporting-events-to-free-over-the-air-television-viewers-867f9a49",
-   "d": "2026-09-21T17:00:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Holding(s) in Company",
-   "u": "https://mfn.se/a/molten-ventures/holding-s-in-company",
-   "d": "2026-09-21T16:50:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Kommuniké från extra bolagsstämma i Mavshack AB publ",
-   "u": "https://mfn.se/beq/a/mavshack/kommunike-fran-extra-bolagsstamma-i-mavshack-ab-publ-2b7fad1d",
-   "d": "2026-09-21T16:44:43.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "REITIR: Breytingar á framkvæmdastjórn",
-   "u": "https://mfn.se/one/a/reitir/reitir-breytingar-a-framkvaemdastjorn-d3583723",
-   "d": "2026-09-21T16:34:06.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Déclaration agrégée de rachat d'actions propres du 14 septembre au 18 septembre 2026",
-   "u": "https://mfn.se/one/a/bureau-veritas/declaration-agregee-de-rachat-dactions-propres-du-14-septembre-au-18-septembre-2026-ed2e1c19",
-   "d": "2026-09-21T16:30:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Disclosure of treasury shares transactions carried out from September 14 to September 18, 2026",
-   "u": "https://mfn.se/one/a/bureau-veritas/disclosure-of-treasury-shares-transactions-carried-out-from-september-14-to-september-18-2026-47645d88",
-   "d": "2026-09-21T16:30:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Kvika banki hf.: Reglubundin tilkynning um kaup á eigin bréfum í samræmi við endurkaupaáætlun og leiðrétting á fyrri tilkynningu um framkvæmd nýrrar endurkaupaáætlunar.",
-   "u": "https://mfn.se/one/a/kvika-banki/kvika-banki-hf-reglubundin-tilkynning-um-kaup-a-eigin-brefum-i-samraemi-vid-endurkaupaaaetlun-og-leidretting-a-fyrri-tilkynningu-um-framkvaemd-nyrrar-endurkaupaaaetlunar-0866870f",
-   "d": "2026-09-21T16:28:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Kvika banki hf.: Transaction in relation to a share buy-back programme and correction of a previous announcement regarding the launch of a new share buyback programme.",
-   "u": "https://mfn.se/one/a/kvika-banki/kvika-banki-hf-transaction-in-relation-to-a-share-buy-back-programme-and-correction-of-a-previous-announcement-regarding-the-launch-of-a-new-share-buyback-programme-80fa4297",
-   "d": "2026-09-21T16:28:00.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Societe Generale: Information regarding executed transactions within the framework of a share buy-back programme",
-   "u": "https://mfn.se/one/a/societe-generale/societe-generale-information-regarding-executed-transactions-within-the-framework-of-a-share-buy-back-programme-dd1f06f9",
-   "d": "2026-09-21T16:24:43.000Z",
-   "src": "mfn"
-  },
-  {
-   "t": "Unlimit Group A/S: Ledende medarbejders og disses nærtstående transaktioner med Unlimit-aktier",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365659/0/da/unlimit-group-a-s-ledende-medarbejders-og-disses-n%C3%A6rtst%C3%A5ende-transaktioner-med-unlimit-aktier.html",
-   "d": "2026-09-21T15:07:00.000Z",
-   "src": "globenewswire-earnings"
-  },
-  {
-   "t": "Nykredit Realkredit A/S: Ledende medarbejdere og disses nærtstående transaktioner",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365256/0/da/nykredit-realkredit-a-s-ledende-medarbejdere-og-disses-n%C3%A6rtst%C3%A5ende-transaktioner.html",
-   "d": "2026-09-21T09:18:00.000Z",
-   "src": "globenewswire-earnings"
-  },
-  {
-   "t": "Nykredit Realkredit A/S: Ledende medarbejdere og disses nærtstående transaktioner",
-   "u": "https://www.globenewswire.com/news-release/2026/09/21/3365243/0/da/nykredit-realkredit-a-s-ledende-medarbejdere-og-disses-n%C3%A6rtst%C3%A5ende-transaktioner.html",
-   "d": "2026-09-21T09:08:00.000Z",
-   "src": "globenewswire-earnings"
   }
  ]
 }
