@@ -410,3 +410,15 @@ SYNA
 # kontant (~5,7 mdr USD) i stället för aktieavtalet från 2026-06-25, efter ett
 # oinbjudet bud från en strategisk part 2026-09-02. Case 2 i scout-261002 ->
 # kandidat 261002-SYNA, price: null.
+
+# --- Bevakade case (scout 2026-10-06) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. PCVX och PTC saknade
+# rad i state/prices.json på flaggningsdagen (tickerCount 246) och noll punkter i
+# price_history.json.
+PCVX
+# Vaxcyte – pivotal fas III OPUS-1 för VAX-31 positiv 2026-10-05 (alla primära
+# endpoints, noninferiority mot Prevnar 20 och Capvaxive); emission annonserad samma
+# kväll. Case 1 i scout-261006 -> kandidat 261006-PCVX, price: null.
+PTC
+# PTC – Schneider Electric förvärvar bolaget för 205 USD/aktie kontant (~22,6 mdr USD),
+# annonserat 2026-10-05. Case 2 i scout-261006 -> kandidat 261006-PTC, price: null.

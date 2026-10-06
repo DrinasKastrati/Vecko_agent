@@ -1319,6 +1319,44 @@
       "decidedBy": "reports/us_daily/us-daglig-261002.md",
       "decidedAt": "2026-10-02",
       "decisionReason": "Grind 4: kontantbud 123 USD tak, 122,49 forbors (2026-10-02T11:04Z, pre) ger +0,4 pct uppsida mot krav >= 8 pct. Dessutom grind 2: 1 historikpunkt, teknik ej berakningsbar."
+    },
+    {
+      "id": "261006-PCVX",
+      "date": "2026-10-06",
+      "ticker": "PCVX",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "regulatory",
+      "catalystDate": "2026-10-05",
+      "confirmed": true,
+      "thesis": "Pivotal fas III OPUS-1 (3 572 vuxna) for 31-valent pneumokockvaccin VAX-31: alla primara endpoints, noninferiority 20/20 serotyper mot Prevnar 20 och 17/19 mot Capvaxive, sakerhet lik PCV20/21. Kvall 5/10: emission (aktier + konvertibler). KURS EJ VERIFIERAD: saknas i prices.json.",
+      "sourceRef": "Vaxcyte pressmeddelande via GlobeNewswire 2026-10-05 (fore oppning); state/news_feed.json globenewswire 2026-10-05T20:28Z (Commencement of Proposed Public Offerings); Clinical Trials Arena 2026-10-05. PCVX tillagd i config/watchlist_us.txt samma korning per L-2.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-13",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "261006-PTC",
+      "date": "2026-10-06",
+      "ticker": "PTC",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-05",
+      "confirmed": true,
+      "thesis": "Schneider Electric forvarvar PTC for 205 USD/aktie kontant (~22,6 mdr USD), 42,3 pct premie mot senaste stangning. Stangning vantas till Q3 2027, kraver aktieagarnas och myndigheters godkannande. Fusionsarbitrage, uppsida i praktiken taket 205. KURS EJ VERIFIERAD: saknas i prices.json.",
+      "sourceRef": "PTC 8-K och DEFA14A (SEC CIK 0000857005) 2026-10-05; catalystType other: undertecknat avtal, inte rykte; ptc.com 2026-10-05 (Schneider Electric to Acquire PTC); Bloomberg och Axios 2026-10-05. PTC tillagd i config/watchlist_us.txt samma korning per L-2.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-13",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
