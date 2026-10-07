@@ -422,3 +422,13 @@ PCVX
 PTC
 # PTC – Schneider Electric förvärvar bolaget för 205 USD/aktie kontant (~22,6 mdr USD),
 # annonserat 2026-10-05. Case 2 i scout-261006 -> kandidat 261006-PTC, price: null.
+
+# --- Bevakat case (scout 2026-10-07) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. BKH saknade rad i
+# state/prices.json på flaggningsdagen (tickerCount 254) och noll punkter i
+# price_history.json.
+BKH
+# Black Hills Corp. – bindande avtal 2026-10-06 20:10 UTC (efter stängning) om att
+# försörja Googles planerade datacenter i Cheyenne: 1,8 mdr USD i egen gasproduktion,
+# 590 MW + 2,1 GW mikronät, avtalstid t.o.m. 2048, Google bär kostnaderna. Case 2 i
+# scout-261007 -> kandidat 261007-BKH, price: null.
