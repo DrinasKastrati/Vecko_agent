@@ -432,3 +432,20 @@ BKH
 # försörja Googles planerade datacenter i Cheyenne: 1,8 mdr USD i egen gasproduktion,
 # 590 MW + 2,1 GW mikronät, avtalstid t.o.m. 2048, Google bär kostnaderna. Case 2 i
 # scout-261007 -> kandidat 261007-BKH, price: null.
+
+# --- Nyhetsdrivna kandidater v41 (punkt 6b: varje symbol med ett beslut i ---
+# decisions.json ska gå att prissätta, annars blir raden omätbar för alltid.
+# Samtliga sex föll på grind 1 (saknades i state/prices.json) i
+# us-veckorapport-261007 och loggades med price: null. Går FÖRE taket på 25 symboler.
+PECO
+# Phillips Edison & Company – höjd förvärvsguide för 2026 (GlobeNewswire 2026-10-01).
+AXGN
+# Axogen – slutfört förvärv av BioCircuit Technologies/NerveTape (GlobeNewswire 2026-10-01).
+NG
+# NOVAGOLD – extrastämma för förvärv av 100 % av Donlin Gold (GlobeNewswire + 8-K 2026-10-05).
+CEG
+# Constellation Energy – långsiktigt kärnkraftsavtal med Google, +12,25 % förbörs 2026-10-07 (TheStreet).
+VST
+# Vistra – +10,77 % förbörs 2026-10-07 på väntat statligt lån för kärnkraft (TheStreet), obekräftat.
+CIEN
+# Ciena – +13,85 % förbörs 2026-10-07 (TheStreet), ingen namngiven bolagshändelse belagd.

@@ -1333,11 +1333,11 @@
       "sourceRef": "Vaxcyte pressmeddelande via GlobeNewswire 2026-10-05 (fore oppning); state/news_feed.json globenewswire 2026-10-05T20:28Z (Commencement of Proposed Public Offerings); Clinical Trials Arena 2026-10-05. PCVX tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 72.43,
       "priceAsOf": "2026-10-06T11:57:13.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-13",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261007.md",
+      "decidedAt": "2026-10-07",
+      "decisionReason": "Grind 4: regulatory-malet +14 pct (76,04) ligger over 250d-hogsta 73,82 - ingen chartreferens; emission annonserad 5/10.",
       "priceSession": "pre"
     },
     {
@@ -1353,11 +1353,11 @@
       "sourceRef": "PTC 8-K och DEFA14A (SEC CIK 0000857005) 2026-10-05; catalystType other: undertecknat avtal, inte rykte; ptc.com 2026-10-05 (Schneider Electric to Acquire PTC); Bloomberg och Axios 2026-10-05. PTC tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 192.8,
       "priceAsOf": "2026-10-06T11:53:32.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-13",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261007.md",
+      "decidedAt": "2026-10-07",
+      "decisionReason": "Grind 4: uppsidan kapad av budet 205 USD = +6,2 pct mot 193,00, under kostnadstroskeln 8 pct; RSI 80,6.",
       "priceSession": "pre"
     },
     {
@@ -1373,11 +1373,11 @@
       "sourceRef": "Investing.com 2026-10-06 (Marvell Technology stock rallies following ambitious investor day targets); Startup Fortune 2026-10-06; BigGo Finance 2026-10-06. price null: katalysatorn intraffade under sessionen och klockslaget ar ej belagt ur primarkalla.",
       "price": 281.31,
       "priceAsOf": "2026-10-07T11:44:24.000Z",
-      "status": "new",
+      "status": "promoted",
       "expiresAt": "2026-10-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261007.md",
+      "decidedAt": "2026-10-07",
+      "decisionReason": "Alla fem grindar: stangning 287,01 efter katalysatorn, RSI 69,9, full EMA-stack, volym 3,01x. Forbors => villkorad plan 25 pct <= 275,00, stop 260,00, mal 313,50, R/R 2,57.",
       "priceSession": "pre"
     },
     {
@@ -1393,11 +1393,11 @@
       "sourceRef": "state/news_feed.json mfn 2026-10-06T20:10Z (Black Hills Corp. Executes Definitive Agreements to Serve Google Planned Data Center in Cheyenne, Wyoming); GlobeNewswire 2026-10-06; 8-K CIK 0001130464 acc 0001193125-26-415597. BKH tillagd i config/watchlist_us.txt samma korning per L-2.",
       "price": 71,
       "priceAsOf": "2026-10-07T11:39:48.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-14",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261007.md",
+      "decidedAt": "2026-10-07",
+      "decisionReason": "Grind 2: kursserien har 1 punkt, RSI/MACD/EMA och volymsnitt omatbara. Tillfallig datalucka - provas om enligt L-4 nar backfillen fyllt serien, inom expiresAt.",
       "priceSession": "pre"
     }
   ]
