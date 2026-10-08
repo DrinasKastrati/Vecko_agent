@@ -20618,6 +20618,128 @@
         "L-7",
         "L-8"
       ]
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 481.65,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -1,70 pct pa dagen, -2,62 pct mot entry. Regim PA: +3,12 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "GMAB.CO",
+      "action": "AVVAKTA",
+      "price": 2487,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 73.14,
+      "reason": "Villkorad plan <= 2410 EJ TRIGGAD (dagslagsta 2457). Tes intakt: stangning 2487 over gapstod 2377. Planen ligger kvar, avfors efter 2026-10-14.",
+      "lessonIds": [
+        "L-2"
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "EGTX.ST",
+      "action": "AVVAKTA",
+      "price": 9.54,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 69.18,
+      "reason": "Punkt 4 villkor 3: FDA-beskedet 28/9 utanfor 5 handelsdagar. Aven grind 2: volymkvot 1,05x mot 1,5x.",
+      "lessonIds": [
+        "L-2"
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "CHEMM.CO",
+      "action": "AVVAKTA",
+      "price": 567.5,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Livsvetenskapsverktyg",
+      "rsi": 65.15,
+      "reason": "Grind 2: volymkvot 0,85x mot 1,5x. Grind 3 oberoende: ingen daterad katalysator. Punkt 4 villkor 1 ej uppfyllt.",
+      "lessonIds": []
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "FRO.OL",
+      "action": "AVVAKTA",
+      "price": 512,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Tankrederi",
+      "rsi": 68.53,
+      "reason": "Grind 2: volymkvot 0,83x mot 1,5x. Grind 3 oberoende: ingen daterad bolagshandelse. Punkt 4 villkor 1 ej uppfyllt.",
+      "lessonIds": []
+    },
+    {
+      "date": "2026-10-08",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "HMS.ST",
+      "action": "AVVAKTA",
+      "price": 566,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Industriell IT",
+      "rsi": 62.53,
+      "reason": "Grind 2: volymkvot 1,21x mot 1,5x. Grind 3 oberoende: ingen katalysator; Q3-rapport 21/10 stanger kopfonstret fran 19/10.",
+      "lessonIds": [
+        "L-5"
+      ]
     }
   ]
 }
