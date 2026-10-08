@@ -1395,9 +1395,9 @@
       "priceAsOf": "2026-10-07T11:39:48.000Z",
       "status": "rejected",
       "expiresAt": "2026-10-14",
-      "decidedBy": "reports/us_weekly/us-veckorapport-261007.md",
-      "decidedAt": "2026-10-07",
-      "decisionReason": "Grind 2: kursserien har 1 punkt, RSI/MACD/EMA och volymsnitt omatbara. Tillfallig datalucka - provas om enligt L-4 nar backfillen fyllt serien, inom expiresAt.",
+      "decidedBy": "reports/us_daily/us-daglig-261008.md",
+      "decidedAt": "2026-10-08",
+      "decisionReason": "L-4-omprovning 2026-10-08 (250 pkt, kurs 75,84): grind 2 passerar, grind 5 faller - nabarhet 2 x 1,04 pct x rot(30) = 11,4 pct < order-golv 14 pct; mal over 250d-hogsta 76,83.",
       "priceSession": "pre"
     },
     {
@@ -1414,11 +1414,11 @@
       "price": 166.72,
       "priceAsOf": "2026-10-07T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-15",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-261008.md",
+      "decidedAt": "2026-10-08",
+      "decisionReason": "Grind 2 (teknik): RSI 75,6 > 75 utan exceptionell katalysator (villkorat lanelofte); EMA20 < EMA50 < EMA200; 120d +0,7 pct = brant uppgang utan langre trend (punkt 1b)."
     },
     {
       "id": "261008-COST",
@@ -1433,11 +1433,11 @@
       "sourceRef": "state/news_feed.json mfn 2026-10-07T20:15Z (Costco Wholesale Corporation Reports September Sales Results); Costco IR 2026-10-07; Motley Fool 2026-10-04 (tidigare manader). COST finns redan i config/watchlist_us.txt.",
       "price": 946.68,
       "priceAsOf": "2026-10-08T11:58:01.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-15",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_daily/us-daglig-261008.md",
+      "decidedAt": "2026-10-08",
+      "decisionReason": "Grind 2 (trend/MA200): kurs under MA200 962,52 - stangning 942,25 och forbors 952,00 (2026-10-08T13:14Z) - blockerar ny aktieposition; volymkvot 0,74x mot 1,5x.",
       "priceSession": "pre"
     }
   ]

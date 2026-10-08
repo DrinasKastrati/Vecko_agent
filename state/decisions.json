@@ -20740,6 +20740,90 @@
       "lessonIds": [
         "L-5"
       ]
+    },
+    {
+      "date": "2026-10-08",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 777.22,
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 59.8,
+      "reason": "Sleeven 100 pct, inga aktieinnehav. 777,22 (7/10 20:00Z), +0,51 pct mot entry. Regim PA: ^GSPC 7801,77 +7,74 pct over MA200 7241,28. MRVL <= 275,00 ej triggad (lagsta 276,50)."
+    },
+    {
+      "date": "2026-10-08",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "VST",
+      "action": "AVVAKTA",
+      "price": 166.72,
+      "catalystType": "other",
+      "sector": "Kraft/karnkraft",
+      "rsi": 75.6,
+      "reason": "Scout 261008-VST. Grind 2: RSI 75,6 > 75 utan exceptionell katalysator (villkorat DOE-lan), EMA20 < EMA50 < EMA200; 120d +0,7 pct = brant uppgang utan langre trend (1b)."
+    },
+    {
+      "date": "2026-10-08",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "COST",
+      "action": "AVVAKTA",
+      "price": 952,
+      "catalystType": "earnings",
+      "sector": "Detaljhandel",
+      "rsi": 60.9,
+      "reason": "Scout 261008-COST rejected. Grind 2: kurs under MA200 962,52 (stangning 942,25, forbors 952,00 8/10 13:14Z) blockerar ny aktieposition; volymkvot 0,74x mot 1,5x. Pris = forbors efter katalysatorn."
+    },
+    {
+      "date": "2026-10-08",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "BKH",
+      "action": "AVVAKTA",
+      "price": 75.84,
+      "catalystType": "order",
+      "sector": "Kraft/gas",
+      "rsi": 67.6,
+      "reason": "L-4-omprovning 261007-BKH (250 pkt). Grind 2 passerar (RSI 67,6, volym 3,85x). Grind 5: nabarhetstak 2 x 1,04 pct x rot(30) = 11,4 pct < order-golv 14 pct; mal over 250d-hogsta 76,83."
     }
   ]
 }
