@@ -1399,6 +1399,45 @@
       "decidedAt": "2026-10-07",
       "decisionReason": "Grind 2: kursserien har 1 punkt, RSI/MACD/EMA och volymsnitt omatbara. Tillfallig datalucka - provas om enligt L-4 nar backfillen fyllt serien, inom expiresAt.",
       "priceSession": "pre"
+    },
+    {
+      "id": "261008-VST",
+      "date": "2026-10-08",
+      "ticker": "VST",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-05",
+      "confirmed": true,
+      "thesis": "DOE villkorat lanelofte upp till 4,2 mdr USD 5/10 for effekthojningar Beaver Valley, Davis-Besse, Perry (433 MW nytt i PJM, ~4 GW bevaras). +10,77 pct 6/10, +3,88 pct 7/10 pa 1,97x volym. RSI 75,6, over MA200 154,78, 20,9 pct under 250d-hogsta 210,85. Villkorat.",
+      "sourceRef": "ANS Nuclear Newswire 2026-10-06; Rigzone 2026-10-06; APPA 2026-10-06; Motley Fool 2026-10-06 (Why Vistra Stock Popped on Tuesday). catalystType other: statligt finansieringslofte. VST finns redan i config/watchlist_us.txt.",
+      "price": 166.72,
+      "priceAsOf": "2026-10-07T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-15",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "261008-COST",
+      "date": "2026-10-08",
+      "ticker": "COST",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-07",
+      "confirmed": true,
+      "thesis": "Septemberforsaljning 7/10 AMC: netto 30,02 mdr USD (+13,0 pct), jfr +7,6 pct exkl bensin/valuta (aug 5,4) - bryter tre manaders avmattning. Kurs under MA200 962,52. price null: senaste stangning 942,25 ar PRE-event (rapport efter stangning).",
+      "sourceRef": "state/news_feed.json mfn 2026-10-07T20:15Z (Costco Wholesale Corporation Reports September Sales Results); Costco IR 2026-10-07; Motley Fool 2026-10-04 (tidigare manader). COST finns redan i config/watchlist_us.txt.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-15",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
