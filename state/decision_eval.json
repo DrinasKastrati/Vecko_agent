@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-08T13:19:16.738Z",
+ "generatedAt": "2026-10-08T13:25:40.361Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 818,
-  "measurable": 818,
+  "decisions": 821,
+  "measurable": 821,
   "missing": 0,
-  "pending": 85
+  "pending": 88
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -16632,6 +16632,36 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Industriell IT",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-08",
+   "ticker": "VST",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kraft/karnkraft",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-08",
+   "ticker": "COST",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-08",
+   "ticker": "BKH",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Kraft/gas",
    "reconstructed": false,
    "fwd": {}
   }
