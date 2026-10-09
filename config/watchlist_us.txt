@@ -449,3 +449,12 @@ VST
 # Vistra – +10,77 % förbörs 2026-10-07 på väntat statligt lån för kärnkraft (TheStreet), obekräftat.
 CIEN
 # Ciena – +13,85 % förbörs 2026-10-07 (TheStreet), ingen namngiven bolagshändelse belagd.
+
+# --- Bevakat case (scout 2026-10-09) ---
+# L-2: ett case ska ha verifierad kurs samma vecka det flaggas. DVN saknade rad i
+# state/prices.json på flaggningsdagen (tickerCount 216) och noll punkter i
+# price_history.json.
+DVN
+# Devon Energy – avtal 2026-10-08 11:10 UTC om att sälja Eagle Ford till Crescent
+# Energy för 4,2 mdr USD kontant (~4 % av produktionen), likviden påskyndar återköp.
+# Case 2 i scout-261009 -> kandidat 261009-DVN, price: null.

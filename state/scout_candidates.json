@@ -1439,6 +1439,43 @@
       "decidedAt": "2026-10-08",
       "decisionReason": "Grind 2 (trend/MA200): kurs under MA200 962,52 - stangning 942,25 och forbors 952,00 (2026-10-08T13:14Z) - blockerar ny aktieposition; volymkvot 0,74x mot 1,5x.",
       "priceSession": "pre"
+    },
+    {
+      "id": "261009-ACN",
+      "date": "2026-10-09",
+      "ticker": "ACN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-08",
+      "confirmed": true,
+      "thesis": "Accenture Dell Business Group 8/10 (privat/hybrid AI-infrastruktur, 3 000+ konsulter utbildas). +5,96 pct pa 1,73x volym mot fallande Nasdaq. Over MA200 194,44, RSI 63,1, EMA50 < EMA200. Motstand 212,30 (+1,9 pct). Boken stoppades ut ur ACN 7/10.",
+      "sourceRef": "Investing.com 2026-10-08 (Accenture and Dell form business group to scale AI deployment); MarketScreener 2026-10-08; StockStory 2026-10-08; TradingKey 2026-10-08 (UBS Kop). ACN finns redan i config/watchlist_us.txt.",
+      "price": 208.36,
+      "priceAsOf": "2026-10-08T20:00:03.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-16",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "261009-DVN",
+      "date": "2026-10-09",
+      "ticker": "DVN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-08",
+      "confirmed": true,
+      "thesis": "Saljer Eagle Ford till Crescent Energy for 4,2 mdr USD kontant (~4 pct av produktionen), pengarna paskyndar aterkop inom 8 mdr-programmet; stangning Q4 2026/tidigt 2027 (HSR). KURS EJ VERIFIERAD: saknas i prices.json.",
+      "sourceRef": "state/news_feed.json globenewswire-earnings 2026-10-08T11:10Z (Devon Energy Announces Agreement to Exit the Eagle Ford for $4.2 Billion); 8-K Ex 99.1 SEC CIK 0001090012 2026-10-08. DVN tillagd i config/watchlist_us.txt samma korning.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-16",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
