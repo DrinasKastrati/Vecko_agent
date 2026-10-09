@@ -20824,6 +20824,128 @@
       "sector": "Kraft/gas",
       "rsi": 67.6,
       "reason": "L-4-omprovning 261007-BKH (250 pkt). Grind 2 passerar (RSI 67,6, volym 3,85x). Grind 5: nabarhetstak 2 x 1,04 pct x rot(30) = 11,4 pct < order-golv 14 pct; mal over 250d-hogsta 76,83."
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 478,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -0,76 pct pa dagen, -3,36 pct mot entry. Regim PA: +2,28 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "GMAB.CO",
+      "action": "AVVAKTA",
+      "price": 2356,
+      "currency": "DKK",
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 57.74,
+      "reason": "Plan <= 2410 TRIGGAD 8/10 (low 2346) men AVFORD: stangning 2356 under gapstod 2377 = forhandsdefinierad punktering, 0,9 pct over stop 2335. Inget kop.",
+      "lessonIds": [
+        "L-2"
+      ]
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "EGTX.ST",
+      "action": "AVVAKTA",
+      "price": 9.85,
+      "currency": "SEK",
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 71.85,
+      "reason": "Punkt 4 villkor 3: FDA-beskedet 28/9 utanfor 5 handelsdagar. Aven grind 2: volymkvot 1,02x mot 1,5x.",
+      "lessonIds": [
+        "L-2"
+      ]
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CHEMM.CO",
+      "action": "AVVAKTA",
+      "price": 555.5,
+      "currency": "DKK",
+      "catalystType": "buyback",
+      "sector": "Livsvetenskapsverktyg",
+      "rsi": 60.36,
+      "reason": "Punkt 4 villkor 1 ej uppfyllt. Grind 2: volymkvot 0,72x mot 1,5x. Aterkopsrubrik 8/10 ej verifierbar via lank; provas i v42.",
+      "lessonIds": []
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "FRO.OL",
+      "action": "AVVAKTA",
+      "price": 529.4,
+      "currency": "NOK",
+      "catalystType": "other",
+      "sector": "Tankrederi",
+      "rsi": 72.24,
+      "reason": "Grind 2: volymkvot 0,93x mot 1,5x. Grind 3 oberoende: ingen daterad bolagshandelse. Punkt 4 villkor 1 ej uppfyllt.",
+      "lessonIds": []
+    },
+    {
+      "date": "2026-10-09",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "HMS.ST",
+      "action": "AVVAKTA",
+      "price": 561.5,
+      "currency": "SEK",
+      "catalystType": "other",
+      "sector": "Industriell IT",
+      "rsi": 60.07,
+      "reason": "Grind 2: volymkvot 0,70x mot 1,5x. Grind 3 oberoende: ingen katalysator; Q3-rapport 21/10 stanger kopfonstret fran 19/10.",
+      "lessonIds": [
+        "L-5"
+      ]
     }
   ]
 }
