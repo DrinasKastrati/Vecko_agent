@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-09T13:07:24.312Z",
+ "generatedAt": "2026-10-09T13:30:37.364Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 826,
-  "measurable": 826,
+  "decisions": 829,
+  "measurable": 829,
   "missing": 0,
-  "pending": 77
+  "pending": 80
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -16860,6 +16860,36 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Industriell IT",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "MRVL",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "ACN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "IT-tjanster",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "DVN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Olja/gas",
    "reconstructed": false,
    "fwd": {}
   }
