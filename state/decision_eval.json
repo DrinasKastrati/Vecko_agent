@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-08T21:32:36.225Z",
+ "generatedAt": "2026-10-09T06:44:03.078Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 821,
-  "measurable": 821,
+  "decisions": 826,
+  "measurable": 826,
   "missing": 0,
-  "pending": 77
+  "pending": 82
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -16739,6 +16739,56 @@
    "action": "AVVAKTA",
    "catalystType": "order",
    "sector": "Kraft/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "GMAB.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "EGTX.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "CHEMM.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Livsvetenskapsverktyg",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "FRO.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Tankrederi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-09",
+   "ticker": "HMS.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industriell IT",
    "reconstructed": false,
    "fwd": {}
   }
