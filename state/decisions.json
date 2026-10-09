@@ -20946,6 +20946,91 @@
       "lessonIds": [
         "L-5"
       ]
+    },
+    {
+      "date": "2026-10-09",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 773.93,
+      "weight": 0.75,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 56.1,
+      "reason": "Sleeven minskad 100 -> 75 pct for att finansiera MRVL (25 pct, plan triggad 8/10) - enda tillatna skalet i LAGE B. 773,93 (8/10 20:00Z), +0,09 pct mot entry. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-10-09",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "MRVL",
+      "action": "KÖP",
+      "price": 275.0,
+      "weight": 0.25,
+      "entry": 275.0,
+      "stop": 260.0,
+      "target": 313.5,
+      "rr": 2.57,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 61.2,
+      "horizonDays": 20,
+      "reason": "Plan 261007-MRVL <= 275,00 triggad 8/10 (lagsta 265,79, stangning 274,66). Fyllnad vid limit. Filter omprovade: regim PA, RSI 61,2, over EMA20/50/200, volym 1,55x. Stop -5,45, mal +14,0 pct."
+    },
+    {
+      "date": "2026-10-09",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-6"
+      ],
+      "ticker": "ACN",
+      "action": "AVVAKTA",
+      "price": 208.36,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "IT-tjanster",
+      "rsi": 63.1,
+      "reason": "Scout 261009-ACN. Grind 3: Dell-affarsgrupp utan kvantifierad intakt/order ar ingen fundamental katalysator. Aven grind 4: motstand 212,30-213,31 (+1,9-2,4 pct) dar 1-2/10 vande."
+    },
+    {
+      "date": "2026-10-09",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "DVN",
+      "action": "AVVAKTA",
+      "price": 48.92,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Olja/gas",
+      "rsi": null,
+      "reason": "Scout 261009-DVN. Grind 2: 1 historikpunkt - MA200/RSI/MACD/volymkvot omatbara, saknad MA200 blockerar. Datalucka, vilande enligt L-4 t.o.m. expiresAt 2026-10-16."
     }
   ]
 }
