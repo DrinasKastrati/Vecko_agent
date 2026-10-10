@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-03T11:39:00.250Z",
+ "generatedAt": "2026-10-10T12:31:01.786Z",
  "note": "Breddad rörelsedetektion för miss-retrons STEG 1. Rörelsen har REDAN inträffat – detta är bevakningsunderlag, inte köpsignaler.",
  "universeCount": 110,
  "okCount": 107,
@@ -13,22 +13,62 @@
   "dayPct": 6,
   "sessionsWeek": 5
  },
- "asOf": "2026-10-02",
+ "asOf": "2026-10-09",
  "movers": [
   {
-   "symbol": "VOLCAR-B.ST",
-   "lastClose": 14.175,
-   "lastDate": "2026-10-02",
-   "weekPct": -10.82,
-   "dayPct": -7.35,
+   "symbol": "FRO.OL",
+   "lastClose": 543.6,
+   "lastDate": "2026-10-09",
+   "weekPct": 11.03,
+   "dayPct": 2.68,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "PDX.ST",
+   "lastClose": 138,
+   "lastDate": "2026-10-09",
+   "weekPct": -9.45,
+   "dayPct": -0.5,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "DEMANT.CO",
+   "lastClose": 341.2,
+   "lastDate": "2026-10-09",
+   "weekPct": 8.66,
+   "dayPct": 6.16,
    "trigger": "dag"
   },
   {
-   "symbol": "G5EN.ST",
-   "lastClose": 69.9,
-   "lastDate": "2026-10-02",
-   "weekPct": 9.22,
-   "dayPct": 7.04,
+   "symbol": "HNSA.ST",
+   "lastClose": 35.96,
+   "lastDate": "2026-10-09",
+   "weekPct": 8.38,
+   "dayPct": 7.73,
+   "trigger": "dag"
+  },
+  {
+   "symbol": "GMAB.CO",
+   "lastClose": 2445,
+   "lastDate": "2026-10-09",
+   "weekPct": 8.33,
+   "dayPct": 3.78,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "KINV-B.ST",
+   "lastClose": 67.4,
+   "lastDate": "2026-10-09",
+   "weekPct": 8.29,
+   "dayPct": 3.53,
+   "trigger": "vecka"
+  },
+  {
+   "symbol": "SF.ST",
+   "lastClose": 7.65,
+   "lastDate": "2026-10-09",
+   "weekPct": 7.9,
+   "dayPct": 9.29,
    "trigger": "dag"
   }
  ]
