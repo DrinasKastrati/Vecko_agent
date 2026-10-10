@@ -1479,6 +1479,42 @@
       "decidedAt": "2026-10-09",
       "priceSession": "pre",
       "decisionReason": "Grind 2 (datalucka): 1 historikpunkt - MA200, RSI, MACD och volymkvot omatbara; saknad MA200 blockerar. Vilande enligt L-4, omprovas nar serien backfillats."
+    },
+    {
+      "id": "261010-TEVA",
+      "date": "2026-10-10",
+      "ticker": "TEVA",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "regulatory",
+      "catalystDate": "2026-10-09",
+      "confirmed": true,
+      "thesis": "FDA godkande 9/10 WELTRUZA (olanzapin), forsta och enda manatliga subkutana olanzapinsprutan vid schizofreni (SOLARIS). +4,71 pct pa 2,74x volym till ny 250d-hogsta 41,10. Full EMA-stack, RSI 65,3, over MA200 33,91. Oppenheimer PT 52.",
+      "sourceRef": "Teva/GlobeNewswire 2026-10-09 (Teva Announces U.S. FDA Approval of WELTRUZA); Psychiatric Times 2026-10-09; HCPLive 2026-10-09; Investing.com 2026-10-09 (Oppenheimer PT 50->52). TEVA finns redan i config/watchlist_us.txt.",
+      "price": 41.1,
+      "priceAsOf": "2026-10-09T20:00:02.000Z",
+      "status": "new",
+      "expiresAt": "2026-10-16",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "261010-ZS",
+      "date": "2026-10-10",
+      "ticker": "ZS",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-10-06",
+      "confirmed": true,
+      "thesis": "Investerardag 6/10: vag till >8 mdr USD ARR FY31 (uppsida 10 mdr), FY27-guide bekraftad. +5,18 pct 6/10, +7,80 pct 9/10 pa hojda riktkurser. Full EMA-stack, RSI 72,9, 30,5 pct under 250d-hogsta 336,27.",
+      "sourceRef": "Zscaler 8-K investor day press release (SEC CIK 0001713683, 2026-10); MarketBeat 2026-10-06 (Zscaler Investor Day Maps AI Security Path to $8B ARR); GuruFocus 2026-10 (UBS hojd PT, Morgan Stanley sankt). ZS finns redan i config/watchlist_us.txt.",
+      "price": 233.73,
+      "priceAsOf": "2026-10-09T20:00:00.000Z",
+      "status": "new",
+      "expiresAt": "2026-10-16",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }

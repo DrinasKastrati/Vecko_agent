@@ -458,3 +458,23 @@ DVN
 # Devon Energy – avtal 2026-10-08 11:10 UTC om att sälja Eagle Ford till Crescent
 # Energy för 4,2 mdr USD kontant (~4 % av produktionen), likviden påskyndar återköp.
 # Case 2 i scout-261009 -> kandidat 261009-DVN, price: null.
+
+# --- Rapporterar inom 10 handelsdagar (L-5, tillagda 2026-10-10) ---
+# L-5 kräver att varje bolag som uppräkningen visar rapportera inom 10
+# handelsdagar och som saknar rad här läggs till i samma körning, så att
+# kursserien börjar byggas FÖRE eventet. Datumen kommer ur websök 2026-10-10
+# (CNBC 2026-10-09 "Earnings season kicks into high gear as big banks report
+# next week", Kiplinger "Earnings Calendar … October 12-16", Seeking Alpha
+# Catalyst Watch), INTE ur state/earnings_calendar.json, som bara ser symboler
+# prices.yml redan hämtar. Resten av universumet är OKONTROLLERAT. Rapport-
+# förbudet (scoutpromptens punkt 8) gäller oförändrat: bevakning, aldrig köp.
+GS
+# Goldman Sachs – Q3, tisdag 2026-10-13 (MarketBeat: datumet ej bekräftat av bolaget).
+JNJ
+# Johnson & Johnson – Q3, tisdag 2026-10-13 före öppning.
+BAC
+# Bank of America – Q3, vecka 2026-10-13–16 (exakt dag ej belagd).
+MS
+# Morgan Stanley – Q3, vecka 2026-10-13–16 (exakt dag ej belagd).
+UNH
+# UnitedHealth – Q3, vecka 2026-10-13–16 (exakt dag ej belagd).
