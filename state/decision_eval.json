@@ -1,17 +1,22 @@
 {
- "generatedAt": "2026-10-12T23:15:25.935Z",
+ "generatedAt": "2026-10-13T06:47:44.899Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 829,
-  "measurable": 829,
-  "missing": 0,
-  "pending": 77
+  "decisions": 848,
+  "measurable": 844,
+  "missing": 4,
+  "pending": 92
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "ALVO-SDB.ST",
+  "KOA.OL",
+  "LUG.ST",
+  "RILBA.CO"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -17427,6 +17432,200 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Olja/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "LUG.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Guld/gruvor",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "ALVO-SDB.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Lakemedel/biosimilarer",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "KOA.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "turnaround",
+   "sector": "Fordonsunderleverantor",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "RILBA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Bank",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "CHEMM.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Life science-verktyg",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "GMAB.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "EGTX.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "FRO.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Tankrederi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "HMS.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Industriell IT",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "HAYPP.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Konsument/e-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "BWE.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Olja/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "KINV-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Investmentbolag",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "DEMANT.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "BAVA.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik/vaccin",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "NNIT.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "IT-tjanster",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "EG7.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Spel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "EMBRAC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Spel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "VITR.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-13",
+   "ticker": "KCC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Shipping",
    "reconstructed": false,
    "fwd": {}
   }
