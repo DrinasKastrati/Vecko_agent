@@ -1475,10 +1475,10 @@
       "priceAsOf": "2026-10-09T11:13:00.000Z",
       "status": "rejected",
       "expiresAt": "2026-10-16",
-      "decidedBy": "reports/us_daily/us-daglig-261009.md",
-      "decidedAt": "2026-10-09",
+      "decidedBy": "reports/us_weekly/us-veckorapport-261013.md",
+      "decidedAt": "2026-10-13",
       "priceSession": "pre",
-      "decisionReason": "Grind 2 (datalucka): 1 historikpunkt - MA200, RSI, MACD och volymkvot omatbara; saknad MA200 blockerar. Vilande enligt L-4, omprovas nar serien backfillats."
+      "decisionReason": "L-4-omprovning 2026-10-13 (dataluckan fylld, 250 pkt, stangning 48,96): full EMA-stack, RSI 56,1, MACD-hist stigande - men grind 2 (volym): kvot 0,44x under 1,5x. Nytt avgorande, omdomesskal."
     },
     {
       "id": "261010-TEVA",
@@ -1493,10 +1493,11 @@
       "sourceRef": "Teva/GlobeNewswire 2026-10-09 (Teva Announces U.S. FDA Approval of WELTRUZA); Psychiatric Times 2026-10-09; HCPLive 2026-10-09; Investing.com 2026-10-09 (Oppenheimer PT 50->52). TEVA finns redan i config/watchlist_us.txt.",
       "price": 41.1,
       "priceAsOf": "2026-10-09T20:00:02.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-16",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-261013.md",
+      "decidedAt": "2026-10-13",
+      "decisionReason": "Grind 2 (volym): volymkvot 1,23x (12/10) under 1,5x - katalysatordagen 9/10 gav 2,74x men flodet holl inte. Aven grind 4: mal +14 pct over 250d-hogsta 41,17, inget motstand att ankra i."
     },
     {
       "id": "261010-ZS",
@@ -1511,10 +1512,11 @@
       "sourceRef": "Zscaler 8-K investor day press release (SEC CIK 0001713683, 2026-10); MarketBeat 2026-10-06 (Zscaler Investor Day Maps AI Security Path to $8B ARR); GuruFocus 2026-10 (UBS hojd PT, Morgan Stanley sankt). ZS finns redan i config/watchlist_us.txt.",
       "price": 233.73,
       "priceAsOf": "2026-10-09T20:00:00.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-16",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-261013.md",
+      "decidedAt": "2026-10-13",
+      "decisionReason": "Grind 2 (volym): volymkvot 0,79x (12/10) under 1,5x. Investerardagen 6/10 ligger 6 handelsdagar bak, i kanten av femdagarsfonstret (grind 3). Forbors 221,02 (-2,11 pct, 13/10)."
     }
   ]
 }
