@@ -478,3 +478,14 @@ MS
 # Morgan Stanley – Q3, vecka 2026-10-13–16 (exakt dag ej belagd).
 UNH
 # UnitedHealth – Q3, vecka 2026-10-13–16 (exakt dag ej belagd).
+
+# --- Rapporterar inom 10 handelsdagar (L-5, tillagda 2026-10-13) ---
+# Datumen kommer ur websök 2026-10-13 (fffinstill "Earnings calendar week 2026-10-12",
+# MarketScreener/nextearningsdate för Netflix), INTE ur state/earnings_calendar.json,
+# som bara ser symboler prices.yml redan hämtar – den såg ingen av de två nedan.
+# Resten av universumet är OKONTROLLERAT. Rapportförbudet (scoutpromptens punkt 8)
+# gäller oförändrat: bevakning, aldrig köp.
+ABT
+# Abbott Laboratories – Q3, veckan 2026-10-12–16 före öppning (exakt dag ej belagd ur IR).
+NFLX
+# Netflix – Q3, 2026-10-20 enligt två kalendrar (projicerat, ej bekräftat av bolaget).
