@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-14T12:51:46.334Z",
+ "generatedAt": "2026-10-14T13:24:00.444Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 872,
-  "measurable": 872,
+  "decisions": 874,
+  "measurable": 874,
   "missing": 0,
-  "pending": 93
+  "pending": 95
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -18148,6 +18148,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Guldgruvor",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-14",
+   "ticker": "MRVL",
+   "book": "us",
+   "action": "SÄLJ",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-14",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Internet/AI",
    "reconstructed": false,
    "fwd": {}
   }
