@@ -20978,10 +20978,10 @@
       ],
       "ticker": "MRVL",
       "action": "KÖP",
-      "price": 275.0,
+      "price": 275,
       "weight": 0.25,
-      "entry": 275.0,
-      "stop": 260.0,
+      "entry": 275,
+      "stop": 260,
       "target": 313.5,
       "rr": 2.57,
       "catalystType": "other",
@@ -21978,6 +21978,75 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-10-14",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "ticker": "MRVL",
+      "action": "SÄLJ",
+      "price": 260,
+      "weight": 0.25,
+      "entry": 275,
+      "stop": 260,
+      "target": 313.5,
+      "rr": 2.57,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 56.8,
+      "horizonDays": 20,
+      "holdDays": 3,
+      "outcomePct": -5.45,
+      "benchPct": 0.52,
+      "alphaPct": -5.97,
+      "realizedRr": -1,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "STOP BRUTEN 13/10 intradag (269,14-248,45, stangning 268,725), sektorbred halvledarforsaljning pa CXMT-oro. Exit till stopniva 260,00. Kapitalet till SPY-sleeven."
+    },
+    {
+      "date": "2026-10-14",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 778.01,
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 59.2,
+      "reason": "Sleeven okad 75 -> 100 pct med kapitalet fran MRVL (stop). 778,01 (13/10 20:00Z), +0,61 pct mot entry. Regim PA: ^GSPC 7805,45 +7,52 pct over MA200 7259,46."
+    },
+    {
+      "date": "2026-10-14",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "ticker": "META",
+      "action": "AVVAKTA",
+      "price": 762.5,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Internet/AI",
+      "rsi": 66,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261014-META rejected. Grind 2: volymkvot 1,04x < 1,5x och MACD-histogram negativt (-2,98, stigande). Rapport 21/10 inom horisonten. Forbors 756,96."
     }
   ]
 }
