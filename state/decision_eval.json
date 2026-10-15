@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-14T20:21:32.123Z",
+ "generatedAt": "2026-10-15T06:43:32.793Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 874,
-  "measurable": 874,
+  "decisions": 875,
+  "measurable": 875,
   "missing": 0,
-  "pending": 61
+  "pending": 62
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -18442,6 +18442,16 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Internet/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-15",
+   "ticker": "LUG.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Guldgruvor",
    "reconstructed": false,
    "fwd": {}
   }
