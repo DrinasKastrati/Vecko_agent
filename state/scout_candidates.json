@@ -1551,11 +1551,11 @@
       "price": 395.62,
       "priceAsOf": "2026-10-14T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-22",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-261015.md",
+      "decidedAt": "2026-10-15",
+      "decisionReason": "grind 2 (teknik/volym): volymkvot 1,41x < 1,5x och EMA20 < EMA50; grind 5 (nabarhet): tak 11,2 pct vid 30 dagar < earnings-golvet 14 pct"
     },
     {
       "id": "261015-BLK",
@@ -1571,11 +1571,11 @@
       "price": 1073.79,
       "priceAsOf": "2026-10-14T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-22",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-261015.md",
+      "decidedAt": "2026-10-15",
+      "decisionReason": "grind 2 (teknik): kurs under EMA20 och EMA50, RSI 48,3 < 50; grind 5 (nabarhet): tak 11,5 pct vid 30 dagar < 14 pct"
     }
   ]
 }

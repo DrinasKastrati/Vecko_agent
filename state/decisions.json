@@ -22089,6 +22089,69 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-10-15",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 769.6,
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 49.6,
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav. 769,60 (14/10 20:00Z), -0,48 pct mot entry. Regim PA: ^GSPC 7718,94 +6,27 pct over MA200 7263,40."
+    },
+    {
+      "date": "2026-10-15",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "UNH",
+      "action": "AVVAKTA",
+      "price": 395.62,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Halsovard/forsakring",
+      "rsi": 62.2,
+      "reason": "Scout 261015-UNH rejected. Grind 2: volymkvot 1,41x < 1,5x och EMA20 379,30 < EMA50 385,77. Grind 5: nabarhetstak 2x1,02pct x sqrt(30) = 11,2 pct < earnings-golvet 14 pct."
+    },
+    {
+      "date": "2026-10-15",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "BLK",
+      "action": "AVVAKTA",
+      "price": 1073.79,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Kapitalforvaltning",
+      "rsi": 48.3,
+      "reason": "Scout 261015-BLK rejected. Grind 2: kurs 1073,79 under EMA20 1075,46 och EMA50 1083,27, RSI 48,3 < 50. Grind 5: nabarhetstak 2x1,05pct x sqrt(30) = 11,5 pct < 14 pct."
     }
   ]
 }
