@@ -22047,6 +22047,48 @@
         "L-3"
       ],
       "reason": "Scout 261014-META rejected. Grind 2: volymkvot 1,04x < 1,5x och MACD-histogram negativt (-2,98, stigande). Rapport 21/10 inom horisonten. Forbors 756,96."
+    },
+    {
+      "date": "2026-10-15",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 489.55,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. +0,19 pct pa dagen, -1,02 pct mot entry. Regim PA: ^OMX +4,35 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-15",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "LUG.ST",
+      "action": "AVVAKTA",
+      "price": 650.6,
+      "currency": "SEK",
+      "catalystType": "earnings",
+      "sector": "Guldgruvor",
+      "rsi": 54.84,
+      "reason": "Punkt 4 bubblar-plan, sista dagen i katalysatorfonstret: villkor 4 faller pa grind 2 (volymkvot 1,13x mot 1,5x; EMA50 < EMA200; 6 man -13,3 pct). Kurs 650,60 under egen MA200 658,00.",
+      "lessonIds": [
+        "L-2"
+      ]
     }
   ]
 }
