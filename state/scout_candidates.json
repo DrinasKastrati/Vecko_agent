@@ -1536,6 +1536,46 @@
       "decidedBy": "reports/us_daily/us-daglig-261014.md",
       "decidedAt": "2026-10-14",
       "decisionReason": "grind 2 (teknik/volym): volymkvot 1,04x < 1,5x och MACD-histogram negativt (-2,98); rapport 21/10 inom horisonten"
+    },
+    {
+      "id": "261015-UNH",
+      "date": "2026-10-15",
+      "ticker": "UNH",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-13",
+      "confirmed": true,
+      "thesis": "Q3 13/10 fore borsen: just. EPS 4,69 mot vantade 4,12, intakter 112,7 mdr, MCR 88,4 pct (89,9), helarsguidning hojd till minst 20,50 USD. Aktien +4,73 pct 14/10 pa 1,41x volym, over EMA20/50/MA200, RSI 62,2. Bear: volym under 1,5x, reaktionen kom forst dag 2.",
+      "sourceRef": "UnitedHealth Group newsroom + SEC 8-K (earningsrelease3q26unh) 2026-10-13; Investing.com transcript 2026-10-13. Kurs ur state/prices.json marketTime 2026-10-14T20:00:02Z (Yahoo Finance chart API), reguljar stangning dagen efter katalysatorn.",
+      "price": 395.62,
+      "priceAsOf": "2026-10-14T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-22",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "261015-BLK",
+      "date": "2026-10-15",
+      "ticker": "BLK",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-14",
+      "confirmed": true,
+      "thesis": "Q3 14/10 fore borsen: just. EPS 15,93 mot vantade ~14,15-14,32, rekord-AUM 15,5 bn USD (+15 pct a/a). Volym 2,07x men aktien gav bort ~4 pct forborsuppgang och stangde +0,72 pct, under EMA20/EMA50. Svag prisatgard trots stark rapport.",
+      "sourceRef": "Il Sole 24 Ore 2026-10-14; Yahoo Finance earnings live 2026-10-14; Newsquawk estimates 2026-10-14. Kurs ur state/prices.json marketTime 2026-10-14T20:00:02Z (Yahoo Finance chart API), reguljar stangning efter rapport fore borsoppning samma dag.",
+      "price": 1073.79,
+      "priceAsOf": "2026-10-14T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-22",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
