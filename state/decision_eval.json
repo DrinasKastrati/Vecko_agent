@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-15T12:38:20.035Z",
+ "generatedAt": "2026-10-15T13:19:59.576Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 875,
-  "measurable": 875,
+  "decisions": 877,
+  "measurable": 877,
   "missing": 0,
-  "pending": 57
+  "pending": 59
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -18523,6 +18523,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Guldgruvor",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-15",
+   "ticker": "UNH",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halsovard/forsakring",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-15",
+   "ticker": "BLK",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kapitalforvaltning",
    "reconstructed": false,
    "fwd": {}
   }
