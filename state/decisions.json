@@ -22152,6 +22152,48 @@
       "sector": "Kapitalforvaltning",
       "rsi": 48.3,
       "reason": "Scout 261015-BLK rejected. Grind 2: kurs 1073,79 under EMA20 1075,46 och EMA50 1083,27, RSI 48,3 < 50. Grind 5: nabarhetstak 2x1,05pct x sqrt(30) = 11,5 pct < 14 pct."
+    },
+    {
+      "date": "2026-10-16",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 485.4,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -0,85 pct pa dagen, -1,86 pct mot entry. Regim PA: ^OMX +3,64 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-16",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "LUG.ST",
+      "action": "AVVAKTA",
+      "price": 669.4,
+      "currency": "SEK",
+      "catalystType": "earnings",
+      "sector": "Guldgruvor",
+      "rsi": null,
+      "reason": "Punkt 4 bubblar-plan: villkor 3 faller - katalysatorn (rekordproduktion Q3, MFN 2026-10-08) ligger utanfor 5 handelsdagar efter 15/10. Ingen plan; kan bara aterkomma med ny katalysator vid rotation.",
+      "lessonIds": [
+        "L-2"
+      ]
     }
   ]
 }
