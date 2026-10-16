@@ -1591,11 +1591,11 @@
       "price": 422.25,
       "priceAsOf": "2026-10-15T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-23",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-261016.md",
+      "decidedAt": "2026-10-16",
+      "decisionReason": "Grind 2: RSI 37,7 < 40 (ej turnaround), kurs 422,25 under EMA20 447,41/EMA50 438,20, MACD-histogram fallande -2,81 -> -5,63."
     },
     {
       "id": "261016-USB",
@@ -1611,11 +1611,11 @@
       "price": 57.39,
       "priceAsOf": "2026-10-15T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-23",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null
+      "decidedBy": "reports/us_daily/us-daglig-261016.md",
+      "decidedAt": "2026-10-16",
+      "decisionReason": "Grind 2: kurs 57,39 <= MA200 57,78 (blockerar), under EMA20 58,08/EMA50 59,67, RSI 41,6. Grind 5: nabarhetstak 2x0,90pct x sqrt(30) = 9,9 pct < 14 pct."
     }
   ]
 }
