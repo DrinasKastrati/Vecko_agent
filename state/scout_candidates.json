@@ -1576,6 +1576,46 @@
       "decidedBy": "reports/us_daily/us-daglig-261015.md",
       "decidedAt": "2026-10-15",
       "decisionReason": "grind 2 (teknik): kurs under EMA20 och EMA50, RSI 48,3 < 50; grind 5 (nabarhet): tak 11,5 pct vid 30 dagar < 14 pct"
+    },
+    {
+      "id": "261016-TSM",
+      "date": "2026-10-16",
+      "ticker": "TSM",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-15",
+      "confirmed": true,
+      "thesis": "Q3 15/10 fore US-oppning: intakter 46,72 mdr USD (+41,2 pct a/a) over guidningen 44,6-45,8, bruttomarginal 66,4 pct (Q2 67,7), helarstillvaxt hojd till ~44 pct. Aktien -1,80 pct pa 2,26x volym, under EMA20/EMA50, RSI 37,7. Svag prisatgard.",
+      "sourceRef": "TSMC 6-K (SEC, 2026-10-15); Investing.com transcript 2026-10-15; Motley Fool transcript 2026-10-15. Kurs ur state/prices.json marketTime 2026-10-15T20:00:02Z (Yahoo Finance chart API), reguljar stangning efter rapporten.",
+      "price": 422.25,
+      "priceAsOf": "2026-10-15T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-23",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "261016-USB",
+      "date": "2026-10-16",
+      "ticker": "USB",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-15",
+      "confirmed": true,
+      "thesis": "Q3 15/10 fore borsen: EPS 1,34 mot vantade 1,32-1,33, rekordintakter 7,97 mdr (+8,7 pct, nagot under 8,01), helarsguide intakter hojd till 8-9 pct (7-9). +2,01 pct pa 1,50x volym men kurs under MA200 57,78, EMA20 och EMA50.",
+      "sourceRef": "U.S. Bancorp pressmeddelande usbank.com 2026-10-15; Benzinga 2026-10-15; Zacks/Yahoo Finance 2026-10-15. Kurs ur state/prices.json marketTime 2026-10-15T20:00:02Z (Yahoo Finance chart API), reguljar stangning efter rapporten.",
+      "price": 57.39,
+      "priceAsOf": "2026-10-15T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-10-23",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
