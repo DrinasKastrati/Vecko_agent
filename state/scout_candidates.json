@@ -1616,6 +1616,24 @@
       "decidedBy": "reports/us_daily/us-daglig-261016.md",
       "decidedAt": "2026-10-16",
       "decisionReason": "Grind 2: kurs 57,39 <= MA200 57,78 (blockerar), under EMA20 58,08/EMA50 59,67, RSI 41,6. Grind 5: nabarhetstak 2x0,90pct x sqrt(30) = 9,9 pct < 14 pct."
+    },
+    {
+      "id": "261017-CRGY",
+      "date": "2026-10-17",
+      "ticker": "CRGY",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "ma_rumor",
+      "catalystDate": "2026-10-08",
+      "confirmed": true,
+      "thesis": "Bekraftat forvarv 8/10: koper Devons Eagle Ford-tillgangar for ~4,2 mdr USD kontant (68 kboe/d, ~140 MUSD synergier). Emission 92 mn aktier a 12,50 likviderad 13/10. +10,07 pct 16/10 pa 2,18x volym over EMA20/50/MA200, RSI 56. Bear: katalysatorn 9 dagar gammal, rorelsen oljedriven.",
+      "sourceRef": "World Oil 2026-10-08; Oil & Gas Journal 2026-10-08; Rigzone 2026-10-09; SEC 8-K prissattning okt 2026. Kurs ur state/prices.json marketTime 2026-10-16T20:00:02Z (Yahoo Finance chart API), reguljar stangning efter katalysatorn.",
+      "price": 13.77,
+      "priceAsOf": "2026-10-16T20:00:02.000Z",
+      "status": "new",
+      "expiresAt": "2026-10-23",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
