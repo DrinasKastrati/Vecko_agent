@@ -1630,10 +1630,11 @@
       "sourceRef": "World Oil 2026-10-08; Oil & Gas Journal 2026-10-08; Rigzone 2026-10-09; SEC 8-K prissattning okt 2026. Kurs ur state/prices.json marketTime 2026-10-16T20:00:02Z (Yahoo Finance chart API), reguljar stangning efter katalysatorn.",
       "price": 13.77,
       "priceAsOf": "2026-10-16T20:00:02.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-23",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_weekly/us-veckorapport-261019.md",
+      "decidedAt": "2026-10-19",
+      "decisionReason": "Grind 3: forvarvet 8/10 ar 7 handelsdagar gammalt, utanfor femdagarsfonstret. Grind 2: MACD-histogram negativt (-0,016). Volym 2,18x och kurs over EMA20/50/MA200."
     }
   ]
 }
