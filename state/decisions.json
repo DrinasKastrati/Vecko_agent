@@ -23190,6 +23190,48 @@
         "L-2"
       ],
       "reason": "Nyhetsflode g0: 8-K 14/10 (innehall ej belagt). Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
+    },
+    {
+      "date": "2026-10-20",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 486.45,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -0,80 pct pa dagen, -1,65 pct mot entry. Regim PA: ^OMX +3,87 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-20",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ERIC-B.ST",
+      "action": "AVVAKTA",
+      "price": 103.15,
+      "currency": "SEK",
+      "catalystType": "earnings",
+      "sector": "Telekomutrustning",
+      "rsi": 62.66,
+      "reason": "Punkt 4 bubblar-plan: villkor 4 faller pa grind 2 - volymkvot 1,03x mot 1,5x, inverterad EMA-stack (EMA50 97,72 < EMA200 100,05), 6 man -4,9 pct. Kurs nu verifierad; ingen plan.",
+      "lessonIds": [
+        "L-2"
+      ]
     }
   ]
 }
