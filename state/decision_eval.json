@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-19T20:34:44.214Z",
+ "generatedAt": "2026-10-20T06:43:42.122Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 923,
-  "measurable": 923,
+  "decisions": 924,
+  "measurable": 924,
   "missing": 0,
-  "pending": 94
+  "pending": 95
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -19383,6 +19383,16 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-20",
+   "ticker": "ERIC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Telekomutrustning",
    "reconstructed": false,
    "fwd": {}
   }
