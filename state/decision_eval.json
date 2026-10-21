@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-21T12:55:06.610Z",
+ "generatedAt": "2026-10-21T13:20:02.157Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 925,
-  "measurable": 925,
+  "decisions": 927,
+  "measurable": 927,
   "missing": 0,
-  "pending": 53
+  "pending": 55
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -19802,6 +19802,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Telekomutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-21",
+   "ticker": "SMCI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "AI-servrar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-21",
+   "ticker": "COF",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Bank/kortutgivare",
    "reconstructed": false,
    "fwd": {}
   }
