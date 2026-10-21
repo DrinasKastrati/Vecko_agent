@@ -1635,6 +1635,44 @@
       "decidedBy": "reports/us_weekly/us-veckorapport-261019.md",
       "decidedAt": "2026-10-19",
       "decisionReason": "Grind 3: forvarvet 8/10 ar 7 handelsdagar gammalt, utanfor femdagarsfonstret. Grind 2: MACD-histogram negativt (-0,016). Volym 2,18x och kurs over EMA20/50/MA200."
+    },
+    {
+      "id": "261021-SMCI",
+      "date": "2026-10-21",
+      "ticker": "SMCI",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-20",
+      "confirmed": true,
+      "thesis": "Bekraftad preliminar Q1 FY27 (8-K 20/10 efter stangning): intakt 18,5-19,5 mdr USD mot tidigare guide 14,5-15,5, bruttomarginal 12,0-12,5 % mot 10,4-10,8. Ca +10 % efterbors. Pris null: stangningen 32,47 ar pre-event. Bear: oreviderat, aktien under EMA20/50.",
+      "sourceRef": "Supermicro IR + SEC 8-K 2026-10-20; TradingView/RTTNews 2026-10-20; CNBC after-hours movers 2026-10-20. Kurs: ingen post-event-kurs i state/prices.json (generatedAt 2026-10-20T23:51:43Z).",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-28",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
+    },
+    {
+      "id": "261021-COF",
+      "date": "2026-10-21",
+      "ticker": "COF",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-20",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 (8-K 20/10 efter stangning): nettovinst 3,5 mdr USD, 5,61 USD/aktie, justerat 6,69 mot konsensus ca 5,32-5,45 (kallorna skiljer). Ca +4,8 % efterbors. COF saknas i prices.json - lagd i watchlist_us. Bear: kreditforluster, justeringsposter.",
+      "sourceRef": "Capital One SEC 8-K ex. 99.1 2026-10-20; Chartmill/CNBC after-hours movers 2026-10-20. Kurs: COF saknas i state/prices.json (generatedAt 2026-10-20T23:51:43Z).",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-28",
+      "decidedBy": null,
+      "decidedAt": null,
+      "decisionReason": null
     }
   ]
 }
