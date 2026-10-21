@@ -1649,11 +1649,11 @@
       "sourceRef": "Supermicro IR + SEC 8-K 2026-10-20; TradingView/RTTNews 2026-10-20; CNBC after-hours movers 2026-10-20. Kurs: ingen post-event-kurs i state/prices.json (generatedAt 2026-10-20T23:51:43Z).",
       "price": 36.3,
       "priceAsOf": "2026-10-21T10:05:26.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-28",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_daily/us-daglig-261021.md",
+      "decidedAt": "2026-10-21",
+      "decisionReason": "Grind 2 (teknik): forbors 36,50 (21/10 12:54Z) under EMA20 37,85 och EMA50 37,59, MACD-hist -1,06, RSI 45,9. Full rapport 3/11 ar en andra binar handelse inom horisonten.",
       "priceSession": "pre"
     },
     {
@@ -1669,11 +1669,11 @@
       "sourceRef": "Capital One SEC 8-K ex. 99.1 2026-10-20; Chartmill/CNBC after-hours movers 2026-10-20. Kurs: COF saknas i state/prices.json (generatedAt 2026-10-20T23:51:43Z).",
       "price": 208.4,
       "priceAsOf": "2026-10-21T09:30:18.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-28",
-      "decidedBy": null,
-      "decidedAt": null,
-      "decisionReason": null,
+      "decidedBy": "reports/us_daily/us-daglig-261021.md",
+      "decidedAt": "2026-10-21",
+      "decisionReason": "Grind 5 (nabarhet): 2 x 1,06 % x rot(30) = 11,6 % < earnings-golvet 14 %. Forbors 209,35 (21/10 12:39Z) over EMA20/50/200, RSI 61,6, MACD-hist stigande.",
       "priceSession": "pre"
     }
   ]

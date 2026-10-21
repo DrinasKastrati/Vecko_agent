@@ -23295,6 +23295,65 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-10-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 769.05,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 49.7,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav eller pending. 769,05 (20/10 20:00Z), -0,54 pct mot entry. Regim PA: ^GSPC 7712,57 +5,94 pct over MA200 7279,90. SMCI/COF avvisade."
+    },
+    {
+      "date": "2026-10-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SMCI",
+      "action": "AVVAKTA",
+      "price": 36.5,
+      "catalystType": "earnings",
+      "sector": "AI-servrar",
+      "rsi": 45.9,
+      "lessonIds": [],
+      "reason": "Scout 261021-SMCI. Grind 2: forbors 36,50 (21/10 12:54Z) under EMA20 37,85/EMA50 37,59, MACD-hist -1,06, RSI 45,9. Full rapport 3/11 inom horisonten."
+    },
+    {
+      "date": "2026-10-21",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "COF",
+      "action": "AVVAKTA",
+      "price": 209.35,
+      "catalystType": "earnings",
+      "sector": "Bank/kortutgivare",
+      "rsi": 61.6,
+      "lessonIds": [],
+      "reason": "Scout 261021-COF. Grind 5 (nabarhet): 2 x 1,06 pct x rot30 = 11,6 pct < earnings-golvet 14 pct. Forbors 209,35 (21/10 12:39Z) over EMA20/50/200, RSI 61,6."
     }
   ]
 }
