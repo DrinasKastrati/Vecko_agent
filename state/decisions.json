@@ -23253,6 +23253,48 @@
         "L-3"
       ],
       "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav, inga pending-planer, inga nya US-scoutkandidater. 766,48 (19/10 20:00Z), -0,88 pct mot entry. Regim PA: ^GSPC 7690,73 +5,71 pct over MA200 7275,63."
+    },
+    {
+      "date": "2026-10-21",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 482.75,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. -0,76 pct pa dagen, -2,40 pct mot entry. Regim PA: ^OMX +2,90 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-21",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ERIC-B.ST",
+      "action": "AVVAKTA",
+      "price": 104.85,
+      "currency": "SEK",
+      "catalystType": "earnings",
+      "sector": "Telekomutrustning",
+      "rsi": 65.24,
+      "reason": "Punkt 4 bubblar-plan: villkor 4 faller pa grind 2 - volymkvot 0,84x mot 1,5x, EMA50 98,00 < EMA200 100,22, 6 man -2,1 pct mot +11,9 pct pa tva veckor. Sista dagen i katalysatorfonstret; ingen plan.",
+      "lessonIds": [
+        "L-2"
+      ]
     }
   ]
 }
