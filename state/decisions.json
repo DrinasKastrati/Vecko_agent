@@ -23354,6 +23354,48 @@
       "rsi": 61.6,
       "lessonIds": [],
       "reason": "Scout 261021-COF. Grind 5 (nabarhet): 2 x 1,06 pct x rot30 = 11,6 pct < earnings-golvet 14 pct. Forbors 209,35 (21/10 12:39Z) over EMA20/50/200, RSI 61,6."
+    },
+    {
+      "date": "2026-10-22",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 483.45,
+      "currency": "SEK",
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Indexsleeve, kapitalparkering. Ingen stop och inget mal; ror bara vid aktiekop/-salj, inget sadant i dag. +0,15 pct pa dagen, -2,25 pct mot entry. Regim PA: ^OMX +3,02 pct over MA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-22",
+      "book": "nordic",
+      "mode": "B",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ERIC-B.ST",
+      "action": "AVVAKTA",
+      "price": 102.9,
+      "currency": "SEK",
+      "catalystType": "earnings",
+      "sector": "Telekomutrustning",
+      "rsi": null,
+      "reason": "Punkt 4 bubblar-plan: villkor 3 faller - katalysatorn (Q3-rapport 15/10) ligger utanfor 5 handelsdagar efter 21/10. Ingen plan; kan bara aterkomma med ny katalysator vid v44-rotationen.",
+      "lessonIds": [
+        "L-2"
+      ]
     }
   ]
 }
