@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-22T12:57:24.571Z",
+ "generatedAt": "2026-10-22T13:25:10.825Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 928,
-  "measurable": 928,
+  "decisions": 930,
+  "measurable": 930,
   "missing": 0,
-  "pending": 53
+  "pending": 55
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -19907,6 +19907,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Telekomutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-22",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Internet/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-22",
+   "ticker": "QGEN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Diagnostik",
    "reconstructed": false,
    "fwd": {}
   }
