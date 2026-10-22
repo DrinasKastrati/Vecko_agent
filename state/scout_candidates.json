@@ -1675,6 +1675,43 @@
       "decidedAt": "2026-10-21",
       "decisionReason": "Grind 5 (nabarhet): 2 x 1,06 % x rot(30) = 11,6 % < earnings-golvet 14 %. Forbors 209,35 (21/10 12:39Z) over EMA20/50/200, RSI 61,6, MACD-hist stigande.",
       "priceSession": "pre"
+    },
+    {
+      "id": "261022-META",
+      "date": "2026-10-22",
+      "ticker": "META",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-21",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 (8-K 21/10 efter stangning): intakt 64,6 mdr USD (+26 %) mot vantat 63,3, Q4-guide 73-76 mdr, capex 135-145 mdr (smalare). Bear: FCF -2,12 mdr, rattskostnad 9,89 mdr. Efterbors 712,31 strax under EMA20 714,14.",
+      "sourceRef": "Meta SEC 8-K ex. 99.1 2026-10-21; CNBC 2026-10-21; Fortune 2026-10-21. Kurs: state/prices.json extendedPrice 712,31, extendedSession post, 2026-10-21T23:59:54Z (Yahoo Finance chart API).",
+      "price": 712.31,
+      "priceAsOf": "2026-10-21T23:59:54.000Z",
+      "priceSession": "post",
+      "status": "new",
+      "expiresAt": "2026-10-29",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "261022-QGEN",
+      "date": "2026-10-22",
+      "ticker": "QGEN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "ma_rumor",
+      "catalystDate": "2026-10-21",
+      "confirmed": true,
+      "thesis": "Bekraftat rekommenderat kontantbud fran EQT 21/10 22:46 UTC: 46,50 EUR/aktie, premie 40,3 % mot opaverkad kurs, EV ca 10,8 mdr EUR, stangning mitten 2027. Arbitrage, taklagd uppsida i EUR. QGEN saknas i prices.json - lagd i watchlist_us.",
+      "sourceRef": "QIAGEN/EQT pressmeddelande via PR Newswire + Business Wire 2026-10-21; StockTitan, Investing.com 2026-10-21. Kurs: QGEN saknas i state/prices.json (generatedAt 2026-10-22T00:00:39Z).",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-10-29",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
