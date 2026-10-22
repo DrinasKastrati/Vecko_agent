@@ -1690,10 +1690,11 @@
       "price": 712.31,
       "priceAsOf": "2026-10-21T23:59:54.000Z",
       "priceSession": "post",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-29",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261022.md",
+      "decidedAt": "2026-10-22",
+      "decisionReason": "Grind 2 (teknik): forbors 678,21 (22/10 12:56Z) under EMA20 710,72, MACD-hist fallande -9,41 -> -10,59, RSI 42,5. Efterborsuppgangen 712,31 vandes nedat."
     },
     {
       "id": "261022-QGEN",
@@ -1708,11 +1709,12 @@
       "sourceRef": "QIAGEN/EQT pressmeddelande via PR Newswire + Business Wire 2026-10-21; StockTitan, Investing.com 2026-10-21. Kurs: QGEN saknas i state/prices.json (generatedAt 2026-10-22T00:00:39Z).",
       "price": 50.63,
       "priceAsOf": "2026-10-22T10:06:28.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-10-29",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261022.md",
+      "decidedAt": "2026-10-22",
+      "priceSession": "pre",
+      "decisionReason": "Grind 5 (nabart mal): uppsidan taklagd av kontantbudet 46,50 EUR (stangning mitten 2027); 10-12 % inom 15 dagar kraver konkurrerande bud (bara rykte). Forbors 50,50 (22/10 12:56Z)."
     }
   ]
 }

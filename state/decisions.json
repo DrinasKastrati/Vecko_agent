@@ -23396,6 +23396,65 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-10-22",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 773.09,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 53.5,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav eller pending. 773,09 (21/10 20:00Z), -0,02 pct mot entry. Regim PA: ^GSPC 7757,17 +6,49 pct over MA200 7284,18. META/QGEN avvisade."
+    },
+    {
+      "date": "2026-10-22",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "META",
+      "action": "AVVAKTA",
+      "price": 678.21,
+      "catalystType": "earnings",
+      "sector": "Internet/AI",
+      "rsi": 42.5,
+      "lessonIds": [],
+      "reason": "Scout 261022-META. Grind 2: forbors 678,21 (22/10 12:56Z) under EMA20 710,72, MACD-hist -9,41 -> -10,59, RSI 42,5. Rapportslaget vandes till -2,8 pct mot stangning 697,52."
+    },
+    {
+      "date": "2026-10-22",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "QGEN",
+      "action": "AVVAKTA",
+      "price": 50.5015,
+      "catalystType": "ma_rumor",
+      "sector": "Diagnostik",
+      "rsi": 73.5,
+      "lessonIds": [],
+      "reason": "Scout 261022-QGEN. Grind 5: uppsidan taklagd av EQT:s kontantbud 46,50 EUR (stangning mitten 2027); ma_rumor-mal 10-12 pct kraver konkurrerande bud (bara rykte). Forbors 50,50 (22/10 12:56Z)."
     }
   ]
 }
