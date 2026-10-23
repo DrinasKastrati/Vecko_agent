@@ -23497,6 +23497,65 @@
       "lessonIds": [
         "L-2"
       ]
+    },
+    {
+      "date": "2026-10-23",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 763.96,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 45.2,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav eller pending. 763,96 (22/10 20:00Z), -1,20 pct mot entry. Regim PA: ^GSPC 7663,43 +5,15 pct over MA200 7287,77. PG/BX avvisade."
+    },
+    {
+      "date": "2026-10-23",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "PG",
+      "action": "AVVAKTA",
+      "price": 163.2,
+      "catalystType": "earnings",
+      "sector": "Dagligvaror",
+      "rsi": 74.5,
+      "lessonIds": [],
+      "reason": "Scout 261023-PG. Grind 5: earnings-mal 14-18 pct over nabarhetstaket 2 x 0,94 pct x rot(30) = 10,3 pct. RSI 74,5, 250d-hogsta 167,20 nara. Forbors 163,20 (23/10 12:30Z)."
+    },
+    {
+      "date": "2026-10-23",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "BX",
+      "action": "AVVAKTA",
+      "price": 117,
+      "catalystType": "earnings",
+      "sector": "Kapitalforvaltning",
+      "rsi": 54.8,
+      "lessonIds": [],
+      "reason": "Scout 261023-BX. Grind 2: kurs under MA200 125,28 (forbors 117,00 23/10 12:04Z, stangning 118,75), under EMA50 120,21 och EMA200 128,04. Kurs <= MA200 blockerar nya positioner."
     }
   ]
 }
