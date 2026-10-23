@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-22T20:19:56.916Z",
+ "generatedAt": "2026-10-23T06:43:02.650Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 930,
-  "measurable": 930,
+  "decisions": 931,
+  "measurable": 931,
   "missing": 0,
-  "pending": 53
+  "pending": 54
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -19971,6 +19971,16 @@
    "action": "AVVAKTA",
    "catalystType": "ma_rumor",
    "sector": "Diagnostik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-23",
+   "ticker": "ERIC-B.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Telekomutrustning",
    "reconstructed": false,
    "fwd": {}
   }
