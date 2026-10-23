@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-23T12:36:25.136Z",
+ "generatedAt": "2026-10-23T13:17:18.691Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 931,
-  "measurable": 931,
+  "decisions": 933,
+  "measurable": 933,
   "missing": 0,
-  "pending": 53
+  "pending": 55
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -20018,6 +20018,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Telekomutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-23",
+   "ticker": "PG",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Dagligvaror",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-23",
+   "ticker": "BX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kapitalforvaltning",
    "reconstructed": false,
    "fwd": {}
   }
