@@ -1,17 +1,22 @@
 {
- "generatedAt": "2026-10-26T12:48:53.488Z",
+ "generatedAt": "2026-10-26T13:28:59.048Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 955,
-  "measurable": 955,
-  "missing": 0,
-  "pending": 53
+  "decisions": 974,
+  "measurable": 970,
+  "missing": 4,
+  "pending": 68
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "CBOE",
+  "DHR",
+  "KKR",
+  "VRT"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -20596,6 +20601,200 @@
    "sector": "IT-tjanster",
    "reconstructed": false,
    "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "ROP",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "RHI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Bemanning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Internet/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "QGEN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "ma_rumor",
+   "sector": "Diagnostik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "PG",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Dagligvaror",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "BX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kapitalforvaltning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "BLK",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kapitalforvaltning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "macro",
+   "sector": "Olja/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "UNH",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halsovard",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "CRGY",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Olja/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "ZS",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Cybersakerhet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "S",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Cybersakerhet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "RIG",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Offshore-borrning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "HII",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Forsvar/varv",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "DVN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Olja/gas",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Borser",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "VRT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Datacenter-el",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "KKR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kapitalforvaltning",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-10-26",
+   "ticker": "DHR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Life science",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
   }
  ]
 }
