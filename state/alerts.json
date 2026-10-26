@@ -1,10 +1,34 @@
 {
-  "generatedAt": "2026-10-14T17:47:42.606Z",
-  "checkedAt": "2026-10-23T21:02:47.280Z",
+  "generatedAt": "2026-10-26T13:54:58.372Z",
+  "checkedAt": "2026-10-26T13:54:58.372Z",
   "watched": [
+    "SAAB-B.ST",
     "SPY"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "SAAB-B.ST",
+      "type": "SÄLJ",
+      "reason": "stop-loss träffad",
+      "level": 622,
+      "price": 647.2,
+      "currency": "SEK",
+      "marketTime": "2026-10-26T13:54:50.000Z",
+      "basis": "intraday",
+      "hitPrice": 618.9
+    },
+    {
+      "ticker": "SAAB-B.ST",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 632,
+      "price": 647.2,
+      "currency": "SEK",
+      "marketTime": "2026-10-26T13:54:50.000Z",
+      "basis": "intraday",
+      "hitPrice": 618.9
+    }
+  ],
   "history": [
     {
       "ticker": "MRVL",
