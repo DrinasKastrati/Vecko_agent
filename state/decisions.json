@@ -24059,6 +24059,433 @@
         "L-3",
         "L-7"
       ]
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 759.97,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 42.1,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven 100 pct oforandrad - inget av 19 case passerar. 759,97 (23/10 20:00Z), -1,72 pct mot entry. Regim PA: ^GSPC 7623,68 +4,56 pct over MA200 7291,29."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ROP",
+      "action": "AVVAKTA",
+      "price": 438.14,
+      "catalystType": "earnings",
+      "sector": "Mjukvara",
+      "rsi": 80.4,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261024-ROP. Grind 2: RSI 80,4 > 75 utan exceptionell katalysator (Q3 22/10 intakt i linje, guide hojd), volym 1,49x < 1,5x."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "RHI",
+      "action": "AVVAKTA",
+      "price": 45.87,
+      "catalystType": "earnings",
+      "sector": "Bemanning",
+      "rsi": 76.1,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261024-RHI. Grind 2: RSI 76,1 > 75, katalysatorn ej exceptionell (Q3-intakt 1,359 mdr under konsensus 1,371). Grind 4: kurs = 250d-hogsta, mal saknar motstand."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "META",
+      "action": "AVVAKTA",
+      "price": 642.62,
+      "catalystType": "earnings",
+      "sector": "Internet/AI",
+      "rsi": 35.7,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261022. Grind 2: under EMA20 701,70/EMA50 678,54, MACD-hist fallande (-9,4 -> -14,3), RSI 35,7. Vecka -9,4 pct."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "QGEN",
+      "action": "AVVAKTA",
+      "price": 50.39,
+      "catalystType": "ma_rumor",
+      "sector": "Diagnostik",
+      "rsi": 74.5,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261022. Grind 5: uppsidan taklagd av EQT:s kontantbud 46,50 EUR - inget nabart mal >= 10 pct. Grind 2: volym 1,40x."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "PG",
+      "action": "AVVAKTA",
+      "price": 161.02,
+      "catalystType": "earnings",
+      "sector": "Dagligvaror",
+      "rsi": 63.7,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261023. Grind 2: volym 0,99x < 1,5x. Nabarhet 2x1,43pctxrot(25)=14,3 pct - pa golvet, utan marginal."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "BX",
+      "action": "AVVAKTA",
+      "price": 117.97,
+      "catalystType": "earnings",
+      "sector": "Kapitalforvaltning",
+      "rsi": 53.5,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261023. Grind 2: kurs under MA200 125,10, EMA50 120,12 och EMA200 128,05 - blockerar nya positioner."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "BLK",
+      "action": "AVVAKTA",
+      "price": 1118.25,
+      "catalystType": "earnings",
+      "sector": "Kapitalforvaltning",
+      "rsi": 55.2,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Bubblare v43. Grind 2: volym 1,25x. Grind 3: Q3 14/10 ar 8 hd bak. Grind 5: 2x1,11pctxrot(25)=11,1 pct < earnings-golv 14 pct."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CVX",
+      "action": "AVVAKTA",
+      "price": 233.21,
+      "catalystType": "macro",
+      "sector": "Olja/gas",
+      "rsi": 76.9,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Bubblare v43. Grind 2: RSI 76,9 > 75, volym 1,12x. Kurs = 250d-hogsta. Rapport 30/10 (punkt 2e)."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "UNH",
+      "action": "AVVAKTA",
+      "price": 418.09,
+      "catalystType": "earnings",
+      "sector": "Halsovard",
+      "rsi": 66,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Bubblare v43. Grind 2: volym 0,64x. Grind 3: Q3 13/10 ar 9 hd bak."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CRGY",
+      "action": "AVVAKTA",
+      "price": 13.83,
+      "catalystType": "other",
+      "sector": "Olja/gas",
+      "rsi": 56.5,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Bubblare v43. Grind 2: volym 0,76x. Grind 3: ingen ny daterad katalysator (forvarvet 8/10). Rapport 2/11."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ZS",
+      "action": "AVVAKTA",
+      "price": 255.15,
+      "catalystType": "other",
+      "sector": "Cybersakerhet",
+      "rsi": 72,
+      "lessonIds": [
+        "L-3",
+        "L-7"
+      ],
+      "reason": "L-7 vecka +23,0 pct. Grind 3: ingen daterad katalysator inom 5 hd hittad (investerardag 6/10). Grind 2: volym 1,38x."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "S",
+      "action": "AVVAKTA",
+      "price": 24,
+      "catalystType": "other",
+      "sector": "Cybersakerhet",
+      "rsi": 54.2,
+      "lessonIds": [
+        "L-3",
+        "L-7"
+      ],
+      "reason": "L-7 vecka +11,2 pct, volym 1,60x, over EMA20/50/200. Grind 3: ingen daterad katalysator inom 5 hd hittad. Grind 2: MACD-hist negativt (-0,26)."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "RIG",
+      "action": "AVVAKTA",
+      "price": 6.41,
+      "catalystType": "order",
+      "sector": "Offshore-borrning",
+      "rsi": 72,
+      "lessonIds": [
+        "L-3",
+        "L-7"
+      ],
+      "reason": "Nyhetsflode g0: 8-K 23/10; L-7 vecka +14,1 pct. Grind 2: volym 1,16x. Rapport 2/11."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "HII",
+      "action": "AVVAKTA",
+      "price": 274.08,
+      "catalystType": "order",
+      "sector": "Forsvar/varv",
+      "rsi": 52.2,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Nyhetsflode g0: 8-K 20/10. Grind 2: under EMA50/EMA200 och MA200 338,23. Rapport 29/10 (punkt 2e)."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "DVN",
+      "action": "AVVAKTA",
+      "price": 51.39,
+      "catalystType": "other",
+      "sector": "Olja/gas",
+      "rsi": 61.5,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Egen scanning: volym 1,53x, over EMA20/50/200, RSI 61,5. Grind 3: ingen daterad katalysator inom 5 hd hittad (websok). Rapport 5/11."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CBOE",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "buyback",
+      "sector": "Borser",
+      "rsi": null,
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "reason": "Nyhetsflode g0: PR Newswire 22/10 utokat aterkopsmandat. Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "VRT",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "other",
+      "sector": "Datacenter-el",
+      "rsi": null,
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "reason": "Nyhetsflode g0: 8-K 26/10, innehall ej verifierat. Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "KKR",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "other",
+      "sector": "Kapitalforvaltning",
+      "rsi": null,
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "reason": "Nyhetsflode g0: 8-K 26/10, innehall ej verifierat. Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
+    },
+    {
+      "date": "2026-10-26",
+      "book": "us",
+      "mode": "A",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "DHR",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "earnings",
+      "sector": "Life science",
+      "rsi": null,
+      "lessonIds": [
+        "L-2",
+        "L-3"
+      ],
+      "reason": "Nyhetsflode g0: 8-K 20/10, innehall ej verifierat. Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
     }
   ]
 }
