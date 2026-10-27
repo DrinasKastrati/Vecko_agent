@@ -24640,6 +24640,93 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 765.37,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 47.3,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav eller pending. 765,37 (26/10 20:00Z), -1,02 pct mot entry. Regim PA: ^GSPC 7676,77 +5,23 pct over MA200 7295,06. CDNS/NUE/VZ avvisade."
+    },
+    {
+      "date": "2026-10-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CDNS",
+      "action": "AVVAKTA",
+      "price": 324.99,
+      "catalystType": "earnings",
+      "sector": "Halvledardesign-mjukvara",
+      "rsi": null,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-CDNS. Grind 2 omatbar: 1 historikpunkt (26/10), ingen RSI/MACD/EMA/MA200/volymkvot. Vilande (L-4). Forbors 324,99 (27/10 13:07Z), stangning 26/10 322,17."
+    },
+    {
+      "date": "2026-10-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NUE",
+      "action": "AVVAKTA",
+      "price": 259,
+      "catalystType": "earnings",
+      "sector": "Stal",
+      "rsi": null,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-NUE. Grind 2 omatbar: 1 historikpunkt (26/10), ingen RSI/MACD/EMA/MA200/volymkvot. Vilande (L-4). Forbors 259 (27/10 13:08Z), stangning 26/10 257,35."
+    },
+    {
+      "date": "2026-10-27",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "VZ",
+      "action": "AVVAKTA",
+      "price": 42.9983,
+      "catalystType": "earnings",
+      "sector": "Telekom",
+      "rsi": null,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-VZ. Grind 2 omatbar: 1 historikpunkt (26/10), ingen RSI/MACD/EMA/MA200/volymkvot. Vilande (L-4). Forbors 42,9983 (27/10 13:08Z), stangning 26/10 43,1."
     }
   ]
 }
