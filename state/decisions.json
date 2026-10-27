@@ -24486,6 +24486,160 @@
         "L-3"
       ],
       "reason": "Nyhetsflode g0: 8-K 20/10, innehall ej verifierat. Grind 1: ingen verifierad kurs i prices.json - lagd i watchlist_us."
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "SAAB-B.ST",
+      "action": "KÖP",
+      "price": 632,
+      "currency": "SEK",
+      "weight": 0.125,
+      "entry": 632,
+      "stop": 622,
+      "target": 725,
+      "rr": 9.3,
+      "catalystType": "earnings",
+      "sector": "Forsvar",
+      "rsi": 61.4,
+      "horizonDays": 20,
+      "reason": "BEN 2 fyllt: limit <=632 korsad intradag 26/10 (dayLow 618,90). Sammanslagen med ben 1: 25 pct, viktat entry 639,25. Stoppad samma session, se SALJ-raden.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "SAAB-B.ST",
+      "action": "SÄLJ",
+      "price": 622,
+      "currency": "SEK",
+      "weight": 0.25,
+      "entry": 639.25,
+      "stop": 622,
+      "target": 725,
+      "rr": 4.97,
+      "catalystType": "earnings",
+      "sector": "Forsvar",
+      "rsi": 61.4,
+      "horizonDays": 20,
+      "holdDays": 1,
+      "outcomePct": -2.7,
+      "realizedRr": -1.0,
+      "benchPct": 1.57,
+      "alphaPct": -4.27,
+      "reason": "STOPP: stop 622 genomhandlad intradag 26/10 (dayLow 618,90, stangning 651,90), SALJ-signal i alerts.json. Bokad pa stopnivan. Tesen (Q3 23/10) ej punkterad.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 478.85,
+      "currency": "SEK",
+      "weight": 1.0,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering. Okad 87,5 till 100,0 pct med kapitalet fran SAAB-B.ST-stoppet. -3,18 pct mot entry 494,60. Ingen stop, inget mal.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "VITR.ST",
+      "action": "AVVAKTA",
+      "price": 108.9,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Medicinteknik",
+      "rsi": 75.8,
+      "reason": "Ersattningskop 4a avvisat, grind 2: RSI 75,8 over 75, volymkvot 0,93x mot 1,5x, EMA50 under EMA200.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 36.66,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 51.3,
+      "reason": "Ersattningskop 4a avvisat, grind 2: volymkvot 0,64x mot 1,5x, EMA20 36,25 under EMA50 36,77, MACD-histogram avtar.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "LOGI-B.ST",
+      "action": "AVVAKTA",
+      "price": 13.7,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Fastigheter",
+      "rsi": 65.5,
+      "reason": "Ersattningskop 4a avvisat, grind 2: volymkvot 0,38x mot 1,5x, EMA50 12,79 under EMA200 13,60.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "ELUX-B.ST",
+      "action": "AVVAKTA",
+      "price": 26.17,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Hushallsapparater",
+      "rsi": 49.3,
+      "reason": "Ersattningskop 4a avvisat, grind 2: kurs under EMA20/EMA50, EMA50 under EMA200, MACD-histogram avtar, 6 man -46,6 pct.",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
