@@ -1855,6 +1855,38 @@
       "sourceRef": "Verizon SEC 8-K ex. 99 Q3 2026 2026-10-26 via websok; konsensus fran Hudson Labs-preview. Kurs: VZ saknas i state/prices.json (generatedAt 2026-10-27T00:25:13Z).",
       "priceSession": "pre",
       "decisionReason": "Grind 2 (teknik) OMATBAR: price_history/volume_history bar 1 punkt (26/10), RSI/MACD/EMA/MA200/volymkvot gar ej att rakna. VILANDE enligt L-4. Forbors 42,9983 (27/10 13:08Z)."
+    },
+    {
+      "id": "261028-SOFI",
+      "date": "2026-10-28",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-27",
+      "confirmed": true,
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-11-04",
+      "ticker": "SOFI",
+      "thesis": "Bekraftad Q3 2026 (8-K 27/10 fore oppning): just nettointakt ca 1,4 mdr USD (+44 %), just EBITDA 470 MUSD (+70 %), medlemmar 17,1 mn (+35 %). FY26-guide hojd till 5,04 mdr (fran 4,75-4,85), ny 2027-guide 6,4 mdr. Ca +13 % 27/10. Pris null: SOFI saknas i prices.json.",
+      "sourceRef": "SoFi SEC 8-K (a2026q3earningsrelease) 2026-10-27 via websok; Motley Fool + Benzinga 2026-10-27. Kurs: SOFI saknas i state/prices.json (generatedAt 2026-10-28T00:31:45Z)."
+    },
+    {
+      "id": "261028-PNR",
+      "date": "2026-10-28",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-27",
+      "confirmed": true,
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-11-04",
+      "ticker": "PNR",
+      "thesis": "Bekraftad Q3 2026 (27/10 fore oppning): just EPS 1,18 mot konsensus 1,08 och egen guide 1,05-1,08, just ROS 24,8 %. Bear: karnforsaljning -5 %, Pool -18 %, GAAP-guide sankt till 3,76. Ca +12 % 27/10. Pris null: PNR saknas i prices.json.",
+      "sourceRef": "Pentair SEC 8-K (q32026pressrelease) 2026-10-27 via websok; Investing.com + Chartmill 2026-10-27. Kurs: PNR saknas i state/prices.json (generatedAt 2026-10-28T00:31:45Z)."
     }
   ]
 }
