@@ -24748,6 +24748,138 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 769.66,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 51.1,
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav. 769,66 (27/10 20:00Z), -0,47 pct mot entry. Regim PA: ^GSPC 7722,60 +5,81 pct over MA200 7298,85. NUE-plan lagd som villkorad limit, ingen fyllnad."
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NUE",
+      "action": "AVVAKTA",
+      "price": 270.79,
+      "catalystType": "earnings",
+      "sector": "Stal",
+      "rsi": 65.9,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-NUE PROMOTAD (L-4-omprovning), alla fem grindar. 25 pct som limit <= 262,00 regulj session (4a: +5,22 pct 27/10, FOMC 28/10). Stop 247,00, mal 299,00, R/R 2,47."
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CDNS",
+      "action": "AVVAKTA",
+      "price": 343.08,
+      "catalystType": "earnings",
+      "sector": "Halvledardesign-mjukvara",
+      "rsi": 58.1,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-CDNS L-4-omprovning. Grind 4: motstand 351-359,55 (2-7/10) 2-5 pct ovanfor, R/R mot motstandet < 2:1. Punkt 1b: 120d -3,3 pct. Lagre R/R an promotad NUE."
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "VZ",
+      "action": "AVVAKTA",
+      "price": 43.93,
+      "catalystType": "earnings",
+      "sector": "Telekom",
+      "rsi": 43.5,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261027-VZ L-4-omprovning. Grind 2: kurs 43,93 under MA200 46,75 (-6,04 pct), under EMA20/50, RSI 43,5. Kurs <= MA200 blockerar."
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SOFI",
+      "action": "AVVAKTA",
+      "price": 16.4314,
+      "catalystType": "earnings",
+      "sector": "Fintech",
+      "rsi": null,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261028-SOFI. Grind 2 omatbar: 1 historikpunkt (27/10), ingen RSI/MACD/EMA/MA200/volymkvot. Vilande (L-4). Forbors 16,4314 (28/10 12:41Z), stangning 27/10 16,40."
+    },
+    {
+      "date": "2026-10-28",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "PNR",
+      "action": "AVVAKTA",
+      "price": 62.4535,
+      "catalystType": "earnings",
+      "sector": "Industri/vattenteknik",
+      "rsi": null,
+      "lessonIds": [
+        "L-4",
+        "L-3"
+      ],
+      "reason": "Scout 261028-PNR. Grind 2 omatbar: 1 historikpunkt (27/10), ingen RSI/MACD/EMA/MA200/volymkvot. Vilande (L-4). Forbors 62,4535 (28/10 12:08Z), stangning 27/10 62,29."
     }
   ]
 }
