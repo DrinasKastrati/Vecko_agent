@@ -24901,6 +24901,155 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 772.31,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 53.3,
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav, inga fyllnader. 772,31 (28/10 20:00Z), -0,12 pct mot entry. Regim PA: ^GSPC 7743,98 +6,04 pct over MA200 7302,68. AXGN-plan lagd, ingen fyllnad."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "AXGN",
+      "action": "AVVAKTA",
+      "price": 49.25,
+      "catalystType": "earnings",
+      "sector": "Medicinteknik",
+      "rsi": 74.5,
+      "lessonIds": [
+        "L-4",
+        "L-6"
+      ],
+      "reason": "Scout 261029-AXGN PROMOTAD, alla fem grindar. 25 pct som limit <= 46,00 regulj session (4a: gap +31,47 pct 28/10). Stop 43,40, mal 52,44, risk/reward 2,48. Invandning: 250d-hogsta 51,73 under malet."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "MSFT",
+      "action": "AVVAKTA",
+      "price": 540.95,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/moln",
+      "rsi": 56.1,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261029-MSFT. Grind 5 nabarhet: earnings-mal >= 14 pct men tak 2 x 1,10 pct x rot(30) = 12,05 pct. Forbors 540,95 (29/10 12:50Z), stangning 28/10 531,01 (pre-event)."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "VRT",
+      "action": "AVVAKTA",
+      "price": 242.94,
+      "catalystType": "earnings",
+      "sector": "Datacenterinfrastruktur",
+      "rsi": 57,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261029-VRT. Grind 2: kurs 242,94 under MA200 269,86 (-9,97 pct), under EMA200. Kurs <= MA200 blockerar."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ORCL",
+      "action": "AVVAKTA",
+      "price": 144.54,
+      "catalystType": "other",
+      "sector": "Mjukvara/moln",
+      "rsi": 57.6,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261029-ORCL. Grind 2: kurs 144,54 under MA200 157,59 (-8,28 pct), under EMA200 161,57. Kurs <= MA200 blockerar."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SOFI",
+      "action": "AVVAKTA",
+      "price": 17.14,
+      "catalystType": "earnings",
+      "sector": "Fintech",
+      "rsi": 62.4,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261028-SOFI L-4-omprovning (250 punkter). Grind 2: kurs 17,14 under MA200 17,88 (-4,15 pct), EMA20<EMA50<EMA200. Kurs <= MA200 blockerar."
+    },
+    {
+      "date": "2026-10-29",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "PNR",
+      "action": "AVVAKTA",
+      "price": 64.37,
+      "catalystType": "earnings",
+      "sector": "Industri/vattenteknik",
+      "rsi": 80.2,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261028-PNR L-4-omprovning (250 punkter). Grind 2: kurs 64,37 under MA200 76,55 (-15,91 pct), RSI 80,2 > 75. Kurs <= MA200 blockerar."
     }
   ]
 }
