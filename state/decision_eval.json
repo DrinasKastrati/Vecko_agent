@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-10-30T12:42:45.659Z",
+ "generatedAt": "2026-10-30T13:36:17.125Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 994,
-  "measurable": 994,
+  "decisions": 996,
+  "measurable": 996,
   "missing": 0,
-  "pending": 63
+  "pending": 65
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -21373,6 +21373,26 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Industri/vattenteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-30",
+   "ticker": "HII",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Forsvar/varv",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-10-30",
+   "ticker": "AMZN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "E-handel/moln",
    "reconstructed": false,
    "fwd": {}
   }
