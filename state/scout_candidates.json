@@ -1990,8 +1990,11 @@
       "price": 316.21,
       "priceAsOf": "2026-10-29T20:00:02.000Z",
       "priceSession": "regular",
-      "status": "new",
-      "expiresAt": "2026-11-06"
+      "status": "rejected",
+      "expiresAt": "2026-11-06",
+      "decisionReason": "Grind 2 (teknik): kurs 316,21 under MA200 336,14 (-5,93 pct) och RSI 75,7 > 75 - kurs <= MA200 blockerar.",
+      "decidedBy": "reports/us_daily/us-daglig-261030.md",
+      "decidedAt": "2026-10-30"
     },
     {
       "id": "261030-AMZN",
@@ -2006,9 +2009,12 @@
       "sourceRef": "Amazon IR Q3 2026-10-29; Motley Fool, Yahoo Finance live, MarketBeat 2026-10-29 via websok. Efterborskurs saknas i state/prices.json (generatedAt 2026-10-30T00:58:27Z).",
       "price": 228.6,
       "priceAsOf": "2026-10-30T11:20:25.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-06",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Grind 2 (teknik): forbors 225,50 (2026-10-30T12:41Z, prices.json) under MA200 243,38 (-7,35 pct), EMA20 253,40 < EMA50 254,04, RSI 40,7 - kurs <= MA200 blockerar.",
+      "decidedBy": "reports/us_daily/us-daglig-261030.md",
+      "decidedAt": "2026-10-30"
     }
   ]
 }

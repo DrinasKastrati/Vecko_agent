@@ -25071,6 +25071,70 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-10-30",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 1,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 769.36,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 50.6,
+      "lessonIds": [
+        "L-3",
+        "L-4"
+      ],
+      "reason": "Sleeven oforandrad 100 pct, inga aktieinnehav, inga fyllnader. 769,36 (29/10 20:00Z), -0,51 pct mot entry. Regim PA: ^GSPC 7720,39 +5,67 pct over MA200 7306,46. NUE och AXGN ej triggade."
+    },
+    {
+      "date": "2026-10-30",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "HII",
+      "action": "AVVAKTA",
+      "price": 316.21,
+      "catalystType": "earnings",
+      "sector": "Forsvar/varv",
+      "rsi": 75.7,
+      "lessonIds": [
+        "L-6"
+      ],
+      "reason": "Scout 261030-HII. Grind 2 (teknik): kurs 316,21 under MA200 336,14 (-5,93 pct) och RSI 75,7 > 75 - kurs <= MA200 blockerar. Forbors 315,97 (30/10 11:07Z)."
+    },
+    {
+      "date": "2026-10-30",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "AMZN",
+      "action": "AVVAKTA",
+      "price": 225.5,
+      "catalystType": "earnings",
+      "sector": "E-handel/moln",
+      "rsi": 40.7,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Scout 261030-AMZN. Grind 2 (teknik): forbors 225,50 (30/10 12:41Z) under MA200 243,38 (-7,35 pct), EMA20<EMA50, RSI 40,7, MACD-histogram fallande - kurs <= MA200 blockerar."
     }
   ]
 }
