@@ -1975,6 +1975,39 @@
       "priceSession": "regular",
       "thesis": "Bekraftad investerardag 28/10: FCF ca 30 mdr USD FY29 (positivt fran H2 FY28), tak 20 mdr for nya kapitalresningar t.o.m. FY30, intaktsmal 225 mdr FY30. +10,73 % pa 3,0x volym. Bear: mal, inte utfall; kurs under MA200 (157,59).",
       "sourceRef": "Oracle Investor Day 2026 (investor.oracle.com) 2026-10-28; Bloomberg + CNBC 2026-10-28. Kurs: state/prices.json reguljar stangning 2026-10-28T20:03:50Z."
+    },
+    {
+      "id": "261030-HII",
+      "date": "2026-10-30",
+      "ticker": "HII",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-29",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 2026 (8-K 29/10 fore oppning): intakt 3,5 mdr USD (+10,8 %), EPS 5,48 mot konsensus ca 4,36-4,43, order 32,4 mdr i kvartalet, varvsguide FY26 hojd till 10,5-10,7 mdr. +13,23 % pa 3,2x volym. Bear: kurs under MA200 (336,14), RSI 75,7.",
+      "sourceRef": "HII SEC 8-K (hii2026q3earningsrelease) 2026-10-29 via websok; Investing.com, TIKR, Chartmill 2026-10-29. Kurs: state/prices.json reguljar stangning 2026-10-29T20:00:02Z (efter katalysatorn).",
+      "price": 316.21,
+      "priceAsOf": "2026-10-29T20:00:02.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-11-06"
+    },
+    {
+      "id": "261030-AMZN",
+      "date": "2026-10-30",
+      "ticker": "AMZN",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-29",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 2026 (29/10 efter stangning): AWS +39 % till ca 46 mdr USD (snabbast pa ca 5 ar), rorelsemarginal 13,9 % (rekord), men EPS 1,89 mot ca 1,97, capex 75,9 mdr, FCF 12m -42,4 mdr. Ca -4 till -9 % efterbors. Pris null: stangningen 29/10 ar PRE-event.",
+      "sourceRef": "Amazon IR Q3 2026-10-29; Motley Fool, Yahoo Finance live, MarketBeat 2026-10-29 via websok. Efterborskurs saknas i state/prices.json (generatedAt 2026-10-30T00:58:27Z).",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-11-06"
     }
   ]
 }
