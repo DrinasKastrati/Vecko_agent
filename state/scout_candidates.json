@@ -2015,6 +2015,40 @@
       "decisionReason": "Grind 2 (teknik): forbors 225,50 (2026-10-30T12:41Z, prices.json) under MA200 243,38 (-7,35 pct), EMA20 253,40 < EMA50 254,04, RSI 40,7 - kurs <= MA200 blockerar.",
       "decidedBy": "reports/us_daily/us-daglig-261030.md",
       "decidedAt": "2026-10-30"
+    },
+    {
+      "id": "261031-CBOE",
+      "date": "2026-10-31",
+      "ticker": "CBOE",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-30",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 2026 (30/10 fore oppning): nettointakt 712,2 MUSD (+18 %), just EPS 3,63 (+36 %) mot konsensus 3,29-3,43, FY26 organisk intaktstillvaxt hojd till high teens, kostnadsguide sankt. +6,77 % pa 2,0x volym. Bear: 250d-hogsta 366,70 ligger 9 % ovanfor, fallit 4 dagar i rad fore rapporten.",
+      "sourceRef": "Cboe IR + SEC 8-K ex. 99.1 (cboe-20261030xex991) 2026-10-30 via websok; GuruFocus, TradingView/Seeking Alpha 2026-10-30. Kurs: state/prices.json reguljar stangning 2026-10-30T20:00:00Z (efter katalysatorn).",
+      "price": 335.53,
+      "priceAsOf": "2026-10-30T20:00:00.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-11-06"
+    },
+    {
+      "id": "261031-CVX",
+      "date": "2026-10-31",
+      "ticker": "CVX",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-10-30",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 2026 (8-K 30/10 fore oppning): just resultat 10,4 mdr USD / 5,28 per aktie mot konsensus ca 4,73-4,89 (Zacks), produktion ca 2 043 tboe/d. +1,75 % till ny 250d-hogsta. Bear: just resultat -1,6 mdr mot Q2 (lagre realiserade priser), RSI 72,9 nara grind 3-taket, svag reaktion pa beatet.",
+      "sourceRef": "Chevron SEC 8-K ex. 99.1 (a09302026ex9918-k) + chevron.com 2026-10-30 via websok; 24/7 Wall St. 2026-10-26 (konsensus). Kurs: state/prices.json reguljar stangning 2026-10-30T20:02:24Z (efter katalysatorn).",
+      "price": 235.52,
+      "priceAsOf": "2026-10-30T20:02:24.000Z",
+      "priceSession": "regular",
+      "status": "new",
+      "expiresAt": "2026-11-06"
     }
   ]
 }
