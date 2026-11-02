@@ -2030,8 +2030,11 @@
       "price": 335.53,
       "priceAsOf": "2026-10-30T20:00:00.000Z",
       "priceSession": "regular",
-      "status": "new",
-      "expiresAt": "2026-11-06"
+      "status": "promoted",
+      "expiresAt": "2026-11-06",
+      "decisionReason": "Alla fem grindar: Q3 30/10 bekraftad, RSI 63,9, over MA200, volym 2,01x, mal +14,0 pct (nabarhet 25,6), R/R 1:2,41. Ben 1 12,5 pct till 335,53, ben 2 <= 325,00.",
+      "decidedBy": "reports/us_weekly/us-veckorapport-261102.md",
+      "decidedAt": "2026-11-02"
     },
     {
       "id": "261031-CVX",
@@ -2047,8 +2050,11 @@
       "price": 235.52,
       "priceAsOf": "2026-10-30T20:02:24.000Z",
       "priceSession": "regular",
-      "status": "new",
-      "expiresAt": "2026-11-06"
+      "status": "rejected",
+      "expiresAt": "2026-11-06",
+      "decisionReason": "Grind 5 (nabarhetstaket): 2 x 1,16 pct x rot(30) = 12,7 pct < earnings-golvet 14 pct; kurs = 250d-hogsta, mal utan motstand (grind 4).",
+      "decidedBy": "reports/us_weekly/us-veckorapport-261102.md",
+      "decidedAt": "2026-11-02"
     }
   ]
 }
