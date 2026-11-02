@@ -1,17 +1,22 @@
 {
- "generatedAt": "2026-11-02T13:28:26.919Z",
+ "generatedAt": "2026-11-02T14:07:04.362Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1016,
-  "measurable": 1016,
-  "missing": 0,
-  "pending": 61
+  "decisions": 1040,
+  "measurable": 1036,
+  "missing": 4,
+  "pending": 81
  },
- "missingSymbols": [],
+ "missingSymbols": [
+  "AMGN",
+  "BKR",
+  "CNC",
+  "KMB"
+ ],
  "byHorizon": {
   "5": {
    "all": {
@@ -21779,6 +21784,250 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Offshore vind",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "CVX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "MSFT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "VRT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "AI-infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "HII",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Forsvar/varv",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "AMZN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "E-handel/moln",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "RHI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Bemanning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "ROP",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "S",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Cybersakerhet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "DVN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Energi",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "MRVL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "META",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Internet",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "BX",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kapitalforvaltning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "TEVA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Lakemedel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "AMGN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "KMB",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Konsumentvaror",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "BKR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Energitjanster",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "CNC",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Sjukforsakring",
+   "reconstructed": false,
+   "fwd": {},
+   "missing": true
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "PNR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Industri/vattenteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "SOFI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Fintech",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "CCL",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Kryssning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "RIG",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Offshoreborrning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "FIVE",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-02",
+   "ticker": "SKHY",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare/minne",
    "reconstructed": false,
    "fwd": {}
   }
