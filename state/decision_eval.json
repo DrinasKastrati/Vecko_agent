@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-02T23:43:13.029Z",
+ "generatedAt": "2026-11-03T06:43:57.295Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1040,
-  "measurable": 1040,
+  "decisions": 1041,
+  "measurable": 1041,
   "missing": 0,
-  "pending": 66
+  "pending": 67
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22152,6 +22152,16 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Halvledare/minne",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-03",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Försvar",
    "reconstructed": false,
    "fwd": {}
   }
