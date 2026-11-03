@@ -26086,6 +26086,48 @@
         "L-7"
       ],
       "reason": "Rorelsegenomgang (+8,90 pct). Grind 2: serien bar 80 punkter, MA200 ej beraknebar - blockerar; under EMA20/50."
+    },
+    {
+      "date": "2026-11-03",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "KOG.OL",
+      "action": "BEHÅLL",
+      "price": 357.6,
+      "currency": "NOK",
+      "weight": 0.125,
+      "entry": 355.8,
+      "stop": 342,
+      "target": 399,
+      "rr": 3.13,
+      "catalystType": "earnings",
+      "sector": "Försvar",
+      "rsi": null,
+      "reason": "Ben 1 12,5 pct. 357,60 (+0,51 pct mot entry); dagslagsta 353,50 over stop 342 och ben 2-limit 348, dagshogsta 365,40 under mal 399. Q3-tesen intakt, inga nya nyheter 24h.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 489.95,
+      "currency": "SEK",
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering, 87,5 pct. +0,91 pct pa dagen, -0,94 pct mot entry 494,60. Inget aktiekop/-salj i dag. Regim PA: ^OMX 3287,02 > MA200 3158,84 (+4,06 pct).",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
