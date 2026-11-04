@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-04T01:21:44.820Z",
+ "generatedAt": "2026-11-04T06:43:22.998Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1045,
-  "measurable": 1045,
+  "decisions": 1046,
+  "measurable": 1046,
   "missing": 0,
-  "pending": 62
+  "pending": 63
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22397,6 +22397,16 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Optisk komponent/AI-natverk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Försvar",
    "reconstructed": false,
    "fwd": {}
   }
