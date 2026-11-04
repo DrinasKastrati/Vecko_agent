@@ -1,12 +1,24 @@
 {
-  "generatedAt": "2026-10-27T12:59:28.025Z",
-  "checkedAt": "2026-11-03T20:47:08.549Z",
+  "generatedAt": "2026-11-04T15:07:47.457Z",
+  "checkedAt": "2026-11-04T15:07:47.457Z",
   "watched": [
     "KOG.OL",
     "SPY",
     "CBOE"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "KOG.OL",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 348,
+      "price": 351.9,
+      "currency": "NOK",
+      "marketTime": "2026-11-04T14:52:43.000Z",
+      "basis": "intraday",
+      "hitPrice": 345.6
+    }
+  ],
   "history": [
     {
       "ticker": "SAAB-B.ST",
