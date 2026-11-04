@@ -26275,6 +26275,132 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0.875,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 754.35,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 40.2,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Sleeven oforandrad 87,5 pct, inga fyllnader eller salj. 754,35 (3/11 21:00Z), -2,45 pct mot entry. Regim PA: ^GSPC 7568,92 +3,46 pct over MA200 7315,86."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0.125,
+      "entry": 335.53,
+      "stop": 316,
+      "target": 382.5,
+      "rr": 2.41,
+      "ticker": "CBOE",
+      "action": "BEHÅLL",
+      "price": 344.28,
+      "catalystType": "earnings",
+      "sector": "Borser/finansiell infrastruktur",
+      "rsi": 65.1,
+      "lessonIds": [
+        "L-3"
+      ],
+      "reason": "Ben 1 12,5 pct. 344,28 (3/11 21:00Z), +2,61 pct mot entry; dagslagsta 335,00 > stop 316,00. Tes intakt (Q3 30/10), RSI 65,1, over EMA20/50, MACD-histogram stigande. Ben 2 <= 325,00 ej triggad."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "AMD",
+      "action": "AVVAKTA",
+      "price": 479.19,
+      "catalystType": "earnings",
+      "sector": "Halvledare/AI",
+      "rsi": 38.4,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261104-AMD. Grind 2 (teknik): forbors 479,19 (4/11 12:56Z) under EMA20 542,28 och EMA50 544,07, RSI 38,4, MACD-histogram fallande (-8,75 -> -9,49). Forbors -0,97 pct mot stangning 483,90."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ANET",
+      "action": "AVVAKTA",
+      "price": 178.25,
+      "catalystType": "earnings",
+      "sector": "Natverk/AI",
+      "rsi": 38.5,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261104-ANET. Grind 2 (teknik): forbors 178,25 (4/11 12:56Z) under EMA20 183,60 och EMA50 188,88, RSI 38,5, MACD-histogram negativt (-1,83). Over MA200 165,54."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SMCI",
+      "action": "AVVAKTA",
+      "price": 31.55,
+      "catalystType": "earnings",
+      "sector": "Servrar/AI",
+      "rsi": 38.5,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261104-SMCI. Forbors 31,55 (4/11 12:57Z) under MA200 32,67 - kurs <= MA200 blockerar nya positioner. Aven under EMA20 34,97/EMA50 36,23 (grind 2)."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "FN",
+      "action": "AVVAKTA",
+      "price": 363.33,
+      "catalystType": "earnings",
+      "sector": "Optisk komponent/AI-natverk",
+      "rsi": 46.9,
+      "lessonIds": [
+        "L-4"
+      ],
+      "reason": "Scout 261103-FN, L-4-omprovning: serien backfilld (250 punkter). 363,33 (3/11 21:00Z) under MA200 522,91 - blockerar. Aven under EMA50 405,46, 120d -47,8 pct (punkt 1b)."
     }
   ]
 }

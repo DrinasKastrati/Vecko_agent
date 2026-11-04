@@ -2106,15 +2106,15 @@
       "priceAsOf": "2026-11-03T12:43:54.000Z",
       "status": "rejected",
       "expiresAt": "2026-11-10",
-      "decidedBy": "reports/us_daily/us-daglig-261103.md",
-      "decidedAt": "2026-11-03",
+      "decidedBy": "reports/us_daily/us-daglig-261104.md",
+      "decidedAt": "2026-11-04",
       "id": "261103-FN",
       "ticker": "FN",
       "catalystType": "earnings",
       "thesis": "Bekraftad rapport (2/11 AMC): Fabrinet (optisk paketering for AI-natverk) gav en guide for innevarande kvartal langt over konsensus, ca +10 % efterbors. Bear: sektorn (MRVL, CIEN, LITE) foll 11-19 % 2/11, exakta siffror ej verifierade. Pris null: FN saknas i prices.json.",
       "sourceRef": "CNBC after-hours movers 2026-11-02 via websok. Kurs: FN saknas i state/prices.json (generatedAt 2026-11-03T02:56:39Z); tillagd i config/watchlist_us.txt 2026-11-03.",
       "priceSession": "pre",
-      "decisionReason": "Grind 2 (teknik) omatbar: price_history bar 1 punkt, MA200/RSI/MACD kan inte beraknas - saknad MA200 blockerar. VILANDE enligt L-4: provas om nar serien backfillats (inom expiresAt)."
+      "decisionReason": "L-4-omprovning 4/11: serien backfilld. 363,33 (3/11 21:00Z) under MA200 522,91 - blockerar. Under EMA50 405,46, 120d -47,8 %."
     },
     {
       "date": "2026-11-04",
@@ -2125,15 +2125,16 @@
       "confirmed": true,
       "price": 479.19,
       "priceAsOf": "2026-11-04T12:56:11.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-11",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-261104.md",
+      "decidedAt": "2026-11-04",
       "id": "261104-AMD",
       "ticker": "AMD",
       "thesis": "Bekraftad Q3 2026 (3/11 AMC): intakt 13,4 mdr USD, data center ca +97 %, non-GAAP EPS 2,09. Q4-guide ca 17 mdr (+-3 %) mot konsensus ca 16,2-16,4, bruttomarginal ca 55 %. Ca +8 % efterbors. Bear: kurs under MA50, RSI 38. Pris null: stangningen 3/11 ar PRE-event.",
       "sourceRef": "AMD Newsroom + SEC 8-K ex. 99.1 (q32026991) 2026-11-03 via websok; CNBC 2026-11-03. Efterborskurs saknas i state/prices.json (generatedAt 2026-11-04T01:21:41Z).",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Grind 2 (teknik): forbors 479,19 (4/11 12:56Z) under EMA20 542,28 och EMA50 544,07, RSI 38,4, MACD-histogram fallande."
     },
     {
       "date": "2026-11-04",
@@ -2144,15 +2145,16 @@
       "confirmed": true,
       "price": 178.25,
       "priceAsOf": "2026-11-04T12:56:11.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-11",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-261104.md",
+      "decidedAt": "2026-11-04",
       "id": "261104-ANET",
       "ticker": "ANET",
       "thesis": "Bekraftad Q3 2026 (3/11 AMC): intakt ca 3,66 mdr USD (+58,5 %) mot egen guide ca 3,3, justerat EPS 1,20 mot ca 1,08, Q4-guide over konsensus. Ca +7-9 % efterbors. Bear: kurs bara 2,6 % over MA200, under MA50, RSI 38. Pris null: stangningen 3/11 ar PRE-event.",
       "sourceRef": "Arista pressmeddelande 2026-11-03 (Yahoo Finance, MarketScreener) + SEC 8-K ex. 99.1 via websok; GuruFocus 2026-11-03. Efterborskurs saknas i state/prices.json (generatedAt 2026-11-04T01:21:41Z).",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Grind 2 (teknik): forbors 178,25 (4/11 12:56Z) under EMA20 183,60 och EMA50 188,88, RSI 38,5, MACD-histogram negativt."
     },
     {
       "date": "2026-11-04",
@@ -2163,15 +2165,16 @@
       "confirmed": true,
       "price": 31.55,
       "priceAsOf": "2026-11-04T12:57:29.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-11",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-261104.md",
+      "decidedAt": "2026-11-04",
       "id": "261104-SMCI",
       "ticker": "SMCI",
       "thesis": "Bekraftad Q1 FY27 (3/11 AMC): intakt 19,95 mdr USD mot ca 16,3-17,5, justerat EPS 1,81 mot ca 1,23, FY27-guide hojd till 72-82 mdr, bruttomarginal 12,8 %. Ca +7-10 % efterbors. Bear: kurs 3,9 % UNDER MA200 (blockerar). Pris null: PRE-event-kurs.",
       "sourceRef": "Supermicro pressmeddelande 2026-11-03 (Yahoo Finance) + SEC 8-K ex. 99.1 via websok; Benzinga, Seeking Alpha 2026-11-03. Efterborskurs saknas i state/prices.json (generatedAt 2026-11-04T01:21:41Z).",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Kurs under MA200: forbors 31,55 (4/11 12:57Z) mot MA200 32,67 - blockerar nya positioner. Aven under EMA20/EMA50."
     }
   ]
 }
