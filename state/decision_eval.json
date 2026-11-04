@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-04T12:57:51.572Z",
+ "generatedAt": "2026-11-04T13:18:11.110Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1046,
-  "measurable": 1046,
+  "decisions": 1051,
+  "measurable": 1051,
   "missing": 0,
-  "pending": 63
+  "pending": 68
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22437,6 +22437,56 @@
    "action": "BEHÅLL",
    "catalystType": "earnings",
    "sector": "Försvar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledare/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "ANET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Natverk/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "SMCI",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Servrar/AI",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-04",
+   "ticker": "FN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Optisk komponent/AI-natverk",
    "reconstructed": false,
    "fwd": {}
   }
