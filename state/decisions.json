@@ -26233,6 +26233,48 @@
         "L-4"
       ],
       "reason": "Scout 261103-FN. Grind 2 omatbar: price_history 1 punkt, MA200/RSI/MACD saknas - saknad MA200 blockerar. Forbors 338,97 (3/11 12:43Z). Vilande (L-4), provas om efter backfill fore 2026-11-10."
+    },
+    {
+      "date": "2026-11-04",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "KOG.OL",
+      "action": "BEHÅLL",
+      "price": 360.4,
+      "currency": "NOK",
+      "weight": 0.125,
+      "entry": 355.8,
+      "stop": 342,
+      "target": 399,
+      "rr": 3.13,
+      "catalystType": "earnings",
+      "sector": "Försvar",
+      "rsi": null,
+      "reason": "Ben 1 12,5 pct. 360,40 (+1,29 pct mot entry, +0,78 pct pa dagen); dagslagsta 351,60 over stop 342 och ben 2-limit 348, dagshogsta 360,40 under mal 399. Q3-tesen intakt, inga daterade nyheter 24h.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "book": "nordic",
+      "mode": "B",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 488.6,
+      "currency": "SEK",
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering, 87,5 pct. -0,28 pct pa dagen, -1,21 pct mot entry 494,60. Inget aktiekop/-salj i dag. Regim PA: ^OMX 3284,44 > MA200 3160,38 (+3,93 pct).",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
