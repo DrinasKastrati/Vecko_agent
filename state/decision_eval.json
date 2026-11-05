@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-05T13:08:00.920Z",
+ "generatedAt": "2026-11-05T13:20:12.039Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1052,
-  "measurable": 1052,
+  "decisions": 1056,
+  "measurable": 1056,
   "missing": 0,
-  "pending": 64
+  "pending": 68
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22766,6 +22766,46 @@
    "action": "KÖP",
    "catalystType": "earnings",
    "sector": "Försvar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-05",
+   "ticker": "NUE",
+   "book": "us",
+   "action": "KÖP",
+   "catalystType": "earnings",
+   "sector": "Stal",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-05",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-05",
+   "ticker": "APP",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Adtech/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-05",
+   "ticker": "COHR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Optisk komponent/AI-natverk",
    "reconstructed": false,
    "fwd": {}
   }
