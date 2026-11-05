@@ -26401,6 +26401,49 @@
         "L-4"
       ],
       "reason": "Scout 261103-FN, L-4-omprovning: serien backfilld (250 punkter). 363,33 (3/11 21:00Z) under MA200 522,91 - blockerar. Aven under EMA50 405,46, 120d -47,8 pct (punkt 1b)."
+    },
+    {
+      "date": "2026-11-05",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "NOK",
+      "ticker": "KOG.OL",
+      "action": "KÖP",
+      "price": 348,
+      "weight": 0.125,
+      "entry": 351.9,
+      "stop": 342,
+      "target": 399,
+      "rr": 4.76,
+      "catalystType": "earnings",
+      "sector": "Försvar",
+      "rsi": 69.6,
+      "horizonDays": 20,
+      "reason": "BEN 2 fyllt: limit <=348 korsad intradag 4/11 (dagslagsta 345,60, stangning 354,20). Slas ihop till EN rad: 25 pct, viktat entry 351,90, stop 342 oforandrad, R/R 4,76:1. Sleeven 87,5 -> 75 pct.",
+      "lessonIds": [
+        "L-3"
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "book": "nordic",
+      "mode": "B",
+      "currency": "SEK",
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 494.7,
+      "weight": 0.75,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering, minskad 87,5 -> 75 pct for att finansiera ben 2 i KOG.OL. +1,25 pct pa dagen, +0,02 pct mot entry 494,60. Regim PA: ^OMX 3311,67 > MA200 3162,00 (+4,73 pct).",
+      "lessonIds": [
+        "L-3"
+      ]
     }
   ]
 }
