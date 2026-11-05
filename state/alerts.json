@@ -1,12 +1,26 @@
 {
-  "generatedAt": "2026-11-04T15:07:47.457Z",
-  "checkedAt": "2026-11-04T21:43:23.093Z",
+  "generatedAt": "2026-11-05T15:17:11.321Z",
+  "checkedAt": "2026-11-05T15:17:11.321Z",
   "watched": [
     "KOG.OL",
     "SPY",
-    "CBOE"
+    "CBOE",
+    "NUE"
   ],
   "active": [
+    {
+      "ticker": "KOG.OL",
+      "type": "SÄLJ",
+      "reason": "stop-loss träffad",
+      "level": 342,
+      "price": 337,
+      "currency": "NOK",
+      "marketTime": "2026-11-05T15:00:51.000Z",
+      "basis": "price",
+      "hitPrice": 337
+    }
+  ],
+  "history": [
     {
       "ticker": "KOG.OL",
       "type": "KÖP",
@@ -16,10 +30,9 @@
       "currency": "NOK",
       "marketTime": "2026-11-04T15:28:52.000Z",
       "basis": "intraday",
-      "hitPrice": 345.6
-    }
-  ],
-  "history": [
+      "hitPrice": 345.6,
+      "expiredAt": "2026-11-05T15:17:11.321Z"
+    },
     {
       "ticker": "SAAB-B.ST",
       "type": "SÄLJ",
