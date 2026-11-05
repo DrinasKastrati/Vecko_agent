@@ -26444,6 +26444,112 @@
       "lessonIds": [
         "L-3"
       ]
+    },
+    {
+      "date": "2026-11-05",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 766.81,
+      "weight": 0.625,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 50.7,
+      "reason": "Sleeven minskad 87,5 -> 62,5 pct for att finansiera NUE (25 pct, plan triggad 4/11) - enda tillatna skalet i LAGE B. 766,81 (4/11 21:00Z), -0,83 pct mot entry. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-11-05",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NUE",
+      "action": "KÖP",
+      "price": 262,
+      "weight": 0.25,
+      "entry": 262,
+      "stop": 247,
+      "target": 299,
+      "rr": 2.47,
+      "catalystType": "earnings",
+      "sector": "Stal",
+      "rsi": 56.6,
+      "horizonDays": 25,
+      "reason": "Plan 261027-NUE <= 262,00 triggad 4/11, sista dag (lagsta 260,405, stangning 267,91). Fyllnad vid limit. Omprovat: regim PA, RSI 56,6, over EMA20/50/200, volym 1,75x. Stop -5,73, mal +14,12 pct."
+    },
+    {
+      "date": "2026-11-05",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "CBOE",
+      "action": "BEHÅLL",
+      "price": 345.21,
+      "weight": 0.125,
+      "entry": 335.53,
+      "stop": 316,
+      "target": 382.5,
+      "rr": 2.41,
+      "catalystType": "earnings",
+      "sector": "Borser/finansiell infrastruktur",
+      "rsi": 65.5,
+      "reason": "Ben 1 12,5 pct. 345,21 (4/11 21:00Z), +2,88 pct mot entry; dagslagsta 336,25 > stop 316,00. Tes intakt (Q3 30/10), RSI 65,5, over EMA20/50. Ben 2 <= 325,00 ej triggad."
+    },
+    {
+      "date": "2026-11-05",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "APP",
+      "action": "AVVAKTA",
+      "price": 333.61,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Adtech/mjukvara",
+      "rsi": null,
+      "reason": "Scout 261105-APP. Grind 2 omatbar: 1 historikpunkt (4/11), MA200/RSI/MACD/EMA omatbara, saknad MA200 blockerar. Vilande enligt L-4 t.o.m. expiresAt 2026-11-12. Forbors 333,61 (5/11 13:06Z)."
+    },
+    {
+      "date": "2026-11-05",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "COHR",
+      "action": "AVVAKTA",
+      "price": 189.6,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Optisk komponent/AI-natverk",
+      "rsi": null,
+      "reason": "Scout 261105-COHR. Grind 2 omatbar: 1 historikpunkt (4/11), MA200/RSI/MACD/EMA omatbara, saknad MA200 blockerar. Vilande enligt L-4 t.o.m. expiresAt 2026-11-12. Forbors 189,60 (5/11 13:06Z)."
     }
   ]
 }
