@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-05T21:34:42.816Z",
+ "generatedAt": "2026-11-06T06:45:32.054Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1056,
-  "measurable": 1056,
+  "decisions": 1061,
+  "measurable": 1061,
   "missing": 0,
-  "pending": 62
+  "pending": 67
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22866,6 +22866,56 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Optisk komponent/AI-natverk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "KOG.OL",
+   "book": "nordic",
+   "action": "SÄLJ",
+   "catalystType": "earnings",
+   "sector": "Forsvar",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "SOBI.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "KCC.OL",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Sjofart",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "GMAB.CO",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "regulatory",
+   "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "HNSA.ST",
+   "book": "nordic",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Bioteknik",
    "reconstructed": false,
    "fwd": {}
   }
