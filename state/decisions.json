@@ -24528,7 +24528,7 @@
       "horizonDays": 20,
       "holdDays": 1,
       "outcomePct": -2.7,
-      "realizedRr": -1.0,
+      "realizedRr": -1,
       "benchPct": 1.57,
       "alphaPct": -4.27,
       "reason": "STOPP: stop 622 genomhandlad intradag 26/10 (dayLow 618,90, stangning 651,90), SALJ-signal i alerts.json. Bokad pa stopnivan. Tesen (Q3 23/10) ej punkterad.",
@@ -24544,7 +24544,7 @@
       "action": "BEHÅLL",
       "price": 478.85,
       "currency": "SEK",
-      "weight": 1.0,
+      "weight": 1,
       "entry": 494.6,
       "stop": null,
       "target": null,
@@ -26682,6 +26682,180 @@
       "sector": "Bioteknik",
       "rsi": 61,
       "reason": "Ersattningskop 4a avvisat, grind 3: ingen daterad katalysator bar uppgangen (volym 2,55x). Q3 2026-11-11 om 3 handelsdagar."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 733,
+      "weight": 0.875,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 33.5,
+      "reason": "Sleeven okad 62,5 -> 87,5 pct med kapitalet fran NUE (stopp 5/11) - enda tillatna skalet i LAGE B. 733,00 (5/11 21:00Z), -5,21 pct mot entry. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "NUE",
+      "action": "SÄLJ",
+      "price": 247,
+      "weight": 0.25,
+      "entry": 262,
+      "stop": 247,
+      "target": 299,
+      "rr": 2.47,
+      "catalystType": "earnings",
+      "sector": "Stal",
+      "rsi": 38.6,
+      "horizonDays": 25,
+      "holdDays": 1,
+      "outcomePct": -5.73,
+      "benchPct": -4.36,
+      "alphaPct": -1.37,
+      "realizedRr": -1,
+      "reason": "STOP BRUTEN 5/11 (271,24-245,14, stangning 245,68), SALJ-signal i alerts.json. Exit till stopniva 247,00. S&P 500 -4,36 pct samma dag (AI-/chiputforsaljning). Kapitalet till SPY-sleeven."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "CBOE",
+      "action": "BEHÅLL",
+      "price": 353.07,
+      "weight": 0.125,
+      "entry": 335.53,
+      "stop": 316,
+      "target": 382.5,
+      "rr": 2.41,
+      "catalystType": "earnings",
+      "sector": "Borser/finansiell infrastruktur",
+      "rsi": 68,
+      "reason": "Ben 1 12,5 pct. 353,07 (5/11 21:00Z), +5,23 pct mot entry pa en -4,36 pct-dag. Tes intakt (Q3 30/10). Stop kvar 316 tills ben 2 (<= 325, ej triggad) lopt ut i dag."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "AXGN",
+      "action": "AVVAKTA",
+      "price": 48.75,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Medicinteknik",
+      "rsi": 65.7,
+      "reason": "Plan 261029-AXGN <= 46,00 AVFORD: ej triggad inom 5 handelsdagar (sista session 5/11, lagsta 47,575, stangning 48,75). Kapitalet stannar i sleeven."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "U",
+      "action": "AVVAKTA",
+      "price": 51,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/adtech",
+      "rsi": 68.2,
+      "reason": "Scout 261106-U PROMOTAD, alla fem grindar. 25 pct som limit <= 49,00 regulj session (4a gap +14,93 pct 5/11; forbors 51,00). Stop 46,20, mal 56,50, risk/reward 2,68, 25 hd."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "NET",
+      "action": "AVVAKTA",
+      "price": 294.5,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Mjukvara/natverk",
+      "rsi": 29.4,
+      "reason": "Scout 261106-NET. Grind 2 (teknik): forbors 294,50 under EMA20 299,99 och EMA50 308,23, MACD-histogram fallande -6,17 -> -7,40, RSI 29,4 vid stangning. Lagre R/R an U."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "APP",
+      "action": "AVVAKTA",
+      "price": 356.1,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Adtech/mjukvara",
+      "rsi": 71.8,
+      "reason": "Scout 261105-APP L-4-omprovning (serien nu 250 p). Grind 2: kurs 356,10 under MA200 409,96 - blockerar ny position. EMA20 < EMA50 < EMA200. Slutligt."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "ticker": "COHR",
+      "action": "AVVAKTA",
+      "price": 169.76,
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Optisk komponent/AI-natverk",
+      "rsi": 28.4,
+      "reason": "Scout 261105-COHR L-4-omprovning (serien nu 250 p). Grind 2: kurs 169,76 under MA200 296,47 - blockerar. Under EMA20/50, MACD fallande, -12,98 pct 5/11. Slutligt."
     }
   ]
 }

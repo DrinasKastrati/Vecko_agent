@@ -2192,9 +2192,9 @@
       "thesis": "Bekraftad Q3 2026 (4/11 AMC): intakt 2,18 mdr USD (+55 %), EPS 4,30, just. EBITDA 1,84 mdr (84 % marginal), FCF 1,4 mdr, Q4-guide 2,37-2,40 mdr, aterkop utokat 3,2 mdr. Ca +22 % efterbors. Pris null: ingen rad i prices.json.",
       "sourceRef": "AppLovin 8-K ex. 99.1 (SEC, 2026-11-04); MarketBeat, GuruFocus, Chartmill 2026-11-04 via websok. Konsensus omtvistad mellan kallor.",
       "priceSession": "pre",
-      "decisionReason": "Grind 2 omatbar: 1 historikpunkt (4/11), saknad MA200 blockerar. Vilande (L-4) - provas om nar serien backfillats, t.o.m. expiresAt.",
-      "decidedBy": "reports/us_daily/us-daglig-261105.md",
-      "decidedAt": "2026-11-05"
+      "decisionReason": "L-4-omprovning 6/11 (serien 250 p): grind 2 - kurs 356,10 under MA200 409,96 blockerar, EMA20<EMA50<EMA200. Slutligt avvisad.",
+      "decidedBy": "reports/us_daily/us-daglig-261106.md",
+      "decidedAt": "2026-11-06"
     },
     {
       "date": "2026-11-05",
@@ -2212,9 +2212,9 @@
       "thesis": "Bekraftad Q1 FY27 (4/11 AMC): intakt 2,37 mdr USD (+50 %) mot ca 2,31, non-GAAP EPS 2,09 mot 1,99 (FactSet), datacenter +85 %, Q2-guide 2,55-2,75 mdr, FY27 >60 % proforma. Ca +7 % efterbors. Pris null: ingen rad i prices.json.",
       "sourceRef": "Coherent Q1 FY27 2026-11-04 via GuruFocus, Converge Digest, Benzinga 2026-11-04 (websok). Pressmeddelandet ej last direkt.",
       "priceSession": "pre",
-      "decisionReason": "Grind 2 omatbar: 1 historikpunkt (4/11), saknad MA200 blockerar. Vilande (L-4) - provas om nar serien backfillats, t.o.m. expiresAt.",
-      "decidedBy": "reports/us_daily/us-daglig-261105.md",
-      "decidedAt": "2026-11-05"
+      "decisionReason": "L-4-omprovning 6/11 (serien 250 p): grind 2 - kurs 169,76 under MA200 296,47 blockerar, under EMA20/50, MACD fallande. Slutligt avvisad.",
+      "decidedBy": "reports/us_daily/us-daglig-261106.md",
+      "decidedAt": "2026-11-06"
     },
     {
       "date": "2026-11-06",
@@ -2225,15 +2225,16 @@
       "confirmed": true,
       "price": 294.5,
       "priceAsOf": "2026-11-06T12:53:36.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-13",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-261106.md",
+      "decidedAt": "2026-11-06",
       "id": "261106-NET",
       "ticker": "NET",
       "thesis": "Bekraftad Q3 2026 (5/11 AMC): intakt 782,5 MUSD (+39 %) mot ca 738, just. EPS 0,38 mot 0,34, Q4-guide ca 845,5 MUSD mot 795,9, helarsguide hojd. Ca +15-18 % efterbors. Bear: bruttomarginal 74,0->71,2 %, kurs 2,1 % under MA200. Pris null: stangningen 5/11 ar PRE-event.",
       "sourceRef": "Cloudflare Q3 2026-pressmeddelande via StockTitan, Seeking Alpha, TipRanks, Motley Fool 2026-11-05/06 (websok). Efterborskurs saknas i state/prices.json (generatedAt 2026-11-06T01:33:16Z).",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Grind 2 (teknik): forbors 294,50 under EMA20 299,99/EMA50 308,23, MACD-histogram fallande, RSI 29,4 vid stangning 5/11. Dessutom lagre R/R an promotad kandidat samma dag (U)."
     },
     {
       "date": "2026-11-06",
@@ -2244,15 +2245,16 @@
       "confirmed": true,
       "price": 51,
       "priceAsOf": "2026-11-06T12:54:15.000Z",
-      "status": "new",
+      "status": "promoted",
       "expiresAt": "2026-11-13",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_daily/us-daglig-261106.md",
+      "decidedAt": "2026-11-06",
       "id": "261106-U",
       "ticker": "U",
       "thesis": "Bekraftad Q3 2026 (5/11): intakt 622 MUSD (+32 %), strategisk intakt 597 (+59 %), Vector +126 % a/a, forsta GAAP-vinsten sedan IPO (122 MUSD), Q4-guide strategisk 683-691 MUSD (+65-67 %). Pris null: releasetid ej verifierad mot 5/11-stangningen.",
       "sourceRef": "Unity 8-K ex. 99.1 (SEC, Q3 2026); Motley Fool, Yahoo Finance, 247wallst 2026-11-05 (websok). Reaktionen efter releasen ej verifierad.",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "Villkorad plan, alla fem grindar. Gap +14,93 pct + forborskurs (4a/2d): 25 pct limit <= 49,00 regulj session. Stop 46,20, mal 56,50, R/R 1:2,68, 25 hd. Avfors efter 2026-11-13."
     }
   ]
 }
