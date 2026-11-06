@@ -26550,6 +26550,138 @@
       "sector": "Optisk komponent/AI-natverk",
       "rsi": null,
       "reason": "Scout 261105-COHR. Grind 2 omatbar: 1 historikpunkt (4/11), MA200/RSI/MACD/EMA omatbara, saknad MA200 blockerar. Vilande enligt L-4 t.o.m. expiresAt 2026-11-12. Forbors 189,60 (5/11 13:06Z)."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KOG.OL",
+      "action": "SÄLJ",
+      "price": 339.4,
+      "currency": "NOK",
+      "weight": 0.25,
+      "entry": 351.9,
+      "stop": 342,
+      "target": 399,
+      "rr": 4.76,
+      "catalystType": "earnings",
+      "sector": "Forsvar",
+      "rsi": 58.8,
+      "horizonDays": 20,
+      "holdDays": 3,
+      "outcomePct": -3.55,
+      "benchPct": 0.91,
+      "alphaPct": -4.46,
+      "realizedRr": -1.26,
+      "reason": "STOP-LOSS BRUTEN: stangning 339,40 NOK (5/11 15:29Z) 0,76 pct under stop 342, dayLow 333,50. SALJ-signal i alerts.json. Bokad pa stangningen. Tesen (Q3 29/10) ej punkterad."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 492.1,
+      "currency": "SEK",
+      "weight": 1,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering. Okad 75 till 100 pct med kapitalet fran KOG.OL-stoppet. -0,51 pct mot entry 494,60. Regim PA: ^OMX 3301,09 > MA200 3163,49 (+4,35 pct)."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "SOBI.ST",
+      "action": "AVVAKTA",
+      "price": 493.6,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Bioteknik",
+      "rsi": 69.7,
+      "reason": "Ersattningskop 4a avvisat, grind 2: volymkvot 1,09x mot 1,5x. EMA-stack hel, MACD-histogram positivt."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "KCC.OL",
+      "action": "AVVAKTA",
+      "price": 105.4,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Sjofart",
+      "rsi": 47.8,
+      "reason": "Ersattningskop 4a avvisat, grind 2: MACD-histogram negativt (-0,19), kurs under EMA20 107,28, volymkvot 0,68x, RSI 47,8."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "GMAB.CO",
+      "action": "AVVAKTA",
+      "price": 3635,
+      "currency": "DKK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "regulatory",
+      "sector": "Bioteknik",
+      "rsi": 71.9,
+      "reason": "Ersattningskop 4a avvisat, grind 2: volymkvot 0,86x mot 1,5x; MACD-histogram avtar (113 -> 66)."
+    },
+    {
+      "date": "2026-11-06",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "HNSA.ST",
+      "action": "AVVAKTA",
+      "price": 39.8,
+      "currency": "SEK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "other",
+      "sector": "Bioteknik",
+      "rsi": 61,
+      "reason": "Ersattningskop 4a avvisat, grind 3: ingen daterad katalysator bar uppgangen (volym 2,55x). Q3 2026-11-11 om 3 handelsdagar."
     }
   ]
 }
