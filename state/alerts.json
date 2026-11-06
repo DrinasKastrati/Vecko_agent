@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-11-05T21:46:31.012Z",
-  "checkedAt": "2026-11-05T21:46:31.012Z",
+  "generatedAt": "2026-11-06T14:47:51.460Z",
+  "checkedAt": "2026-11-06T14:47:51.460Z",
   "watched": [
-    "KOG.OL",
     "SPY",
     "CBOE",
-    "NUE"
+    "U"
   ],
-  "active": [
+  "active": [],
+  "history": [
     {
       "ticker": "KOG.OL",
       "type": "SÄLJ",
@@ -17,7 +17,8 @@
       "currency": "NOK",
       "marketTime": "2026-11-05T15:29:00.000Z",
       "basis": "price",
-      "hitPrice": 339.4
+      "hitPrice": 339.4,
+      "expiredAt": "2026-11-06T14:47:51.460Z"
     },
     {
       "ticker": "NUE",
@@ -28,10 +29,9 @@
       "currency": "USD",
       "marketTime": "2026-11-05T21:00:02.000Z",
       "basis": "price",
-      "hitPrice": 245.68
-    }
-  ],
-  "history": [
+      "hitPrice": 245.68,
+      "expiredAt": "2026-11-06T14:47:51.460Z"
+    },
     {
       "ticker": "KOG.OL",
       "type": "KÖP",
