@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-06T12:54:33.927Z",
+ "generatedAt": "2026-11-06T13:18:38.638Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1061,
-  "measurable": 1061,
+  "decisions": 1068,
+  "measurable": 1068,
   "missing": 0,
-  "pending": 67
+  "pending": 74
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -22946,6 +22946,76 @@
    "action": "AVVAKTA",
    "catalystType": "other",
    "sector": "Bioteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "NUE",
+   "book": "us",
+   "action": "SÄLJ",
+   "catalystType": "earnings",
+   "sector": "Stal",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "AXGN",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Medicinteknik",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/adtech",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "NET",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/natverk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "APP",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Adtech/mjukvara",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-06",
+   "ticker": "COHR",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Optisk komponent/AI-natverk",
    "reconstructed": false,
    "fwd": {}
   }
