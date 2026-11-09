@@ -2265,14 +2265,15 @@
       "confirmed": true,
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-13",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261109.md",
+      "decidedAt": "2026-11-09",
       "id": "261107-ABNB",
       "ticker": "ABNB",
       "thesis": "Bekraftad Q3 2026 (5/11 AMC): intakt ca 4,9 mdr USD (+19 %, snabbast pa 3+ ar), EPS 3,16 mot ca 2,85, GBV +21 %, FY26-guide hojd till high-teens, Q4 3,22-3,28 mdr, nytt aterkop 12 mdr USD. Pris null: ABNB saknas i prices.json.",
-      "sourceRef": "Airbnb 8-K ex. 99.1 (SEC) + news.airbnb.com Q3 2026; 247wallst, Investing.com, CNBC 2026-11-05/06 (websok)."
+      "sourceRef": "Airbnb 8-K ex. 99.1 (SEC) + news.airbnb.com Q3 2026; 247wallst, Investing.com, CNBC 2026-11-05/06 (websok).",
+      "decisionReason": "kurs ej verifierbar - ABNB saknas i prices.json (prices.yml ej kord sedan 7/11 00:52Z). Vilande enligt L-4, provas om inom expiresAt."
     },
     {
       "date": "2026-11-07",
@@ -2283,14 +2284,15 @@
       "confirmed": true,
       "price": 124.8,
       "priceAsOf": "2026-11-06T21:00:02.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-13",
-      "decidedBy": null,
-      "decidedAt": null,
+      "decidedBy": "reports/us_weekly/us-veckorapport-261109.md",
+      "decidedAt": "2026-11-09",
       "id": "261107-VST",
       "ticker": "VST",
       "thesis": "Bekraftad Q3 2026 (6/11 fore oppning): just. EBITDA 2,38 mdr USD (+50 %), nettovinst 1,14 mdr, FY26-guide 7,1-7,5 mdr, 2027-guide 7,7-8,5 mdr, +1,5 mdr aterkop. Stangning 6/11 +10,55 %. Bear: 18 % under MA200 (blockerar).",
-      "sourceRef": "Vistra 8-K ex. 99.1 (SEC, 2026-11-06); GuruFocus, MarketScreener 2026-11-06 (websok). Kurs: prices.json/Yahoo chart API."
+      "sourceRef": "Vistra 8-K ex. 99.1 (SEC, 2026-11-06); GuruFocus, MarketScreener 2026-11-06 (websok). Kurs: prices.json/Yahoo chart API.",
+      "decisionReason": "Grind 2 (teknik): kurs 124,80 under MA200 152,65 (-18,2 pct), under EMA20/50, MACD-histogram negativt - kurs <= MA200 blockerar. Slutligt avvisad."
     }
   ]
 }
