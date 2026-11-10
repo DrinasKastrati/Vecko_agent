@@ -2293,6 +2293,38 @@
       "thesis": "Bekraftad Q3 2026 (6/11 fore oppning): just. EBITDA 2,38 mdr USD (+50 %), nettovinst 1,14 mdr, FY26-guide 7,1-7,5 mdr, 2027-guide 7,7-8,5 mdr, +1,5 mdr aterkop. Stangning 6/11 +10,55 %. Bear: 18 % under MA200 (blockerar).",
       "sourceRef": "Vistra 8-K ex. 99.1 (SEC, 2026-11-06); GuruFocus, MarketScreener 2026-11-06 (websok). Kurs: prices.json/Yahoo chart API.",
       "decisionReason": "Grind 2 (teknik): kurs 124,80 under MA200 152,65 (-18,2 pct), under EMA20/50, MACD-histogram negativt - kurs <= MA200 blockerar. Slutligt avvisad."
+    },
+    {
+      "id": "261110-AMD",
+      "date": "2026-11-10",
+      "ticker": "AMD",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "order",
+      "catalystDate": "2026-11-09",
+      "confirmed": true,
+      "thesis": "Bekraftat 9/11: AMD:s 5:e gen. EPYC valda som vardprocessor for Google Clouds TPU 8tx (forsta TPU-systemet med hardvarubaserad confidential computing). Oppenheimer hojde till Outperform, riktkurs 600. Stangning +13,26 % pa 1,87x volym. Bear: under EMA20/50, MACD neg.",
+      "sourceRef": "Motley Fool + Yahoo Finance 2026-11-09 (websok), Oppenheimer via Newsbytes 2026-11-09. Kurs: prices.json/Yahoo chart API.",
+      "price": 508.58,
+      "priceAsOf": "2026-11-09T21:00:01.000Z",
+      "status": "new",
+      "expiresAt": "2026-11-17"
+    },
+    {
+      "id": "261110-CEG",
+      "date": "2026-11-10",
+      "ticker": "CEG",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-11-09",
+      "confirmed": true,
+      "thesis": "Bekraftad Q3 2026 (9/11 fore oppning): just. EPS 5,06 (3,04 i fjol; konsensus ca 3,90), intakt 9,55 mdr (+45 %), nettovinst 1,84 mdr, mittpunkten i FY26-guiden hojd andra gangen i ar. Stangning +10,46 % pa 1,88x volym. Bear: kurs 276,09 under MA200 278,63 (blockerar).",
+      "sourceRef": "Constellation 8-K ex. 99.1 + 10-Q (SEC, 2026-11-09); konsensus Earnings Whispers (fore rapport). Kurs: prices.json/Yahoo chart API.",
+      "price": 276.09,
+      "priceAsOf": "2026-11-09T21:00:01.000Z",
+      "status": "new",
+      "expiresAt": "2026-11-17"
     }
   ]
 }
