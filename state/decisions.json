@@ -27746,6 +27746,71 @@
         "L-7"
       ],
       "reason": "Rorelsegenomgang (+7,40 pct). Grind 2: kurs 224,55 <= MA200 224,64 - blockerar. Rapport 18/11. Volym 1,04x."
+    },
+    {
+      "date": "2026-11-10",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "BOOZT.ST",
+      "action": "BEHÅLL",
+      "price": 171.1,
+      "currency": "SEK",
+      "weight": 0.125,
+      "entry": 169.2,
+      "stop": 163,
+      "target": 189.5,
+      "rr": 3.27,
+      "catalystType": "earnings",
+      "sector": "E-handel",
+      "rsi": 67.7,
+      "horizonDays": 20,
+      "reason": "Tes intakt (Q3 3/11). Stangning 171,10 (9/11 16:29Z) +1,12 pct mot entry, dagslagsta 166,70 over stop 163. RSI 67,7, MACD-histogram stigande. Ben 2 <=165 ej triggad."
+    },
+    {
+      "date": "2026-11-10",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 494.2,
+      "currency": "SEK",
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering 87,5 pct, orord. -0,08 pct mot entry 494,60. Regim PA: ^OMX 3309,85 > MA200 3166,19 (+4,54 pct)."
+    },
+    {
+      "date": "2026-11-10",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-2",
+        "L-4"
+      ],
+      "ticker": "MORLD.OL",
+      "action": "AVVAKTA",
+      "price": 26.95,
+      "currency": "NOK",
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "earnings",
+      "sector": "Energitjanster",
+      "rsi": 71.7,
+      "reason": "Villkorad plan <=26,40 lagd (LAGE B punkt 4, alla sex villkor). Ex-kurs 26,95 (9/11 15:28Z). Stop 25,30, mal 29,60, R/R 2,91, tak 15,8 pct. Vol 2,58x, hel EMA-stack. Poang 7,1."
     }
   ]
 }
