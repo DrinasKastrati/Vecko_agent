@@ -27811,6 +27811,49 @@
       "sector": "Energitjanster",
       "rsi": 71.7,
       "reason": "Villkorad plan <=26,40 lagd (LAGE B punkt 4, alla sex villkor). Ex-kurs 26,95 (9/11 15:28Z). Stop 25,30, mal 29,60, risk/reward 2,91, tak 15,8 pct. Vol 2,58x. Poang 7,1."
+    },
+    {
+      "date": "2026-11-11",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "BOOZT.ST",
+      "action": "BEHÅLL",
+      "price": 174.8,
+      "currency": "SEK",
+      "weight": 0.125,
+      "entry": 169.2,
+      "stop": 163,
+      "target": 189.5,
+      "rr": 3.27,
+      "catalystType": "earnings",
+      "sector": "E-handel",
+      "rsi": 70.6,
+      "horizonDays": 20,
+      "reason": "Tes intakt (Q3 3/11). Stangning 174,80 (10/11 16:29Z) +3,31 pct mot entry, ny 250d-hogsta, dagslagsta 168,80 over stop 163. RSI 70,6, MACD-histogram stigande, volym 0,61x. Ben 2 <=165 ej triggad."
+    },
+    {
+      "date": "2026-11-11",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 497.3,
+      "currency": "SEK",
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering 87,5 pct, orord. +0,55 pct mot entry 494,60. Regim PA: ^OMX 3327,75 > MA200 3167,60 (+5,06 pct)."
     }
   ]
 }
