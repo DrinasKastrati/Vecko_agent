@@ -2307,8 +2307,11 @@
       "sourceRef": "Motley Fool + Yahoo Finance 2026-11-09 (websok), Oppenheimer via Newsbytes 2026-11-09. Kurs: prices.json/Yahoo chart API.",
       "price": 508.58,
       "priceAsOf": "2026-11-09T21:00:01.000Z",
-      "status": "new",
-      "expiresAt": "2026-11-17"
+      "status": "rejected",
+      "expiresAt": "2026-11-17",
+      "decisionReason": "grind 2 (teknik): kurs 515,21 under EMA20 516,39 och EMA50 531,46, MACD-histogram negativt (-7,60 -> -3,37). Volym 1,62x racker inte. Avgjord dag efter - korningen 10/11 uteblev.",
+      "decidedBy": "reports/us_daily/us-daglig-261111.md",
+      "decidedAt": "2026-11-11"
     },
     {
       "id": "261110-CEG",
@@ -2323,8 +2326,11 @@
       "sourceRef": "Constellation 8-K ex. 99.1 + 10-Q (SEC, 2026-11-09); konsensus Earnings Whispers (fore rapport). Kurs: prices.json/Yahoo chart API.",
       "price": 276.09,
       "priceAsOf": "2026-11-09T21:00:01.000Z",
-      "status": "new",
-      "expiresAt": "2026-11-17"
+      "status": "rejected",
+      "expiresAt": "2026-11-17",
+      "decisionReason": "grind 2 (teknik): kurs 267,76 under MA200 278,54 - blockerar ny aktieposition. Under EMA200 283,48. Avgjord dag efter - korningen 10/11 uteblev.",
+      "decidedBy": "reports/us_daily/us-daglig-261111.md",
+      "decidedAt": "2026-11-11"
     },
     {
       "id": "261111-COST",
@@ -2339,9 +2345,12 @@
       "sourceRef": "Costco 8-K ex. 99.1 (SEC) + Costco IR 2026-11-10; mfn i news_feed.json; Investing.com 2026-11-10.",
       "price": 1069.33,
       "priceAsOf": "2026-11-11T12:39:29.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-18",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "grind 2 (teknik): volym 0,64x 20-dagarssnittet senaste reguljara session (krav > 1,5x); forbors 1069,33 bara +0,30 pct mot stangning. Extrautdelning 30 USD sanker kursen vid ex-dag.",
+      "decidedBy": "reports/us_daily/us-daglig-261111.md",
+      "decidedAt": "2026-11-11"
     },
     {
       "id": "261111-CRWV",
@@ -2356,9 +2365,12 @@
       "sourceRef": "CoreWeave IR 2026-11-10 (Q3 2026-pressmeddelande); Investing.com + TradingKey 2026-11-10 (websok).",
       "price": 56.84,
       "priceAsOf": "2026-11-11T12:39:44.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-18",
-      "priceSession": "pre"
+      "priceSession": "pre",
+      "decisionReason": "grind 2 (teknik): forbors 56,84 langt under MA200 89,71 - blockerar ny aktieposition. Under EMA20/EMA50, RSI 35,8.",
+      "decidedBy": "reports/us_daily/us-daglig-261111.md",
+      "decidedAt": "2026-11-11"
     }
   ]
 }
