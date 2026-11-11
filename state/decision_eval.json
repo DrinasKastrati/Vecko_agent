@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-11T01:16:52.467Z",
+ "generatedAt": "2026-11-11T06:44:09.318Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1112,
-  "measurable": 1112,
+  "decisions": 1113,
+  "measurable": 1113,
   "missing": 0,
-  "pending": 68
+  "pending": 69
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -24076,6 +24076,16 @@
    "action": "AVVAKTA",
    "catalystType": "earnings",
    "sector": "Energitjanster",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "BOOZT.ST",
+   "book": "nordic",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "E-handel",
    "reconstructed": false,
    "fwd": {}
   }
