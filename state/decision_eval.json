@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-11T12:41:05.310Z",
+ "generatedAt": "2026-11-11T13:23:36.787Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1113,
-  "measurable": 1113,
+  "decisions": 1120,
+  "measurable": 1120,
   "missing": 0,
-  "pending": 68
+  "pending": 75
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -24099,6 +24099,76 @@
    "action": "BEHÅLL",
    "catalystType": "earnings",
    "sector": "E-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "U",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Mjukvara/adtech",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "AMD",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "order",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "CEG",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Kraft/karnkraft",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "COST",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "buyback",
+   "sector": "Detaljhandel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "CRWV",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "AI-moln/datacenter",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-11",
+   "ticker": "ABNB",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Resor/plattform",
    "reconstructed": false,
    "fwd": {}
   }
