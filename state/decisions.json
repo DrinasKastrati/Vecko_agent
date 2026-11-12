@@ -27916,7 +27916,7 @@
       "price": 50.34,
       "catalystType": "earnings",
       "sector": "Mjukvara/adtech",
-      "rsi": 68.0,
+      "rsi": 68,
       "reason": "Plan 261106-U <= 49,00 TRIGGAD 10/11 (lagsta 48,945) men AVFORD vid omprovning: grind 2 volym 0,97x (< 1,5x, volume_history.json). Ovriga filter holl. Inget kop."
     },
     {
@@ -28023,6 +28023,49 @@
       "sector": "Resor/plattform",
       "rsi": 62.6,
       "reason": "Prissatt bubblare (v46, kurs saknades 9/11). Grind 2: volym 1,00x 10/11 (krav > 1,5x; 1,36x 9/11). Ovrigt holl: over MA200, EMA20>50>200, histogram stigande."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "BOOZT.ST",
+      "action": "BEHÅLL",
+      "price": 169.1,
+      "currency": "SEK",
+      "weight": 0.125,
+      "entry": 169.2,
+      "stop": 163,
+      "target": 189.5,
+      "rr": 3.34,
+      "catalystType": "earnings",
+      "sector": "E-handel",
+      "rsi": 61.3,
+      "horizonDays": 20,
+      "reason": "Tes intakt (Q3 3/11). Stangning 169,10 (11/11 16:29Z) -0,06 pct mot entry, vande fran 174,80. Dagslagsta 166,20 over stop 163. RSI 61,3, MACD-hist sjunkande, volym 1,08x. Ben 2 <=165 ej triggad."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 501.9,
+      "currency": "SEK",
+      "weight": 0.875,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Kapitalparkering 87,5 pct, orord. +1,48 pct mot entry 494,60. Regim PA: ^OMX 3360,01 > MA200 3169,27 (+6,02 pct)."
     }
   ]
 }
