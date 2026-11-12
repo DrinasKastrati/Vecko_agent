@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-12T06:45:08.528Z",
+ "generatedAt": "2026-11-12T13:21:01.456Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1121,
-  "measurable": 1121,
+  "decisions": 1125,
+  "measurable": 1125,
   "missing": 0,
-  "pending": 71
+  "pending": 75
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -24226,6 +24226,46 @@
    "action": "BEHÅLL",
    "catalystType": "earnings",
    "sector": "E-handel",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-12",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-12",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-12",
+   "ticker": "AMAT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledarutrustning",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-12",
+   "ticker": "ABNB",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Resor/plattform",
    "reconstructed": false,
    "fwd": {}
   }
