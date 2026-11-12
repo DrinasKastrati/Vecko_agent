@@ -1,13 +1,25 @@
 {
-  "generatedAt": "2026-11-11T14:55:46.051Z",
-  "checkedAt": "2026-11-11T21:45:52.961Z",
+  "generatedAt": "2026-11-12T15:46:35.690Z",
+  "checkedAt": "2026-11-12T15:46:35.690Z",
   "watched": [
     "BOOZT.ST",
     "SPY",
     "CBOE",
     "MORLD.OL"
   ],
-  "active": [],
+  "active": [
+    {
+      "ticker": "MORLD.OL",
+      "type": "KÖP",
+      "reason": "entry-villkor uppfyllt",
+      "level": 26.4,
+      "price": 26.5,
+      "currency": "NOK",
+      "marketTime": "2026-11-12T15:25:10.000Z",
+      "basis": "intraday",
+      "hitPrice": 26.3
+    }
+  ],
   "history": [
     {
       "ticker": "U",
