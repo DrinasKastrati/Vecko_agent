@@ -28066,6 +28066,112 @@
       "sector": "Indexsleeve",
       "rsi": null,
       "reason": "Kapitalparkering 87,5 pct, orord. +1,48 pct mot entry 494,60. Regim PA: ^OMX 3360,01 > MA200 3169,27 (+6,02 pct)."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "weight": 0.875,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 759.81,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 49.9,
+      "reason": "Sleeve 87,5 pct oforandrad. 759,81 (11/11 21:00Z), -1,74 pct mot entry. Inget aktiekop/-salj kravde omviktning. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "weight": 0.125,
+      "entry": 335.53,
+      "stop": 345,
+      "target": 382.5,
+      "rr": 2.41,
+      "ticker": "CBOE",
+      "action": "BEHÅLL",
+      "price": 369.19,
+      "catalystType": "earnings",
+      "sector": "Borser/finansiell infrastruktur",
+      "rsi": 73,
+      "reason": "Ben 1 12,5 pct. 369,19 (11/11 21:00Z), +10,03 pct mot entry, nytt 250d-hogsta. Dagslagsta 359,96 over stop 345, dagshogsta 371,06 under mal 382,50. Tes intakt (Q3 30/10). Stop/mal oforandrade."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NVDA",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 28.7,
+      "reason": "Scout 261112-NVDA. Sparr (a): obekraftad katalysator (rykte WSJ 11/11 om vd-byte, ingen bolagskommunike) - bevakas. Dessutom 15 pct under MA200 och rapport 17/11."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "AMAT",
+      "action": "AVVAKTA",
+      "price": null,
+      "catalystType": "earnings",
+      "sector": "Halvledarutrustning",
+      "rsi": 47.6,
+      "reason": "Scout 261112-AMAT. Sparr (a): obekraftad katalysator (vantat event, Q4 FY26 12/11 AMC). Kop infor rapport underkant (punkt 2e). Dessutom 11,5 pct under MA200."
+    },
+    {
+      "date": "2026-11-12",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4",
+        "L-6"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "ABNB",
+      "action": "AVVAKTA",
+      "price": 181.13,
+      "catalystType": "earnings",
+      "sector": "Resor/plattform",
+      "rsi": 56.7,
+      "reason": "Prissatt bubblare (v46). Grind 2: volym 1,42x 11/11 (krav > 1,5x), MACD-histogram fallande 2,07 -> 1,64. Katalysatorn (Q3 5/11 AMC) pa sin femte handelsdag. Ingen plan."
     }
   ]
 }

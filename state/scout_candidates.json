@@ -2385,10 +2385,11 @@
       "sourceRef": "WSJ 2026-11-11 via Forbes/CBS News/Yahoo Finance 2026-11-11/12 (websok); Reuters och Bloomberg 2026-11-11 via samma. Ingen bolagskommunike.",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-19",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261112.md",
+      "decidedAt": "2026-11-12",
+      "decisionReason": "obekräftad katalysator – bevakas (rykte WSJ 11/11 om vd-byte, ingen bolagskommuniké; dessutom 15 % under MA200 och rapport 17/11)"
     },
     {
       "id": "261112-AMAT",
@@ -2403,10 +2404,11 @@
       "sourceRef": "state/earnings_calendar.json 2026-11-12T02:15Z; FourWeekMBA + mlq.ai 2026-11-11 (websok).",
       "price": null,
       "priceAsOf": null,
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-19",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261112.md",
+      "decidedAt": "2026-11-12",
+      "decisionReason": "obekräftad katalysator – bevakas (väntat event: Q4 FY26 12/11 AMC; köp inför rapport underkänt, punkt 2e; dessutom 11,5 % under MA200)"
     }
   ]
 }
