@@ -2371,6 +2371,42 @@
       "decisionReason": "grind 2 (teknik): forbors 56,84 langt under MA200 89,71 - blockerar ny aktieposition. Under EMA20/EMA50, RSI 35,8.",
       "decidedBy": "reports/us_daily/us-daglig-261111.md",
       "decidedAt": "2026-11-11"
+    },
+    {
+      "id": "261112-NVDA",
+      "date": "2026-11-12",
+      "ticker": "NVDA",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "other",
+      "catalystDate": "2026-11-11",
+      "confirmed": false,
+      "thesis": "RYKTE: WSJ 11/11 efter stangning - styrelsen forbereder att avsatta vd Huang; Reuters bekraftar WSJ-uppgiften, Bloomberg: extern rekrytering. Efterhandel -8,6 % (158,78). Pris null: stangning 173,73 ar pre-rykte. Bear: 15 % under MA200 (blockerar), rapport 17/11.",
+      "sourceRef": "WSJ 2026-11-11 via Forbes/CBS News/Yahoo Finance 2026-11-11/12 (websok); Reuters och Bloomberg 2026-11-11 via samma. Ingen bolagskommunike.",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-11-19",
+      "decidedBy": null,
+      "decidedAt": null
+    },
+    {
+      "id": "261112-AMAT",
+      "date": "2026-11-12",
+      "ticker": "AMAT",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-11-12",
+      "confirmed": false,
+      "thesis": "VANTAT EVENT, bevakningspost: Q4 FY26 rapporteras 12/11 AMC (konsensus EPS 4,05, intakt 10,30 mdr; guide 10,25 +/- 0,5 mdr). SOX +5,66 % 11/11. Ej kopforslag (punkt 8). Bear: 11,5 % under MA200 (blockerar).",
+      "sourceRef": "state/earnings_calendar.json 2026-11-12T02:15Z; FourWeekMBA + mlq.ai 2026-11-11 (websok).",
+      "price": null,
+      "priceAsOf": null,
+      "status": "new",
+      "expiresAt": "2026-11-19",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
