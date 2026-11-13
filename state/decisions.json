@@ -28236,6 +28236,111 @@
       "sector": "Indexsleeve",
       "rsi": null,
       "reason": "Sleeven minskad 87,5 -> 75,0 pct for MORLD.OL ben 1. +1,54 pct mot entry 494,60. Regim PA: ^OMX 3359,37 > MA200 3170,91 (+5,94 pct)."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "weight": 0.875,
+      "entry": 773.26,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "SPY",
+      "action": "BEHÅLL",
+      "price": 757.12,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": 48.5,
+      "reason": "Sleeve 87,5 pct oforandrad. 757,12 (12/11 21:00Z), -2,09 pct mot entry. Inget aktiekop/-salj kravde omviktning. Filtreras bort ur urvalsstatistiken."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-3"
+      ],
+      "weight": 0.125,
+      "entry": 335.53,
+      "stop": 345,
+      "target": 382.5,
+      "rr": 2.41,
+      "ticker": "CBOE",
+      "action": "BEHÅLL",
+      "price": 368.89,
+      "catalystType": "earnings",
+      "sector": "Borser/finansiell infrastruktur",
+      "rsi": 72.7,
+      "reason": "Ben 1 12,5 pct. 368,89 (12/11 21:00Z), +9,94 pct mot entry. Dagslagsta 368,14 over stop 345, dagshogsta 378,35 under mal 382,50. Tes intakt (Q3 30/10). Stop/mal oforandrade."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "NVDA",
+      "action": "AVVAKTA",
+      "price": 166.19,
+      "catalystType": "other",
+      "sector": "Halvledare",
+      "rsi": 26,
+      "reason": "Scout 261113-NVDA. Sparr (d): binar handelse inom 2 handelsdagar (rapport 17/11, earnings_calendar isEstimate false). Dessutom 18,7 pct under MA200 204,34."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "CSCO",
+      "action": "AVVAKTA",
+      "price": 98.87,
+      "catalystType": "earnings",
+      "sector": "Natverk",
+      "rsi": 45.2,
+      "reason": "Scout 261113-CSCO. Grind 2 (teknik): forbors 98,87 (13/11 13:00Z) under MA200 102,26 - blockerar ny aktieposition. Under EMA20 103,56/EMA50 107,16, MACD-histogram negativt."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "us",
+      "mode": "B",
+      "currency": "USD",
+      "lessonIds": [
+        "L-4"
+      ],
+      "weight": 0,
+      "entry": null,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "ticker": "AMAT",
+      "action": "AVVAKTA",
+      "price": 378.3,
+      "catalystType": "earnings",
+      "sector": "Halvledarutrustning",
+      "rsi": 44.7,
+      "reason": "Scout 261113-AMAT. Grind 2 (teknik): forbors 378,30 (13/11 13:00Z) 15,3 pct under MA200 446,39 - blockerar ny aktieposition. Under EMA20/EMA50/EMA200."
     }
   ]
 }

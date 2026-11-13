@@ -2423,10 +2423,11 @@
       "sourceRef": "NVIDIA 8-K (SEC, signerad 2026-11-12); TechCrunch + CNBC 2026-11-12 (websok). Kurs: prices.json/Yahoo chart API.",
       "price": 166.19,
       "priceAsOf": "2026-11-12T21:00:01.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-20",
-      "decidedBy": null,
-      "decidedAt": null
+      "decidedBy": "reports/us_daily/us-daglig-261113.md",
+      "decidedAt": "2026-11-13",
+      "decisionReason": "binär händelse inom 2 handelsdagar (rapport 17/11, earnings_calendar isEstimate false); dessutom 18,7 % under MA200 204,34"
     },
     {
       "id": "261113-CSCO",
@@ -2441,11 +2442,12 @@
       "sourceRef": "Benzinga + MarketBeat + GuruFocus 2026-11-12 (websok); state/earnings_calendar.json. Bolagets pressmeddelande ej last direkt.",
       "price": 98.8734,
       "priceAsOf": "2026-11-13T13:00:12.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-20",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261113.md",
+      "decidedAt": "2026-11-13",
+      "priceSession": "pre",
+      "decisionReason": "grind 2 (teknik): förbörs 98,87 under MA200 102,26 – blockerar ny aktieposition; under EMA20/EMA50, MACD-histogram negativt"
     },
     {
       "id": "261113-AMAT",
@@ -2460,11 +2462,12 @@
       "sourceRef": "Benzinga + Investing.com + GuruFocus 2026-11-12 (websok). Ersatter inte 261112-AMAT (vantat event, avgjord).",
       "price": 378.3,
       "priceAsOf": "2026-11-13T13:00:47.000Z",
-      "status": "new",
+      "status": "rejected",
       "expiresAt": "2026-11-20",
-      "decidedBy": null,
-      "decidedAt": null,
-      "priceSession": "pre"
+      "decidedBy": "reports/us_daily/us-daglig-261113.md",
+      "decidedAt": "2026-11-13",
+      "priceSession": "pre",
+      "decisionReason": "grind 2 (teknik): förbörs 378,30 15,3 % under MA200 446,39 – blockerar ny aktieposition; under EMA20/EMA50/EMA200"
     }
   ]
 }
