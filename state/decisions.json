@@ -28172,6 +28172,70 @@
       "sector": "Resor/plattform",
       "rsi": 56.7,
       "reason": "Prissatt bubblare (v46). Grind 2: volym 1,42x 11/11 (krav > 1,5x), MACD-histogram fallande 2,07 -> 1,64. Katalysatorn (Q3 5/11 AMC) pa sin femte handelsdag. Ingen plan."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3"
+      ],
+      "ticker": "BOOZT.ST",
+      "action": "BEHÅLL",
+      "price": 171.7,
+      "currency": "SEK",
+      "weight": 0.125,
+      "entry": 169.2,
+      "stop": 163,
+      "target": 189.5,
+      "rr": 2.05,
+      "catalystType": "earnings",
+      "sector": "E-handel",
+      "rsi": 63.7,
+      "horizonDays": 20,
+      "reason": "Tes intakt (Q3 3/11). Stangning 171,70 (12/11 16:29Z), +1,48 pct mot entry. Daglagsta 169,10 over stop 163. RSI 63,7, MACD-hist sjunkande, volym 0,67x. Ben 2 <=165 ej triggad, sista dag."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [
+        "L-3",
+        "L-5"
+      ],
+      "ticker": "MORLD.OL",
+      "action": "KÖP",
+      "price": 26.4,
+      "currency": "NOK",
+      "weight": 0.125,
+      "entry": 26.4,
+      "stop": 25.3,
+      "target": 29.6,
+      "rr": 2.91,
+      "catalystType": "earnings",
+      "sector": "Energitjanster",
+      "rsi": 66.1,
+      "horizonDays": 20,
+      "reason": "Bubblarplan <=26,40 TRIGGAD 12/11 (laagsta 26,30, stangning 26,50 15:25Z). KOP-regel c, krav haller. Ben 1 12,5 pct @ 26,40, ben 2 <=26,00. Q3 5/11 hojd EBITDA-prognos. Tak 15,5 pct, regim PA."
+    },
+    {
+      "date": "2026-11-13",
+      "book": "nordic",
+      "mode": "B",
+      "lessonIds": [],
+      "ticker": "XACT-OMXS30.ST",
+      "action": "BEHÅLL",
+      "price": 502.2,
+      "currency": "SEK",
+      "weight": 0.75,
+      "entry": 494.6,
+      "stop": null,
+      "target": null,
+      "rr": null,
+      "catalystType": "index",
+      "sector": "Indexsleeve",
+      "rsi": null,
+      "reason": "Sleeven minskad 87,5 -> 75,0 pct for MORLD.OL ben 1. +1,54 pct mot entry 494,60. Regim PA: ^OMX 3359,37 > MA200 3170,91 (+5,94 pct)."
     }
   ]
 }
