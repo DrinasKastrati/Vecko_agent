@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-13T14:29:28.494Z",
+ "generatedAt": "2026-11-13T14:56:24.632Z",
  "horizons": [
   5,
   20
  ],
  "minN": 8,
  "counts": {
-  "decisions": 1127,
-  "measurable": 1127,
+  "decisions": 1131,
+  "measurable": 1131,
   "missing": 0,
-  "pending": 67
+  "pending": 71
  },
  "missingSymbols": [],
  "byHorizon": {
@@ -24380,6 +24380,46 @@
    "action": "KÖP",
    "catalystType": "earnings",
    "sector": "Energitjanster",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-13",
+   "ticker": "CBOE",
+   "book": "us",
+   "action": "BEHÅLL",
+   "catalystType": "earnings",
+   "sector": "Borser/finansiell infrastruktur",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-13",
+   "ticker": "NVDA",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "other",
+   "sector": "Halvledare",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-13",
+   "ticker": "CSCO",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Natverk",
+   "reconstructed": false,
+   "fwd": {}
+  },
+  {
+   "date": "2026-11-13",
+   "ticker": "AMAT",
+   "book": "us",
+   "action": "AVVAKTA",
+   "catalystType": "earnings",
+   "sector": "Halvledarutrustning",
    "reconstructed": false,
    "fwd": {}
   }
