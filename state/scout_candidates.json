@@ -2468,6 +2468,24 @@
       "decidedAt": "2026-11-13",
       "priceSession": "pre",
       "decisionReason": "grind 2 (teknik): förbörs 378,30 15,3 % under MA200 446,39 – blockerar ny aktieposition; under EMA20/EMA50/EMA200"
+    },
+    {
+      "id": "261114-APP",
+      "date": "2026-11-14",
+      "ticker": "APP",
+      "book": "us",
+      "source": "scout",
+      "catalystType": "earnings",
+      "catalystDate": "2026-11-04",
+      "confirmed": true,
+      "thesis": "Ny bedomning (ej aterstallning av 261105-APP): bekraftad Q3 4/11 AMC (intakt 2,18 mdr +55 %, just. EBITDA-marginal 84 %, Q4-guide 2,37-2,40 mdr). Stangde 13/11 409,10 = 0,81 % OVER MA200 405,79 - spärren som fallde 261105-APP haller inte. Bear: RSI 72,6, volym 0,59x.",
+      "sourceRef": "AppLovin 8-K ex. 99.1 (SEC 2026-11-04); MarketBeat + Investing.com 2026-11-13 (websok). Kurs: prices.json/Yahoo chart API.",
+      "price": 409.1,
+      "priceAsOf": "2026-11-13T21:00:01.000Z",
+      "status": "new",
+      "expiresAt": "2026-11-20",
+      "decidedBy": null,
+      "decidedAt": null
     }
   ]
 }
